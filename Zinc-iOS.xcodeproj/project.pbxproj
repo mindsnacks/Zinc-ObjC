@@ -1,0 +1,642 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		B340F971148D52D800206F86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
+		B340F977148D52D800206F86 /* Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F976148D52D800206F86 /* Zinc.m */; };
+		B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F94A148D514600206F86 /* SenTestingKit.framework */; };
+		B340F97F148D52D800206F86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
+		B340F980148D52D800206F86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
+		B340F983148D52D800206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
+		B340F989148D52D800206F86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B340F987148D52D800206F86 /* InfoPlist.strings */; };
+		B340F98C148D52D800206F86 /* ZincTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F98B148D52D800206F86 /* ZincTests.m */; };
+		B340F995148D543B00206F86 /* ZCBundle.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F993148D543B00206F86 /* ZCBundle.h */; };
+		B340F996148D543B00206F86 /* ZCBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F994148D543B00206F86 /* ZCBundle.m */; };
+		B340F999148D546300206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
+		B340F99B148D563000206F86 /* ZCBundle+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F99A148D563000206F86 /* ZCBundle+Private.h */; };
+		B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F9B3148D581200206F86 /* libOCMock.a */; };
+		B38743091489B830004B227B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
+		B387430B1489B830004B227B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
+		B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430C1489B830004B227B /* CoreGraphics.framework */; };
+		B38743131489B830004B227B /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B38743111489B830004B227B /* InfoPlist.strings */; };
+		B38743151489B830004B227B /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B38743141489B830004B227B /* main.m */; };
+		B38743191489B830004B227B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B38743181489B830004B227B /* AppDelegate.m */; };
+		B387431C1489B830004B227B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B387431B1489B830004B227B /* ViewController.m */; };
+		B387431F1489B830004B227B /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B387431D1489B830004B227B /* ViewController.xib */; };
+		B38743261489B88B004B227B /* Nightlife in Resources */ = {isa = PBXBuildFile; fileRef = B38743251489B88B004B227B /* Nightlife */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B340F981148D52D800206F86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B38742FB1489B830004B227B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B340F96F148D52D800206F86;
+			remoteInfo = Zinc;
+		};
+		B340F997148D544B00206F86 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B38742FB1489B830004B227B /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B340F96F148D52D800206F86;
+			remoteInfo = Zinc;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		B340F94A148D514600206F86 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
+		B340F970148D52D800206F86 /* libZinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZinc.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B340F974148D52D800206F86 /* Zinc-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc-Prefix.pch"; sourceTree = "<group>"; };
+		B340F975148D52D800206F86 /* Zinc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Zinc.h; sourceTree = "<group>"; };
+		B340F976148D52D800206F86 /* Zinc.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Zinc.m; sourceTree = "<group>"; };
+		B340F97D148D52D800206F86 /* ZincTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZincTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B340F986148D52D800206F86 /* ZincTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZincTests-Info.plist"; sourceTree = "<group>"; };
+		B340F988148D52D800206F86 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B340F98A148D52D800206F86 /* ZincTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZincTests.h; sourceTree = "<group>"; };
+		B340F98B148D52D800206F86 /* ZincTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ZincTests.m; sourceTree = "<group>"; };
+		B340F993148D543B00206F86 /* ZCBundle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCBundle.h; sourceTree = "<group>"; };
+		B340F994148D543B00206F86 /* ZCBundle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCBundle.m; sourceTree = "<group>"; };
+		B340F99A148D563000206F86 /* ZCBundle+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZCBundle+Private.h"; sourceTree = "<group>"; };
+		B340F9AD148D581200206F86 /* NSNotificationCenter+OCMAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotificationCenter+OCMAdditions.h"; sourceTree = "<group>"; };
+		B340F9AE148D581200206F86 /* OCMArg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMArg.h; sourceTree = "<group>"; };
+		B340F9AF148D581200206F86 /* OCMConstraint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMConstraint.h; sourceTree = "<group>"; };
+		B340F9B0148D581200206F86 /* OCMock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMock.h; sourceTree = "<group>"; };
+		B340F9B1148D581200206F86 /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
+		B340F9B2148D581200206F86 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
+		B340F9B3148D581200206F86 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
+		B38743041489B830004B227B /* Zinc-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Zinc-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B38743081489B830004B227B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		B387430A1489B830004B227B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		B387430C1489B830004B227B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		B38743101489B830004B227B /* Zinc-Demo-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Zinc-Demo-Info.plist"; sourceTree = "<group>"; };
+		B38743121489B830004B227B /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		B38743141489B830004B227B /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B38743161489B830004B227B /* Zinc-Demo-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc-Demo-Prefix.pch"; sourceTree = "<group>"; };
+		B38743171489B830004B227B /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B38743181489B830004B227B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B387431A1489B830004B227B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		B387431B1489B830004B227B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		B387431E1489B830004B227B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
+		B38743251489B88B004B227B /* Nightlife */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Nightlife; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B340F96D148D52D800206F86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F971148D52D800206F86 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B340F979148D52D800206F86 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */,
+				B340F97F148D52D800206F86 /* UIKit.framework in Frameworks */,
+				B340F980148D52D800206F86 /* Foundation.framework in Frameworks */,
+				B340F983148D52D800206F86 /* libZinc.a in Frameworks */,
+				B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B38743011489B830004B227B /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F999148D546300206F86 /* libZinc.a in Frameworks */,
+				B38743091489B830004B227B /* UIKit.framework in Frameworks */,
+				B387430B1489B830004B227B /* Foundation.framework in Frameworks */,
+				B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		B340F96B148D521000206F86 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				B38743251489B88B004B227B /* Nightlife */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		B340F972148D52D800206F86 /* Zinc */ = {
+			isa = PBXGroup;
+			children = (
+				B340F975148D52D800206F86 /* Zinc.h */,
+				B340F976148D52D800206F86 /* Zinc.m */,
+				B340F993148D543B00206F86 /* ZCBundle.h */,
+				B340F99A148D563000206F86 /* ZCBundle+Private.h */,
+				B340F994148D543B00206F86 /* ZCBundle.m */,
+				B340F973148D52D800206F86 /* Supporting Files */,
+			);
+			path = Zinc;
+			sourceTree = "<group>";
+		};
+		B340F973148D52D800206F86 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B340F974148D52D800206F86 /* Zinc-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B340F984148D52D800206F86 /* ZincTests */ = {
+			isa = PBXGroup;
+			children = (
+				B340F98A148D52D800206F86 /* ZincTests.h */,
+				B340F98B148D52D800206F86 /* ZincTests.m */,
+				B340F99C148D57A000206F86 /* Dependencies */,
+				B340F985148D52D800206F86 /* Supporting Files */,
+			);
+			path = ZincTests;
+			sourceTree = "<group>";
+		};
+		B340F985148D52D800206F86 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B340F986148D52D800206F86 /* ZincTests-Info.plist */,
+				B340F987148D52D800206F86 /* InfoPlist.strings */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B340F99C148D57A000206F86 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				B340F9AA148D581200206F86 /* OCMock-1.77 */,
+			);
+			path = Dependencies;
+			sourceTree = "<group>";
+		};
+		B340F9AA148D581200206F86 /* OCMock-1.77 */ = {
+			isa = PBXGroup;
+			children = (
+				B340F9AB148D581200206F86 /* Headers */,
+				B340F9B3148D581200206F86 /* libOCMock.a */,
+			);
+			path = "OCMock-1.77";
+			sourceTree = "<group>";
+		};
+		B340F9AB148D581200206F86 /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				B340F9AC148D581200206F86 /* OCMock */,
+			);
+			path = Headers;
+			sourceTree = "<group>";
+		};
+		B340F9AC148D581200206F86 /* OCMock */ = {
+			isa = PBXGroup;
+			children = (
+				B340F9AD148D581200206F86 /* NSNotificationCenter+OCMAdditions.h */,
+				B340F9AE148D581200206F86 /* OCMArg.h */,
+				B340F9AF148D581200206F86 /* OCMConstraint.h */,
+				B340F9B0148D581200206F86 /* OCMock.h */,
+				B340F9B1148D581200206F86 /* OCMockObject.h */,
+				B340F9B2148D581200206F86 /* OCMockRecorder.h */,
+			);
+			path = OCMock;
+			sourceTree = "<group>";
+		};
+		B38742F91489B830004B227B = {
+			isa = PBXGroup;
+			children = (
+				B387430E1489B830004B227B /* Demo */,
+				B340F972148D52D800206F86 /* Zinc */,
+				B340F984148D52D800206F86 /* ZincTests */,
+				B38743071489B830004B227B /* Frameworks */,
+				B38743051489B830004B227B /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		B38743051489B830004B227B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B38743041489B830004B227B /* Zinc-iOS.app */,
+				B340F970148D52D800206F86 /* libZinc.a */,
+				B340F97D148D52D800206F86 /* ZincTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B38743071489B830004B227B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B38743081489B830004B227B /* UIKit.framework */,
+				B387430A1489B830004B227B /* Foundation.framework */,
+				B387430C1489B830004B227B /* CoreGraphics.framework */,
+				B340F94A148D514600206F86 /* SenTestingKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B387430E1489B830004B227B /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				B38743171489B830004B227B /* AppDelegate.h */,
+				B38743181489B830004B227B /* AppDelegate.m */,
+				B387431A1489B830004B227B /* ViewController.h */,
+				B387431B1489B830004B227B /* ViewController.m */,
+				B387431D1489B830004B227B /* ViewController.xib */,
+				B387430F1489B830004B227B /* Supporting Files */,
+				B340F96B148D521000206F86 /* Resources */,
+			);
+			name = Demo;
+			path = ZincDemo;
+			sourceTree = "<group>";
+		};
+		B387430F1489B830004B227B /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				B38743101489B830004B227B /* Zinc-Demo-Info.plist */,
+				B38743111489B830004B227B /* InfoPlist.strings */,
+				B38743141489B830004B227B /* main.m */,
+				B38743161489B830004B227B /* Zinc-Demo-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		B340F96E148D52D800206F86 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F995148D543B00206F86 /* ZCBundle.h in Headers */,
+				B340F99B148D563000206F86 /* ZCBundle+Private.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		B340F96F148D52D800206F86 /* Zinc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B340F98D148D52D800206F86 /* Build configuration list for PBXNativeTarget "Zinc" */;
+			buildPhases = (
+				B340F96C148D52D800206F86 /* Sources */,
+				B340F96D148D52D800206F86 /* Frameworks */,
+				B340F96E148D52D800206F86 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Zinc;
+			productName = Zinc;
+			productReference = B340F970148D52D800206F86 /* libZinc.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		B340F97C148D52D800206F86 /* ZincTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B340F990148D52D800206F86 /* Build configuration list for PBXNativeTarget "ZincTests" */;
+			buildPhases = (
+				B340F978148D52D800206F86 /* Sources */,
+				B340F979148D52D800206F86 /* Frameworks */,
+				B340F97A148D52D800206F86 /* Resources */,
+				B340F97B148D52D800206F86 /* ShellScript */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B340F982148D52D800206F86 /* PBXTargetDependency */,
+			);
+			name = ZincTests;
+			productName = ZincTests;
+			productReference = B340F97D148D52D800206F86 /* ZincTests.octest */;
+			productType = "com.apple.product-type.bundle";
+		};
+		B38743031489B830004B227B /* Zinc Demo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B38743221489B830004B227B /* Build configuration list for PBXNativeTarget "Zinc Demo" */;
+			buildPhases = (
+				B38743001489B830004B227B /* Sources */,
+				B38743011489B830004B227B /* Frameworks */,
+				B38743021489B830004B227B /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B340F998148D544B00206F86 /* PBXTargetDependency */,
+			);
+			name = "Zinc Demo";
+			productName = ZincBundleTest;
+			productReference = B38743041489B830004B227B /* Zinc-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B38742FB1489B830004B227B /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+				ORGANIZATIONNAME = MindSnacks;
+			};
+			buildConfigurationList = B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-iOS" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = B38742F91489B830004B227B;
+			productRefGroup = B38743051489B830004B227B /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B38743031489B830004B227B /* Zinc Demo */,
+				B340F96F148D52D800206F86 /* Zinc */,
+				B340F97C148D52D800206F86 /* ZincTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B340F97A148D52D800206F86 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F989148D52D800206F86 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B38743021489B830004B227B /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B38743131489B830004B227B /* InfoPlist.strings in Resources */,
+				B387431F1489B830004B227B /* ViewController.xib in Resources */,
+				B38743261489B88B004B227B /* Nightlife in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		B340F97B148D52D800206F86 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B340F96C148D52D800206F86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F977148D52D800206F86 /* Zinc.m in Sources */,
+				B340F996148D543B00206F86 /* ZCBundle.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B340F978148D52D800206F86 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B340F98C148D52D800206F86 /* ZincTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B38743001489B830004B227B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B38743151489B830004B227B /* main.m in Sources */,
+				B38743191489B830004B227B /* AppDelegate.m in Sources */,
+				B387431C1489B830004B227B /* ViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B340F982148D52D800206F86 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B340F96F148D52D800206F86 /* Zinc */;
+			targetProxy = B340F981148D52D800206F86 /* PBXContainerItemProxy */;
+		};
+		B340F998148D544B00206F86 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B340F96F148D52D800206F86 /* Zinc */;
+			targetProxy = B340F997148D544B00206F86 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B340F987148D52D800206F86 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B340F988148D52D800206F86 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B38743111489B830004B227B /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B38743121489B830004B227B /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B387431D1489B830004B227B /* ViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B387431E1489B830004B227B /* en */,
+			);
+			name = ViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B340F98E148D52D800206F86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Zinc.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		B340F98F148D52D800206F86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DSTROOT = /tmp/Zinc.dst;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		B340F991148D52D800206F86 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Debug;
+		};
+		B340F992148D52D800206F86 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(SDKROOT)/Developer/Library/Frameworks",
+					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
+				);
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = octest;
+			};
+			name = Release;
+		};
+		B38743201489B830004B227B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		B38743211489B830004B227B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B38743231489B830004B227B /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
+				INFOPLIST_FILE = "ZincDemo/Zinc-Demo-Info.plist";
+				PRODUCT_NAME = "Zinc-iOS";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		B38743241489B830004B227B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
+				INFOPLIST_FILE = "ZincDemo/Zinc-Demo-Info.plist";
+				PRODUCT_NAME = "Zinc-iOS";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B340F98D148D52D800206F86 /* Build configuration list for PBXNativeTarget "Zinc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B340F98E148D52D800206F86 /* Debug */,
+				B340F98F148D52D800206F86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B340F990148D52D800206F86 /* Build configuration list for PBXNativeTarget "ZincTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B340F991148D52D800206F86 /* Debug */,
+				B340F992148D52D800206F86 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B38743201489B830004B227B /* Debug */,
+				B38743211489B830004B227B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B38743221489B830004B227B /* Build configuration list for PBXNativeTarget "Zinc Demo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B38743231489B830004B227B /* Debug */,
+				B38743241489B830004B227B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B38742FB1489B830004B227B /* Project object */;
+}
