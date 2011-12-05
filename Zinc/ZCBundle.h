@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Zinc.h"
 
 @interface ZCBundle : NSObject
 
@@ -15,8 +16,7 @@
 
 @property (nonatomic, assign) NSUInteger* version;
 
-- (id) initWithPath:(NSString*)path;
-- (id) initWithURL:(NSURL*)url;
-
++ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
++ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
 
 @end

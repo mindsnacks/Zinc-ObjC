@@ -20,6 +20,10 @@
 		B340F999148D546300206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
 		B340F99B148D563000206F86 /* ZCBundle+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F99A148D563000206F86 /* ZCBundle+Private.h */; };
 		B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F9B3148D581200206F86 /* libOCMock.a */; };
+		B340F9BC148D5C6200206F86 /* ZCBundleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F9BB148D5C6200206F86 /* ZCBundleTests.m */; };
+		B340FA04148D608D00206F86 /* NSFileManager+Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */; };
+		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
+		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
 		B38743091489B830004B227B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
 		B387430B1489B830004B227B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
 		B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430C1489B830004B227B /* CoreGraphics.framework */; };
@@ -69,6 +73,14 @@
 		B340F9B1148D581200206F86 /* OCMockObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockObject.h; sourceTree = "<group>"; };
 		B340F9B2148D581200206F86 /* OCMockRecorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCMockRecorder.h; sourceTree = "<group>"; };
 		B340F9B3148D581200206F86 /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libOCMock.a; sourceTree = "<group>"; };
+		B340F9BA148D5C6200206F86 /* ZCBundleTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCBundleTests.h; sourceTree = "<group>"; };
+		B340F9BB148D5C6200206F86 /* ZCBundleTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCBundleTests.m; sourceTree = "<group>"; };
+		B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+Zinc.h"; sourceTree = "<group>"; };
+		B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+Zinc.m"; sourceTree = "<group>"; };
+		B340FA06148D628300206F86 /* ZincTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincTests-Prefix.pch"; sourceTree = "<group>"; };
+		B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SenTestCase+MethodSwizzling.h"; sourceTree = "<group>"; };
+		B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SenTestCase+MethodSwizzling.m"; sourceTree = "<group>"; };
+		B340FA0D148D6F0F00206F86 /* TestUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtility.h; sourceTree = "<group>"; };
 		B38743041489B830004B227B /* Zinc-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Zinc-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B38743081489B830004B227B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B387430A1489B830004B227B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -136,6 +148,8 @@
 				B340F993148D543B00206F86 /* ZCBundle.h */,
 				B340F99A148D563000206F86 /* ZCBundle+Private.h */,
 				B340F994148D543B00206F86 /* ZCBundle.m */,
+				B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */,
+				B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */,
 				B340F973148D52D800206F86 /* Supporting Files */,
 			);
 			path = Zinc;
@@ -154,6 +168,10 @@
 			children = (
 				B340F98A148D52D800206F86 /* ZincTests.h */,
 				B340F98B148D52D800206F86 /* ZincTests.m */,
+				B340F9BA148D5C6200206F86 /* ZCBundleTests.h */,
+				B340F9BB148D5C6200206F86 /* ZCBundleTests.m */,
+				B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */,
+				B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */,
 				B340F99C148D57A000206F86 /* Dependencies */,
 				B340F985148D52D800206F86 /* Supporting Files */,
 			);
@@ -163,8 +181,10 @@
 		B340F985148D52D800206F86 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B340FA0D148D6F0F00206F86 /* TestUtility.h */,
 				B340F986148D52D800206F86 /* ZincTests-Info.plist */,
 				B340F987148D52D800206F86 /* InfoPlist.strings */,
+				B340FA06148D628300206F86 /* ZincTests-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -274,6 +294,7 @@
 			files = (
 				B340F995148D543B00206F86 /* ZCBundle.h in Headers */,
 				B340F99B148D563000206F86 /* ZCBundle+Private.h in Headers */,
+				B340FA04148D608D00206F86 /* NSFileManager+Zinc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -406,6 +427,7 @@
 			files = (
 				B340F977148D52D800206F86 /* Zinc.m in Sources */,
 				B340F996148D543B00206F86 /* ZCBundle.m in Sources */,
+				B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -414,6 +436,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B340F98C148D52D800206F86 /* ZincTests.m in Sources */,
+				B340F9BC148D5C6200206F86 /* ZCBundleTests.m in Sources */,
+				B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,13 +526,16 @@
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_PREFIX_HEADER = "ZincTests/ZincTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77/Headers\"/**";
 				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Debug;
@@ -521,13 +548,16 @@
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_PREFIX_HEADER = "ZincTests/ZincTests-Prefix.pch";
+				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77/Headers\"/**";
 				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
 				);
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				USER_HEADER_SEARCH_PATHS = "";
 				WRAPPER_EXTENSION = octest;
 			};
 			name = Release;

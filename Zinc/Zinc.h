@@ -7,3 +7,9 @@
 //
 
 #import "ZCBundle.h"
+
+typedef NSInteger ZincFormat;
+
+enum  {
+    ZincFormatInvalid = -1,
+};

@@ -10,6 +10,11 @@
 
 @interface ZCBundle ()
 
+- (id) initWithPath:(NSString*)path;
+- (id) initWithURL:(NSURL*)url;
+
 @property (nonatomic, retain) NSFileManager* fileManager;
+
++ (ZincFormat) readZincFormatFromURL:(NSURL*)url error:(NSError**)outError;
 
 @end
