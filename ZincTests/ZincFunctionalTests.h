@@ -8,6 +8,10 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-@interface ZincTests : SenTestCase
+@class ZCBundle;
+
+@interface ZincFunctionalTests : SenTestCase
+
+@property (nonatomic, retain) ZCBundle* bundle;
 
 @end

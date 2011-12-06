@@ -14,12 +14,15 @@
 - (NSArray*) availableVersions;
 - (NSURL*) url;
 
-@property (nonatomic, assign) NSUInteger* version;
+@property (nonatomic, assign) ZincVersionMajor version;
 
 + (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
 + (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersionMajor)version error:(NSError**)outError;
 
 + (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
 + (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersionMajor)version error:(NSError**)outError;;
+
+- (NSURL*) urlForResource:(NSURL*)url;
+- (NSString*) pathForResource:(NSString*)path;
 
 @end

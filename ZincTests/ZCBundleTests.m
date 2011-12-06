@@ -30,17 +30,17 @@
 
 #pragma mark Tests
 
-- (void) testReadFormat1
-{
-    NSError* error = nil;
-    NSString* path = [self createEmptyZincBundleWithFormat:1];
-    ZincFormat format = [ZCBundle readZincFormatFromURL:[NSURL fileURLWithPath:path] error:&error];
-    if (format == ZincFormatInvalid) {
-        STFail(@"%@", error);
-    } else {
-        STAssertTrue(format == 1, @"format wrong");
-    }
-}
+//- (void) testReadFormat1
+//{
+//    NSError* error = nil;
+//    NSString* path = [self createEmptyZincBundleWithFormat:1];
+//    ZincFormat format = [ZCBundle readZincFormatFromURL:[NSURL fileURLWithPath:path] error:&error];
+//    if (format == ZincFormatInvalid) {
+//        STFail(@"%@", error);
+//    } else {
+//        STAssertTrue(format == 1, @"format wrong");
+//    }
+//}
 
 
 @end

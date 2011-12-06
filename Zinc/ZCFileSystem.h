@@ -19,8 +19,8 @@
 
 @property (nonatomic, retain, readonly) NSURL* url;
 
+- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersionMajor)version;
 - (NSString*) pathForResource:(NSString*)path version:(ZincVersionMajor)version;
-
 
 #pragma mark Utility
 // Not exactly private, but not needed for normal use

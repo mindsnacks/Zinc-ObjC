@@ -10,7 +10,7 @@
 #define TEST_RESOURCE_PATH(name) \
 [[[[NSBundle bundleForClass:[self class]] resourcePath] \
   stringByAppendingPathComponent:TEST_RESOURCE_ROOT] \
- stringByAppendingPathComponent:name];
+ stringByAppendingPathComponent:name]
 
 
 #define TEST_TMP_PATH(name, ext) \

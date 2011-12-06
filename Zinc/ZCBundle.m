@@ -103,8 +103,17 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
     return self.fileSystem.url;
 }
 
+#pragma mark -
 
-#pragma <#arguments#>
+- (NSURL*) urlForResource:(NSURL*)url
+{
+    return [self.fileSystem urlForResource:url version:self.version];
+}
+
+- (NSString*) pathForResource:(NSString*)path
+{
+    return [self.fileSystem pathForResource:path version:self.version];
+}
 
 
 @end

@@ -67,7 +67,6 @@
     [super dealloc];
 }
 
-
 + (ZCFileSystem*) fileSystemForWithURL:(NSURL*)url error:(NSError**)outError
 {
     ZincFormat format = [self readZincFormatFromURL:url error:outError];
@@ -79,7 +78,6 @@
     ZCFileSystem* zcfs = [[[fsClass alloc] initWithURL:url] autorelease];
     return zcfs;
 }
-
 
 - (NSString*) pathForManifestVersion:(ZincVersionMajor)version
 {
@@ -137,6 +135,12 @@
                        stringByAppendingPathComponent:zfilename];
                        
     return zpath;
+}
+
+- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersionMajor)version
+{
+    NSString* path = [self pathForResource:[url path] version:version];
+    return [NSURL fileURLWithPath:path];
 }
 
 @end
