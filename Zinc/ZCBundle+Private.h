@@ -7,14 +7,12 @@
 //
 
 #import "ZCBundle.h"
+#import "ZCFileSystem.h"
 
 @interface ZCBundle ()
 
-- (id) initWithPath:(NSString*)path;
-- (id) initWithURL:(NSURL*)url;
+- (id) initWithFileSystem:(ZCFileSystem*)fileSystem;
 
-@property (nonatomic, retain) NSFileManager* fileManager;
-
-+ (ZincFormat) readZincFormatFromURL:(NSURL*)url error:(NSError**)outError;
+@property (nonatomic, retain) ZCFileSystem* fileSystem;
 
 @end

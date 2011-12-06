@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B3105722148D94480069F0D5 /* KSJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B3105721148D94480069F0D5 /* KSJSON.h */; };
+		B3105724148D94550069F0D5 /* AMFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3105723148D94550069F0D5 /* AMFoundation.h */; };
 		B340F971148D52D800206F86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
 		B340F977148D52D800206F86 /* Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F976148D52D800206F86 /* Zinc.m */; };
 		B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F94A148D514600206F86 /* SenTestingKit.framework */; };
@@ -24,6 +26,12 @@
 		B340FA04148D608D00206F86 /* NSFileManager+Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */; };
 		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
 		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
+		B340FA0F148D7DC100206F86 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; };
+		B3549DCB148D950500DD63D1 /* libAMFoundation_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B310570E148D93980069F0D5 /* libAMFoundation_iOS.a */; };
+		B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DCE148D957900DD63D1 /* KSJSON.m */; };
+		B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */; };
+		B3549DEF148DB80900DD63D1 /* ZCManifest.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DED148DB80900DD63D1 /* ZCManifest.h */; };
+		B3549DF0148DB80900DD63D1 /* ZCManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZCManifest.m */; };
 		B38743091489B830004B227B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
 		B387430B1489B830004B227B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
 		B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430C1489B830004B227B /* CoreGraphics.framework */; };
@@ -33,9 +41,60 @@
 		B387431C1489B830004B227B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B387431B1489B830004B227B /* ViewController.m */; };
 		B387431F1489B830004B227B /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B387431D1489B830004B227B /* ViewController.xib */; };
 		B38743261489B88B004B227B /* Nightlife in Resources */ = {isa = PBXBuildFile; fileRef = B38743251489B88B004B227B /* Nightlife */; };
+		B3D28819148D87E900377B70 /* ZCFileSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA15148D862100206F86 /* ZCFileSystem.h */; };
+		B3D2881A148D87EE00377B70 /* ZCFileSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA16148D862100206F86 /* ZCFileSystem.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		B3105700148D93670069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 398D070D145E5A9C00E0213B;
+			remoteInfo = KSJSON;
+		};
+		B3105702148D93670069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 398D071D145E5A9C00E0213B;
+			remoteInfo = KSJSONTests;
+		};
+		B310570D148D93980069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B3204DD3136388600061A1CE;
+			remoteInfo = AMFoundation_iOS;
+		};
+		B310570F148D93980069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B3204DE11363888B0061A1CE;
+			remoteInfo = AMFoundation_Mac;
+		};
+		B3105711148D93980069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B3204DB4136388230061A1CE;
+			remoteInfo = AMFoundationTests;
+		};
+		B3105713148D93B40069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = B3204DD2136388600061A1CE;
+			remoteInfo = AMFoundation_iOS;
+		};
+		B3105715148D93B70069F0D5 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 398D070C145E5A9C00E0213B;
+			remoteInfo = KSJSON;
+		};
 		B340F981148D52D800206F86 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = B38742FB1489B830004B227B /* Project object */;
@@ -53,6 +112,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B31056F5148D8E430069F0D5 /* libKSJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKSJSON.a; path = "KSJSON/build/Release-iphoneos/libKSJSON.a"; sourceTree = "<group>"; };
+		B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KSJSON.xcodeproj; path = Dependencies/KSJSON/KSJSON.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AMFoundation.xcodeproj; path = Dependencies/AMFoundation/AMFoundation.xcodeproj; sourceTree = SOURCE_ROOT; };
+		B3105721148D94480069F0D5 /* KSJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KSJSON.h; path = ../../Dependencies/KSJSON/KSJSON/KSJSON.h; sourceTree = "<group>"; };
+		B3105723148D94550069F0D5 /* AMFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMFoundation.h; path = ../../Dependencies/AMFoundation/AMFoundation/AMFoundation.h; sourceTree = "<group>"; };
 		B340F94A148D514600206F86 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B340F970148D52D800206F86 /* libZinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZinc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B340F974148D52D800206F86 /* Zinc-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc-Prefix.pch"; sourceTree = "<group>"; };
@@ -81,6 +145,14 @@
 		B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SenTestCase+MethodSwizzling.h"; sourceTree = "<group>"; };
 		B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SenTestCase+MethodSwizzling.m"; sourceTree = "<group>"; };
 		B340FA0D148D6F0F00206F86 /* TestUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestUtility.h; sourceTree = "<group>"; };
+		B340FA0E148D7DC100206F86 /* ZincErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincErrors.h; sourceTree = "<group>"; };
+		B340FA13148D801A00206F86 /* libAMFoundation_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAMFoundation_iOS.a; path = "AMFoundation/build/Release-iphoneos/libAMFoundation_iOS.a"; sourceTree = "<group>"; };
+		B340FA15148D862100206F86 /* ZCFileSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCFileSystem.h; sourceTree = "<group>"; };
+		B340FA16148D862100206F86 /* ZCFileSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCFileSystem.m; sourceTree = "<group>"; };
+		B3549DCE148D957900DD63D1 /* KSJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSJSON.m; path = ../../Dependencies/KSJSON/KSJSON/KSJSON.m; sourceTree = "<group>"; };
+		B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZCFileSystem+Private.h"; sourceTree = "<group>"; };
+		B3549DED148DB80900DD63D1 /* ZCManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCManifest.h; sourceTree = "<group>"; };
+		B3549DEE148DB80900DD63D1 /* ZCManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCManifest.m; sourceTree = "<group>"; };
 		B38743041489B830004B227B /* Zinc-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Zinc-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B38743081489B830004B227B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B387430A1489B830004B227B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -102,6 +174,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3549DCB148D950500DD63D1 /* libAMFoundation_iOS.a in Frameworks */,
 				B340F971148D52D800206F86 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -132,6 +205,54 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B31056F7148D934B0069F0D5 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				B310571F148D94230069F0D5 /* AMFoundation */,
+				B3105720148D942E0069F0D5 /* KSJSON */,
+			);
+			name = Dependencies;
+			path = ZincTests/Dependencies;
+			sourceTree = "<group>";
+		};
+		B31056F9148D93670069F0D5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B3105701148D93670069F0D5 /* libKSJSON.a */,
+				B3105703148D93670069F0D5 /* KSJSONTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B3105705148D93980069F0D5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B310570E148D93980069F0D5 /* libAMFoundation_iOS.a */,
+				B3105710148D93980069F0D5 /* libAMFoundation_Mac.a */,
+				B3105712148D93980069F0D5 /* AMFoundationTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B310571F148D94230069F0D5 /* AMFoundation */ = {
+			isa = PBXGroup;
+			children = (
+				B3105723148D94550069F0D5 /* AMFoundation.h */,
+				B3549DD0148D958D00DD63D1 /* Source */,
+			);
+			name = AMFoundation;
+			sourceTree = "<group>";
+		};
+		B3105720148D942E0069F0D5 /* KSJSON */ = {
+			isa = PBXGroup;
+			children = (
+				B3549DCE148D957900DD63D1 /* KSJSON.m */,
+				B3105721148D94480069F0D5 /* KSJSON.h */,
+				B3549DD4148D959C00DD63D1 /* Source */,
+			);
+			name = KSJSON;
+			sourceTree = "<group>";
+		};
 		B340F96B148D521000206F86 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -145,9 +266,15 @@
 			children = (
 				B340F975148D52D800206F86 /* Zinc.h */,
 				B340F976148D52D800206F86 /* Zinc.m */,
+				B340FA0E148D7DC100206F86 /* ZincErrors.h */,
 				B340F993148D543B00206F86 /* ZCBundle.h */,
 				B340F99A148D563000206F86 /* ZCBundle+Private.h */,
 				B340F994148D543B00206F86 /* ZCBundle.m */,
+				B340FA15148D862100206F86 /* ZCFileSystem.h */,
+				B3549DED148DB80900DD63D1 /* ZCManifest.h */,
+				B3549DEE148DB80900DD63D1 /* ZCManifest.m */,
+				B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */,
+				B340FA16148D862100206F86 /* ZCFileSystem.m */,
 				B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */,
 				B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */,
 				B340F973148D52D800206F86 /* Supporting Files */,
@@ -227,12 +354,29 @@
 			path = OCMock;
 			sourceTree = "<group>";
 		};
+		B3549DD0148D958D00DD63D1 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		B3549DD4148D959C00DD63D1 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
 		B38742F91489B830004B227B = {
 			isa = PBXGroup;
 			children = (
 				B387430E1489B830004B227B /* Demo */,
 				B340F972148D52D800206F86 /* Zinc */,
 				B340F984148D52D800206F86 /* ZincTests */,
+				B31056F7148D934B0069F0D5 /* Dependencies */,
 				B38743071489B830004B227B /* Frameworks */,
 				B38743051489B830004B227B /* Products */,
 			);
@@ -251,6 +395,8 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B31056F5148D8E430069F0D5 /* libKSJSON.a */,
+				B340FA13148D801A00206F86 /* libAMFoundation_iOS.a */,
 				B38743081489B830004B227B /* UIKit.framework */,
 				B387430A1489B830004B227B /* Foundation.framework */,
 				B387430C1489B830004B227B /* CoreGraphics.framework */,
@@ -295,6 +441,12 @@
 				B340F995148D543B00206F86 /* ZCBundle.h in Headers */,
 				B340F99B148D563000206F86 /* ZCBundle+Private.h in Headers */,
 				B340FA04148D608D00206F86 /* NSFileManager+Zinc.h in Headers */,
+				B340FA0F148D7DC100206F86 /* ZincErrors.h in Headers */,
+				B3D28819148D87E900377B70 /* ZCFileSystem.h in Headers */,
+				B3105722148D94480069F0D5 /* KSJSON.h in Headers */,
+				B3105724148D94550069F0D5 /* AMFoundation.h in Headers */,
+				B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */,
+				B3549DEF148DB80900DD63D1 /* ZCManifest.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -312,6 +464,8 @@
 			buildRules = (
 			);
 			dependencies = (
+				B3105716148D93B70069F0D5 /* PBXTargetDependency */,
+				B3105714148D93B40069F0D5 /* PBXTargetDependency */,
 			);
 			name = Zinc;
 			productName = Zinc;
@@ -374,6 +528,16 @@
 			mainGroup = B38742F91489B830004B227B;
 			productRefGroup = B38743051489B830004B227B /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = B3105705148D93980069F0D5 /* Products */;
+					ProjectRef = B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */;
+				},
+				{
+					ProductGroup = B31056F9148D93670069F0D5 /* Products */;
+					ProjectRef = B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				B38743031489B830004B227B /* Zinc Demo */,
@@ -382,6 +546,44 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		B3105701148D93670069F0D5 /* libKSJSON.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libKSJSON.a;
+			remoteRef = B3105700148D93670069F0D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B3105703148D93670069F0D5 /* KSJSONTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = KSJSONTests.octest;
+			remoteRef = B3105702148D93670069F0D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B310570E148D93980069F0D5 /* libAMFoundation_iOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAMFoundation_iOS.a;
+			remoteRef = B310570D148D93980069F0D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B3105710148D93980069F0D5 /* libAMFoundation_Mac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libAMFoundation_Mac.a;
+			remoteRef = B310570F148D93980069F0D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		B3105712148D93980069F0D5 /* AMFoundationTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = AMFoundationTests.octest;
+			remoteRef = B3105711148D93980069F0D5 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		B340F97A148D52D800206F86 /* Resources */ = {
@@ -428,6 +630,9 @@
 				B340F977148D52D800206F86 /* Zinc.m in Sources */,
 				B340F996148D543B00206F86 /* ZCBundle.m in Sources */,
 				B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */,
+				B3D2881A148D87EE00377B70 /* ZCFileSystem.m in Sources */,
+				B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */,
+				B3549DF0148DB80900DD63D1 /* ZCManifest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -454,6 +659,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		B3105714148D93B40069F0D5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = AMFoundation_iOS;
+			targetProxy = B3105713148D93B40069F0D5 /* PBXContainerItemProxy */;
+		};
+		B3105716148D93B70069F0D5 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = KSJSON;
+			targetProxy = B3105715148D93B70069F0D5 /* PBXContainerItemProxy */;
+		};
 		B340F982148D52D800206F86 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = B340F96F148D52D800206F86 /* Zinc */;
@@ -498,7 +713,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -510,7 +725,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = NO;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

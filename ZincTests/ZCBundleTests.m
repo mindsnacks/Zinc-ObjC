@@ -34,9 +34,13 @@
 {
     NSError* error = nil;
     NSString* path = [self createEmptyZincBundleWithFormat:1];
-    if (![ZCBundle readZincFormatFromURL:[NSURL fileURLWithPath:path] error:&error]) {
+    ZincFormat format = [ZCBundle readZincFormatFromURL:[NSURL fileURLWithPath:path] error:&error];
+    if (format == ZincFormatInvalid) {
         STFail(@"%@", error);
+    } else {
+        STAssertTrue(format == 1, @"format wrong");
     }
 }
+
 
 @end

@@ -12,11 +12,14 @@
 @interface ZCBundle : NSObject
 
 - (NSArray*) availableVersions;
-@property (nonatomic, retain, readonly) NSURL* url;
+- (NSURL*) url;
 
 @property (nonatomic, assign) NSUInteger* version;
 
 + (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
++ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersionMajor)version error:(NSError**)outError;
+
 + (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
++ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersionMajor)version error:(NSError**)outError;;
 
 @end

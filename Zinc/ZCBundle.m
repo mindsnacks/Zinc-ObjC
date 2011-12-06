@@ -9,21 +9,27 @@
 #import "ZCBundle.h"
 #import "ZCBundle+Private.h"
 #import "NSFileManager+Zinc.h"
+#import "ZCFileSystem.h"
 
-#define ZINC_FORMAT_FILE @"zinc_format.txt"
+
+static const char* queue_name_for_url(NSURL* url) {
+    return [[kZincPackageName stringByAppendingFormat:@".bundle#%@",
+             [url absoluteString]] cStringUsingEncoding:NSUTF8StringEncoding];
+}
 
 static NSMutableDictionary * _ZCBundle_sharedURLMap;
 
+
 @interface ZCBundle ()
-@property (nonatomic, retain, readwrite) NSURL* url;
+@property (nonatomic, assign) dispatch_queue_t queue;
 @end
 
 
 @implementation ZCBundle
 
-@synthesize url = _url;
 @synthesize version = _version;
-@synthesize fileManager = _fileManager;
+@synthesize fileSystem = _fileSystem;
+@synthesize queue = _queue;
 
 + (void) initialize
 {
@@ -32,68 +38,73 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 	}
 }
 
-- (id) initWithURL:(NSURL*)url
+- (id) initWithFileSystem:(ZCFileSystem*)fileSystem
 {
     self = [super init];
     if (self) {
-        self.url = url;
-        self.fileManager = [[[NSFileManager alloc] init] autorelease];
+        //self.queue = dispatch_queue_create(queue_name_for_url(self.url), NULL);
+        self.fileSystem = fileSystem;
     }
     return self;
 }
 
-- (id) initWithPath:(NSString*)path
+- (void) dealloc 
 {
-    return [self initWithURL:[NSURL fileURLWithPath:path]];
-}
-
-+ (ZincFormat) readZincFormatFromURL:(NSURL*)url error:(NSError**)outError
-{
-    NSFileManager* fm = [NSFileManager zinc_newFileManager];
-    NSString* path = [[url path] stringByAppendingPathComponent:ZINC_FORMAT_FILE];
-    if (![fm fileExistsAtPath:path]) {
-        // file doesn't exist error
-        return ZincFormatInvalid;
-    }
+    // -- remove from sharedMap
+	@synchronized(_ZCBundle_sharedURLMap) {
+		[_ZCBundle_sharedURLMap removeObjectForKey:[[self url] absoluteString]];
+	}
     
-    NSString* string = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
-    if (string == nil) {
-        return ZincFormatInvalid;
-    }
-    
-    if ([string integerValue] == 0) {
-        return ZincFormatInvalid;
-    }
-    
-    return [string integerValue];;
+    self.fileSystem = nil;
+    [super dealloc];
 }
 
 + (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
 {
+    ZCFileSystem* zcfs = [ZCFileSystem fileSystemForWithURL:url error:outError];
+    if (zcfs == nil) {
+        return nil;
+    }
     
+    ZCBundle* bundle = [[[ZCBundle alloc] initWithFileSystem:zcfs] autorelease];
+    return bundle;
+}
+
++ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersionMajor)version error:(NSError**)outError
+{
+    ZCBundle* bundle = [self bundleWithURL:url error:outError];
+    if (bundle == nil) {
+        return nil;
+    }
+
+    return bundle;
 }
 
 + (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError
 {
-    
+    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
 }
 
-- (void)dealloc 
++ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersionMajor)version error:(NSError**)outError
 {
-    // -- remove from sharedMap
-	@synchronized(_ZCBundle_sharedURLMap) {
-		[_ZCBundle_sharedURLMap removeObjectForKey:[self.url absoluteString]];
-	}
-    
-    self.url = nil;
-    self.fileManager = nil;
-    [super dealloc];
+    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
 }
+
+
+#pragma mark Accessors
 
 - (NSArray*) availableVersions;
 {
     return nil;
 }
+
+- (NSURL*) url
+{
+    return self.fileSystem.url;
+}
+
+
+#pragma <#arguments#>
 
 
 @end
