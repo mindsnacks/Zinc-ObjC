@@ -10,6 +10,7 @@
 
 #import "ViewController.h"
 #import "ZCBundle.h"
+#import "ZCBundleManager.h"
 
 @implementation AppDelegate
 
@@ -31,9 +32,19 @@
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
     
-    NSString* dir = [[NSBundle mainBundle] pathForResource:@"Nightlife" ofType:nil];
+//    NSString* dir = [[NSBundle mainBundle] pathForResource:@"Nightlife" ofType:nil];
+//    
+//    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
+
     
-    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
+    ZCBundleManager* bm = [ZCBundleManager defaultManager];
+    [bm addRepoWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/z1/"]];
+    [bm refreshReposWithCompletion:^(id result, id completion, NSError* error) {
+        
+        NSLog(@"result: %@", result);
+        NSLog(@"error: %@", error);
+        
+    }];
     
     
     return YES;

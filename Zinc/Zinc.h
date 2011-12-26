@@ -10,12 +10,10 @@
 #define kZincPackageName @"com.mindsnacks.zinc"
 
 typedef NSInteger ZincFormat;
-typedef NSInteger ZincVersionMajor;
-typedef NSInteger ZincVersionMinor;
+typedef NSInteger ZincVersion;
 
 enum  {
     ZincFormatInvalid = -1,
 };
 
 #import "ZincErrors.h"
-#import "ZCBundle.h"

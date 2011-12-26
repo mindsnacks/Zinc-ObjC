@@ -11,7 +11,7 @@
 #import "ZCManifest.h"
 #import "NSFileManager+Zinc.h"
 
-#define ZINC_FORMAT_FILE @"zinc_format.txt"
+#define ZINC_INDEX_FILE @"index.json"
 
 @interface ZCFileSystem ()
 @property (nonatomic, retain, readwrite) NSURL* url;
@@ -25,16 +25,19 @@
 
 + (Class) fileSystemForFormat:(NSInteger)format
 {
-    return self;
+    if (format == 1) {
+        return self;
+    } 
+    return nil;
 }
 
 + (ZincFormat) readZincFormatFromURL:(NSURL*)url error:(NSError**)outError
 {
     NSFileManager* fm = [NSFileManager zinc_newFileManager];
-    NSString* path = [[url path] stringByAppendingPathComponent:ZINC_FORMAT_FILE];
+    NSString* path = [[url path] stringByAppendingPathComponent:ZINC_INDEX_FILE];
     if (![fm fileExistsAtPath:path]) {
         // file doesn't exist error
-        AMErrorAssignIfNotNil(outError, ZCError(ZINC_ERR_MISSING_FORMAT_FILE));
+        AMErrorAssignIfNotNil(outError, ZCError(ZINC_ERR_MISSING_INDEX_FILE));
         return ZincFormatInvalid;
     }
     
@@ -43,11 +46,21 @@
         return ZincFormatInvalid;
     }
     
+    id json = [KSJSON deserializeString:string error:outError];
+    if (json == nil) {
+        return ZincFormatInvalid;
+    }
+
+    if ([json isKindOfClass:[NSDictionary class]] && [json objectForKey:@"format"] != nil) {
+        NSNumber* format = [json objectForKey:@"format"];
+        return [format integerValue];
+    }
+    
+    return ZincFormatInvalid;
+
     if ([string integerValue] == 0) {
         return ZincFormatInvalid;
     }
-    
-    return [string integerValue];;
 }
 
 - (id) initWithURL:(NSURL*)url
@@ -67,7 +80,7 @@
     [super dealloc];
 }
 
-+ (ZCFileSystem*) fileSystemForWithURL:(NSURL*)url error:(NSError**)outError
++ (ZCFileSystem*) fileSystemWithURL:(NSURL*)url error:(NSError**)outError
 {
     ZincFormat format = [self readZincFormatFromURL:url error:outError];
     if (format == ZincFormatInvalid) {
@@ -79,16 +92,16 @@
     return zcfs;
 }
 
-- (NSString*) pathForManifestVersion:(ZincVersionMajor)version
+- (NSString*) pathForManifestVersion:(ZincVersion)version
 {
     return [[[[self.url path] 
-             stringByAppendingPathComponent:@"versions"]
+             stringByAppendingPathComponent:@"manifests"]
             stringByAppendingPathComponent:[NSString stringWithFormat:@"%d", version]]
             stringByAppendingPathComponent:@"manifest.json"];
     
 }
 
-- (ZCManifest*) readManifestForVersion:(ZincVersionMajor)version error:(NSError**)outError
+- (ZCManifest*) readManifestForVersion:(ZincVersion)version error:(NSError**)outError
 {
     NSString* path = [self pathForManifestVersion:version];
     NSString* manifestString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
@@ -110,7 +123,7 @@
     return manifest;
 }
 
-- (NSString*) pathForResource:(NSString*)path version:(ZincVersionMajor)version
+- (NSString*) pathForResource:(NSString*)path version:(ZincVersion)version
 {
     ZCManifest* manifest = [self.manifestsByVersion objectForKey:[NSNumber numberWithUnsignedInteger:version]];
     if (manifest == nil) {
@@ -125,7 +138,7 @@
         }
     }
     
-    NSString* sha = [manifest shaForPath:path];
+    NSString* sha = [manifest shaForFile:path];
     NSString* dir = [path stringByDeletingLastPathComponent];
     NSString* filename = [[path lastPathComponent] stringByDeletingPathExtension];
     NSString* fileext = [[path lastPathComponent] pathExtension];
@@ -137,7 +150,7 @@
     return zpath;
 }
 
-- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersionMajor)version
+- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersion)version
 {
     NSString* path = [self pathForResource:[url path] version:version];
     return [NSURL fileURLWithPath:path];

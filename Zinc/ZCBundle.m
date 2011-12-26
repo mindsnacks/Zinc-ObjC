@@ -11,7 +11,6 @@
 #import "NSFileManager+Zinc.h"
 #import "ZCFileSystem.h"
 
-
 static const char* queue_name_for_url(NSURL* url) {
     return [[kZincPackageName stringByAppendingFormat:@".bundle#%@",
              [url absoluteString]] cStringUsingEncoding:NSUTF8StringEncoding];
@@ -28,8 +27,10 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 @implementation ZCBundle
 
 @synthesize version = _version;
+@synthesize manifest = _manifest;
 @synthesize fileSystem = _fileSystem;
 @synthesize queue = _queue;
+@synthesize manager = _manager;
 
 + (void) initialize
 {
@@ -55,13 +56,14 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 		[_ZCBundle_sharedURLMap removeObjectForKey:[[self url] absoluteString]];
 	}
     
+    self.manifest = nil;
     self.fileSystem = nil;
     [super dealloc];
 }
 
 + (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
 {
-    ZCFileSystem* zcfs = [ZCFileSystem fileSystemForWithURL:url error:outError];
+    ZCFileSystem* zcfs = [ZCFileSystem fileSystemWithURL:url error:outError];
     if (zcfs == nil) {
         return nil;
     }
@@ -70,25 +72,25 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
     return bundle;
 }
 
-+ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersionMajor)version error:(NSError**)outError
-{
-    ZCBundle* bundle = [self bundleWithURL:url error:outError];
-    if (bundle == nil) {
-        return nil;
-    }
-
-    return bundle;
-}
+//+ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError
+//{
+//    ZCBundle* bundle = [self bundleWithURL:url error:outError];
+//    if (bundle == nil) {
+//        return nil;
+//    }
+//
+//    return bundle;
+//}
 
 + (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError
 {
     return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
 }
 
-+ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersionMajor)version error:(NSError**)outError
-{
-    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
-}
+//+ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError
+//{
+//    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
+//}
 
 
 #pragma mark Accessors

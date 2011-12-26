@@ -10,48 +10,58 @@
 #import "ZCManifest.h"
 
 @interface ZCManifest ()
-@property (nonatomic, retain) NSDictionary* manifestDict;
+@property (nonatomic, retain) NSDictionary* files;
 @end
 
 @implementation ZCManifest
 
-@synthesize manifestDict = _manifestDict;
+@synthesize bundleName = _bundleName;
+@synthesize version = _version;
+@synthesize files = _files;
 
 - (id) initWithDictionary:(NSDictionary*)dict;
 {
     self = [super init];
     if (self) {
-        self.manifestDict = dict;
+        self.bundleName = [dict objectForKey:@"bundle_name"];
+        self.version = [[dict objectForKey:@"version"] integerValue];
+        self.files = [dict objectForKey:@"files"];
+    }
+    return self;
+}
+
+- (id)init 
+{
+    self = [super init];
+    if (self) {
     }
     return self;
 }
 
 - (void)dealloc
 {
-    self.manifestDict = nil;
+    self.bundleName = nil;
+    self.files = nil;
     [super dealloc];
 }
 
-- (NSString*) version
+- (NSString*) shaForFile:(NSString*)path
 {
-    return [self.manifestDict objectForKey:@"version"];
+    return [self.files objectForKey:path];
 }
 
-- (ZincVersionMajor) majorVersion
+- (NSArray*) allFiles
 {
-    return [[[[self version] componentsSeparatedByString:@"."]
-             objectAtIndex:0] integerValue];
+    return [self.files allKeys];
 }
 
-- (ZincVersionMinor) minorVersion
-{
-    return [[[[self version] componentsSeparatedByString:@"."]
-             objectAtIndex:1] integerValue];
-}
-
-- (NSString*) shaForPath:(NSString*)path
-{
-    return [[self.manifestDict objectForKey:@"files"] objectForKey:path];
+- (NSDictionary*) dictionaryRepresentation
+{            
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
+    [d setObject:self.bundleName forKey:@"bundle_name"];
+    [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
+    [d setObject:self.files forKey:@"files"];
+    return d;
 }
 
 

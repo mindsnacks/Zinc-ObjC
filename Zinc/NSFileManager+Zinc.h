@@ -12,4 +12,7 @@
 
 + (NSFileManager *) zinc_newFileManager;
 
+- (BOOL) zinc_directoryExistsAtPath:(NSString*)path;
+- (BOOL) zinc_directoryExistsAtURL:(NSURL*)url;
+
 @end

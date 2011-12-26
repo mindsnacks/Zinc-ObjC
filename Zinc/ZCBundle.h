@@ -8,21 +8,32 @@
 
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
+#import "ZCManifest.h"
+
+@class ZCBundleManager;
+
+enum {
+    ZCBundleStateAvailable = 0x1,
+    ZCBundleStateUpdating = 0x1>>1,
+};
+
+typedef NSInteger ZCBundleState;
+
 
 @interface ZCBundle : NSObject
 
 - (NSArray*) availableVersions;
 - (NSURL*) url;
 
-@property (nonatomic, assign) ZincVersionMajor version;
+@property (nonatomic, assign) ZincVersion version;
 
-+ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
-+ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersionMajor)version error:(NSError**)outError;
-
-+ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
-+ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersionMajor)version error:(NSError**)outError;;
+// TODO: make private?
+@property (nonatomic, retain) ZCManifest* manifest;
 
 - (NSURL*) urlForResource:(NSURL*)url;
 - (NSString*) pathForResource:(NSString*)path;
+
+// TODO: rename
+@property (nonatomic, assign) ZCBundleManager* manager;
 
 @end

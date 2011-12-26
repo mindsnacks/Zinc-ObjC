@@ -15,12 +15,12 @@
  */
 + (Class) fileSystemForFormat:(ZincFormat)format;
 
-+ (ZCFileSystem*) fileSystemForWithURL:(NSURL*)url error:(NSError**)outError;
++ (ZCFileSystem*) fileSystemWithURL:(NSURL*)url error:(NSError**)outError;
 
 @property (nonatomic, retain, readonly) NSURL* url;
 
-- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersionMajor)version;
-- (NSString*) pathForResource:(NSString*)path version:(ZincVersionMajor)version;
+//- (NSURL*) urlForResource:(NSURL*)url version:(ZincVersion)version;
+//- (NSString*) pathForResource:(NSString*)path version:(ZincVersion)version;
 
 #pragma mark Utility
 // Not exactly private, but not needed for normal use

@@ -15,8 +15,9 @@ typedef void (^ZCBasicBlock)(id result, id context, NSError* error);
 
 enum 
 {
-    ZINC_ERR_MISSING_FORMAT_FILE                  = 1001,
-    ZINC_ERR_INVALID_FORMAT                       = 1002,
-    ZINC_ERR_INVALID_MANIFEST_FORMAT              = 1101,
+    ZINC_ERR_INVALID_DIRECTORY                    = 1001,
+    ZINC_ERR_MISSING_INDEX_FILE                   = 2001,
+    ZINC_ERR_INVALID_FORMAT                       = 2002,
+    ZINC_ERR_INVALID_MANIFEST_FORMAT              = 2101,
     ZINC_ERR_UNKNOWN                              = 99999,
 };

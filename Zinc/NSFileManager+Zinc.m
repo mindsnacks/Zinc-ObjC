@@ -15,4 +15,17 @@
     return [[[NSFileManager alloc] init] autorelease];
 }
 
+- (BOOL) zinc_directoryExistsAtPath:(NSString*)path
+{
+    BOOL isDir;
+    BOOL result = [self fileExistsAtPath:path isDirectory:&isDir];
+    return result && isDir;
+}
+
+- (BOOL) zinc_directoryExistsAtURL:(NSURL*)url
+{
+    return [self zinc_directoryExistsAtPath:[url path]];
+}
+
+
 @end

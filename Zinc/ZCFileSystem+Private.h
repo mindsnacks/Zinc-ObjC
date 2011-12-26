@@ -12,6 +12,6 @@
 
 - (id) initWithURL:(NSURL*)url;
 
-- (ZCManifest*) readManifestForVersion:(ZincVersionMajor)version error:(NSError**)outError;
+- (ZCManifest*) readManifestForVersion:(ZincVersion)version error:(NSError**)outError;
 
 @end

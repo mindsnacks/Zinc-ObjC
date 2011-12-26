@@ -11,11 +11,15 @@
 
 @interface ZCManifest : NSObject
 
+- (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-- (NSString*) version;
-- (ZincVersionMajor) majorVersion;
-- (ZincVersionMinor) minorVersion;
-- (NSString*) shaForPath:(NSString*)path;
+@property (nonatomic, retain) NSString* bundleName;
+@property (nonatomic, assign) ZincVersion version;
+
+- (NSString*) shaForFile:(NSString*)path;
+- (NSArray*) allFiles;
+
+- (NSDictionary*) dictionaryRepresentation;
 
 @end

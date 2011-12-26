@@ -11,6 +11,12 @@
 
 @interface ZCBundle ()
 
++ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
++ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;
+
+//+ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError;
+//+ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;
+
 - (id) initWithFileSystem:(ZCFileSystem*)fileSystem;
 
 @property (nonatomic, retain) ZCFileSystem* fileSystem;

@@ -4,3 +4,6 @@
 [submodule "Dependencies/AMFoundation"]
 	path = Dependencies/AMFoundation
 	url = git@github.com:amrox/AMFoundation.git
+[submodule "Dependencies/AFNetworking"]
+	path = Dependencies/AFNetworking
+	url = https://github.com/gowalla/AFNetworking.git
