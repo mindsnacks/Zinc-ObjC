@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
-#import "ZCManifest.h"
+#import "ZincManifest.h"
 
 @class ZincClient;
 
@@ -28,7 +28,7 @@ typedef NSInteger ZCBundleState;
 //@property (nonatomic, assign) ZincVersion version;
 
 // TODO: make private?
-@property (nonatomic, retain) ZCManifest* manifest;
+@property (nonatomic, retain) ZincManifest* manifest;
 
 //- (NSURL*) urlForResource:(NSURL*)url;
 //- (NSString*) pathForResource:(NSString*)path;

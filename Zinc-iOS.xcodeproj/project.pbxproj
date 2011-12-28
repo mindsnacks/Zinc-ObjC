@@ -30,8 +30,8 @@
 		B3549DCB148D950500DD63D1 /* libAMFoundation_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B310570E148D93980069F0D5 /* libAMFoundation_iOS.a */; };
 		B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DCE148D957900DD63D1 /* KSJSON.m */; };
 		B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */; };
-		B3549DEF148DB80900DD63D1 /* ZCManifest.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DED148DB80900DD63D1 /* ZCManifest.h */; };
-		B3549DF0148DB80900DD63D1 /* ZCManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZCManifest.m */; };
+		B3549DEF148DB80900DD63D1 /* ZincManifest.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DED148DB80900DD63D1 /* ZincManifest.h */; };
+		B3549DF0148DB80900DD63D1 /* ZincManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZincManifest.m */; };
 		B3549DF3148DC0ED00DD63D1 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = B3549DF2148DC0ED00DD63D1 /* Data */; };
 		B38743091489B830004B227B /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
 		B387430B1489B830004B227B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
@@ -181,8 +181,8 @@
 		B340FA16148D862100206F86 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepo.m; sourceTree = "<group>"; };
 		B3549DCE148D957900DD63D1 /* KSJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSJSON.m; path = ../../Dependencies/KSJSON/KSJSON/KSJSON.m; sourceTree = "<group>"; };
 		B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZCFileSystem+Private.h"; sourceTree = "<group>"; };
-		B3549DED148DB80900DD63D1 /* ZCManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCManifest.h; sourceTree = "<group>"; };
-		B3549DEE148DB80900DD63D1 /* ZCManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCManifest.m; sourceTree = "<group>"; };
+		B3549DED148DB80900DD63D1 /* ZincManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifest.h; sourceTree = "<group>"; };
+		B3549DEE148DB80900DD63D1 /* ZincManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifest.m; sourceTree = "<group>"; };
 		B3549DF2148DC0ED00DD63D1 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
 		B38743041489B830004B227B /* Zinc-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Zinc-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B38743081489B830004B227B /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -334,8 +334,8 @@
 				B340F993148D543B00206F86 /* ZCBundle.h */,
 				B340F99A148D563000206F86 /* ZCBundle+Private.h */,
 				B340F994148D543B00206F86 /* ZCBundle.m */,
-				B3549DED148DB80900DD63D1 /* ZCManifest.h */,
-				B3549DEE148DB80900DD63D1 /* ZCManifest.m */,
+				B3549DED148DB80900DD63D1 /* ZincManifest.h */,
+				B3549DEE148DB80900DD63D1 /* ZincManifest.m */,
 				B340FA15148D862100206F86 /* ZincRepo.h */,
 				B340FA16148D862100206F86 /* ZincRepo.m */,
 				B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */,
@@ -544,7 +544,7 @@
 				B3105722148D94480069F0D5 /* KSJSON.h in Headers */,
 				B3105724148D94550069F0D5 /* AMFoundation.h in Headers */,
 				B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */,
-				B3549DEF148DB80900DD63D1 /* ZCManifest.h in Headers */,
+				B3549DEF148DB80900DD63D1 /* ZincManifest.h in Headers */,
 				B3F8AF76148EFCDF00CB92B5 /* ZincClient.h in Headers */,
 				B3AE4614149C0DDC00767CBD /* ZincIndex.h in Headers */,
 				B3AE461C149C126E00767CBD /* AMURLRequestManager.h in Headers */,
@@ -746,7 +746,7 @@
 				B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */,
 				B3D2881A148D87EE00377B70 /* ZincRepo.m in Sources */,
 				B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */,
-				B3549DF0148DB80900DD63D1 /* ZCManifest.m in Sources */,
+				B3549DF0148DB80900DD63D1 /* ZincManifest.m in Sources */,
 				B3F8AF77148EFCDF00CB92B5 /* ZincClient.m in Sources */,
 				B3AE4615149C0DDC00767CBD /* ZincIndex.m in Sources */,
 				B3AE461D149C126E00767CBD /* AMURLRequestManager.m in Sources */,

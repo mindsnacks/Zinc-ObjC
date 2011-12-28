@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
 
-@interface ZCManifest : NSObject
+@interface ZincManifest : NSObject
 
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;

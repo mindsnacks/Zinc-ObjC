@@ -7,13 +7,13 @@
 //
 
 
-#import "ZCManifest.h"
+#import "ZincManifest.h"
 
-@interface ZCManifest ()
+@interface ZincManifest ()
 @property (nonatomic, retain) NSDictionary* files;
 @end
 
-@implementation ZCManifest
+@implementation ZincManifest
 
 @synthesize bundleName = _bundleName;
 @synthesize version = _version;

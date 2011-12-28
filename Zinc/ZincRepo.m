@@ -8,7 +8,7 @@
 
 #import "ZincRepo.h"
 #import "KSJSON.h"
-#import "ZCManifest.h"
+#import "ZincManifest.h"
 #import "NSFileManager+Zinc.h"
 
 #define ZINC_INDEX_FILE @"index.json"
@@ -101,7 +101,7 @@
     
 }
 
-- (ZCManifest*) readManifestForVersion:(ZincVersion)version error:(NSError**)outError
+- (ZincManifest*) readManifestForVersion:(ZincVersion)version error:(NSError**)outError
 {
     NSString* path = [self pathForManifestVersion:version];
     NSString* manifestString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
@@ -119,13 +119,13 @@
         return nil;
     }
     
-    ZCManifest* manifest = [[[ZCManifest alloc] initWithDictionary:jsonObj] autorelease];
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:jsonObj] autorelease];
     return manifest;
 }
 
 - (NSString*) pathForResource:(NSString*)path version:(ZincVersion)version
 {
-    ZCManifest* manifest = [self.manifestsByVersion objectForKey:[NSNumber numberWithUnsignedInteger:version]];
+    ZincManifest* manifest = [self.manifestsByVersion objectForKey:[NSNumber numberWithUnsignedInteger:version]];
     if (manifest == nil) {
         @synchronized(self) {
             NSError* error = nil;
