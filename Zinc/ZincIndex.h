@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
 
-@interface ZCIndex : NSObject
+@interface ZincIndex : NSObject
 
 - (id) init;
 

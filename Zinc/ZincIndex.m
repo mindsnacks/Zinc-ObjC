@@ -6,9 +6,9 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCIndex.h"
+#import "ZincIndex.h"
 
-@implementation ZCIndex
+@implementation ZincIndex
 
 @synthesize format = _format;
 @synthesize bundles = _bundles;

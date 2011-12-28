@@ -11,7 +11,7 @@
 #import "ZCBundle+Private.h"
 #import "NSFileManager+Zinc.h"
 #import "ZCRemoteRepository.h"
-#import "ZCIndex.h"
+#import "ZincIndex.h"
 #import "KSJSON.h"
 #import "AFNetworking.h"
 
@@ -95,7 +95,7 @@ static ZincClient* _defaultClient = nil;
                 completion(nil, nil, jsonError);
                 return;
             }
-            ZCIndex* index = [[[ZCIndex alloc] initWithDictionary:json] autorelease];
+            ZincIndex* index = [[[ZincIndex alloc] initWithDictionary:json] autorelease];
             completion(index, nil, nil);
         };
         

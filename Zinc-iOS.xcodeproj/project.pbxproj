@@ -41,8 +41,8 @@
 		B38743191489B830004B227B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B38743181489B830004B227B /* AppDelegate.m */; };
 		B387431C1489B830004B227B /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B387431B1489B830004B227B /* ViewController.m */; };
 		B387431F1489B830004B227B /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B387431D1489B830004B227B /* ViewController.xib */; };
-		B3AE4614149C0DDC00767CBD /* ZCIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE4612149C0DDC00767CBD /* ZCIndex.h */; };
-		B3AE4615149C0DDC00767CBD /* ZCIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE4613149C0DDC00767CBD /* ZCIndex.m */; };
+		B3AE4614149C0DDC00767CBD /* ZincIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE4612149C0DDC00767CBD /* ZincIndex.h */; };
+		B3AE4615149C0DDC00767CBD /* ZincIndex.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE4613149C0DDC00767CBD /* ZincIndex.m */; };
 		B3AE461C149C126E00767CBD /* AMURLRequestManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE461A149C126E00767CBD /* AMURLRequestManager.h */; };
 		B3AE461D149C126E00767CBD /* AMURLRequestManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE461B149C126E00767CBD /* AMURLRequestManager.m */; };
 		B3AE4635149C1D3400767CBD /* AFHTTPClient.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE461F149C1D3400767CBD /* AFHTTPClient.h */; };
@@ -197,8 +197,8 @@
 		B387431A1489B830004B227B /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
 		B387431B1489B830004B227B /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		B387431E1489B830004B227B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
-		B3AE4612149C0DDC00767CBD /* ZCIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZCIndex.h; sourceTree = "<group>"; };
-		B3AE4613149C0DDC00767CBD /* ZCIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZCIndex.m; sourceTree = "<group>"; };
+		B3AE4612149C0DDC00767CBD /* ZincIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincIndex.h; sourceTree = "<group>"; };
+		B3AE4613149C0DDC00767CBD /* ZincIndex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincIndex.m; sourceTree = "<group>"; };
 		B3AE461A149C126E00767CBD /* AMURLRequestManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMURLRequestManager.h; path = "../../../MindSnacks-2.3.1/Classes/AMURLRequestManager.h"; sourceTree = "<group>"; };
 		B3AE461B149C126E00767CBD /* AMURLRequestManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AMURLRequestManager.m; path = "../../../MindSnacks-2.3.1/Classes/AMURLRequestManager.m"; sourceTree = "<group>"; };
 		B3AE461F149C1D3400767CBD /* AFHTTPClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AFHTTPClient.h; path = Dependencies/AFNetworking/AFNetworking/AFHTTPClient.h; sourceTree = SOURCE_ROOT; };
@@ -328,8 +328,8 @@
 			children = (
 				B340F975148D52D800206F86 /* Zinc.h */,
 				B340F976148D52D800206F86 /* Zinc.m */,
-				B3AE4612149C0DDC00767CBD /* ZCIndex.h */,
-				B3AE4613149C0DDC00767CBD /* ZCIndex.m */,
+				B3AE4612149C0DDC00767CBD /* ZincIndex.h */,
+				B3AE4613149C0DDC00767CBD /* ZincIndex.m */,
 				B340FA0E148D7DC100206F86 /* ZincErrors.h */,
 				B340F993148D543B00206F86 /* ZCBundle.h */,
 				B340F99A148D563000206F86 /* ZCBundle+Private.h */,
@@ -546,7 +546,7 @@
 				B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */,
 				B3549DEF148DB80900DD63D1 /* ZCManifest.h in Headers */,
 				B3F8AF76148EFCDF00CB92B5 /* ZincClient.h in Headers */,
-				B3AE4614149C0DDC00767CBD /* ZCIndex.h in Headers */,
+				B3AE4614149C0DDC00767CBD /* ZincIndex.h in Headers */,
 				B3AE461C149C126E00767CBD /* AMURLRequestManager.h in Headers */,
 				B3AE4635149C1D3400767CBD /* AFHTTPClient.h in Headers */,
 				B3AE4637149C1D3400767CBD /* AFHTTPRequestOperation.h in Headers */,
@@ -748,7 +748,7 @@
 				B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */,
 				B3549DF0148DB80900DD63D1 /* ZCManifest.m in Sources */,
 				B3F8AF77148EFCDF00CB92B5 /* ZincClient.m in Sources */,
-				B3AE4615149C0DDC00767CBD /* ZCIndex.m in Sources */,
+				B3AE4615149C0DDC00767CBD /* ZincIndex.m in Sources */,
 				B3AE461D149C126E00767CBD /* AMURLRequestManager.m in Sources */,
 				B3AE4636149C1D3400767CBD /* AFHTTPClient.m in Sources */,
 				B3AE4638149C1D3400767CBD /* AFHTTPRequestOperation.m in Sources */,
