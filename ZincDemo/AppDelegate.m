@@ -10,7 +10,7 @@
 
 #import "ViewController.h"
 #import "ZCBundle.h"
-#import "ZCBundleManager.h"
+#import "ZincClient.h"
 
 @implementation AppDelegate
 
@@ -37,7 +37,7 @@
 //    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
 
     
-    ZCBundleManager* bm = [ZCBundleManager defaultManager];
+    ZincClient* bm = [ZincClient defaultClient];
     [bm addRepoWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/z1/"]];
     [bm refreshReposWithCompletion:^(id result, id completion, NSError* error) {
         

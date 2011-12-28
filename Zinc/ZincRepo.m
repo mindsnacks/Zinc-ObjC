@@ -6,24 +6,24 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCFileSystem.h"
+#import "ZincRepo.h"
 #import "KSJSON.h"
 #import "ZCManifest.h"
 #import "NSFileManager+Zinc.h"
 
 #define ZINC_INDEX_FILE @"index.json"
 
-@interface ZCFileSystem ()
+@interface ZincRepo ()
 @property (nonatomic, retain, readwrite) NSURL* url;
 @property (nonatomic, retain) NSMutableDictionary* manifestsByVersion;
 @end
 
-@implementation ZCFileSystem
+@implementation ZincRepo
 
 @synthesize url = _url;
 @synthesize manifestsByVersion = _manifestsByVersion;
 
-+ (Class) fileSystemForFormat:(NSInteger)format
++ (Class) classForFormat:(NSInteger)format
 {
     if (format == 1) {
         return self;
@@ -80,15 +80,15 @@
     [super dealloc];
 }
 
-+ (ZCFileSystem*) fileSystemWithURL:(NSURL*)url error:(NSError**)outError
++ (ZincRepo*) zincRepoWithURL:(NSURL*)url error:(NSError**)outError
 {
     ZincFormat format = [self readZincFormatFromURL:url error:outError];
     if (format == ZincFormatInvalid) {
         return nil;
     }
     
-    Class fsClass = [self fileSystemForFormat:format];
-    ZCFileSystem* zcfs = [[[fsClass alloc] initWithURL:url] autorelease];
+    Class fsClass = [self classForFormat:format];
+    ZincRepo* zcfs = [[[fsClass alloc] initWithURL:url] autorelease];
     return zcfs;
 }
 

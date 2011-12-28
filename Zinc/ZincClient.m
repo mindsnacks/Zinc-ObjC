@@ -6,7 +6,7 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCBundleManager.h"
+#import "ZincClient.h"
 #import "ZCBundle.h"
 #import "ZCBundle+Private.h"
 #import "NSFileManager+Zinc.h"
@@ -15,17 +15,17 @@
 #import "KSJSON.h"
 #import "AFNetworking.h"
 
-static ZCBundleManager* _defaultManager = nil;
+static ZincClient* _defaultClient = nil;
 
 
-@interface ZCBundleManager ()
+@interface ZincClient ()
 @property (nonatomic, retain) NSOperationQueue* networkOperationQueue;
 @property (nonatomic, retain) NSMutableSet* repoURLs;
 @property (nonatomic, retain) NSMutableSet* bundleURLs;
 @property (nonatomic, retain) NSCache* bundleCache;
 @end
 
-@implementation ZCBundleManager
+@implementation ZincClient
 
 @synthesize delegate = _delegate;
 @synthesize networkOperationQueue = _networkOperationQueue;
@@ -33,13 +33,13 @@ static ZCBundleManager* _defaultManager = nil;
 @synthesize bundleURLs = _bundleURLs;
 @synthesize bundleCache = _bundleCache;
 
-+ (ZCBundleManager*) defaultManager
++ (ZincClient*) defaultClient
 {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _defaultManager = [[ZCBundleManager alloc] init];
+        _defaultClient = [[ZincClient alloc] init];
     });
-    return _defaultManager;
+    return _defaultClient;
 }
 
 - (id) initWithNetworkOperationQueue:(NSOperationQueue*)operationQueue
@@ -128,77 +128,77 @@ static ZCBundleManager* _defaultManager = nil;
 
 #pragma mark Bundle Registration
 
-- (BOOL) registerBundleWithURL:(NSURL*)url error:(NSError**)outError
-{
-    if ([self.bundleURLs containsObject:url]) {
-        return YES;
-    }
-    
-    if ([[NSFileManager defaultManager] zinc_directoryExistsAtURL:url]) {
-        AMErrorAssignIfNotNil(outError, ZCError(ZINC_ERR_INVALID_DIRECTORY));
-        return NO;
-    }
-    
-    // TODO: check for the info file
-    
-    [self.bundleURLs addObject:url];
-    return YES;
-}
-
-- (BOOL) registerBundleWithPath:(NSString*)path error:(NSError**)outError
-{
-    return [self registerBundleWithURL:[NSURL fileURLWithPath:path] error:outError];
-}
-
-- (void) unregisterBundleWithURL:(NSURL*)url
-{
-    @synchronized(self) {
-        [self.bundleURLs removeObject:url];
-    }
-}
-
-- (void) unregisterBundleWithPath:(NSString*)path
-{
-    [self unregisterBundleWithURL:[NSURL fileURLWithPath:path]];
-}
-
-- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
-{
-    @synchronized(self) {
-        ZCBundle* bundle = [self.bundleCache objectForKey:url];
-        if (bundle == nil) {
-            bundle = [ZCBundle bundleWithURL:url error:outError];
-            if (bundle == nil) {
-                return nil;
-            }
-            if ([self registerBundleWithURL:[bundle url] error:outError]) {
-                return nil;
-            }
-            [self.bundleCache setObject:bundle forKey:[bundle url]];
-        }
-        return bundle;
-    }
-}
-
-- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError
-{
-    ZCBundle* bundle = [self bundleWithURL:url error:outError];
-    if (bundle == nil) {
-        return nil;
-    }
-    bundle.version = version;
-    return bundle;
-}
-
-- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;
-{
-    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
-}
-
-- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;
-{
-    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
-}
+//- (BOOL) registerBundleWithURL:(NSURL*)url error:(NSError**)outError
+//{
+//    if ([self.bundleURLs containsObject:url]) {
+//        return YES;
+//    }
+//    
+//    if ([[NSFileManager defaultManager] zinc_directoryExistsAtURL:url]) {
+//        AMErrorAssignIfNotNil(outError, ZCError(ZINC_ERR_INVALID_DIRECTORY));
+//        return NO;
+//    }
+//    
+//    // TODO: check for the info file
+//    
+//    [self.bundleURLs addObject:url];
+//    return YES;
+//}
+//
+//- (BOOL) registerBundleWithPath:(NSString*)path error:(NSError**)outError
+//{
+//    return [self registerBundleWithURL:[NSURL fileURLWithPath:path] error:outError];
+//}
+//
+//- (void) unregisterBundleWithURL:(NSURL*)url
+//{
+//    @synchronized(self) {
+//        [self.bundleURLs removeObject:url];
+//    }
+//}
+//
+//- (void) unregisterBundleWithPath:(NSString*)path
+//{
+//    [self unregisterBundleWithURL:[NSURL fileURLWithPath:path]];
+//}
+//
+//- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
+//{
+//    @synchronized(self) {
+//        ZCBundle* bundle = [self.bundleCache objectForKey:url];
+//        if (bundle == nil) {
+//            bundle = [ZCBundle bundleWithURL:url error:outError];
+//            if (bundle == nil) {
+//                return nil;
+//            }
+//            if ([self registerBundleWithURL:[bundle url] error:outError]) {
+//                return nil;
+//            }
+//            [self.bundleCache setObject:bundle forKey:[bundle url]];
+//        }
+//        return bundle;
+//    }
+//}
+//
+//- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError
+//{
+//    ZCBundle* bundle = [self bundleWithURL:url error:outError];
+//    if (bundle == nil) {
+//        return nil;
+//    }
+//    bundle.version = version;
+//    return bundle;
+//}
+//
+//- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;
+//{
+//    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
+//}
+//
+//- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;
+//{
+//    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
+//}
 
 
 @end

@@ -8,10 +8,10 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-@class ZCFileSystem;
+@class ZincRepo;
 
 @interface ZincFunctionalTests : SenTestCase
 
-@property (nonatomic, retain) ZCFileSystem* repo;
+@property (nonatomic, retain) ZincRepo* repo;
 
 @end

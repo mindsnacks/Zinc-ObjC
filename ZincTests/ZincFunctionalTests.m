@@ -7,7 +7,7 @@
 //
 
 #import "ZincFunctionalTests.h"
-#import "ZCFileSystem.h"
+#import "ZincRepo.h"
 
 @implementation ZincFunctionalTests
 
@@ -18,7 +18,7 @@
     [super setUp];
 
     NSError* error = nil;
-    ZCFileSystem* repo = [ZCFileSystem fileSystemWithURL:[NSURL fileURLWithPath:TEST_RESOURCE_PATH(@"testrepo1")] error:&error];
+    ZincRepo* repo = [ZincRepo zincRepoWithURL:[NSURL fileURLWithPath:TEST_RESOURCE_PATH(@"testrepo1")] error:&error];
     if (repo == nil) {
         STFail(@"%@", error);
     }

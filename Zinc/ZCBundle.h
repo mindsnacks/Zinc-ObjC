@@ -10,7 +10,7 @@
 #import "Zinc.h"
 #import "ZCManifest.h"
 
-@class ZCBundleManager;
+@class ZincClient;
 
 enum {
     ZCBundleStateAvailable = 0x1,
@@ -23,17 +23,17 @@ typedef NSInteger ZCBundleState;
 @interface ZCBundle : NSObject
 
 - (NSArray*) availableVersions;
-- (NSURL*) url;
+//- (NSURL*) url;
 
-@property (nonatomic, assign) ZincVersion version;
+//@property (nonatomic, assign) ZincVersion version;
 
 // TODO: make private?
 @property (nonatomic, retain) ZCManifest* manifest;
 
-- (NSURL*) urlForResource:(NSURL*)url;
-- (NSString*) pathForResource:(NSString*)path;
+//- (NSURL*) urlForResource:(NSURL*)url;
+//- (NSString*) pathForResource:(NSString*)path;
 
 // TODO: rename
-@property (nonatomic, assign) ZCBundleManager* manager;
+@property (nonatomic, assign) ZincClient* manager;
 
 @end

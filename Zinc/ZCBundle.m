@@ -9,7 +9,7 @@
 #import "ZCBundle.h"
 #import "ZCBundle+Private.h"
 #import "NSFileManager+Zinc.h"
-#import "ZCFileSystem.h"
+#import "ZincRepo.h"
 
 static const char* queue_name_for_url(NSURL* url) {
     return [[kZincPackageName stringByAppendingFormat:@".bundle#%@",
@@ -26,9 +26,9 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 
 @implementation ZCBundle
 
-@synthesize version = _version;
+//@synthesize version = _version;
 @synthesize manifest = _manifest;
-@synthesize fileSystem = _fileSystem;
+@synthesize repo = _repo;
 @synthesize queue = _queue;
 @synthesize manager = _manager;
 
@@ -39,38 +39,40 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 	}
 }
 
-- (id) initWithFileSystem:(ZCFileSystem*)fileSystem
+- (id) initWithRepo:(ZincRepo*)repo
 {
     self = [super init];
     if (self) {
         //self.queue = dispatch_queue_create(queue_name_for_url(self.url), NULL);
-        self.fileSystem = fileSystem;
+        self.repo = repo;
     }
     return self;
 }
 
 - (void) dealloc 
 {
-    // -- remove from sharedMap
-	@synchronized(_ZCBundle_sharedURLMap) {
-		[_ZCBundle_sharedURLMap removeObjectForKey:[[self url] absoluteString]];
-	}
+    // TODO: !!!: restore mapping
+    
+//    // -- remove from sharedMap
+//	@synchronized(_ZCBundle_sharedURLMap) {
+//		[_ZCBundle_sharedURLMap removeObjectForKey:[[self url] absoluteString]];
+//	}
     
     self.manifest = nil;
-    self.fileSystem = nil;
+    self.repo = nil;
     [super dealloc];
 }
 
-+ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
-{
-    ZCFileSystem* zcfs = [ZCFileSystem fileSystemWithURL:url error:outError];
-    if (zcfs == nil) {
-        return nil;
-    }
-    
-    ZCBundle* bundle = [[[ZCBundle alloc] initWithFileSystem:zcfs] autorelease];
-    return bundle;
-}
+//+ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
+//{
+//    ZincRepo* zcfs = [ZincRepo zincRepoWithURL:url error:outError];
+//    if (zcfs == nil) {
+//        return nil;
+//    }
+//    
+//    ZCBundle* bundle = [[[ZCBundle alloc] initWithRepo:zcfs] autorelease];
+//    return bundle;
+//}
 
 //+ (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError
 //{
@@ -82,10 +84,10 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 //    return bundle;
 //}
 
-+ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError
-{
-    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
-}
+//+ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError
+//{
+//    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
+//}
 
 //+ (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError
 //{
@@ -100,22 +102,22 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
     return nil;
 }
 
-- (NSURL*) url
-{
-    return self.fileSystem.url;
-}
+//- (NSURL*) url
+//{
+//    return self.fileSystem.url;
+//}
 
 #pragma mark -
 
-- (NSURL*) urlForResource:(NSURL*)url
-{
-    return [self.fileSystem urlForResource:url version:self.version];
-}
-
-- (NSString*) pathForResource:(NSString*)path
-{
-    return [self.fileSystem pathForResource:path version:self.version];
-}
+//- (NSURL*) urlForResource:(NSURL*)url
+//{
+//    return [self.fileSystem urlForResource:url version:self.version];
+//}
+//
+//- (NSString*) pathForResource:(NSString*)path
+//{
+//    return [self.fileSystem pathForResource:path version:self.version];
+//}
 
 
 @end
