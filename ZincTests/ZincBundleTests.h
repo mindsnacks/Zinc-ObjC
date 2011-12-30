@@ -11,6 +11,6 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-@interface ZCBundleTests : SenTestCase
+@interface ZincBundleTests : SenTestCase
 
 @end

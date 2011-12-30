@@ -6,8 +6,8 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCBundle.h"
-#import "ZCBundle+Private.h"
+#import "ZincBundle.h"
+#import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincRepo.h"
 
@@ -19,12 +19,12 @@ static const char* queue_name_for_url(NSURL* url) {
 static NSMutableDictionary * _ZCBundle_sharedURLMap;
 
 
-@interface ZCBundle ()
+@interface ZincBundle ()
 @property (nonatomic, assign) dispatch_queue_t queue;
 @end
 
 
-@implementation ZCBundle
+@implementation ZincBundle
 
 //@synthesize version = _version;
 @synthesize manifest = _manifest;
@@ -34,7 +34,7 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 
 + (void) initialize
 {
-	if ( self == [ZCBundle class] ) {
+	if ( self == [ZincBundle class] ) {
 		_ZCBundle_sharedURLMap = [[NSMutableDictionary alloc] init];
 	}
 }
@@ -118,6 +118,19 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 //{
 //    return [self.fileSystem pathForResource:path version:self.version];
 //}
+
+
++ (NSString*) sourceFromBundleIdentifier:(NSString*)bundleId
+{
+    NSArray* comps = [bundleId componentsSeparatedByString:@"."];
+    NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
+    return sourceId;
+}
+
++ (NSString*) nameFromBundleIdentifier:(NSString*)bundleId
+{
+    return [[bundleId componentsSeparatedByString:@"."] lastObject];
+}
 
 
 @end

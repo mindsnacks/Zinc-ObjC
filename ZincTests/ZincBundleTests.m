@@ -6,12 +6,12 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCBundleTests.h"
-#import "ZCBundle.h"
-#import "ZCBundle+Private.h"
+#import "ZincBundleTests.h"
+#import "ZincBundle.h"
+#import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
 
-@implementation ZCBundleTests
+@implementation ZincBundleTests
 
 #pragma mark Utility
 
@@ -41,6 +41,15 @@
 //        STAssertTrue(format == 1, @"format wrong");
 //    }
 //}
+
+- (void) testBundleIdentifierParsing
+{
+    STAssertEqualObjects([ZincBundle nameFromBundleIdentifier:@"mindsnacks.assets"], @"assets", @"should be 'assets'");
+    STAssertEqualObjects([ZincBundle sourceFromBundleIdentifier:@"mindsnacks.assets"], @"mindsnacks", @"should be 'mindsnacks'");
+    
+    STAssertEqualObjects([ZincBundle nameFromBundleIdentifier:@"com.mindsnacks.assets"], @"assets", @"should be 'assets'");
+    STAssertEqualObjects([ZincBundle sourceFromBundleIdentifier:@"com.mindsnacks.assets"], @"com.mindsnacks", @"should be 'com.mindsnacks'");
+}
 
 
 @end

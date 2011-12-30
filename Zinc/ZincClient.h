@@ -7,21 +7,29 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ZCBundle.h"
+#import "ZincBundle.h"
 
 #define kZCBundleManagerDefaultNetworkOperationCount (5)
 
-@protocol ZCBundleManagerDelegate;
+@protocol ZincClientDelegate;
 
 @interface ZincClient : NSObject
 
-+ (ZincClient*) defaultClient;
-- (id) initWithNetworkOperationQueue:(NSOperationQueue*)operationQueue;
-- (id) init;
++ (ZincClient*) defaultClient; // TODO: rename to sharedClient?
 
-@property (nonatomic, assign) id<ZCBundleManagerDelegate> delegate;
++ (ZincClient*) clientWithURL:(NSURL*)fileURL error:(NSError**)outError;
+
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
+- (id) initWithURL:(NSURL*)fileURL;
+
+@property (nonatomic, assign) id<ZincClientDelegate> delegate;
+@property (nonatomic, retain, readonly) NSURL* url;
+
+@property (nonatomic, assign) NSTimeInterval refreshInterval;
 
 #pragma mark Loading
+
+- (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
 
 //- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
 //- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError;
@@ -29,12 +37,15 @@
 //- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
 //- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;;
 
-#pragma mark Repo Registration
+- (ZincBundle*) bundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
 
-- (void) addRepoWithURL:(NSURL*)url;
+#pragma mark Source Registration
+
+- (void) addSourceURL:(NSURL*)url;
 //- (void) removeRepoWithIdentifer:(NSString*)identifier;
 
-- (void) refreshReposWithCompletion:(ZCBasicBlock)completion;
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
+- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
 //- (ZCBundle*) bundleWithName:(NSString*)name distribution:(NSString*)distribution;
 
@@ -49,8 +60,8 @@
 @end
 
 
-@protocol ZCBundleManagerDelegate <NSObject>
+@protocol ZincClientDelegate <NSObject>
 
-- (void) bundleManager:(ZincClient*)bundleManager didEncounterError:(NSError*)error;
+- (void) zincClient:(ZincClient*)zincClient didEncounterError:(NSError*)error;
 
 @end

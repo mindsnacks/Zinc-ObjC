@@ -11,8 +11,6 @@
 #define ZCError(E) AMError(E, kZincErrorDomain)
 #define ZCErrorWithInfo(E,I) AMErrorWithInfo(E,kZincErrorDomain,I) 
 
-typedef void (^ZCBasicBlock)(id result, id context, NSError* error);
-
 enum 
 {
     ZINC_ERR_INVALID_DIRECTORY                    = 1001,

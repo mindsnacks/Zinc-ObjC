@@ -6,10 +6,10 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZCBundle.h"
+#import "ZincBundle.h"
 #import "ZincRepo.h"
 
-@interface ZCBundle ()
+@interface ZincBundle ()
 
 //+ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
 //+ (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;

@@ -9,8 +9,9 @@
 #import "AppDelegate.h"
 
 #import "ViewController.h"
-#import "ZCBundle.h"
+#import "ZincBundle.h"
 #import "ZincClient.h"
+
 
 @implementation AppDelegate
 
@@ -37,16 +38,23 @@
 //    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
 
     
-    ZincClient* bm = [ZincClient defaultClient];
-    [bm addRepoWithURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/z1/"]];
-    [bm refreshReposWithCompletion:^(id result, id completion, NSError* error) {
+//    ZincClient* zc = [ZincClient defaultClient];
+    NSError* error = nil;
+    ZincClient* zc = [[ZincClient clientWithURL:
+                      [NSURL fileURLWithPath:
+                       [AMGetApplicationDocumentsDirectory()
+                        stringByAppendingPathComponent:@"zinc"]] error:&error] retain];
+
+    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
+    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo2/"]];
+    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo3/"]];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" label:@"test"];
+//    [zc refreshSourcesWithCompletion:^{
+//        
+//        LOG_DEBUG(@"boom");
+//        LOG_WARNING(@"boom boom");
+//    }];
         
-        NSLog(@"result: %@", result);
-        NSLog(@"error: %@", error);
-        
-    }];
-    
-    
     return YES;
 }
 

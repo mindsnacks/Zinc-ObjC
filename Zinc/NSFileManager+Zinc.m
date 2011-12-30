@@ -27,5 +27,20 @@
     return [self zinc_directoryExistsAtPath:[url path]];
 }
 
+- (BOOL) zinc_createDirectoryIfNeededAtPath:(NSString*)path error:(NSError**)outError
+{
+    if (![self zinc_directoryExistsAtPath:path]) {
+        if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:outError]) {
+            return NO;
+        }
+    }
+    return YES;
+}
+
+- (BOOL) zinc_createDirectoryIfNeededAtURL:(NSURL*)url error:(NSError**)outError
+{
+    return [self zinc_createDirectoryIfNeededAtPath:[url path] error:outError];
+}
+
 
 @end

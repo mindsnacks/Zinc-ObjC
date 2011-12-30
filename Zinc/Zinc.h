@@ -16,4 +16,20 @@ enum  {
     ZincFormatInvalid = -1,
 };
 
+enum  {
+    ZincVersionInvalid = -1,
+};
+
+
+typedef void (^ZCBasicBlock)(id result, NSError* error);
+
+#ifndef ZINC_DEBUG_LOG
+    #define ZINC_DEBUG_LOG NSLog
+#endif
+
 #import "ZincErrors.h"
+
+#pragma mark Utility Functions
+
+extern void ZincAddSkipBackupAttributeToFile(NSURL* url);
+extern NSString* ZincGetApplicationDocumentsDirectory(void);

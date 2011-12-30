@@ -6,10 +6,12 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincIndex.h"
+#import "ZincCatalog.h"
+#import "KSJSON.h"
 
-@implementation ZincIndex
+@implementation ZincCatalog
 
+@synthesize identifier = _identifier;
 @synthesize format = _format;
 @synthesize bundles = _bundles;
 @synthesize distributions = _distributions;
@@ -22,6 +24,7 @@
 }
 
 - (void)dealloc {
+    self.identifier = nil;
     self.bundles = nil;
     self.distributions = nil;
     [super dealloc];
@@ -33,6 +36,7 @@
 {
     self = [super init];
     if (self) {
+        self.identifier = [dict objectForKey:@"id"]; 
         self.format = [[dict objectForKey:@"format"] integerValue];
         self.bundles = [dict objectForKey:@"bundles"];
         self.distributions = [dict objectForKey:@"distributions"];
@@ -42,11 +46,18 @@
 
 - (NSDictionary*) dictionaryRepresentation
 {
-    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
+    NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:4];
+    [d setObject:self.identifier forKey:@"id"];
     [d setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
     [d setObject:self.bundles forKey:@"bundles"];
     [d setObject:self.distributions forKey:@"distributions"];
     return d;
+}
+
+// TODO: refactor
+- (NSString*) jsonRepresentation:(NSError**)outError
+{
+    return [KSJSON serializeObject:[self dictionaryRepresentation] error:outError];
 }
 
 - (NSString*) description
@@ -57,5 +68,30 @@
             [self dictionaryRepresentation]];
 }
 
+#pragma mark -
+
+- (NSInteger) versionForBundleName:(NSString*)bundleName label:(NSString*)label
+{
+    NSNumber* version = [[self.distributions objectForKey:label] objectForKey:bundleName];
+    if (version != nil) {
+        return [version integerValue];
+    }
+    return ZincVersionInvalid;
+}
+
+@end
+
+// TODO: rename, break out, etc
+@implementation ZincCatalog (JSON)
+ 
++ (ZincCatalog*) catalogFromJSONString:(NSString*)string error:(NSError**)outError
+{
+    id json = [KSJSON deserializeString:string error:outError];
+    if (json == nil) {
+        return nil;
+    }
+    ZincCatalog* catalog = [[[ZincCatalog alloc] initWithDictionary:json] autorelease];
+    return catalog;
+}
 
 @end

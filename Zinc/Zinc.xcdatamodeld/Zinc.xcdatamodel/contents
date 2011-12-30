@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model name="" userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="878" systemVersion="11C74" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="ZincBundle" syncable="YES">
+        <relationship name="manifest" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincManifest" inverseName="bundle" inverseEntity="ZincManifest" syncable="YES"/>
+        <relationship name="repo" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincRepo" inverseName="bundles" inverseEntity="ZincRepo" syncable="YES"/>
+    </entity>
+    <entity name="ZincCatalog" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="manifests" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ZincManifest" inverseName="catalog" inverseEntity="ZincManifest" syncable="YES"/>
+        <relationship name="sources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ZincSource" inverseName="catalog" inverseEntity="ZincSource" syncable="YES"/>
+    </entity>
+    <entity name="ZincLabel" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="manifest" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincManifest" inverseName="labels" inverseEntity="ZincManifest" syncable="YES"/>
+    </entity>
+    <entity name="ZincManifest" syncable="YES">
+        <attribute name="bundleName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="version" optional="YES" attributeType="Integer 32" defaultValueString="0" syncable="YES"/>
+        <relationship name="bundle" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincBundle" inverseName="manifest" inverseEntity="ZincBundle" syncable="YES"/>
+        <relationship name="catalog" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincCatalog" inverseName="manifests" inverseEntity="ZincCatalog" syncable="YES"/>
+        <relationship name="labels" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ZincLabel" inverseName="manifest" inverseEntity="ZincLabel" syncable="YES"/>
+    </entity>
+    <entity name="ZincRepo" syncable="YES">
+        <relationship name="bundles" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ZincBundle" inverseName="repo" inverseEntity="ZincBundle" syncable="YES"/>
+        <relationship name="sources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ZincSource" inverseName="repo" inverseEntity="ZincSource" syncable="YES"/>
+    </entity>
+    <entity name="ZincSource" syncable="YES">
+        <attribute name="url" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <relationship name="catalog" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincCatalog" inverseName="sources" inverseEntity="ZincCatalog" syncable="YES"/>
+        <relationship name="repo" optional="YES" minCount="1" maxCount="1" deletionRule="Nullify" destinationEntity="ZincRepo" inverseName="sources" inverseEntity="ZincRepo" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="ZincBundle" positionX="-4961" positionY="-2646" width="128" height="75"/>
+        <element name="ZincManifest" positionX="-5049" positionY="-2295" width="128" height="75"/>
+        <element name="ZincRepo" positionX="-5195" positionY="-2610" width="128" height="90"/>
+        <element name="ZincCatalog" positionX="-5249" positionY="-2328" width="128" height="90"/>
+        <element name="ZincSource" positionX="-5382" positionY="-2493" width="128" height="90"/>
+        <element name="ZincLabel" positionX="-5256" positionY="-2145" width="128" height="75"/>
+    </elements>
+</model>

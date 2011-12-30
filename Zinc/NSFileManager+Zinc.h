@@ -15,4 +15,7 @@
 - (BOOL) zinc_directoryExistsAtPath:(NSString*)path;
 - (BOOL) zinc_directoryExistsAtURL:(NSURL*)url;
 
+- (BOOL) zinc_createDirectoryIfNeededAtPath:(NSString*)path error:(NSError**)outError;
+- (BOOL) zinc_createDirectoryIfNeededAtURL:(NSURL*)url error:(NSError**)outError;
+
 @end

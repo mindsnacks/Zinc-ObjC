@@ -21,5 +21,6 @@
 - (NSArray*) allFiles;
 
 - (NSDictionary*) dictionaryRepresentation;
+- (NSString*) jsonRepresentation:(NSError**)outError;
 
 @end

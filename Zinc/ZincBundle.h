@@ -20,7 +20,7 @@ enum {
 typedef NSInteger ZCBundleState;
 
 
-@interface ZCBundle : NSObject
+@interface ZincBundle : NSObject
 
 - (NSArray*) availableVersions;
 //- (NSURL*) url;
@@ -35,5 +35,8 @@ typedef NSInteger ZCBundleState;
 
 // TODO: rename
 @property (nonatomic, assign) ZincClient* manager;
+
++ (NSString*) sourceFromBundleIdentifier:(NSString*)bundleId;
++ (NSString*) nameFromBundleIdentifier:(NSString*)bundleId;
 
 @end

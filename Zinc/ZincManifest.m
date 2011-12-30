@@ -8,6 +8,7 @@
 
 
 #import "ZincManifest.h"
+#import "KSJSON.h"
 
 @interface ZincManifest ()
 @property (nonatomic, retain) NSDictionary* files;
@@ -23,7 +24,7 @@
 {
     self = [super init];
     if (self) {
-        self.bundleName = [dict objectForKey:@"bundle_name"];
+        self.bundleName = [dict objectForKey:@"bundle"];
         self.version = [[dict objectForKey:@"version"] integerValue];
         self.files = [dict objectForKey:@"files"];
     }
@@ -62,6 +63,12 @@
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
     return d;
+}
+
+// TODO: refactor
+- (NSString*) jsonRepresentation:(NSError**)outError
+{
+    return [KSJSON serializeObject:[self dictionaryRepresentation] error:outError];
 }
 
 
