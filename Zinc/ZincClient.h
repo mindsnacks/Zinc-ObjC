@@ -39,13 +39,14 @@
 
 - (ZincBundle*) bundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
 
-#pragma mark Source Registration
+- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+
+#pragma mark Sources
 
 - (void) addSourceURL:(NSURL*)url;
 //- (void) removeRepoWithIdentifer:(NSString*)identifier;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
 //- (ZCBundle*) bundleWithName:(NSString*)name distribution:(NSString*)distribution;
 

@@ -150,17 +150,7 @@ static ZincClient* _defaultClient = nil;
     [super dealloc];
 }
 
-#pragma mark Utility
-
-- (NSString*) catalogsPath
-{
-    return [[self.url path] stringByAppendingPathComponent:CATALOGS_DIR_NAME];
-}
-
-- (NSString*) manifestsPath
-{
-    return [[self.url path] stringByAppendingPathComponent:MANIFESTS_DIR_NAME];
-}
+#pragma mark Filesystem Utilities
 
 - (BOOL) createDirectoriesIfNeeded:(NSError**)outError
 {
@@ -183,27 +173,16 @@ static ZincClient* _defaultClient = nil;
     return YES;
 }
 
-#pragma mark Repo Registration
+#pragma mark Path Helpers
 
-- (void) addSourceURL:(NSURL*)url
+- (NSString*) catalogsPath
 {
-    [self.sourceURLs addObject:url];
+    return [[self.url path] stringByAppendingPathComponent:CATALOGS_DIR_NAME];
 }
 
-- (void) addSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog
+- (NSString*) manifestsPath
 {
-    NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalog.identifier];
-    if (sources == nil) {
-        sources = [NSMutableArray array];
-        [self.sourcesByCatalog setObject:sources forKey:catalog.identifier];
-    }
-    // TODO: cleaner duplicate check
-    for (ZincSource* existingSource in sources) {
-        if ([existingSource.url isEqual:source.url]) {
-            return;
-        }
-    }
-    [sources addObject:source];
+    return [[self.url path] stringByAppendingPathComponent:MANIFESTS_DIR_NAME];
 }
 
 - (NSString*) pathForCatalogIndexWithIdentifier:(NSString*)identifier
@@ -217,6 +196,19 @@ static ZincClient* _defaultClient = nil;
 {
     return [self pathForCatalogIndexWithIdentifier:catalog.identifier];
 }
+
+- (NSString*) pathForManifestWithBundleIdentifier:(NSString*)identifier version:(ZincVersion)version
+{
+    NSString* manifestFilename = [NSString stringWithFormat:@"%@-%d.json", identifier, version];
+    NSString* manifestPath = [[self manifestsPath] stringByAppendingPathComponent:manifestFilename];
+    return manifestPath;
+}
+
+
+
+#pragma mark Repo Registration
+
+#pragma mark Internal Operations
 
 - (void) handleError:(NSError*)error
 {
@@ -251,7 +243,7 @@ static ZincClient* _defaultClient = nil;
     NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
         
         NSError* error = nil;
-
+        
         NSURLRequest* request = [source urlRequestForCatalogIndex];
         AFHTTPRequestOperation* requestOp = [self queuedHTTPRequestOperationForRequest:request];
         ZINC_DEBUG_LOG(@"[ZincClient 0x%x] Downloading source index from %@", (int)blockself, [requestOp.request URL]);
@@ -284,13 +276,6 @@ static ZincClient* _defaultClient = nil;
         [blockself addSource:source forCatalog:catalog];
     }];
     return op;
-}
-
-- (NSString*) pathForManifestWithBundleIdentifier:(NSString*)identifier version:(ZincVersion)version
-{
-    NSString* manifestFilename = [NSString stringWithFormat:@"%@-%d.json", identifier, version];
-    NSString* manifestPath = [[self manifestsPath] stringByAppendingPathComponent:manifestFilename];
-    return manifestPath;
 }
 
 - (NSOperation*) downloadOperationForBundleIdentifier:(NSString*)bundleId label:(NSString*)label
@@ -351,6 +336,29 @@ static ZincClient* _defaultClient = nil;
     return op;
 }
 
+#pragma mark Sources
+
+- (void) addSourceURL:(NSURL*)url
+{
+    [self.sourceURLs addObject:url];
+}
+
+- (void) addSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog
+{
+    NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalog.identifier];
+    if (sources == nil) {
+        sources = [NSMutableArray array];
+        [self.sourcesByCatalog setObject:sources forKey:catalog.identifier];
+    }
+    // TODO: cleaner duplicate check
+    for (ZincSource* existingSource in sources) {
+        if ([existingSource.url isEqual:source.url]) {
+            return;
+        }
+    }
+    [sources addObject:source];
+}
+
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
     NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
@@ -361,23 +369,11 @@ static ZincClient* _defaultClient = nil;
         NSOperation* downloadOp = [self downloadOperationForCatalogIndex:source];
         [self.controlOperationQueue addOperation:downloadOp];        
         [parentOp addDependency:downloadOp];
-        
     }
     [self.controlOperationQueue addOperation:parentOp];
 }
 
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
-{
-    NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
-    parentOp.completionBlock = completion;
-
-    for (NSString* bundleId in [self.trackedBundles allKeys]) {
-        NSOperation* downloadOp = [self downloadOperationForBundleIdentifier:bundleId label:[self.trackedBundles objectForKey:bundleId]];
-        [self.controlOperationQueue addOperation:downloadOp];        
-        [parentOp addDependency:downloadOp];
-    }
-    [self.controlOperationQueue addOperation:parentOp];
-}
+#pragma mark Catalogs
 
 - (NSString*) cacheKeyForCatalogIdentifier:(NSString*)identifier
 {
@@ -413,11 +409,25 @@ static ZincClient* _defaultClient = nil;
     }
 }
 
+#pragma mark Bundles
+
 - (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId label:(NSString*)label
 {
     [self.trackedBundles setObject:label forKey:bundleId];
 }
 
+- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
+{
+    NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
+    parentOp.completionBlock = completion;
+
+    for (NSString* bundleId in [self.trackedBundles allKeys]) {
+        NSOperation* downloadOp = [self downloadOperationForBundleIdentifier:bundleId label:[self.trackedBundles objectForKey:bundleId]];
+        [self.controlOperationQueue addOperation:downloadOp];        
+        [parentOp addDependency:downloadOp];
+    }
+    [self.controlOperationQueue addOperation:parentOp];
+}
 
 #pragma mark Bundle Registration
 
