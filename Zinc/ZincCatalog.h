@@ -19,7 +19,7 @@
 @property (nonatomic, retain) NSDictionary* distributions;
 
 #pragma mark -
-- (NSInteger) versionForBundleName:(NSString*)bundleName label:(NSString*)label;
+- (ZincVersion) versionForBundleName:(NSString*)bundleName label:(NSString*)label;
 
 #pragma mark Encoding
 - (id) initWithDictionary:(NSDictionary*)dict;

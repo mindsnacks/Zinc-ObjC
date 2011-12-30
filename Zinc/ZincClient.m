@@ -32,11 +32,13 @@ static ZincClient* _defaultClient = nil;
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain) NSTimer* refreshTimer;
+
 - (BOOL) createDirectoriesIfNeeded:(NSError**)outError;
 - (NSString*) catalogsPath;
 - (NSString*) manifestsPath;
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
 - (void) addSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
+- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
 @end
 
 @interface ZincBundleUpdateOperation : NSOperation
@@ -204,10 +206,6 @@ static ZincClient* _defaultClient = nil;
     return manifestPath;
 }
 
-
-
-#pragma mark Repo Registration
-
 #pragma mark Internal Operations
 
 - (void) handleError:(NSError*)error
@@ -234,6 +232,7 @@ static ZincClient* _defaultClient = nil;
 {
     AFHTTPRequestOperation* op = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     [self.networkOperationQueue addOperation:op];
+    ZINC_DEBUG_LOG(@"[ZincClient 0x%x] Downloading %@", (int)self, [request URL]);
     return op;
 }
 
@@ -246,7 +245,6 @@ static ZincClient* _defaultClient = nil;
         
         NSURLRequest* request = [source urlRequestForCatalogIndex];
         AFHTTPRequestOperation* requestOp = [self queuedHTTPRequestOperationForRequest:request];
-        ZINC_DEBUG_LOG(@"[ZincClient 0x%x] Downloading source index from %@", (int)blockself, [requestOp.request URL]);
         [requestOp waitUntilFinished];
         if ([requestOp.response statusCode] != 200) {
             // TODO: better status code checking
@@ -278,7 +276,7 @@ static ZincClient* _defaultClient = nil;
     return op;
 }
 
-- (NSOperation*) downloadOperationForBundleIdentifier:(NSString*)bundleId label:(NSString*)label
+- (NSOperation*) downloadOperationForManifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
 {
     __block typeof(self) blockself = self;
     NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
@@ -292,14 +290,8 @@ static ZincClient* _defaultClient = nil;
             ZINC_DEBUG_LOG(@"source is nil");
             return;
         }
-        
-        ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
-        if (catalog == nil) {
-            [blockself handleError:error];
-            return;
-        }
 
-        NSURLRequest* request = [source urlRequestForBundleName:bundleName label:label catalog:catalog];
+        NSURLRequest* request = [source urlRequestForBundleName:bundleName version:version];
         if (request == nil) {
             // TODO: better error
             NSAssert(0, @"request is nil");
@@ -411,6 +403,35 @@ static ZincClient* _defaultClient = nil;
 
 #pragma mark Bundles
 
+- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
+{
+    NSString* path = [self pathForManifestWithBundleIdentifier:bundleId version:version];
+    return [self.fileManager fileExistsAtPath:path];
+}
+
+- (ZincVersion) versionForBundleIdentifier:(NSString*)bundleId label:(NSString*)label
+{
+    NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleId];
+    NSString* bundleName = [ZincBundle nameFromBundleIdentifier:bundleId];
+    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:NULL];
+    if (catalog == nil) {
+        return ZincVersionInvalid;
+    }
+    return [catalog versionForBundleName:bundleName label:label];
+}
+
+- (BOOL) hasManifestForBundleIdentifier:(NSString *)bundleId label:(NSString*)label
+{
+    NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleId];
+    NSString* bundleName = [ZincBundle nameFromBundleIdentifier:bundleId];
+    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:NULL];
+    if (catalog == nil) {
+        return NO;
+    }
+    ZincVersion version = [catalog versionForBundleName:bundleName label:label];
+    return [self hasManifestForBundleIdentifier:bundleId version:version];
+}
+
 - (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId label:(NSString*)label
 {
     [self.trackedBundles setObject:label forKey:bundleId];
@@ -422,9 +443,15 @@ static ZincClient* _defaultClient = nil;
     parentOp.completionBlock = completion;
 
     for (NSString* bundleId in [self.trackedBundles allKeys]) {
-        NSOperation* downloadOp = [self downloadOperationForBundleIdentifier:bundleId label:[self.trackedBundles objectForKey:bundleId]];
-        [self.controlOperationQueue addOperation:downloadOp];        
-        [parentOp addDependency:downloadOp];
+        NSString* label = [self.trackedBundles objectForKey:bundleId];
+        ZincVersion version = [self versionForBundleIdentifier:bundleId label:label];
+        if (version != ZincVersionInvalid) {
+            if (![self hasManifestForBundleIdentifier:bundleId version:version]) {
+                NSOperation* downloadOp = [self downloadOperationForManifestWithBundleIdentifier:bundleId version:version];
+                [self.controlOperationQueue addOperation:downloadOp];        
+                [parentOp addDependency:downloadOp];
+            }
+        }
     }
     [self.controlOperationQueue addOperation:parentOp];
 }
