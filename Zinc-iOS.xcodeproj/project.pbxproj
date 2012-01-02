@@ -13,6 +13,9 @@
 		B326A94914B11B7E00CED8DF /* NSData+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A94714B11B7E00CED8DF /* NSData+Zinc.m */; };
 		B326A94C14B20FA100CED8DF /* ZincOperationProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A94A14B20FA100CED8DF /* ZincOperationProxy.h */; };
 		B326A94D14B20FA100CED8DF /* ZincOperationProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A94B14B20FA100CED8DF /* ZincOperationProxy.m */; };
+		B326A95014B2451B00CED8DF /* ZincOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A94E14B2451B00CED8DF /* ZincOperation.h */; };
+		B326A95114B2451B00CED8DF /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A94F14B2451B00CED8DF /* ZincOperation.m */; };
+		B326A95314B2460900CED8DF /* ZincOperation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A95214B2460900CED8DF /* ZincOperation+Private.h */; };
 		B327D12F14AD744F00D359CF /* Zinc.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B327D12D14AD744F00D359CF /* Zinc.xcdatamodeld */; };
 		B327D4B114AE6F410051416F /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4AF14AE6F410051416F /* sha1.c */; };
 		B327D4B214AE6F410051416F /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B014AE6F410051416F /* sha1.h */; };
@@ -161,6 +164,9 @@
 		B326A94714B11B7E00CED8DF /* NSData+Zinc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Zinc.m"; sourceTree = "<group>"; };
 		B326A94A14B20FA100CED8DF /* ZincOperationProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincOperationProxy.h; sourceTree = "<group>"; };
 		B326A94B14B20FA100CED8DF /* ZincOperationProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincOperationProxy.m; sourceTree = "<group>"; };
+		B326A94E14B2451B00CED8DF /* ZincOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincOperation.h; sourceTree = "<group>"; };
+		B326A94F14B2451B00CED8DF /* ZincOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincOperation.m; sourceTree = "<group>"; };
+		B326A95214B2460900CED8DF /* ZincOperation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincOperation+Private.h"; sourceTree = "<group>"; };
 		B327D12E14AD744F00D359CF /* Zinc.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Zinc.xcdatamodel; sourceTree = "<group>"; };
 		B327D4AF14AE6F410051416F /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = Dependencies/sha1/sha1.c; sourceTree = SOURCE_ROOT; };
 		B327D4B014AE6F410051416F /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = Dependencies/sha1/sha1.h; sourceTree = SOURCE_ROOT; };
@@ -381,6 +387,9 @@
 				B326A94714B11B7E00CED8DF /* NSData+Zinc.m */,
 				B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */,
 				B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */,
+				B326A94E14B2451B00CED8DF /* ZincOperation.h */,
+				B326A95214B2460900CED8DF /* ZincOperation+Private.h */,
+				B326A94F14B2451B00CED8DF /* ZincOperation.m */,
 				B326A94A14B20FA100CED8DF /* ZincOperationProxy.h */,
 				B326A94B14B20FA100CED8DF /* ZincOperationProxy.m */,
 				B340F973148D52D800206F86 /* Supporting Files */,
@@ -605,6 +614,8 @@
 				B327D4BA14AE754C0051416F /* Base64Transcoder.h in Headers */,
 				B326A94814B11B7E00CED8DF /* NSData+Zinc.h in Headers */,
 				B326A94C14B20FA100CED8DF /* ZincOperationProxy.h in Headers */,
+				B326A95014B2451B00CED8DF /* ZincOperation.h in Headers */,
+				B326A95314B2460900CED8DF /* ZincOperation+Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -810,6 +821,7 @@
 				B327D4B914AE754C0051416F /* Base64Transcoder.c in Sources */,
 				B326A94914B11B7E00CED8DF /* NSData+Zinc.m in Sources */,
 				B326A94D14B20FA100CED8DF /* ZincOperationProxy.m in Sources */,
+				B326A95114B2451B00CED8DF /* ZincOperation.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
