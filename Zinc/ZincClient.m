@@ -295,49 +295,6 @@ static ZincClient* _defaultClient = nil;
     }
 }
 
-//- (NSArray*) getAllFileUpdateOperations
-//{
-//    @synchronized(self) {
-//        return [[self.primaryOperationQueue operations] filteredArrayUsingPredicate:
-//                [NSPredicate predicateWithBlock:^(id obj, NSDictionary* bind) {
-//            return ([obj isKindOfClass:[ZincRepoFileUpdateOperation class]]);
-//        }]];
-//    }
-//}
-//
-//- (NSDictionary*) getFileUpdateOperationsBySHA
-//{
-//    @synchronized(self) {
-//        NSArray* ops = [self getAllFileUpdateOperations];
-//        NSDictionary* dict = [NSDictionary dictionaryWithObjects:ops
-//                                                         forKeys:[ops valueForKey:@"sha"]];
-//        return dict;
-//    }
-//}
-
-//- (NSArray*) getAllManifestUpdateOperations
-//{
-//    @synchronized(self) {
-//        return [[self.primaryOperationQueue operations] filteredArrayUsingPredicate:
-//                [NSPredicate predicateWithBlock:^(id obj, NSDictionary* bind) {
-//            return ([obj isKindOfClass:[ZincRepoManifestUpdateOperation class]]);
-//        }]];
-//    }
-//}
-
-//- (ZincRepoManifestUpdateOperation*) manifestUpdateOperationsForBundleId:(NSString*)bundleId version:(ZincVersion)version
-//{
-//    @synchronized(self) {
-//        NSArray* ops = [[self getAllManifestUpdateOperations] filteredArrayUsingPredicate:
-//                        [NSPredicate predicateWithFormat:@"(bundleId == %@) && (version == %d)", bundleId, version]];
-//        if ([ops count] > 0) {
-//            NSAssert([ops count] == 1, @"found too many ops"); // TODO: turn this into a log?
-//            return [ops objectAtIndex:0];
-//        }
-//        return nil;
-//    }
-//}
-
 - (void) handleError:(NSError*)error
 {
     if (self.delegate == nil) return;
@@ -404,60 +361,6 @@ static ZincClient* _defaultClient = nil;
     }];
     return op;
 }
-
-//- (NSOperation*) downloadOperationForManifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
-//{
-//    __block typeof(self) blockself = self;
-//    NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
-//        
-//        NSError* error = nil;
-//        
-//        NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleId];
-//        NSString* bundleName = [ZincBundle nameFromBundleIdentifier:bundleId];
-//        ZincSource* source = [[blockself.sourcesByCatalog objectForKey:catalogId] lastObject]; // TODO: fix lastObject
-//        if (source == nil) {
-//            ZINC_DEBUG_LOG(@"source is nil");
-//            return;
-//        }
-//        
-//        NSURLRequest* request = [source urlRequestForBundleName:bundleName version:version];
-//        if (request == nil) {
-//            // TODO: better error
-//            NSAssert(0, @"request is nil");
-//            return;
-//        }
-//        
-//        AFHTTPRequestOperation* requestOp = [blockself queuedHTTPRequestOperationForRequest:request];
-//        [requestOp waitUntilFinished];
-//        if (requestOp.response.statusCode != 200) { // TODO: fix status check
-//            return;
-//        }
-//        
-//        id json = [KSJSON deserializeString:requestOp.responseString error:&error];
-//        if (json == nil) {
-//            [self handleError:error];
-//            return;
-//        }
-//        
-//        ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
-//        NSData* data = [[manifest jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
-//        if (data == nil) {
-//            [blockself handleError:error];
-//            return;
-//        }
-//        
-//        NSString* path = [blockself pathForManifestWithBundleIdentifier:bundleId version:manifest.version];
-//        ZincRepoAtomicFileWriteOperation* writeOp = [blockself queuedFileWriteOperationForData:data path:path];
-//        [writeOp waitUntilFinished];
-//        if (writeOp.error != nil) {
-//            [blockself handleError:writeOp.error];
-//            return;
-//        }
-//        
-//        [blockself.cache setObject:manifest forKey:[self cacheKeyManifestWithBundleIdentifier:bundleId version:version]];
-//    }];
-//    return op;
-//}
 
 #pragma mark Sources
 
@@ -616,93 +519,8 @@ static ZincClient* _defaultClient = nil;
     [self.trackedBundles setObject:label forKey:bundleId];
 }
 
-//- (void) ensureFilesForBundleIdentifier:(NSString*)bundleIdentifier version:(ZincVersion)version
-//{
-//    NSError* error = nil;
-//    ZincManifest* manifest = [self manifestWithBundleIdentifier:bundleIdentifier version:version error:&error];
-//    if (manifest == nil) {
-//        [self handleError:error];
-//        return;
-//    }
-//    
-//    NSArray* SHAs = [manifest allSHAs];
-//    NSArray* allFileUpdateOps = [self getAllFileUpdateOperations];
-//    
-//    for (NSString* expectedSHA in SHAs) {
-//        NSString* path = [self pathForFileWithSHA:expectedSHA];
-//        NSString* actualSHA = [self.fileManager zinc_sha1ForPath:path];
-//        
-//        // check if file is missing or invalid
-//        if (actualSHA == nil || ![expectedSHA isEqualToString:actualSHA]) {
-//            
-//            // check if not already downloading
-//            NSArray* existingOps = [allFileUpdateOps filteredArrayUsingPredicate:
-//                                    [NSPredicate predicateWithFormat:@"sha == %@", expectedSHA]];
-//            if ([existingOps count] == 0) {
-//                
-//                // queue redownload
-//                NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleIdentifier];
-//                ZincSource* source = [[self sourcesForCatalogIdentifier:catalogId] lastObject];
-//                ZincRepoFileUpdateOperation* op = 
-//                [[[ZincRepoFileUpdateOperation alloc] initWithClient:self 
-//                                                              source:source
-//                                                                 sha:expectedSHA] autorelease];
-//                [self.primaryOperationQueue addOperation:op];
-//            }
-//        }
-//    }
-//}
-
-//- (void) ensureBundleWithIdentifier:(NSString*)bundleId version:(ZincVersion)version
-//{
-//    NSArray* existingManifestOps = [self manifestUpdateOperationsForBundleId:bundleId];
-//    if ([existingManifestOps count] > 0) {
-//        __block typeof(self) blockself = self;
-//        NSOperation* filesOp = [NSBlockOperation blockOperationWithBlock:^{
-//            [blockself ensureFilesForBundleIdentifier:bundleId version:version];
-//        }];
-//        for (NSOperation* manifestOp in existingManifestOps) {
-//            [filesOp addDependency:manifestOp];
-//        }
-//        [self.primaryOperationQueue addOperation:filesOp];
-//        
-//    } else if (![self hasManifestForBundleIdentifier:bundleId version:version]) {
-//         NSOperation* manifestOp = [self downloadOperationForManifestWithBundleIdentifier:bundleId version:version];
-//        manifestOp.completionBlock = ^{
-//            //if (manifestOp
-//            [blockself ensureFilesForBundleIdentifier:bundleId version:version];
-//        };
-//        [self.primaryOperationQueue addOperation:manifestOp];        
-//    } else {
-//        [self ensureFilesForBundleIdentifier:bundleId version:version];
-//    }
-//}
-//
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
-    //    NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
-    //    parentOp.completionBlock = completion;
-    //    
-    //    for (NSString* bundleId in [self.trackedBundles allKeys]) {
-    //        NSString* label = [self.trackedBundles objectForKey:bundleId];
-    //        ZincVersion version = [self versionForBundleIdentifier:bundleId label:label];
-    //        if (version != ZincVersionInvalid) {
-    //            if (![self hasManifestForBundleIdentifier:bundleId version:version]) {
-    //                NSOperation* downloadOp = [self downloadOperationForManifestWithBundleIdentifier:bundleId version:version];
-    //                [self.primaryOperationQueue addOperation:downloadOp];        
-    //                [parentOp addDependency:downloadOp];
-    //            }
-    //            
-    //            NSString* label = [self.trackedBundles objectForKey:bundleId];
-    //            ZincVersion version = [self versionForBundleIdentifier:bundleId label:label];
-    //            [self ensureFilesForBundleIdentifier:bundleId version:version];
-    //
-    //            
-    //            
-    //        }
-    //    }
-    //    [self.primaryOperationQueue addOperation:parentOp];
-    
     NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
     parentOp.completionBlock = completion;
     
