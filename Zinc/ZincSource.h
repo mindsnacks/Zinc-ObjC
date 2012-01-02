@@ -24,4 +24,7 @@
 - (NSURL*) urlForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)catalog;
 - (NSURLRequest*) urlRequestForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)index;
 
+- (NSURL*) urlForFileWithSHA:(NSString*)sha;
+- (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha;
+
 @end

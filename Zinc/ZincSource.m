@@ -78,4 +78,19 @@
     return [self getRequestForURL:manifestURL];
 }
 
+- (NSURL*) urlForFileWithSHA:(NSString*)sha
+{
+    NSString* relativePath = [NSString stringWithFormat:@"files/%@/%@/%@",
+                              [sha substringWithRange:NSMakeRange(0, 2)],
+                              [sha substringWithRange:NSMakeRange(2, 2)],
+                              sha];
+    return [[NSURL URLWithString:relativePath relativeToURL:self.url] absoluteURL];
+}
+
+- (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha
+{
+    NSURL* fileURL = [self urlForFileWithSHA:sha];
+    return [self getRequestForURL:fileURL];
+}
+
 @end

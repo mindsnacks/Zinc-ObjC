@@ -18,4 +18,6 @@
 - (BOOL) zinc_createDirectoryIfNeededAtPath:(NSString*)path error:(NSError**)outError;
 - (BOOL) zinc_createDirectoryIfNeededAtURL:(NSURL*)url error:(NSError**)outError;
 
+- (NSString*) zinc_sha1ForPath:(NSString*)path;
+
 @end

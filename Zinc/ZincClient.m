@@ -15,9 +15,11 @@
 #import "ZincCatalog.h"
 #import "KSJSON.h"
 #import "AFNetworking.h"
+#import "sha1.h"
 
 #define CATALOGS_DIR_NAME @"catalogs"
 #define MANIFESTS_DIR_NAME @"manifests"
+#define FILES_DIR_NAME @"files"
 
 static ZincClient* _defaultClient = nil;
 
@@ -36,9 +38,23 @@ static ZincClient* _defaultClient = nil;
 - (BOOL) createDirectoriesIfNeeded:(NSError**)outError;
 - (NSString*) catalogsPath;
 - (NSString*) manifestsPath;
-- (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
+- (NSString*) filesPath;
+
+- (NSString*) cacheKeyForCatalogIdentifier:(NSString*)identifier;
+- (NSString*) cacheKeyManifestWithBundleIdentifier:(NSString*)identifier version:(ZincVersion)version;
+- (NSString*) cacheKeyForBundleIdentifier:(NSString*)identifier version:(ZincVersion)version;
+
 - (void) addSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
+- (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId;
+
+- (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
+- (ZincVersion) versionForBundleIdentifier:(NSString*)bundleId label:(NSString*)label;
+
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
+- (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
+
+- (void) ensureFilesForBundleIdentifier:(NSString*)bundleIdentifier version:(ZincVersion)version;
+
 @end
 
 @interface ZincBundleUpdateOperation : NSOperation
@@ -51,6 +67,14 @@ static ZincClient* _defaultClient = nil;
 @property (nonatomic, assign) ZincClient* client;
 @property (nonatomic, retain) NSData* data;
 @property (nonatomic, retain) NSString* path;
+@property (nonatomic, retain) NSError* error;
+@end
+
+@interface ZincRepoFileUpdateOperation : NSOperation
+- (id)initWithClient:(ZincClient*)client source:(ZincSource*)souce sha:(NSString*)sha;
+@property (nonatomic, assign) ZincClient* client;
+@property (nonatomic, retain) ZincSource* source;
+@property (nonatomic, retain) NSString* sha;
 @property (nonatomic, retain) NSError* error;
 @end
 
@@ -94,7 +118,7 @@ static ZincClient* _defaultClient = nil;
     if (self) {
         self.url = fileURL;
         self.controlOperationQueue = [[[NSOperationQueue alloc] init] autorelease];
-        self.controlOperationQueue.maxConcurrentOperationCount = 1;
+        //self.controlOperationQueue.maxConcurrentOperationCount = 1;
         self.fileOperationQueue = [[[NSOperationQueue alloc] init] autorelease];
         self.fileOperationQueue.maxConcurrentOperationCount = 1;
         self.networkOperationQueue = operationQueue;
@@ -119,20 +143,20 @@ static ZincClient* _defaultClient = nil;
     
     [blockself refreshSourcesWithCompletion:^{
         
-        ZINC_DEBUG_LOG(@"beep");
-        
         [blockself refreshBundlesWithCompletion:^{
             
-            ZINC_DEBUG_LOG(@"honk");
-
+            for (NSString* bundleId in self.trackedBundles) {
+                NSString* label = [self.trackedBundles objectForKey:bundleId];
+                ZincVersion version = [self versionForBundleIdentifier:bundleId label:label];
+                [self ensureFilesForBundleIdentifier:bundleId version:version];
+            }
         }];
-
     }];
 }
 
 - (id) initWithURL:(NSURL*)fileURL
 {
-//    NSString* defaultPath = [GetApplicationDocumentsDirectory() stringByAppendingPathComponent:@"zinc"];
+    //    NSString* defaultPath = [GetApplicationDocumentsDirectory() stringByAppendingPathComponent:@"zinc"];
     NSOperationQueue* operationQueue = [[[NSOperationQueue alloc] init] autorelease];
     [operationQueue setMaxConcurrentOperationCount:kZCBundleManagerDefaultNetworkOperationCount];
     return [self initWithURL:fileURL networkOperationQueue:operationQueue];
@@ -162,6 +186,9 @@ static ZincClient* _defaultClient = nil;
     if (![self.fileManager zinc_createDirectoryIfNeededAtPath:[self manifestsPath] error:outError]) {
         return NO;
     }
+    if (![self.fileManager zinc_createDirectoryIfNeededAtPath:[self filesPath] error:outError]) {
+        return NO;
+    }
     return YES;
 }
 
@@ -175,6 +202,7 @@ static ZincClient* _defaultClient = nil;
     return YES;
 }
 
+
 #pragma mark Path Helpers
 
 - (NSString*) catalogsPath
@@ -185,6 +213,11 @@ static ZincClient* _defaultClient = nil;
 - (NSString*) manifestsPath
 {
     return [[self.url path] stringByAppendingPathComponent:MANIFESTS_DIR_NAME];
+}
+
+- (NSString*) filesPath
+{
+    return [[self.url path] stringByAppendingPathComponent:FILES_DIR_NAME];
 }
 
 - (NSString*) pathForCatalogIndexWithIdentifier:(NSString*)identifier
@@ -206,20 +239,79 @@ static ZincClient* _defaultClient = nil;
     return manifestPath;
 }
 
+- (NSString*) pathForFileWithSHA:(NSString*)sha
+{
+    NSString* relativePath = [NSString stringWithFormat:@"%@/%@/%@",
+                              [sha substringWithRange:NSMakeRange(0, 2)],
+                              [sha substringWithRange:NSMakeRange(2, 2)],
+                              sha];
+    return [[self filesPath] stringByAppendingPathComponent:relativePath];
+}
+
 #pragma mark Internal Operations
+
+- (NSArray*) allFileUpdateOperations
+{
+    return [[self.controlOperationQueue operations] filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:^(id obj, NSDictionary* bind) {
+        return ([obj isKindOfClass:[ZincRepoFileUpdateOperation class]]);
+    }]];
+}
+
+- (NSArray*) fileUpdateOperationsForSHA:(NSString*)sha
+{
+    return [[self allFileUpdateOperations] filteredArrayUsingPredicate:
+            [NSPredicate predicateWithFormat:@"sha == %@", sha]];
+}
 
 - (void) handleError:(NSError*)error
 {
     if (self.delegate == nil) return;
     
     __block typeof(self) blockself = self;
-    NSOperation* op = [NSBlockOperation blockOperationWithBlock:^{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         ZINC_DEBUG_LOG(@"[ZincClient 0x%x] %@", (int)blockself, error);
         [blockself.delegate zincClient:blockself didEncounterError:error];
     }];
-    
-    [[NSOperationQueue mainQueue] addOperation:op];
 }
+
+- (void) ensureFilesForBundleIdentifier:(NSString*)bundleIdentifier version:(ZincVersion)version
+{
+    NSError* error = nil;
+    ZincManifest* manifest = [self manifestWithBundleIdentifier:bundleIdentifier version:version error:&error];
+    if (manifest == nil) {
+        [self handleError:error];
+        return;
+    }
+    
+    NSArray* SHAs = [manifest allSHAs];
+    NSArray* allFileUpdateOps = [self allFileUpdateOperations];
+    
+    for (NSString* expectedSHA in SHAs) {
+        NSString* path = [self pathForFileWithSHA:expectedSHA];
+        NSString* actualSHA = [self.fileManager zinc_sha1ForPath:path];
+        
+        // check if file is missing or invalid
+        if (actualSHA == nil || ![expectedSHA isEqualToString:actualSHA]) {
+            
+            // check if not already downloading
+            NSArray* existingOps = [allFileUpdateOps filteredArrayUsingPredicate:
+                                    [NSPredicate predicateWithFormat:@"sha == %@", expectedSHA]];
+            if ([existingOps count] == 0) {
+                
+                // queue redownload
+                NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleIdentifier];
+                ZincSource* source = [[self sourcesForCatalogIdentifier:catalogId] lastObject];
+                ZincRepoFileUpdateOperation* op = 
+                [[[ZincRepoFileUpdateOperation alloc] initWithClient:self 
+                                                              source:source
+                                                                 sha:expectedSHA] autorelease];
+                [self.controlOperationQueue addOperation:op];
+            }
+        }
+    }
+}
+
 
 - (ZincRepoAtomicFileWriteOperation*) queuedFileWriteOperationForData:(NSData*)data path:(NSString*)path
 {
@@ -269,8 +361,9 @@ static ZincClient* _defaultClient = nil;
         if (writeOp.error != nil) {
             [blockself handleError:writeOp.error];
             return;
-        }
+        } 
         
+        [blockself.cache setObject:catalog forKey:[self cacheKeyForCatalogIdentifier:catalog.identifier]];
         [blockself addSource:source forCatalog:catalog];
     }];
     return op;
@@ -280,7 +373,7 @@ static ZincClient* _defaultClient = nil;
 {
     __block typeof(self) blockself = self;
     NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
-
+        
         NSError* error = nil;
         
         NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:bundleId];
@@ -290,7 +383,7 @@ static ZincClient* _defaultClient = nil;
             ZINC_DEBUG_LOG(@"source is nil");
             return;
         }
-
+        
         NSURLRequest* request = [source urlRequestForBundleName:bundleName version:version];
         if (request == nil) {
             // TODO: better error
@@ -324,9 +417,41 @@ static ZincClient* _defaultClient = nil;
             [blockself handleError:writeOp.error];
             return;
         }
+        
+        [blockself.cache setObject:manifest forKey:[self cacheKeyManifestWithBundleIdentifier:bundleId version:version]];
     }];
     return op;
 }
+
+//- (NSOperation*) downloadOperationForFileWithSHA:(NSString*)sha fromSource:(ZincSource*)source
+//{
+//    __block typeof(self) blockself = self;
+//    NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
+//
+//        NSURLRequest* request = [source urlRequestForFileWithSHA:sha];
+//        if (request == nil) {
+//            // TODO: better error
+//            NSAssert(0, @"request is nil");
+//            return;
+//        }
+//        
+//        AFHTTPRequestOperation* requestOp = [blockself queuedHTTPRequestOperationForRequest:request];
+//        [requestOp waitUntilFinished];
+//        if (requestOp.response.statusCode != 200) { // TODO: fix status check
+//            return;
+//        }
+//        
+//        NSData* data = requestOp.responseData;
+//        NSString* path = [blockself pathForFileWithSHA:sha];
+//        ZincRepoAtomicFileWriteOperation* writeOp = [blockself queuedFileWriteOperationForData:data path:path];
+//        [writeOp waitUntilFinished];
+//        if (writeOp.error != nil) {
+//            [blockself handleError:writeOp.error];
+//            return;
+//        }
+//    }];
+//    return op;
+//}
 
 #pragma mark Sources
 
@@ -365,12 +490,30 @@ static ZincClient* _defaultClient = nil;
     [self.controlOperationQueue addOperation:parentOp];
 }
 
-#pragma mark Catalogs
+- (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId
+{
+    return [self.sourcesByCatalog objectForKey:catalogId];
+}
+
+#pragma mark Caching
 
 - (NSString*) cacheKeyForCatalogIdentifier:(NSString*)identifier
 {
-    return [@"ZincCatalog:" stringByAppendingString:identifier];
+    return [@"Catalog:" stringByAppendingString:identifier];
 }
+
+- (NSString*) cacheKeyManifestWithBundleIdentifier:(NSString*)identifier version:(ZincVersion)version
+{
+    return [[@"Manifest:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
+}
+
+- (NSString*) cacheKeyForBundleIdentifier:(NSString*)identifier version:(ZincVersion)version
+{
+    return [[@"Bundle:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
+}
+
+
+#pragma mark Catalogs
 
 - (ZincCatalog*) loadCatalogWithIdentifier:(NSString*)identifier error:(NSError**)outError
 {
@@ -390,11 +533,12 @@ static ZincClient* _defaultClient = nil;
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)identifier error:(NSError**)outError
 {
     @synchronized(self) {
-        ZincCatalog* catalog = [self.cache objectForKey:[self cacheKeyForCatalogIdentifier:identifier]];
+        NSString* key = [self cacheKeyForCatalogIdentifier:identifier];
+        ZincCatalog* catalog = [self.cache objectForKey:key];
         if (catalog == nil) {
             catalog = [self loadCatalogWithIdentifier:identifier error:outError];
             if (catalog != nil) {
-                [self.cache setObject:catalog forKey:[self cacheKeyForCatalogIdentifier:identifier]];
+                [self.cache setObject:catalog forKey:key];
             }
         }
         return catalog;
@@ -407,6 +551,36 @@ static ZincClient* _defaultClient = nil;
 {
     NSString* path = [self pathForManifestWithBundleIdentifier:bundleId version:version];
     return [self.fileManager fileExistsAtPath:path];
+}
+
+- (ZincManifest*) loadManifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+{
+    NSString* manifestPath = [self pathForManifestWithBundleIdentifier:bundleId version:version];
+    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
+    if (jsonString == nil) {
+        return nil;
+    }
+    NSDictionary* jsonDict = [KSJSON deserializeString:jsonString error:outError];
+    if (jsonDict == nil) {
+        return nil;
+    }
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:jsonDict] autorelease];
+    return manifest;
+}
+
+- (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+{
+    @synchronized(self) {
+        NSString* key = [self cacheKeyManifestWithBundleIdentifier:bundleId version:version];
+        ZincManifest* manifest = [self.cache objectForKey:key];
+        if (manifest == nil) {
+            manifest = [self loadManifestWithBundleIdentifier:bundleId version:version error:outError];
+            if (manifest != nil) {
+                [self.cache setObject:manifest forKey:key];
+            }
+        }
+        return manifest;
+    }
 }
 
 - (ZincVersion) versionForBundleIdentifier:(NSString*)bundleId label:(NSString*)label
@@ -441,7 +615,7 @@ static ZincClient* _defaultClient = nil;
 {
     NSOperation* parentOp = [[[NSOperation alloc] init] autorelease];
     parentOp.completionBlock = completion;
-
+    
     for (NSString* bundleId in [self.trackedBundles allKeys]) {
         NSString* label = [self.trackedBundles objectForKey:bundleId];
         ZincVersion version = [self versionForBundleIdentifier:bundleId label:label];
@@ -589,9 +763,73 @@ static ZincClient* _defaultClient = nil;
 - (void) main
 {
     NSError* error = nil;
+    
+    NSString* dir = [self.path stringByDeletingLastPathComponent];
+    if (![self.client.fileManager zinc_createDirectoryIfNeededAtPath:dir error:&error]) {
+        self.error = error;
+        return;
+    }
+    
     if (![self.client writeDataAtomically:self.data toPath:self.path error:&error]) {
         self.error = error;
+        return;
     }
 }
 
 @end
+
+// -----------------------------------------------------------------------------
+#pragma mark - 
+
+@implementation ZincRepoFileUpdateOperation
+
+@synthesize client = _client;
+@synthesize source = _source;
+@synthesize sha = _sha;
+@synthesize error = _error;
+
+- (id)initWithClient:(ZincClient*)client source:(ZincSource*)souce sha:(NSString*)sha
+{
+    self = [super init];
+    if (self) {
+        self.client = client;
+        self.source = souce;
+        self.sha = sha;
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    self.source = nil;
+    self.sha = nil;
+    self.error = nil;
+    [super dealloc];
+}
+
+- (void) main
+{
+    NSURLRequest* request = [self.source urlRequestForFileWithSHA:self.sha];
+    if (request == nil) {
+        // TODO: better error
+        NSAssert(0, @"request is nil");
+        return;
+    }
+    
+    AFHTTPRequestOperation* requestOp = [self.client queuedHTTPRequestOperationForRequest:request];
+    [requestOp waitUntilFinished];
+    if (requestOp.response.statusCode != 200) { // TODO: fix status check
+        return;
+    }
+    
+    NSData* data = requestOp.responseData;
+    NSString* path = [self.client pathForFileWithSHA:self.sha];
+    ZincRepoAtomicFileWriteOperation* writeOp = [self.client queuedFileWriteOperationForData:data path:path];
+    [writeOp waitUntilFinished];
+    if (writeOp.error != nil) {
+        self.error = writeOp.error;
+        return;
+    }
+}
+@end
+

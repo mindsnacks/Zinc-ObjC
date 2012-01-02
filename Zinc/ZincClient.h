@@ -31,13 +31,13 @@
 
 - (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
 
-//- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
-//- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError;
-//
-//- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
-//- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;;
+////- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
+////- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError;
+////
+////- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
+////- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;;
 
-- (ZincBundle*) bundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
+//- (ZincBundle*) bundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 

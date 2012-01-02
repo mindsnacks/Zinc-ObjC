@@ -56,6 +56,11 @@
     return [self.files allKeys];
 }
 
+- (NSArray*) allSHAs
+{
+    return [self.files allValues];
+}
+
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
