@@ -9,59 +9,58 @@
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
-#import "ZincRepo.h"
-
-static const char* queue_name_for_url(NSURL* url) {
-    return [[kZincPackageName stringByAppendingFormat:@".bundle#%@",
-             [url absoluteString]] cStringUsingEncoding:NSUTF8StringEncoding];
-}
-
-static NSMutableDictionary * _ZCBundle_sharedURLMap;
-
+#import "ZincClient.h"
 
 @interface ZincBundle ()
-@property (nonatomic, assign) dispatch_queue_t queue;
+@property (nonatomic, retain, readwrite) ZincClient* repo;
+@property (nonatomic, retain, readwrite) NSString* bundleId;
+@property (nonatomic, assign, readwrite) ZincVersion version;
 @end
-
 
 @implementation ZincBundle
 
-//@synthesize version = _version;
-@synthesize manifest = _manifest;
+@synthesize bundleId = _bundleId;
+@synthesize version = _version;
 @synthesize repo = _repo;
-@synthesize queue = _queue;
-@synthesize manager = _manager;
+@synthesize manifest = _manifest;
 
-+ (void) initialize
-{
-	if ( self == [ZincBundle class] ) {
-		_ZCBundle_sharedURLMap = [[NSMutableDictionary alloc] init];
-	}
-}
-
-- (id) initWithRepo:(ZincRepo*)repo
+- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincClient*)repo
 {
     self = [super init];
     if (self) {
-        //self.queue = dispatch_queue_create(queue_name_for_url(self.url), NULL);
         self.repo = repo;
+        self.bundleId = bundleId;
+        self.version = version;
     }
     return self;
 }
 
 - (void) dealloc 
 {
-    // TODO: !!!: restore mapping
-    
-//    // -- remove from sharedMap
-//	@synchronized(_ZCBundle_sharedURLMap) {
-//		[_ZCBundle_sharedURLMap removeObjectForKey:[[self url] absoluteString]];
-//	}
-    
     self.manifest = nil;
     self.repo = nil;
     [super dealloc];
 }
+
+- (NSURL*) urlForResource:(NSString*)resource
+{
+    NSString* path = [self pathForResource:resource];
+    if (path != nil) {
+        return [NSURL fileURLWithPath:path];
+    }
+    return nil;
+}
+
+- (NSString*) pathForResource:(NSString*)path
+{
+//    if (self.manifest == nil) return nil;
+//    
+    NSString* sha = [self.manifest shaForFile:path];
+//    if (sha == nil) return nil;
+    
+    return [self.repo pathForFileWithSHA:sha];
+}
+
 
 //+ (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
 //{
@@ -97,11 +96,11 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 
 #pragma mark Accessors
 
-- (NSArray*) availableVersions;
-{
-    return nil;
-}
-
+//- (NSArray*) availableVersions;
+//{
+//    return nil;
+//}
+//
 //- (NSURL*) url
 //{
 //    return self.fileSystem.url;
@@ -130,6 +129,16 @@ static NSMutableDictionary * _ZCBundle_sharedURLMap;
 + (NSString*) nameFromBundleIdentifier:(NSString*)bundleId
 {
     return [[bundleId componentsSeparatedByString:@"."] lastObject];
+}
+
++ (NSString*) descriptorForBundleId:(NSString*)bundleId version:(ZincVersion)version
+{
+    return [NSString stringWithFormat:@"%@-%d", bundleId, version];
+}
+
+- (NSString*) descriptor
+{
+    return [[self class] descriptorForBundleId:self.bundleId version:self.version];
 }
 
 

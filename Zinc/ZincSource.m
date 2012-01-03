@@ -36,7 +36,7 @@
     return [[NSURL URLWithString:@"index.json" relativeToURL:self.url] absoluteURL];
 }
 
-- (NSURLRequest*) getRequestForURL:(NSURL*)url
+- (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
 {
     NSMutableURLRequest* req = [[[NSMutableURLRequest alloc] initWithURL:url] autorelease];
     [req setHTTPMethod:@"GET"];
@@ -46,7 +46,9 @@
 - (NSURLRequest*) urlRequestForCatalogIndex
 {
     NSURL* indexURL = [self urlForCatalogIndex];
-    return [self getRequestForURL:indexURL];
+    NSMutableURLRequest* request = [self getRequestForURL:indexURL];
+    [request setCachePolicy:NSURLCacheStorageNotAllowed];
+    return request;
 }
 
 - (NSURL*) urlForBundleName:(NSString*)name version:(NSInteger)version

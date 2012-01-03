@@ -16,6 +16,17 @@
 		B326A95014B2451B00CED8DF /* ZincOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A94E14B2451B00CED8DF /* ZincOperation.h */; };
 		B326A95114B2451B00CED8DF /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A94F14B2451B00CED8DF /* ZincOperation.m */; };
 		B326A95314B2460900CED8DF /* ZincOperation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A95214B2460900CED8DF /* ZincOperation+Private.h */; };
+		B326A96614B3985700CED8DF /* MANotificationCenterAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A95B14B3985700CED8DF /* MANotificationCenterAdditions.h */; };
+		B326A96714B3985700CED8DF /* MANotificationCenterAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A95C14B3985700CED8DF /* MANotificationCenterAdditions.m */; };
+		B326A96814B3985700CED8DF /* MAWeakArray.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A95D14B3985700CED8DF /* MAWeakArray.h */; };
+		B326A96914B3985700CED8DF /* MAWeakArray.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A95E14B3985700CED8DF /* MAWeakArray.m */; };
+		B326A96A14B3985700CED8DF /* MAWeakDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A95F14B3985700CED8DF /* MAWeakDictionary.h */; };
+		B326A96B14B3985700CED8DF /* MAWeakDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A96014B3985700CED8DF /* MAWeakDictionary.m */; };
+		B326A96C14B3985700CED8DF /* MAZeroingWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A96114B3985700CED8DF /* MAZeroingWeakProxy.h */; };
+		B326A96D14B3985700CED8DF /* MAZeroingWeakProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A96214B3985700CED8DF /* MAZeroingWeakProxy.m */; };
+		B326A96E14B3985700CED8DF /* MAZeroingWeakRef.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A96314B3985700CED8DF /* MAZeroingWeakRef.h */; };
+		B326A96F14B3985700CED8DF /* MAZeroingWeakRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A96414B3985700CED8DF /* MAZeroingWeakRef.m */; };
+		B326A97014B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A96514B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */; };
 		B327D12F14AD744F00D359CF /* Zinc.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B327D12D14AD744F00D359CF /* Zinc.xcdatamodeld */; };
 		B327D4B114AE6F410051416F /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4AF14AE6F410051416F /* sha1.c */; };
 		B327D4B214AE6F410051416F /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B014AE6F410051416F /* sha1.h */; };
@@ -167,6 +178,17 @@
 		B326A94E14B2451B00CED8DF /* ZincOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincOperation.h; sourceTree = "<group>"; };
 		B326A94F14B2451B00CED8DF /* ZincOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincOperation.m; sourceTree = "<group>"; };
 		B326A95214B2460900CED8DF /* ZincOperation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincOperation+Private.h"; sourceTree = "<group>"; };
+		B326A95B14B3985700CED8DF /* MANotificationCenterAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MANotificationCenterAdditions.h; path = Dependencies/MAZeroingWeakRef/Source/MANotificationCenterAdditions.h; sourceTree = SOURCE_ROOT; };
+		B326A95C14B3985700CED8DF /* MANotificationCenterAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MANotificationCenterAdditions.m; path = Dependencies/MAZeroingWeakRef/Source/MANotificationCenterAdditions.m; sourceTree = SOURCE_ROOT; };
+		B326A95D14B3985700CED8DF /* MAWeakArray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAWeakArray.h; path = Dependencies/MAZeroingWeakRef/Source/MAWeakArray.h; sourceTree = SOURCE_ROOT; };
+		B326A95E14B3985700CED8DF /* MAWeakArray.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAWeakArray.m; path = Dependencies/MAZeroingWeakRef/Source/MAWeakArray.m; sourceTree = SOURCE_ROOT; };
+		B326A95F14B3985700CED8DF /* MAWeakDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAWeakDictionary.h; path = Dependencies/MAZeroingWeakRef/Source/MAWeakDictionary.h; sourceTree = SOURCE_ROOT; };
+		B326A96014B3985700CED8DF /* MAWeakDictionary.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAWeakDictionary.m; path = Dependencies/MAZeroingWeakRef/Source/MAWeakDictionary.m; sourceTree = SOURCE_ROOT; };
+		B326A96114B3985700CED8DF /* MAZeroingWeakProxy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakProxy.h; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakProxy.h; sourceTree = SOURCE_ROOT; };
+		B326A96214B3985700CED8DF /* MAZeroingWeakProxy.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAZeroingWeakProxy.m; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakProxy.m; sourceTree = SOURCE_ROOT; };
+		B326A96314B3985700CED8DF /* MAZeroingWeakRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRef.h; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRef.h; sourceTree = SOURCE_ROOT; };
+		B326A96414B3985700CED8DF /* MAZeroingWeakRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAZeroingWeakRef.m; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRef.m; sourceTree = SOURCE_ROOT; };
+		B326A96514B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRefNativeZWRNotAllowedTable.h; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRefNativeZWRNotAllowedTable.h; sourceTree = SOURCE_ROOT; };
 		B327D12E14AD744F00D359CF /* Zinc.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Zinc.xcdatamodel; sourceTree = "<group>"; };
 		B327D4AF14AE6F410051416F /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = Dependencies/sha1/sha1.c; sourceTree = SOURCE_ROOT; };
 		B327D4B014AE6F410051416F /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = Dependencies/sha1/sha1.h; sourceTree = SOURCE_ROOT; };
@@ -295,6 +317,7 @@
 		B31056F7148D934B0069F0D5 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
+				B326A95A14B3984300CED8DF /* MAZeroingWeakRef */,
 				B327D4AE14AE6F0B0051416F /* sha1 */,
 				B3AE461E149C1D0200767CBD /* AFNetworking */,
 				B310571F148D94230069F0D5 /* AMFoundation */,
@@ -340,6 +363,24 @@
 				B3549DD4148D959C00DD63D1 /* Source */,
 			);
 			name = KSJSON;
+			sourceTree = "<group>";
+		};
+		B326A95A14B3984300CED8DF /* MAZeroingWeakRef */ = {
+			isa = PBXGroup;
+			children = (
+				B326A95B14B3985700CED8DF /* MANotificationCenterAdditions.h */,
+				B326A95C14B3985700CED8DF /* MANotificationCenterAdditions.m */,
+				B326A95D14B3985700CED8DF /* MAWeakArray.h */,
+				B326A95E14B3985700CED8DF /* MAWeakArray.m */,
+				B326A95F14B3985700CED8DF /* MAWeakDictionary.h */,
+				B326A96014B3985700CED8DF /* MAWeakDictionary.m */,
+				B326A96114B3985700CED8DF /* MAZeroingWeakProxy.h */,
+				B326A96214B3985700CED8DF /* MAZeroingWeakProxy.m */,
+				B326A96314B3985700CED8DF /* MAZeroingWeakRef.h */,
+				B326A96414B3985700CED8DF /* MAZeroingWeakRef.m */,
+				B326A96514B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */,
+			);
+			name = MAZeroingWeakRef;
 			sourceTree = "<group>";
 		};
 		B327D4AE14AE6F0B0051416F /* sha1 */ = {
@@ -616,6 +657,12 @@
 				B326A94C14B20FA100CED8DF /* ZincOperationProxy.h in Headers */,
 				B326A95014B2451B00CED8DF /* ZincOperation.h in Headers */,
 				B326A95314B2460900CED8DF /* ZincOperation+Private.h in Headers */,
+				B326A96614B3985700CED8DF /* MANotificationCenterAdditions.h in Headers */,
+				B326A96814B3985700CED8DF /* MAWeakArray.h in Headers */,
+				B326A96A14B3985700CED8DF /* MAWeakDictionary.h in Headers */,
+				B326A96C14B3985700CED8DF /* MAZeroingWeakProxy.h in Headers */,
+				B326A96E14B3985700CED8DF /* MAZeroingWeakRef.h in Headers */,
+				B326A97014B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -822,6 +869,11 @@
 				B326A94914B11B7E00CED8DF /* NSData+Zinc.m in Sources */,
 				B326A94D14B20FA100CED8DF /* ZincOperationProxy.m in Sources */,
 				B326A95114B2451B00CED8DF /* ZincOperation.m in Sources */,
+				B326A96714B3985700CED8DF /* MANotificationCenterAdditions.m in Sources */,
+				B326A96914B3985700CED8DF /* MAWeakArray.m in Sources */,
+				B326A96B14B3985700CED8DF /* MAWeakDictionary.m in Sources */,
+				B326A96D14B3985700CED8DF /* MAZeroingWeakProxy.m in Sources */,
+				B326A96F14B3985700CED8DF /* MAZeroingWeakRef.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

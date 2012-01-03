@@ -5,4 +5,8 @@
 #ifdef __OBJC__
     #import <Foundation/Foundation.h>
     #import "AMFoundation.h"
+
+    // for MAZeroingWeakRef
+    #define COREFOUNDATION_HACK_LEVEL 0
+    #define KVO_HACK_LEVEL 0
 #endif

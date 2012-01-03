@@ -22,21 +22,23 @@ typedef NSInteger ZCBundleState;
 
 @interface ZincBundle : NSObject
 
-- (NSArray*) availableVersions;
-//- (NSURL*) url;
-
-//@property (nonatomic, assign) ZincVersion version;
+- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincClient*)repo;
+@property (nonatomic, retain, readonly) ZincClient* repo;
+@property (nonatomic, retain, readonly) NSString* bundleId;
+@property (nonatomic, assign, readonly) ZincVersion version;
 
 // TODO: make private?
 @property (nonatomic, retain) ZincManifest* manifest;
 
-//- (NSURL*) urlForResource:(NSURL*)url;
-//- (NSString*) pathForResource:(NSString*)path;
+- (NSURL*) urlForResource:(NSString*)resource;
+- (NSString*) pathForResource:(NSString*)path;
 
-// TODO: rename
-@property (nonatomic, assign) ZincClient* manager;
+- (NSString*) descriptor;
+
+#pragma mark Utility
 
 + (NSString*) sourceFromBundleIdentifier:(NSString*)bundleId;
 + (NSString*) nameFromBundleIdentifier:(NSString*)bundleId;
++ (NSString*) descriptorForBundleId:(NSString*)bundleId version:(ZincVersion)version;
 
 @end

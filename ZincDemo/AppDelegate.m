@@ -48,13 +48,15 @@
     [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
     [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo2/"]];
     [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo3/"]];
-    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" label:@"test"];
-//    [zc refreshSourcesWithCompletion:^{
-//        
-//        LOG_DEBUG(@"boom");
-//        LOG_WARNING(@"boom boom");
-//    }];
-        
+    [zc refreshSourcesWithCompletion:nil];
+    
+//    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+
+    ZincBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+    
+    NSString* turtlePath = [bundle pathForResource:@"turtle_strawberry.jpeg"];
+    NSLog(@"%@", turtlePath);
+    
     return YES;
 }
 

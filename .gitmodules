@@ -7,3 +7,6 @@
 [submodule "Dependencies/AFNetworking"]
 	path = Dependencies/AFNetworking
 	url = https://github.com/gowalla/AFNetworking.git
+[submodule "Dependencies/MAZeroingWeakRef"]
+	path = Dependencies/MAZeroingWeakRef
+	url = https://github.com/mikeash/MAZeroingWeakRef

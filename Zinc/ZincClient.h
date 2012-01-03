@@ -29,7 +29,7 @@
 
 #pragma mark Loading
 
-- (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
+- (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId distribution:(NSString*)dista;
 
 ////- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError;
 ////- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError;
@@ -37,9 +37,12 @@
 ////- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;;
 ////- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;;
 
-//- (ZincBundle*) bundleWithIdentifier:(NSString*)bundleId label:(NSString*)label;
+- (ZincBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
+//- (ZincBundle*) bundleWithId:(NSString*)bundleId version:(ZincVersion)version;
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+
+- (NSString*) pathForFileWithSHA:(NSString*)sha;
 
 #pragma mark Sources
 
