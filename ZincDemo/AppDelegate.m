@@ -54,9 +54,14 @@
 
     ZincBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
     
-    NSString* turtlePath = [bundle pathForResource:@"turtle_strawberry.jpeg"];
-    NSLog(@"%@", turtlePath);
+    NSString* p1 = nil;
+
+    p1 = [bundle pathForResource:@"turtle_strawberry.jpeg"];
+    NSLog(@"%@", p1);
     
+    p1 = [bundle pathForResource:@"audio/night-out-3.caf"];
+    NSLog(@"%@", p1);
+
     return YES;
 }
 

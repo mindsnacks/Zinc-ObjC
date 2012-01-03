@@ -57,8 +57,6 @@ static ZincClient* _defaultClient = nil;
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
 - (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 
-// - (void) ensureFilesForBundleIdentifier:(NSString*)bundleIdentifier version:(ZincVersion)version;
-
 @end
 
 @interface ZincRepoAtomicFileWriteOperation : ZincOperation
@@ -331,48 +329,6 @@ static ZincClient* _defaultClient = nil;
     return op;
 }
 
-//- (NSOperation*) downloadOperationForCatalogIndex:(ZincSource*)source
-//{
-//    __block typeof(self) blockself = self;
-//    NSBlockOperation* op = [NSBlockOperation blockOperationWithBlock:^{
-//        
-//        NSError* error = nil;
-//        
-//        NSURLRequest* request = [source urlRequestForCatalogIndex];
-//        AFHTTPRequestOperation* requestOp = [self queuedHTTPRequestOperationForRequest:request];
-//        [requestOp waitUntilFinished];
-//        if ([requestOp.response statusCode] != 200) {
-//            // TODO: better status code checking
-//            return;
-//        }
-//        
-//        ZincCatalog* catalog = [ZincCatalog catalogFromJSONString:requestOp.responseString error:&error];
-//        if (catalog == nil) {
-//            [blockself handleError:error];
-//            return;
-
-//        }
-//        
-//        NSData* data = [[catalog jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
-//        if (data == nil) {
-//            [blockself handleError:error];
-//            return;
-//        }
-//        
-//        NSString* path = [blockself pathForCatalogIndex:catalog];
-//        ZincRepoAtomicFileWriteOperation* writeOp = [blockself queuedFileWriteOperationForData:data path:path];
-//        [writeOp waitUntilFinished];
-//        if (writeOp.error != nil) {
-//            [blockself handleError:writeOp.error];
-//            return;
-//        } 
-//        
-//        [blockself.cache setObject:catalog forKey:[self cacheKeyForCatalogIdentifier:catalog.identifier]];
-//        [blockself addSource:source forCatalog:catalog];
-//    }];
-//    return op;
-//}
-
 #pragma mark Sources
 
 - (void) addSourceURL:(NSURL*)url
@@ -405,7 +361,6 @@ static ZincClient* _defaultClient = nil;
     
     for (NSURL* sourceURL in self.sourceURLs) {
         ZincSource* source = [ZincSource sourceWithURL:sourceURL];
-//        NSOperation* downloadOp = [self downloadOperationForCatalogIndex:source];
         ZincRepoCatalogIndexUpdateOperation* downloadOp = [[[ZincRepoCatalogIndexUpdateOperation alloc] 
                                                             initWithClient:self source:source] autorelease];
         [self addOperationToPrimaryQueue:downloadOp];
@@ -591,81 +546,6 @@ static ZincClient* _defaultClient = nil;
     
     return [self bundleWithId:bundleId version:version];
 }
-
-
-
-//- (BOOL) registerBundleWithURL:(NSURL*)url error:(NSError**)outError
-//{
-//    if ([self.trackedBundles containsObject:url]) {
-//        return YES;
-//    }
-//    
-//    if ([[NSFileManager defaultManager] zinc_directoryExistsAtURL:url]) {
-//        AMErrorAssignIfNotNil(outError, ZCError(ZINC_ERR_INVALID_DIRECTORY));
-//        return NO;
-//    }
-//    
-//    // TODO: check for the info file
-//    
-//    [self.trackedBundles addObject:url];
-//    return YES;
-//}
-//
-//- (BOOL) registerBundleWithPath:(NSString*)path error:(NSError**)outError
-//{
-//    return [self registerBundleWithURL:[NSURL fileURLWithPath:path] error:outError];
-//}
-//
-//- (void) unregisterBundleWithURL:(NSURL*)url
-//{
-//    @synchronized(self) {
-//        [self.trackedBundles removeObject:url];
-//    }
-//}
-//
-//- (void) unregisterBundleWithPath:(NSString*)path
-//{
-//    [self unregisterBundleWithURL:[NSURL fileURLWithPath:path]];
-//}
-//
-//- (ZCBundle*) bundleWithURL:(NSURL*)url error:(NSError**)outError
-//{
-//    @synchronized(self) {
-//        ZCBundle* bundle = [self.bundleCache objectForKey:url];
-//        if (bundle == nil) {
-//            bundle = [ZCBundle bundleWithURL:url error:outError];
-//            if (bundle == nil) {
-//                return nil;
-//            }
-//            if ([self registerBundleWithURL:[bundle url] error:outError]) {
-//                return nil;
-//            }
-//            [self.bundleCache setObject:bundle forKey:[bundle url]];
-//        }
-//        return bundle;
-//    }
-//}
-//
-//- (ZCBundle*) bundleWithURL:(NSURL*)url version:(ZincVersion)version error:(NSError**)outError
-//{
-//    ZCBundle* bundle = [self bundleWithURL:url error:outError];
-//    if (bundle == nil) {
-//        return nil;
-//    }
-//    bundle.version = version;
-//    return bundle;
-//}
-//
-//- (ZCBundle*) bundleWithPath:(NSString*)path error:(NSError**)outError;
-//{
-//    return [self bundleWithURL:[NSURL fileURLWithPath:path] error:outError];
-//}
-//
-//- (ZCBundle*) bundleWithPath:(NSString*)path version:(ZincVersion)version error:(NSError**)outError;
-//{
-//    return [self bundleWithURL:[NSURL fileURLWithPath:path] version:version error:outError];
-//}
-
 
 @end
 
