@@ -24,3 +24,6 @@ NSString* ZincGetApplicationDocumentsDirectory(void)
     }
     return dir;
 }
+
+
+NSString* const ZincEventNotification = @"ZincEventNotification";

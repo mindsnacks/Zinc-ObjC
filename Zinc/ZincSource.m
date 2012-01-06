@@ -33,7 +33,7 @@
 
 - (NSURL*) urlForCatalogIndex
 {
-    return [[NSURL URLWithString:@"index.json" relativeToURL:self.url] absoluteURL];
+    return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self.url] absoluteURL];
 }
 
 - (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
@@ -53,7 +53,7 @@
 
 - (NSURL*) urlForBundleName:(NSString*)name version:(NSInteger)version
 {
-    NSString* manifest = [NSString stringWithFormat:@"%@-%d.json", name, version];
+    NSString* manifest = [NSString stringWithFormat:@"%@-%d.json.gz", name, version];
     NSString* manifestPath = [NSString stringWithFormat:@"manifests/%@", manifest];
     NSURL* manifestURL = [NSURL URLWithString:manifestPath relativeToURL:self.url];
     return [manifestURL absoluteURL];
@@ -80,18 +80,38 @@
     return [self getRequestForURL:manifestURL];
 }
 
+- (NSURL*) urlForFileWithSHA:(NSString*)sha extension:(NSString*)extension
+{
+    NSString* relativeDir = [NSString stringWithFormat:@"files/%@/%@/",
+                              [sha substringWithRange:NSMakeRange(0, 2)],
+                             [sha substringWithRange:NSMakeRange(2, 2)]];
+    NSString* file = sha;
+    if (extension != nil) {
+        file = [file stringByAppendingPathExtension:extension];
+    }
+    NSString* relativePath = [relativeDir stringByAppendingPathComponent:file];
+    
+    return [[NSURL URLWithString:relativePath relativeToURL:self.url] absoluteURL];
+}
+
 - (NSURL*) urlForFileWithSHA:(NSString*)sha
 {
-    NSString* relativePath = [NSString stringWithFormat:@"files/%@/%@/%@",
-                              [sha substringWithRange:NSMakeRange(0, 2)],
-                              [sha substringWithRange:NSMakeRange(2, 2)],
-                              sha];
-    return [[NSURL URLWithString:relativePath relativeToURL:self.url] absoluteURL];
+    return [self urlForFileWithSHA:sha extension:nil];
+}
+
+- (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha extension:(NSString*)extension
+{
+    NSURL* fileURL = [self urlForFileWithSHA:sha extension:extension];
+    NSMutableURLRequest* request = [self getRequestForURL:fileURL];
+//    if ([extension isEqualToString:@"gz"]) {
+//        [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
+//    }
+    return request;
 }
 
 - (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha
 {
-    NSURL* fileURL = [self urlForFileWithSHA:sha];
+    NSURL* fileURL = [self urlForFileWithSHA:sha extension:nil];
     return [self getRequestForURL:fileURL];
 }
 

@@ -36,11 +36,15 @@
     [super dealloc];
 }
 
-- (NSString*) name
+- (NSString*) descriptor
 {
     //NSAssert(NO, @"must override");
     return nil;
 }
 
+- (double) progress;
+{
+    return 0.0;
+}
 
 @end

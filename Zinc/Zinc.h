@@ -33,3 +33,7 @@ typedef void (^ZCBasicBlock)(id result, NSError* error);
 
 extern void ZincAddSkipBackupAttributeToFile(NSURL* url);
 extern NSString* ZincGetApplicationDocumentsDirectory(void);
+
+#pragma mark Notifications
+
+extern NSString* const ZincEventNotification;

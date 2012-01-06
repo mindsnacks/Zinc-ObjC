@@ -17,6 +17,8 @@
 @property (nonatomic, readonly, assign) ZincClient* client;
 @property (nonatomic, readonly, retain) NSError* error;
 
-- (NSString*) name;
+- (NSString*) descriptor;
+
+- (double) progress;
            
 @end

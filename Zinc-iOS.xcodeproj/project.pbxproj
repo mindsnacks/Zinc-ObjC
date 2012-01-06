@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B30B763914B6CDF3004E6587 /* ZincTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B30B763714B6CDF3004E6587 /* ZincTask.h */; };
+		B30B763A14B6CDF3004E6587 /* ZincTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B30B763814B6CDF3004E6587 /* ZincTask.m */; };
+		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B3105722148D94480069F0D5 /* KSJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B3105721148D94480069F0D5 /* KSJSON.h */; };
 		B3105724148D94550069F0D5 /* AMFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3105723148D94550069F0D5 /* AMFoundation.h */; };
 		B326A94814B11B7E00CED8DF /* NSData+Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A94614B11B7E00CED8DF /* NSData+Zinc.h */; };
@@ -27,6 +30,8 @@
 		B326A96E14B3985700CED8DF /* MAZeroingWeakRef.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A96314B3985700CED8DF /* MAZeroingWeakRef.h */; };
 		B326A96F14B3985700CED8DF /* MAZeroingWeakRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B326A96414B3985700CED8DF /* MAZeroingWeakRef.m */; };
 		B326A97014B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */ = {isa = PBXBuildFile; fileRef = B326A96514B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */; };
+		B327068114B77FAB004E3244 /* ZincEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = B327067F14B77FAB004E3244 /* ZincEvent.h */; };
+		B327068214B77FAB004E3244 /* ZincEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = B327068014B77FAB004E3244 /* ZincEvent.m */; };
 		B327D12F14AD744F00D359CF /* Zinc.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = B327D12D14AD744F00D359CF /* Zinc.xcdatamodeld */; };
 		B327D4B114AE6F410051416F /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4AF14AE6F410051416F /* sha1.c */; };
 		B327D4B214AE6F410051416F /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B014AE6F410051416F /* sha1.h */; };
@@ -55,7 +60,6 @@
 		B340FA0F148D7DC100206F86 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; };
 		B3549DCB148D950500DD63D1 /* libAMFoundation_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B310570E148D93980069F0D5 /* libAMFoundation_iOS.a */; };
 		B3549DCF148D957900DD63D1 /* KSJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DCE148D957900DD63D1 /* KSJSON.m */; };
-		B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */; };
 		B3549DEF148DB80900DD63D1 /* ZincManifest.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DED148DB80900DD63D1 /* ZincManifest.h */; };
 		B3549DF0148DB80900DD63D1 /* ZincManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZincManifest.m */; };
 		B3549DF3148DC0ED00DD63D1 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = B3549DF2148DC0ED00DD63D1 /* Data */; };
@@ -166,6 +170,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		B30B763714B6CDF3004E6587 /* ZincTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTask.h; sourceTree = "<group>"; };
+		B30B763814B6CDF3004E6587 /* ZincTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTask.m; sourceTree = "<group>"; };
+		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B31056F5148D8E430069F0D5 /* libKSJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKSJSON.a; path = "KSJSON/build/Release-iphoneos/libKSJSON.a"; sourceTree = "<group>"; };
 		B31056F8148D93670069F0D5 /* KSJSON.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = KSJSON.xcodeproj; path = Dependencies/KSJSON/KSJSON.xcodeproj; sourceTree = SOURCE_ROOT; };
 		B3105704148D93980069F0D5 /* AMFoundation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AMFoundation.xcodeproj; path = Dependencies/AMFoundation/AMFoundation.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -189,6 +196,8 @@
 		B326A96314B3985700CED8DF /* MAZeroingWeakRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRef.h; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRef.h; sourceTree = SOURCE_ROOT; };
 		B326A96414B3985700CED8DF /* MAZeroingWeakRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MAZeroingWeakRef.m; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRef.m; sourceTree = SOURCE_ROOT; };
 		B326A96514B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MAZeroingWeakRefNativeZWRNotAllowedTable.h; path = Dependencies/MAZeroingWeakRef/Source/MAZeroingWeakRefNativeZWRNotAllowedTable.h; sourceTree = SOURCE_ROOT; };
+		B327067F14B77FAB004E3244 /* ZincEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincEvent.h; sourceTree = "<group>"; };
+		B327068014B77FAB004E3244 /* ZincEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincEvent.m; sourceTree = "<group>"; };
 		B327D12E14AD744F00D359CF /* Zinc.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Zinc.xcdatamodel; sourceTree = "<group>"; };
 		B327D4AF14AE6F410051416F /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = Dependencies/sha1/sha1.c; sourceTree = SOURCE_ROOT; };
 		B327D4B014AE6F410051416F /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = Dependencies/sha1/sha1.h; sourceTree = SOURCE_ROOT; };
@@ -231,7 +240,6 @@
 		B340FA15148D862100206F86 /* ZincRepo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepo.h; sourceTree = "<group>"; };
 		B340FA16148D862100206F86 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepo.m; sourceTree = "<group>"; };
 		B3549DCE148D957900DD63D1 /* KSJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = KSJSON.m; path = ../../Dependencies/KSJSON/KSJSON/KSJSON.m; sourceTree = "<group>"; };
-		B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZCFileSystem+Private.h"; sourceTree = "<group>"; };
 		B3549DED148DB80900DD63D1 /* ZincManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifest.h; sourceTree = "<group>"; };
 		B3549DEE148DB80900DD63D1 /* ZincManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifest.m; sourceTree = "<group>"; };
 		B3549DF2148DC0ED00DD63D1 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
@@ -304,6 +312,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B30B763C14B75750004E6587 /* libz.dylib in Frameworks */,
 				B340F999148D546300206F86 /* libZinc.a in Frameworks */,
 				B38743091489B830004B227B /* UIKit.framework in Frameworks */,
 				B387430B1489B830004B227B /* Foundation.framework in Frameworks */,
@@ -419,7 +428,6 @@
 				B3549DEE148DB80900DD63D1 /* ZincManifest.m */,
 				B340FA15148D862100206F86 /* ZincRepo.h */,
 				B340FA16148D862100206F86 /* ZincRepo.m */,
-				B3549DD5148DA5CC00DD63D1 /* ZCFileSystem+Private.h */,
 				B3F8AF74148EFCDF00CB92B5 /* ZincClient.h */,
 				B3F8AF75148EFCDF00CB92B5 /* ZincClient.m */,
 				B3AE464B149C1FA700767CBD /* ZincSource.h */,
@@ -428,11 +436,15 @@
 				B326A94714B11B7E00CED8DF /* NSData+Zinc.m */,
 				B340FA02148D608D00206F86 /* NSFileManager+Zinc.h */,
 				B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */,
+				B30B763714B6CDF3004E6587 /* ZincTask.h */,
+				B30B763814B6CDF3004E6587 /* ZincTask.m */,
 				B326A94E14B2451B00CED8DF /* ZincOperation.h */,
 				B326A95214B2460900CED8DF /* ZincOperation+Private.h */,
 				B326A94F14B2451B00CED8DF /* ZincOperation.m */,
 				B326A94A14B20FA100CED8DF /* ZincOperationProxy.h */,
 				B326A94B14B20FA100CED8DF /* ZincOperationProxy.m */,
+				B327067F14B77FAB004E3244 /* ZincEvent.h */,
+				B327068014B77FAB004E3244 /* ZincEvent.m */,
 				B340F973148D52D800206F86 /* Supporting Files */,
 			);
 			path = Zinc;
@@ -532,6 +544,7 @@
 		B38742F91489B830004B227B = {
 			isa = PBXGroup;
 			children = (
+				B30B763B14B75750004E6587 /* libz.dylib */,
 				B387430E1489B830004B227B /* Demo */,
 				B340F972148D52D800206F86 /* Zinc */,
 				B340F984148D52D800206F86 /* ZincTests */,
@@ -633,7 +646,6 @@
 				B3D28819148D87E900377B70 /* ZincRepo.h in Headers */,
 				B3105722148D94480069F0D5 /* KSJSON.h in Headers */,
 				B3105724148D94550069F0D5 /* AMFoundation.h in Headers */,
-				B3549DD6148DA5CC00DD63D1 /* ZCFileSystem+Private.h in Headers */,
 				B3549DEF148DB80900DD63D1 /* ZincManifest.h in Headers */,
 				B3F8AF76148EFCDF00CB92B5 /* ZincClient.h in Headers */,
 				B3AE4614149C0DDC00767CBD /* ZincCatalog.h in Headers */,
@@ -663,6 +675,8 @@
 				B326A96C14B3985700CED8DF /* MAZeroingWeakProxy.h in Headers */,
 				B326A96E14B3985700CED8DF /* MAZeroingWeakRef.h in Headers */,
 				B326A97014B3985700CED8DF /* MAZeroingWeakRefNativeZWRNotAllowedTable.h in Headers */,
+				B30B763914B6CDF3004E6587 /* ZincTask.h in Headers */,
+				B327068114B77FAB004E3244 /* ZincEvent.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -874,6 +888,8 @@
 				B326A96B14B3985700CED8DF /* MAWeakDictionary.m in Sources */,
 				B326A96D14B3985700CED8DF /* MAZeroingWeakProxy.m in Sources */,
 				B326A96F14B3985700CED8DF /* MAZeroingWeakRef.m in Sources */,
+				B30B763A14B6CDF3004E6587 /* ZincTask.m in Sources */,
+				B327068214B77FAB004E3244 /* ZincEvent.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

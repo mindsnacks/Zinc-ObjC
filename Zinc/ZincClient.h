@@ -37,7 +37,8 @@
 
 - (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId distribution:(NSString*)dista;
 
-- (ZincBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
+//- (ZincBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
+- (NSBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 

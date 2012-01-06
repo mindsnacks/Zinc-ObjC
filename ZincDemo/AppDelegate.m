@@ -52,14 +52,14 @@
     
 //    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
 
-    ZincBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+    NSBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
     
     NSString* p1 = nil;
 
-    p1 = [bundle pathForResource:@"turtle_strawberry.jpeg"];
+    p1 = [bundle pathForResource:@"turtle_strawberry" ofType:@"jpeg"];
     NSLog(@"%@", p1);
     
-    p1 = [bundle pathForResource:@"audio/night-out-3.caf"];
+    p1 = [bundle pathForResource:@"audio/night-out-3" ofType:@"caf"];
     NSLog(@"%@", p1);
 
     return YES;
