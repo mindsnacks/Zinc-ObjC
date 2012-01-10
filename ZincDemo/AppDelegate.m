@@ -33,35 +33,88 @@
     self.window.rootViewController = self.viewController;
     [self.window makeKeyAndVisible];
     
-//    NSString* dir = [[NSBundle mainBundle] pathForResource:@"Nightlife" ofType:nil];
-//    
-//    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
-
+    //    NSString* dir = [[NSBundle mainBundle] pathForResource:@"Nightlife" ofType:nil];
+    //    
+    //    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
     
-//    ZincClient* zc = [ZincClient defaultClient];
+    
+    //    ZincClient* zc = [ZincClient defaultClient];
     NSError* error = nil;
     ZincClient* zc = [[ZincClient clientWithURL:
-                      [NSURL fileURLWithPath:
-                       [AMGetApplicationDocumentsDirectory()
-                        stringByAppendingPathComponent:@"zinc"]] error:&error] retain];
-
-    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
-    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo2/"]];
-    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo3/"]];
-    [zc refreshSourcesWithCompletion:nil];
+                       [NSURL fileURLWithPath:
+                        [AMGetApplicationDocumentsDirectory()
+                         stringByAppendingPathComponent:@"zinc"]] error:&error] retain];
     
-//    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
-
-    NSBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+    //    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
+    //    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo2/"]];
+    //    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo3/"]];
+    //    [zc refreshSourcesWithCompletion:nil];
+    //    
+    ////    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+    //
+    //    NSBundle* bundle = [zc bundleWithId:@"com.mindsnacks.zinc.demo1.fr-Nightlife" distribution:@"test"];
+    //    
+    //    NSString* p1 = nil;
+    //
+    //    p1 = [bundle pathForResource:@"turtle_strawberry" ofType:@"jpeg"];
+    //    NSLog(@"%@", p1);
+    //    
+    //    p1 = [bundle pathForResource:@"audio/night-out-3" ofType:@"caf"];
+    //    NSLog(@"%@", p1);
     
-    NSString* p1 = nil;
-
-    p1 = [bundle pathForResource:@"turtle_strawberry" ofType:@"jpeg"];
-    NSLog(@"%@", p1);
+    [zc addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french/"]];
     
-    p1 = [bundle pathForResource:@"audio/night-out-3" ofType:@"caf"];
-    NSLog(@"%@", p1);
-
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.AdvancedNumbers" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.AtThePharmacy" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.BasicAdjectives" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.BasicGreetings" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.BasicPrepositions" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.BodyParts" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.CestVsIlEst" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.CommandsInFrench" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Comparisons" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.DaysAndColors" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Emotions" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.ExploringTheCity" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.ExpressionsWithEtre" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.FrequencyExpressions" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.GettingAroundTown" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.GoingShopping" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.IntroToNumbers" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.IntroducingGender" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.IntroducingPlural" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.LearnWhatYouEat" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.LetsGoToTheRestaurant" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.LikesAndDislikes" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.MonthsAndSeasons" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.MoreAdvancedNumbers" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.MoreGreetings" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.MoreShopping" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Nightlife" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.PluralAdjectives" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Possessives" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.PostOfficeAndTheBank" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.ProfessionsAndTitles" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Regular-erVerbs" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.Regular-irVerbs" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.SportyVocabulary" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.TaxiAdventures" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.TheFamily" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.TheHouse" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.TheWeather" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.TimeAndDate" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.ToTheMovies" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingAller" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingAvoir" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingAvoirSomeMore" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingEtre" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingFaire" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingMettre" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.UsingPrendre" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.VacationPart2" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.VacationSurvivalPhrases" distribution:@"master"];
+    [zc beginTrackingBundleWithIdentifier:@"com.mindsnacks.french.VacationTime" distribution:@"master"];
+    
     return YES;
 }
 

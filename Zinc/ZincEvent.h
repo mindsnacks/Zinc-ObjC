@@ -28,4 +28,6 @@ typedef enum {
 - (id) initWithError:(NSError*)error source:(id)source;
 @property (nonatomic, retain, readonly) NSError* error;
 
++ (id) eventWithError:(NSError*)error source:(id)source;
+
 @end

@@ -23,6 +23,8 @@ enum  {
 
 typedef void (^ZCBasicBlock)(id result, NSError* error);
 
+typedef BOOL (^ZincPassFailBlock)(void);
+
 #ifndef ZINC_DEBUG_LOG
     #define ZINC_DEBUG_LOG NSLog
 #endif

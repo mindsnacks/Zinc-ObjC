@@ -11,21 +11,21 @@
 
 @interface ZincTask : NSObject
 
-//@property (nonatomic, readonly, assign) ZincTask* supertask;
-//@property (nonatomic, readonly) NSArray* subtasks;
-
 - (id) initWithClient:(ZincClient*)client;
+@property (nonatomic, assign, readonly) ZincClient* client;
 
-@property (nonatomic, readonly) NSArray* events;
+@property (readonly) ZincTask* supertask;
+@property (readonly) NSArray* subtasks;
 
-//- (BOOL) isExecuting;
 
-- (BOOL) wasCompletedSuccessfully;
+- (void) start;
+- (BOOL) isExecuting;
+- (void) cancel;
 
-- (void) run;
 
+- (NSString*) title;
 - (double) progress;
 
-- (NSString*) descriptor;
+- (NSString*) key;
 
 @end

@@ -46,6 +46,10 @@
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
 
+#pragma mark Tasks
+
+@property (readonly) NSArray* tasks;
+           
 @end
 
 

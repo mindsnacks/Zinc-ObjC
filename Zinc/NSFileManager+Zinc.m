@@ -1,3 +1,4 @@
+
 //
 //  NSFileManager+Zinc.m
 //  Zinc-iOS
@@ -52,7 +53,9 @@
     }
  
     NSData* data = [[NSData alloc] initWithContentsOfFile:path];
-    return [data zinc_sha1];
+    NSString* sha = [data zinc_sha1];
+    [data release];
+    return sha;
 }
 
 @end

@@ -64,4 +64,10 @@
     [super dealloc];
 }
 
++ (id) eventWithError:(NSError*)error source:(id)source
+{
+    return [[[ZincErrorEvent alloc] initWithError:error source:source] autorelease];
+}
+
+
 @end

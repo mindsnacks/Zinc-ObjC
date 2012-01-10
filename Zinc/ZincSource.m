@@ -47,7 +47,7 @@
 {
     NSURL* indexURL = [self urlForCatalogIndex];
     NSMutableURLRequest* request = [self getRequestForURL:indexURL];
-    [request setCachePolicy:NSURLCacheStorageNotAllowed];
+    [request setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     return request;
 }
 
