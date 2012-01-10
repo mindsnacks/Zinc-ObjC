@@ -6,13 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask2.h"
+#import "ZincTask.h"
 
 @class ZincSource;
 
-@interface ZincFileUpdateTask2 : ZincTask2
+@interface ZincFileUpdateTask : ZincTask
 
-- (id)initWithClient:(ZincClient*)client source:(ZincSource*)souce sha:(NSString*)sha;
+- (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha;
 @property (nonatomic, retain) ZincSource* source;
 @property (nonatomic, retain) NSString* sha;
 

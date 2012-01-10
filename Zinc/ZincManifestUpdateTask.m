@@ -6,25 +6,25 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincManifestUpdateOperation.h"
+#import "ZincManifestUpdateTask.h"
 #import "ZincBundle.h"
 #import "ZincSource.h"
-#import "ZincClient.h"
-#import "ZincClient+Private.h"
+#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
 #import "AFHTTPRequestOperation.h"
 #import "ZincAtomicFileWriteOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "KSJSON.h"
 
-@implementation ZincManifestUpdateOperation
+@implementation ZincManifestUpdateTask
 
 @synthesize bundleId = _bundleId;
 @synthesize version = _version;
 
-- (id)initWithClient:(ZincClient *)client bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
+- (id)initWithRepo:(ZincRepo *)repo bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
 {    
-    self = [super initWithClient:client];
+    self = [super initWithRepo:repo];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;
@@ -52,7 +52,7 @@
     
     NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:self.bundleId];
     NSString* bundleName = [ZincBundle nameFromBundleIdentifier:self.bundleId];
-    ZincSource* source = [[self.client sourcesForCatalogIdentifier:catalogId] lastObject]; // TODO: fix lastObject
+    ZincSource* source = [[self.self.repo sourcesForCatalogIdentifier:catalogId] lastObject]; // TODO: fix lastObject
     if (source == nil) {
         ZINC_DEBUG_LOG(@"source is nil");
         // TODO: better error
@@ -66,10 +66,9 @@
         return;
     }
     
-//    AFHTTPRequestOperation* requestOp = [self.client queuedHTTPRequestOperationForRequest:request];
     AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [self.client addOperation:requestOp];
+    [self.self.repo addOperation:requestOp];
     [requestOp waitUntilFinished];
     if (!requestOp.hasAcceptableStatusCode) {
         [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
@@ -97,16 +96,16 @@
         return;
     }
     
-    NSString* path = [self.client pathForManifestWithBundleIdentifier:self.bundleId version:manifest.version];
+    NSString* path = [self.self.repo pathForManifestWithBundleIdentifier:self.bundleId version:manifest.version];
     ZincAtomicFileWriteOperation* writeOp = [[[ZincAtomicFileWriteOperation alloc] initWithData:data path:path] autorelease];
-    [self.client addOperation:writeOp];
+    [self.self.repo addOperation:writeOp];
     [writeOp waitUntilFinished];
     if (writeOp.error != nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    [self.client registerManifest:manifest forBundleId:self.bundleId];
+    [self.self.repo registerManifest:manifest forBundleId:self.bundleId];
     
     self.finishedSuccessfully = YES;
 }

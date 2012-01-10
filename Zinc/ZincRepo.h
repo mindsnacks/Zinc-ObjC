@@ -9,20 +9,18 @@
 #import <Foundation/Foundation.h>
 #import "ZincBundle.h"
 
-#define kZCBundleManagerDefaultNetworkOperationCount (5)
+#define kZincRepoDefaultNetworkOperationCount (5)
 
-@protocol ZincClientDelegate;
+@protocol ZincRepoDelegate;
 
-@interface ZincClient : NSObject
+@interface ZincRepo : NSObject
 
-+ (ZincClient*) defaultClient; // TODO: rename to sharedClient?
-
-+ (ZincClient*) clientWithURL:(NSURL*)fileURL error:(NSError**)outError;
++ (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 - (id) initWithURL:(NSURL*)fileURL;
 
-@property (nonatomic, assign) id<ZincClientDelegate> delegate;
+@property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
@@ -37,7 +35,6 @@
 
 - (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId distribution:(NSString*)dista;
 
-//- (ZincBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
 - (NSBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
@@ -53,8 +50,8 @@
 @end
 
 
-@protocol ZincClientDelegate <NSObject>
+@protocol ZincRepoDelegate <NSObject>
 
-- (void) zincClient:(ZincClient*)zincClient didEncounterError:(NSError*)error;
+- (void) zincRepo:(ZincRepo*)repo didEncounterError:(NSError*)error;
 
 @end

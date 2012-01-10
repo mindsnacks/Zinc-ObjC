@@ -9,10 +9,10 @@
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
-#import "ZincClient.h"
+#import "ZincRepo.h"
 
 @interface ZincBundle ()
-@property (nonatomic, retain, readwrite) ZincClient* repo;
+@property (nonatomic, retain, readwrite) ZincRepo* repo;
 @property (nonatomic, retain, readwrite) NSString* bundleId;
 @property (nonatomic, assign, readwrite) ZincVersion version;
 @end
@@ -24,7 +24,7 @@
 @synthesize repo = _repo;
 @synthesize manifest = _manifest;
 
-- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincClient*)repo
+- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincRepo*)repo
 {
     self = [super init];
     if (self) {

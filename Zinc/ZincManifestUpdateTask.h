@@ -6,14 +6,14 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask2.h"
+#import "ZincTask.h"
 #import "Zinc.h"
 
-@class ZincClient;
+@class ZincRepo;
 
-@interface ZincManifestUpdateOperation : ZincTask2
+@interface ZincManifestUpdateTask : ZincTask
 
-- (id)initWithClient:(ZincClient *)client bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
+- (id)initWithRepo:(ZincRepo*)repo bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
 
 @property (nonatomic, retain) NSString* bundleId;
 @property (nonatomic, assign) ZincVersion version;

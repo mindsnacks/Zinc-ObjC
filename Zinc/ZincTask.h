@@ -1,5 +1,5 @@
 //
-//  ZincTask2.h
+//  ZincTask.h
 //  Zinc-iOS
 //
 //  Created by Andy Mroczkowski on 1/10/12.
@@ -8,15 +8,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class ZincClient;
+@class ZincRepo;
 @class ZincEvent;
 
-@interface ZincTask2 : NSOperation
+@interface ZincTask : NSOperation
 
-- (id) initWithClient:(ZincClient*)client;
-@property (nonatomic, assign, readonly) ZincClient* client;
+- (id) initWithRepo:(ZincRepo*)repo;
+@property (nonatomic, assign, readonly) ZincRepo* repo;
 
-@property (assign) ZincTask2* supertask;
+@property (assign) ZincTask* supertask;
 @property (readonly) NSArray* subtasks;
 
 @property (readonly, retain) NSString* title;
@@ -29,7 +29,7 @@
 
 #pragma mark Private
 
-@interface ZincTask2 ()
+@interface ZincTask ()
 
 @property (readwrite, retain) NSString* title;
 

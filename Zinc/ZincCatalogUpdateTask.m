@@ -6,27 +6,27 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincCatalogUpdateOperation2.h"
+#import "ZincCatalogUpdateTask.h"
 #import "AFHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincCatalog.h"
-#import "ZincClient.h"
-#import "ZincClient+Private.h"
+#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincSource.h"
 #import "ZincAtomicFileWriteOperation.h"
 
-@interface ZincCatalogUpdateOperation2 ()
+@interface ZincCatalogUpdateTask ()
 @property (nonatomic, retain, readwrite) ZincSource* source;
 @end
 
-@implementation ZincCatalogUpdateOperation2
+@implementation ZincCatalogUpdateTask
 
 @synthesize source = _source;
 
-- (id) initWithClient:(ZincClient *)client source:(ZincSource*)source
+- (id) initWithRepo:(ZincRepo *)repo source:(ZincSource*)source
 {
-    self = [super initWithClient:client];
+    self = [super initWithRepo:repo];
     if (self) {
         self.source = source;
         self.title = @"Updating Catalog"; // TODO: localization
@@ -52,7 +52,7 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.source urlRequestForCatalogIndex];
-    //AFHTTPRequestOperation* requestOp = [self.client queuedHTTPRequestOperationForRequest:request];
+    //AFHTTPRequestOperation* requestOp = [self.self.repo queuedHTTPRequestOperationForRequest:request];
     AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
     [self addOperation:requestOp];
@@ -85,7 +85,7 @@
         return;
     }
     
-    NSString* path = [self.client pathForCatalogIndex:catalog];
+    NSString* path = [self.self.repo pathForCatalogIndex:catalog];
     ZincAtomicFileWriteOperation* writeOp = [[[ZincAtomicFileWriteOperation alloc] initWithData:data path:path] autorelease];
     [self addOperation:writeOp];
     [writeOp waitUntilFinished];
@@ -94,7 +94,7 @@
         return;
     } 
     
-    [self.client registerSource:self.source forCatalog:catalog];
+    [self.self.repo registerSource:self.source forCatalog:catalog];
     
     self.finishedSuccessfully = YES;
 }

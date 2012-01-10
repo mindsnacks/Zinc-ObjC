@@ -10,7 +10,7 @@
 
 #import "ViewController.h"
 #import "ZincBundle.h"
-#import "ZincClient.h"
+#import "ZincRepo.h"
 
 
 @implementation AppDelegate
@@ -38,9 +38,9 @@
     //    ZCBundle* zbundle = [[ZCBundle alloc] initWithPath:dir];
     
     
-    //    ZincClient* zc = [ZincClient defaultClient];
+    //    Zincself.repo* zc = [Zincself.repo defaultself.repo];
     NSError* error = nil;
-    ZincClient* zc = [[ZincClient clientWithURL:
+    ZincRepo* zc = [[ZincRepo repoWithURL:
                        [NSURL fileURLWithPath:
                         [AMGetApplicationDocumentsDirectory()
                          stringByAppendingPathComponent:@"zinc"]] error:&error] retain];

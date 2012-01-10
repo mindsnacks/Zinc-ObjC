@@ -1,34 +1,34 @@
 //
-//  ZincTask2.m
+//  ZincTask.m
 //  Zinc-iOS
 //
 //  Created by Andy Mroczkowski on 1/10/12.
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask2.h"
-#import "ZincClient.h"
-#import "ZincClient+Private.h"
+#import "ZincTask.h"
+#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
 
-@interface ZincTask2 ()
-@property (nonatomic, assign, readwrite) ZincClient* client;
+@interface ZincTask ()
+@property (nonatomic, assign, readwrite) ZincRepo* repo;
 @property (nonatomic, retain) NSMutableArray* myEvents;
 @end
 
-@implementation ZincTask2
+@implementation ZincTask
 
-@synthesize client = _client;
+@synthesize repo = _repo;
 @synthesize suboperations = _suboperations;
 @synthesize supertask = _supertask;
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
 
-- (id) initWithClient:(ZincClient*)client
+- (id) initWithRepo:(ZincRepo*)repo
 {
     self = [super init];
     if (self) {
-        self.client = client;
+        self.repo = repo;
         self.myEvents = [NSMutableArray array];
     }
     return self;
@@ -38,7 +38,7 @@
 {
     self.suboperations = nil;
     self.myEvents = nil;
-    self.client = nil;
+    self.repo = nil;
     [super dealloc];
 }
 
@@ -67,13 +67,13 @@
         
         if (self.isCancelled) return;
         
-        if ([operation isKindOfClass:[ZincTask2 class]]) {
-            ZincTask2* task = (ZincTask2*)operation;
+        if ([operation isKindOfClass:[ZincTask class]]) {
+            ZincTask* task = (ZincTask*)operation;
             task.supertask = self;
         }
         
         [self.suboperations addObject:operation];
-        [self.client addOperation:operation];
+        [self.repo addOperation:operation];
     }
 }
 
@@ -81,7 +81,7 @@
 {
     return [self.suboperations filteredArrayUsingPredicate:
             [NSPredicate predicateWithBlock:^(id obj, NSDictionary* bindings) {
-        return [obj isKindOfClass:[ZincTask2 class]];
+        return [obj isKindOfClass:[ZincTask class]];
     }]];
 }
 

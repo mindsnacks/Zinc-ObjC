@@ -6,24 +6,24 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincFileUpdateTask2.h"
+#import "ZincFileUpdateTask.h"
 #import "Zinc.h"
 #import "ZincSource.h"
-#import "ZincClient.h"
-#import "ZincClient+Private.h"
+#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
 #import "AFHTTPRequestOperation.h"
 #import "ZincEvent.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 
-@implementation ZincFileUpdateTask2
+@implementation ZincFileUpdateTask
 
 @synthesize source = _source;
 @synthesize sha = _sha;
 
-- (id)initWithClient:(ZincClient*)client source:(ZincSource*)souce sha:(NSString*)sha
+- (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha
 {
-    self = [super initWithClient:client];
+    self = [super initWithRepo:repo];
     if (self) {
         self.source = souce;
         self.sha = sha;
@@ -64,7 +64,7 @@
         return;
     }
     
-    NSString* path = [self.client pathForFileWithSHA:self.sha];
+    NSString* path = [self.self.repo pathForFileWithSHA:self.sha];
     NSString* gzpath = [path stringByAppendingPathExtension:@"gz"];
     NSString* dir = [gzpath stringByDeletingLastPathComponent];
     NSString* downloadPath = path;
@@ -84,9 +84,9 @@
     NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
     downloadOp.outputStream = outStream;
     
-    ZINC_DEBUG_LOG(@"[ZincClient 0x%x] Downloading %@", (int)self.client, [request URL]);
+    ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Downloading %@", (int)self.self.repo, [request URL]);
 
-    [self.client addOperation:downloadOp];
+    [self.self.repo addOperation:downloadOp];
     [downloadOp waitUntilFinished];
     
     if (!downloadOp.hasAcceptableStatusCode) {

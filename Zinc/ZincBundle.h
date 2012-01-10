@@ -10,7 +10,7 @@
 #import "Zinc.h"
 #import "ZincManifest.h"
 
-@class ZincClient;
+@class ZincRepo;
 
 enum {
     ZCBundleStateAvailable = 0x1,
@@ -22,8 +22,8 @@ typedef NSInteger ZCBundleState;
 
 @interface ZincBundle : NSObject
 
-- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincClient*)repo;
-@property (nonatomic, retain, readonly) ZincClient* repo;
+- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version repo:(ZincRepo*)repo;
+@property (nonatomic, retain, readonly) ZincRepo* repo;
 @property (nonatomic, retain, readonly) NSString* bundleId;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
