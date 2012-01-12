@@ -25,5 +25,15 @@ NSString* ZincGetApplicationDocumentsDirectory(void)
     return dir;
 }
 
+NSString* ZincGetApplicationCacheDirectory(void)
+{
+    NSString* dir =  [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    if([dir length] == 0) {
+        [NSException raise:@"Caches dir not found"
+                    format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
+    }
+    return dir;
+}
+
 
 NSString* const ZincEventNotification = @"ZincEventNotification";

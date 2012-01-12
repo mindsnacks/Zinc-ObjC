@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@class ZincRepo;
+
 @interface ViewController : UIViewController
+
+
+@property (nonatomic, retain) ZincRepo* repo;
+
+- (IBAction)beginTracking:(id)sender;
+- (IBAction)stopTracking:(id)sender;
 
 @end

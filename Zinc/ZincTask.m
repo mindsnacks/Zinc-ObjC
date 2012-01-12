@@ -9,26 +9,30 @@
 #import "ZincTask.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
+#import "ZincTaskDescriptor.h"
 
 @interface ZincTask ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
+@property (nonatomic, retain, readwrite) id<ZincResourceDescriptor>* resource;
 @property (nonatomic, retain) NSMutableArray* myEvents;
 @end
 
 @implementation ZincTask
 
 @synthesize repo = _repo;
+@synthesize resource = _resource;
 @synthesize suboperations = _suboperations;
 @synthesize supertask = _supertask;
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
 
-- (id) initWithRepo:(ZincRepo*)repo
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(id<ZincResourceDescriptor>)resource
 {
     self = [super init];
     if (self) {
         self.repo = repo;
+        self.resource = resource;
         self.myEvents = [NSMutableArray array];
     }
     return self;
@@ -39,6 +43,7 @@
     self.suboperations = nil;
     self.myEvents = nil;
     self.repo = nil;
+    self.resource = nil;
     [super dealloc];
 }
 
@@ -55,10 +60,22 @@
     return -1;
 }
 
-- (NSString*) key
++ (NSString*) taskMethod
 {
-    NSAssert(NO, @"must override");
-    return nil;
+    return NSStringFromClass(self);
+}
+
++ (ZincTaskDescriptor*) taskDescriptorForResource:(id<ZincResourceDescriptor>)resource
+{
+    ZincTaskDescriptor* td = [[[ZincTaskDescriptor alloc] init] autorelease];
+    td.method = [self taskMethod];
+    td.resource = resource;
+    return td;
+}
+
+- (ZincTaskDescriptor*) taskDescriptor
+{
+    return [[self class] taskDescriptorForResource:self.resource];    
 }
 
 - (void) addOperation:(NSOperation*)operation

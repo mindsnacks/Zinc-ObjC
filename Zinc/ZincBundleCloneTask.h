@@ -9,10 +9,11 @@
 #import "ZincTask.h"
 #import "Zinc.h"
 
-@interface ZincBundleUpdateTask : ZincTask
+@interface ZincBundleCloneTask : ZincTask
 
-- (id)initWithRepo:(ZincRepo *)repo bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
+- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
 
+// TODO: readonly?
 @property (nonatomic, retain) NSString* bundleId;
 @property (nonatomic, assign) ZincVersion version;
 

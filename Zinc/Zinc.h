@@ -35,6 +35,7 @@ typedef BOOL (^ZincPassFailBlock)(void);
 
 extern void ZincAddSkipBackupAttributeToFile(NSURL* url);
 extern NSString* ZincGetApplicationDocumentsDirectory(void);
+extern NSString* ZincGetApplicationCacheDirectory(void);
 
 #pragma mark Notifications
 

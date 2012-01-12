@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZincResourceDescriptor.h"
 
 @class ZincCatalog;
 
-@interface ZincSource : NSObject
+@interface ZincSource : NSObject <ZincResourceDescriptor>
 
 + (ZincSource*) sourceWithURL:(NSURL*)url;
 @property (nonatomic, retain, readonly) NSURL* url;
@@ -21,8 +22,8 @@
 - (NSURL*) urlForBundleName:(NSString*)name version:(NSInteger)version;
 - (NSURLRequest*) urlRequestForBundleName:(NSString*)name version:(NSInteger)version;
 
-- (NSURL*) urlForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)catalog;
-- (NSURLRequest*) urlRequestForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)index;
+- (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog;
+- (NSURLRequest*) urlRequestForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)index;
 
 - (NSURL*) urlForFileWithSHA:(NSString*)sha extension:(NSString*)extension;
 - (NSURL*) urlForFileWithSHA:(NSString*)sha;

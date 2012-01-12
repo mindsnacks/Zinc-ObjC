@@ -8,6 +8,7 @@
 
 #import "NSData+Zinc.h"
 #import "Zinc.h"
+#import "NSFileManager+Zinc.h"
 #import "sha1.h"
 #include <zlib.h>
 
@@ -130,10 +131,17 @@
 	else return nil;
 }
 
-- (BOOL) zinc_writeToFile:(NSString*)path atomically:(BOOL)useAuxiliaryFile skipBackup:(BOOL)skipBackup error:(NSError**)outError
+- (BOOL) zinc_writeToFile:(NSString*)path atomically:(BOOL)useAuxiliaryFile createDirectories:(BOOL)createIntermediates skipBackup:(BOOL)skipBackup error:(NSError**)outError
 {
     NSDataWritingOptions options = 0;
     if (useAuxiliaryFile) options = NSDataWritingAtomic;
+    
+    if (createIntermediates) {
+        NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+        if (![fm zinc_createDirectoryIfNeededAtPath:[path stringByDeletingLastPathComponent] error:outError]) {
+            return NO;
+        }
+    }
     
     if (![self writeToFile:path options:options error:outError]) {
         return NO;

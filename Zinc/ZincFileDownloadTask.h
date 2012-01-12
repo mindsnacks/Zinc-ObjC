@@ -10,7 +10,7 @@
 
 @class ZincSource;
 
-@interface ZincFileUpdateTask : ZincTask
+@interface ZincFileDownloadTask : ZincTask
 
 - (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha;
 @property (nonatomic, retain) ZincSource* source;

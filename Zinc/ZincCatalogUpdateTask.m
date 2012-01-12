@@ -1,34 +1,33 @@
 //
-//  ZincCatalogUpdateOperation2.m
+//  ZincCatalogUpdateTask.m
 //  Zinc-iOS
 //
-//  Created by Andy Mroczkowski on 1/10/12.
+//  Created by Andy Mroczkowski on 1/11/12.
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
 #import "ZincCatalogUpdateTask.h"
-#import "AFHTTPRequestOperation.h"
-#import "NSData+Zinc.h"
 #import "ZincCatalog.h"
+#import "ZincResourceDescriptor.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
-#import "ZincSource.h"
-#import "ZincAtomicFileWriteOperation.h"
+#import "NSData+Zinc.h"
 
 @interface ZincCatalogUpdateTask ()
-@property (nonatomic, retain, readwrite) ZincSource* source;
+@property (nonatomic, retain, readwrite) ZincCatalog* catalog;
 @end
 
 @implementation ZincCatalogUpdateTask
 
-@synthesize source = _source;
+@synthesize catalog = _catalog;
 
-- (id) initWithRepo:(ZincRepo *)repo source:(ZincSource*)source
+- (id) initWithRepo:(ZincRepo *)repo catalog:(ZincCatalog*)catalog
 {
-    self = [super initWithRepo:repo];
+    ZincCatalogDescriptor* desc = [ZincCatalogDescriptor catalogDescriptorForId:catalog.identifier];
+    self = [super initWithRepo:repo resourceDescriptor:desc];
     if (self) {
-        self.source = source;
+        self.catalog = catalog;
         self.title = @"Updating Catalog"; // TODO: localization
     }
     return self;
@@ -36,67 +35,26 @@
 
 - (void)dealloc 
 {
-    self.source = nil;
+    self.catalog = nil;
     [super dealloc];
-}
-
-- (NSString*) key
-{
-    return [NSString stringWithFormat:@"%@:%@",
-            NSStringFromClass([self class]),
-            [self.source.url absoluteString]];
 }
 
 - (void) main
 {
     NSError* error = nil;
     
-    NSURLRequest* request = [self.source urlRequestForCatalogIndex];
-    //AFHTTPRequestOperation* requestOp = [self.self.repo queuedHTTPRequestOperationForRequest:request];
-    AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-    [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [self addOperation:requestOp];
-    [requestOp waitUntilFinished];
-    if (![requestOp hasAcceptableStatusCode]) {
-        // TODO: error;
-        NSAssert(NO, @"request failed");
-        return;
-    }
-    
-    if (self.isCancelled) return;
-    
-    NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
-    if (uncompressed == nil) {
-        // TODO: real error
-        NSAssert(NO, @"gunzip failed");
-        return;
-    }
-    
-    NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-    ZincCatalog* catalog = [ZincCatalog catalogFromJSONString:jsonString error:&error];
-    if (catalog == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return;
-    }
-    
-    NSData* data = [[catalog jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* data = [[self.catalog jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
     if (data == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    NSString* path = [self.self.repo pathForCatalogIndex:catalog];
-    ZincAtomicFileWriteOperation* writeOp = [[[ZincAtomicFileWriteOperation alloc] initWithData:data path:path] autorelease];
-    [self addOperation:writeOp];
-    [writeOp waitUntilFinished];
-    if (writeOp.error != nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:writeOp.error source:self]];
+    NSString* path = [self.repo pathForCatalogIndex:self.catalog];
+    if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
+        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
-    } 
-    
-    [self.self.repo registerSource:self.source forCatalog:catalog];
+    }
     
     self.finishedSuccessfully = YES;
 }
-
 @end

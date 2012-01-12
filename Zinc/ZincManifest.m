@@ -61,6 +61,12 @@
     return [self.files allValues];
 }
 
+- (NSUInteger) fileCount
+{
+    return [self.files count];
+}
+
+
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];

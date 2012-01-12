@@ -31,6 +31,13 @@
     [super dealloc];
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    ZincSource* newsource = [[ZincSource allocWithZone:zone] init];
+    newsource.url = [[self.url copy] autorelease];
+    return newsource;
+}
+
 - (NSURL*) urlForCatalogIndex
 {
     return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self.url] absoluteURL];
@@ -65,18 +72,18 @@
     return [self getRequestForURL:manifestURL];
 }
 
-- (NSURL*) urlForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)catalog
+- (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog
 {
-    NSInteger version = [catalog versionForBundleName:name label:label];
+    NSInteger version = [catalog versionForBundleName:name distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
     }
     return [self urlForBundleName:name version:version];
 }
 
-- (NSURLRequest*) urlRequestForBundleName:(NSString*)name label:(NSString*)label catalog:(ZincCatalog*)catalog
+- (NSURLRequest*) urlRequestForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog
 {
-    NSURL* manifestURL = [self urlForBundleName:name label:label catalog:catalog];
+    NSURL* manifestURL = [self urlForBundleName:name distribution:distro catalog:catalog];
     return [self getRequestForURL:manifestURL];
 }
 

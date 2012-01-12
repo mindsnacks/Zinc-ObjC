@@ -42,15 +42,15 @@
 {
     NSError* error = nil;
     
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    
-    NSString* dir = [self.path stringByDeletingLastPathComponent];
-    if (![fm zinc_createDirectoryIfNeededAtPath:dir error:&error]) {
-        self.error = error;
-        return;
-    }
-    
-    if (![self.data zinc_writeToFile:self.path atomically:YES skipBackup:YES error:&error]) {
+//    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+//    
+//    NSString* dir = [self.path stringByDeletingLastPathComponent];
+//    if (![fm zinc_createDirectoryIfNeededAtPath:dir error:&error]) {
+//        self.error = error;
+//        return;
+//    }
+//    
+    if (![self.data zinc_writeToFile:self.path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
         self.error = error;
         return;
     }

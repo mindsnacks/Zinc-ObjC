@@ -10,15 +10,15 @@
 #import "ZincBundle.h"
 
 #define kZincRepoDefaultNetworkOperationCount (5)
+#define kZincRepoDefaultAutoRefreshInterval (10)
+#define kZincRepoDefaultCacheCount (20)
 
 @protocol ZincRepoDelegate;
 
 @interface ZincRepo : NSObject
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
-
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
-- (id) initWithURL:(NSURL*)fileURL;
++ (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
 
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
@@ -28,24 +28,25 @@
 #pragma mark Sources
 
 - (void) addSourceURL:(NSURL*)url;
+- (void) removeSourceURL:(NSURL*)url;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
 #pragma mark Bundles
 
-- (void) beginTrackingBundleWithIdentifier:(NSString*)bundleId distribution:(NSString*)dista;
-
-- (NSBundle*) bundleWithId:(NSString*)bundleId distribution:(NSString*)dist;
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
+- (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
-#pragma mark Files
-
-- (NSString*) pathForFileWithSHA:(NSString*)sha;
+- (NSBundle*) bundleWithId:(NSString*)bundleId;
 
 #pragma mark Tasks
 
 @property (readonly) NSArray* tasks;
+
+- (void) suspendAllTasks;
+- (void) resumeAllTasks;
            
 @end
 

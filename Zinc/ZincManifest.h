@@ -20,6 +20,7 @@
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) allFiles;
 - (NSArray*) allSHAs;
+- (NSUInteger) fileCount;
 
 - (NSDictionary*) dictionaryRepresentation;
 - (NSString*) jsonRepresentation:(NSError**)outError;

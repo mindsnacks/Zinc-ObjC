@@ -10,36 +10,42 @@
 
 @class ZincRepo;
 @class ZincEvent;
+@class ZincTaskDescriptor;
+@protocol ZincResourceDescriptor;
 
 @interface ZincTask : NSOperation
 
-- (id) initWithRepo:(ZincRepo*)repo;
 @property (nonatomic, assign, readonly) ZincRepo* repo;
+@property (nonatomic, retain, readonly) id<ZincResourceDescriptor> resource;
+
+@property (readonly, retain) NSString* title;
 
 @property (assign) ZincTask* supertask;
 @property (readonly) NSArray* subtasks;
 
-@property (readonly, retain) NSString* title;
+@property (readonly) NSArray* events;
+
 - (double) progress;
 
-- (NSString*) key;
-
 @end
-
 
 #pragma mark Private
 
 @interface ZincTask ()
 
-@property (readwrite, retain) NSString* title;
-
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(id<ZincResourceDescriptor>)resource;
 @property (retain) NSMutableArray* suboperations;
 - (void) addOperation:(NSOperation*)operation;
 //- (void) waitForSuboperations;
 
-@property (readonly) NSArray* events;
 - (void) addEvent:(ZincEvent*)event;
 
+@property (readwrite, retain) NSString* title;
+
 @property (assign) BOOL finishedSuccessfully;
+
++ (NSString*) taskMethod;
++ (ZincTaskDescriptor*) taskDescriptorForResource:(id<ZincResourceDescriptor>)resource;
+- (ZincTaskDescriptor*) taskDescriptor;
 
 @end

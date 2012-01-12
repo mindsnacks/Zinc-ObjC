@@ -8,28 +8,45 @@
 
 #import "ZincRepo.h"
 
-@class AFHTTPRequestOperation;
-@class ZincOperation;
 @class ZincCatalog;
 @class ZincSource;
 @class ZincTask;
+@class ZincManifest;
 
 @interface ZincRepo ()
+
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 
 - (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId;
 - (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
 - (void) registerSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
 
+- (void) registerManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
+- (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
 - (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
-- (NSString*) pathForManifestWithBundleIdentifier:(NSString*)identifier version:(ZincVersion)version;
-- (void) registerManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
+- (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
+
+#pragma mark Bundles
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
 
-- (ZincTask*) taskForKey:(NSString*)key;
+// includes all currently tracked and open bundles
+// returns ZincBundleDescriptors
+- (NSArray*) activeBundles;
+
+#pragma mark Files
+
+- (NSString*) pathForFileWithSHA:(NSString*)sha;
+
 - (ZincTask*) getOrAddTask:(ZincTask*)task;
 - (void) addOperation:(NSOperation*)operation;
+
+#pragma mark Paths
+
+- (NSString*) filesPath;
+- (NSString*) bundlesPath;
+- (NSString*) downloadsPath;
 
 @end
 

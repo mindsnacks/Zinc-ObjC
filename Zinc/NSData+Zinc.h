@@ -14,6 +14,6 @@
 
 - (NSData*) zinc_gzipInflate;
 
-- (BOOL) zinc_writeToFile:(NSString*)path atomically:(BOOL)useAuxiliaryFile skipBackup:(BOOL)skipBackup error:(NSError**)outError;
+- (BOOL) zinc_writeToFile:(NSString*)path atomically:(BOOL)useAuxiliaryFile createDirectories:(BOOL)createIntermediates skipBackup:(BOOL)skipBackup error:(NSError**)outError;
 
 @end

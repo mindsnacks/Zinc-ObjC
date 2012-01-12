@@ -7,8 +7,16 @@
 //
 
 #import "ViewController.h"
+#import "ZincRepo.h"
 
 @implementation ViewController
+
+@synthesize repo = _repo;
+
+- (void)dealloc {
+    self.repo = nil;
+    [super dealloc];
+}
 
 - (void)didReceiveMemoryWarning
 {
@@ -56,5 +64,17 @@
     // Return YES for supported orientations
     return (interfaceOrientation != UIInterfaceOrientationPortraitUpsideDown);
 }
+
+- (IBAction)beginTracking:(id)sender
+{
+    [self.repo beginTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers" distribution:@"master"];
+}
+
+- (IBAction)stopTracking:(id)sender
+{
+    [self.repo stopTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers"];
+}
+ 
+
 
 @end

@@ -6,25 +6,27 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincManifestUpdateTask.h"
+#import "ZincManifestDownloadTask.h"
 #import "ZincBundle.h"
 #import "ZincSource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
+#import "ZincManifest.h"
+#import "ZincResourceDescriptor.h"
 #import "AFHTTPRequestOperation.h"
-#import "ZincAtomicFileWriteOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "KSJSON.h"
 
-@implementation ZincManifestUpdateTask
+@implementation ZincManifestDownloadTask
 
 @synthesize bundleId = _bundleId;
 @synthesize version = _version;
 
-- (id)initWithRepo:(ZincRepo *)repo bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
+- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version
 {    
-    self = [super initWithRepo:repo];
+    ZincManifestDescriptor* desc = [ZincManifestDescriptor manifestDescriptorForId:bundleId version:version];
+    self = [super initWithRepo:repo resourceDescriptor:desc];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;
@@ -39,20 +41,14 @@
     [super dealloc];
 }
 
-- (NSString*) key
-{
-    return [NSString stringWithFormat:@"%@:%@-$d",
-            NSStringFromClass([self class]),
-            self.bundleId, self.version];
-}
-
 - (void) main
 {
     NSError* error = nil;
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
-    NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:self.bundleId];
-    NSString* bundleName = [ZincBundle nameFromBundleIdentifier:self.bundleId];
-    ZincSource* source = [[self.self.repo sourcesForCatalogIdentifier:catalogId] lastObject]; // TODO: fix lastObject
+    NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
+    NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
+    ZincSource* source = [[self.repo sourcesForCatalogIdentifier:catalogId] lastObject]; // TODO: fix lastObject
     if (source == nil) {
         ZINC_DEBUG_LOG(@"source is nil");
         // TODO: better error
@@ -68,7 +64,7 @@
     
     AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [self.self.repo addOperation:requestOp];
+    [self addOperation:requestOp];
     [requestOp waitUntilFinished];
     if (!requestOp.hasAcceptableStatusCode) {
         [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
@@ -96,16 +92,17 @@
         return;
     }
     
-    NSString* path = [self.self.repo pathForManifestWithBundleIdentifier:self.bundleId version:manifest.version];
-    ZincAtomicFileWriteOperation* writeOp = [[[ZincAtomicFileWriteOperation alloc] initWithData:data path:path] autorelease];
-    [self.self.repo addOperation:writeOp];
-    [writeOp waitUntilFinished];
-    if (writeOp.error != nil) {
+    NSString* path = [self.repo pathForManifestWithBundleId:self.bundleId version:manifest.version];
+    
+    // try remove existing. it shouldn't exist, but being defensive.
+    [fm removeItemAtPath:path error:NULL];
+    
+    if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
-    
-    [self.self.repo registerManifest:manifest forBundleId:self.bundleId];
+
+    [self.repo registerManifest:manifest forBundleId:self.bundleId];
     
     self.finishedSuccessfully = YES;
 }

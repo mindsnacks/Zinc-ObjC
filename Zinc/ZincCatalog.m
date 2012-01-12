@@ -70,9 +70,9 @@
 
 #pragma mark -
 
-- (NSInteger) versionForBundleName:(NSString*)bundleName label:(NSString*)label
+- (NSInteger) versionForBundleName:(NSString*)bundleName distribution:(NSString*)distro
 {
-    NSNumber* version = [[self.distributions objectForKey:label] objectForKey:bundleName];
+    NSNumber* version = [[self.distributions objectForKey:distro] objectForKey:bundleName];
     if (version != nil) {
         return [version integerValue];
     }

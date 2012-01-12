@@ -6,22 +6,24 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleUpdateTask.h"
+#import "ZincBundleCloneTask.h"
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
-#import "ZincManifestUpdateTask.h"
+#import "ZincManifestDownloadTask.h"
 #import "ZincEvent.h"
 #import "NSFileManager+Zinc.h"
-#import "ZincFileUpdateTask.h"
+#import "ZincFileDownloadTask.h"
+#import "ZincBundleDescriptor.h"
 
-@implementation ZincBundleUpdateTask
+@implementation ZincBundleCloneTask
 
 @synthesize bundleId = _bundleId;
 @synthesize version = _version;
 
-- (id)initWithRepo:(ZincRepo *)repo bundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
+- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
 {
-    self = [super initWithRepo:repo];
+    ZincBundleDescriptor* desc = [ZincBundleDescriptor bundleDescriptorForId:bundleId version:version];
+    self = [super initWithRepo:repo resourceDescriptor:desc];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;
@@ -35,31 +37,19 @@
     [super dealloc];
 }
 
-- (NSString*) key
-{
-    return [NSString stringWithFormat:@"%@:%@-$d",
-            NSStringFromClass([self class]),
-            self.bundleId, self.version];
-}
-
 - (void) main
 {
-    ZINC_DEBUG_LOG(@"ENSURING BUNDLE %@!", self.bundleId);
+    ZINC_DEBUG_LOG(@"CLONING BUNDLE %@!", self.bundleId);
     
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
-    // TODO: fix this mess
+    ZincManifestDownloadTask* manifestOp = nil;
     
-    ZincManifestUpdateTask* manifestOp = [[[ZincManifestUpdateTask alloc] initWithRepo:self.self.repo bundleIdentifier:self.bundleId version:self.version] autorelease];
-    
-    if ([self.self.repo taskForKey:[manifestOp key]] ||
-        (![self.self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version])) {
-        manifestOp = (ZincManifestUpdateTask*)[self.self.repo getOrAddTask:manifestOp];
-
-    } else {
-        // no update required
-        manifestOp = nil;
+    // if the manifest doesn't exist, get it. 
+    if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
+        manifestOp = [[[ZincManifestDownloadTask alloc] initWithRepo:self.repo bundleId:self.bundleId version:self.version] autorelease];
+        manifestOp = (ZincManifestDownloadTask*)[self.repo getOrAddTask:manifestOp];
     }
     
     if (manifestOp != nil) {
@@ -70,14 +60,14 @@
         }
     }
     
-    ZincManifest* manifest = [self.self.repo manifestWithBundleIdentifier:self.bundleId version:self.version error:&error];
+    ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    NSString* catalogId = [ZincBundle sourceFromBundleIdentifier:self.bundleId];
-    NSArray* sources = [self.self.repo sourcesForCatalogIdentifier:catalogId];
+    NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
+    NSArray* sources = [self.repo sourcesForCatalogIdentifier:catalogId];
     if (sources == nil || [sources count] == 0) {
         // TODO: error, log, or requeue or SOMETHING
         return;
@@ -86,24 +76,24 @@
     NSArray* SHAs = [manifest allSHAs];
     NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[SHAs count]];
     
-    for (NSString* expectedSHA in SHAs) {
-        NSString* path = [self.self.repo pathForFileWithSHA:expectedSHA];
-        NSString* actualSHA = [fm zinc_sha1ForPath:path];
+    for (NSString* sha in SHAs) {
+        NSString* path = [self.repo pathForFileWithSHA:sha];
         
-        // check if file is missing or invalid
-        if (actualSHA == nil || ![expectedSHA isEqualToString:actualSHA]) {
+        // check if file is missing
+        if (![fm fileExistsAtPath:path]) {
             
             // queue redownload
             ZincSource* source = [sources lastObject]; // TODO: fix lastobject
             NSAssert(source, @"source is nil");
             ZincTask* fileOp = 
-            [[[ZincFileUpdateTask alloc] initWithRepo:self.self.repo
-                                                          source:source
-                                                             sha:expectedSHA] autorelease];
-            fileOp = [self.self.repo getOrAddTask:fileOp];
+            [[[ZincFileDownloadTask alloc] initWithRepo:self.repo
+                                               source:source
+                                                  sha:sha] autorelease];
+            fileOp = [self.repo getOrAddTask:fileOp];
             [fileOps addObject:fileOp];
         }
     }
+    
     
     BOOL allSuccessful = YES;
     
@@ -116,7 +106,7 @@
     
     if (!allSuccessful) return;
     
-    NSString* bundlePath = [self.self.repo pathForBundleWithId:self.bundleId version:self.version];
+    NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
     NSArray* allFiles = [manifest allFiles];
     for (NSString* file in allFiles) {
         NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
@@ -126,7 +116,7 @@
             return;
         }
         
-        NSString* shaPath = [self.self.repo pathForFileWithSHA:[manifest shaForFile:file]];
+        NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
         BOOL createLink = NO;
         if ([fm fileExistsAtPath:filePath]) {
             NSString* dst = [fm destinationOfSymbolicLinkAtPath:filePath error:NULL];
@@ -142,7 +132,7 @@
         }
         
         if (createLink) {
-            if (![fm createSymbolicLinkAtPath:filePath withDestinationPath:shaPath error:&error]) {
+            if (![fm linkItemAtPath:shaPath toPath:filePath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 return;
             }
