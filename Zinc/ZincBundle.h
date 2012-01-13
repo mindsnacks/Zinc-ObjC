@@ -9,23 +9,23 @@
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
 
-//@class ZincRepo;
-
-//enum {
-//    ZCBundleStateAvailable = 0x1,
-//    ZCBundleStateUpdating = 0x1>>1,
-//};
-//
-//typedef NSInteger ZCBundleState;
-
 
 @interface ZincBundle : NSObject
 
-- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version;
+- (id) initWithBundleId:(NSString*)bundleId version:(ZincVersion)version bundleURL:(NSURL*)bundleURL;
 @property (nonatomic, retain, readonly) NSString* bundleId;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
-- (NSString*) descriptor;
+#pragma mark NSBundle-like access
+
+- (NSURL *)URLForResource:(NSString *)name withExtension:(NSString *)ext;
+- (NSURL *)URLForResource:(NSString *)name;
+
+- (NSString *)pathForResource:(NSString *)name ofType:(NSString *)ext;
+- (NSString *)pathForResource:(NSString *)name;
+
+/* DON'T retain this */
+- (NSBundle*) nsbundle;
 
 #pragma mark Utility
 

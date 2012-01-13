@@ -14,8 +14,12 @@
 
 
 @property (nonatomic, retain) ZincRepo* repo;
+@property (nonatomic, retain) id bundle;
 
 - (IBAction)beginTracking:(id)sender;
 - (IBAction)stopTracking:(id)sender;
+
+- (IBAction)getBundle:(id)sender;
+- (IBAction)releaseBundle:(id)sender;
 
 @end

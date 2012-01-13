@@ -12,6 +12,7 @@
 @implementation ViewController
 
 @synthesize repo = _repo;
+@synthesize bundle = _bundle;
 
 - (void)dealloc {
     self.repo = nil;
@@ -74,6 +75,18 @@
 {
     [self.repo stopTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers"];
 }
+
+- (IBAction)getBundle:(id)sender
+{
+    self.bundle = [self.repo bundleWithId:@"com.mindsnacks.french.AdvancedNumbers"];
+    NSAssert(self.bundle, @"ow");
+}
+
+- (IBAction)releaseBundle:(id)sender
+{
+    self.bundle = nil;   
+}
+
  
 
 

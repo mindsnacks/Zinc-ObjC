@@ -40,7 +40,7 @@
 
 // includes all currently tracked and open bundles
 // returns NSURLs (ZincBundleDescriptors)
-- (NSArray*) activeBundles;
+- (NSSet*) activeBundles;
 
 #pragma mark Files
 

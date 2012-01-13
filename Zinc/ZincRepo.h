@@ -14,6 +14,7 @@
 #define kZincRepoDefaultCacheCount (20)
 
 @protocol ZincRepoDelegate;
+@class ZincBundle;
 
 @interface ZincRepo : NSObject
 
@@ -39,7 +40,7 @@
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
-- (NSBundle*) bundleWithId:(NSString*)bundleId;
+- (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
 #pragma mark Tasks
 
