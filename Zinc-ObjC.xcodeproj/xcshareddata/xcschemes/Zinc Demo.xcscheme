@@ -13,10 +13,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B340F96F148D52D800206F86"
-               BuildableName = "libZinc.a"
-               BlueprintName = "Zinc"
-               ReferencedContainer = "container:Zinc-iOS.xcodeproj">
+               BlueprintIdentifier = "B38743031489B830004B227B"
+               BuildableName = "Zinc-iOS.app"
+               BlueprintName = "Zinc Demo"
+               ReferencedContainer = "container:ZincObjC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -27,17 +27,16 @@
       shouldUseLaunchSchemeArgsEnv = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B340F97C148D52D800206F86"
-               BuildableName = "ZincTests.octest"
-               BlueprintName = "ZincTests"
-               ReferencedContainer = "container:Zinc-iOS.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "Zinc Demo"
+            ReferencedContainer = "container:ZincObjC.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
    </TestAction>
    <LaunchAction
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.GDB"
@@ -47,6 +46,15 @@
       buildConfiguration = "Debug"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "Zinc Demo"
+            ReferencedContainer = "container:ZincObjC.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>
@@ -56,6 +64,15 @@
       useCustomWorkingDirectory = "NO"
       buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "Zinc Demo"
+            ReferencedContainer = "container:ZincObjC.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

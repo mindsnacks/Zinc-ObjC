@@ -815,7 +815,7 @@
 				LastUpgradeCheck = 0420;
 				ORGANIZATIONNAME = MindSnacks;
 			};
-			buildConfigurationList = B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-iOS" */;
+			buildConfigurationList = B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-ObjC" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -1195,7 +1195,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-iOS" */ = {
+		B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-ObjC" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B38743201489B830004B227B /* Debug */,
