@@ -51,6 +51,8 @@
         return;
     }
     
+    [self.repo registerCatalog:self.catalog];
+    
     self.finishedSuccessfully = YES;
 }
 @end

@@ -24,6 +24,8 @@
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
 - (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
+
+- (void) registerCatalog:(ZincCatalog*)catalog;
 - (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
 
 - (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;

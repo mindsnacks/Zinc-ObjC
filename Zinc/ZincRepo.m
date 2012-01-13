@@ -362,7 +362,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog
 {
-    @synchronized(self) {
+    @synchronized(self.sourcesByCatalog) {
         NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalog.identifier];
         if (sources == nil) {
             sources = [NSMutableArray array];
@@ -431,6 +431,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 }
 
 #pragma mark Catalogs
+
+- (void) registerCatalog:(ZincCatalog*)catalog
+{
+    NSString* key = [self cacheKeyForCatalogId:catalog.identifier];
+    [self.cache setObject:catalog forKey:key];
+}
 
 - (ZincCatalog*) loadCatalogWithIdentifier:(NSString*)identifier error:(NSError**)outError
 {
