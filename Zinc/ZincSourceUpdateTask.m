@@ -15,20 +15,21 @@
 #import "ZincEvent.h"
 #import "ZincSource.h"
 #import "ZincCatalogUpdateTask.h"
+#import "ZincResource.h"
 
 @interface ZincSourceUpdateTask ()
-@property (nonatomic, retain, readwrite) ZincSource* source;
+@property (nonatomic, retain, readwrite) NSURL* sourceURL;
 @end
 
 @implementation ZincSourceUpdateTask
 
-@synthesize source = _source;
+@synthesize sourceURL = _sourceURL;
 
-- (id) initWithRepo:(ZincRepo *)repo source:(ZincSource*)source
+- (id) initWithRepo:(ZincRepo *)repo source:(NSURL*)source
 {
     self = [super initWithRepo:repo resourceDescriptor:source];
     if (self) {
-        self.source = source;
+        self.sourceURL = source;
         self.title = @"Updating Source"; // TODO: localization
     }
     return self;
@@ -36,7 +37,7 @@
 
 - (void)dealloc 
 {
-    self.source = nil;
+    self.sourceURL = nil;
     [super dealloc];
 }
 
@@ -44,7 +45,7 @@
 {
     NSError* error = nil;
     
-    NSURLRequest* request = [self.source urlRequestForCatalogIndex];
+    NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
     AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
     [self addOperation:requestOp];
@@ -85,7 +86,7 @@
         return;
     }
     
-    [self.repo registerSource:self.source forCatalog:catalog];
+    [self.repo registerSource:self.sourceURL forCatalog:catalog];
     
     self.finishedSuccessfully = YES;
 }

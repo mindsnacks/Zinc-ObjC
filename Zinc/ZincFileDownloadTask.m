@@ -12,7 +12,7 @@
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
-#import "ZincResourceDescriptor.h"
+#import "ZincResource.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "AFHTTPRequestOperation.h"
@@ -24,10 +24,8 @@
 
 - (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha
 {
-    ZincFileDescriptor* fd = [[[ZincFileDescriptor alloc] init] autorelease];
-    fd.sha = sha;
-    
-    self = [super initWithRepo:repo resourceDescriptor:fd];
+    NSURL* res = [NSURL zincResourceForFileWithSHA:sha];
+    self = [super initWithRepo:repo resourceDescriptor:res];
     if (self) {
         self.source = souce;
         self.sha = sha;

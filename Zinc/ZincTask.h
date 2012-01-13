@@ -11,12 +11,11 @@
 @class ZincRepo;
 @class ZincEvent;
 @class ZincTaskDescriptor;
-@protocol ZincResourceDescriptor;
 
 @interface ZincTask : NSOperation
 
 @property (nonatomic, assign, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) id<ZincResourceDescriptor> resource;
+@property (nonatomic, retain, readonly) NSURL* resource;
 
 @property (readonly, retain) NSString* title;
 
@@ -33,7 +32,7 @@
 
 @interface ZincTask ()
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(id<ZincResourceDescriptor>)resource;
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
 @property (retain) NSMutableArray* suboperations;
 - (void) addOperation:(NSOperation*)operation;
 //- (void) waitForSuboperations;
@@ -45,7 +44,7 @@
 @property (assign) BOOL finishedSuccessfully;
 
 + (NSString*) taskMethod;
-+ (ZincTaskDescriptor*) taskDescriptorForResource:(id<ZincResourceDescriptor>)resource;
++ (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource;
 - (ZincTaskDescriptor*) taskDescriptor;
 
 @end

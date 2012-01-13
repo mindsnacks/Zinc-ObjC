@@ -17,4 +17,6 @@
 @property (nonatomic, retain) NSString* bundleId;
 @property (nonatomic, assign) ZincVersion version;
 
+- (NSString*) stringValue;
+
 @end

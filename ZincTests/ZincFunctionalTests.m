@@ -13,18 +13,18 @@
 
 @synthesize repo = _repo;
 
-- (void)setUp
-{
-    [super setUp];
-
-    NSError* error = nil;
-    ZincRepo* repo = [ZincRepo zincRepoWithURL:[NSURL fileURLWithPath:TEST_RESOURCE_PATH(@"testrepo1")] error:&error];
-    if (repo == nil) {
-        STFail(@"%@", error);
-    }
-    self.repo = repo;
-//    self.bundle.version = 1;
-}
+//- (void)setUp
+//{
+//    [super setUp];
+//
+//    NSError* error = nil;
+//    ZincRepo* repo = [ZincRepo zincRepoWithURL:[NSURL fileURLWithPath:TEST_RESOURCE_PATH(@"testrepo1")] error:&error];
+//    if (repo == nil) {
+//        STFail(@"%@", error);
+//    }
+//    self.repo = repo;
+////    self.bundle.version = 1;
+//}
 
 - (void) testRepoLoadBasic
 {

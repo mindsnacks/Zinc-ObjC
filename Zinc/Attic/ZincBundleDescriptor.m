@@ -27,6 +27,12 @@
     [super dealloc];
 }
 
+- (NSString*) stringValue
+{
+    return [NSString stringWithFormat:@"%@-%d", self.bundleId, self.version];
+}
+
+
 - (id)copyWithZone:(NSZone *)zone
 {
     ZincBundleDescriptor* newdesc = [[ZincBundleDescriptor allocWithZone:zone] init];
@@ -51,5 +57,19 @@
     
     return YES;    
 }
+
+- (NSUInteger) hash
+{
+    return [[self stringValue] hash];
+}
+
+- (NSString*) description
+{
+    return [NSString stringWithFormat:@"<%@ 0x%x bundle:%@ version:%d>",
+			NSStringFromClass([self class]),
+			self,
+            self.bundleId, self.version];
+}
+
 
 @end

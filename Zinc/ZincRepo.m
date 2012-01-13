@@ -11,17 +11,18 @@
 #import "ZincRepoIndex.h"
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
-#import "ZincBundleDescriptor.h"
 #import "ZincManifest.h"
 #import "ZincSource.h"
 #import "ZincCatalog.h"
 #import "ZincEvent.h"
+#import "ZincResource.h"
 #import "ZincBundleCloneTask.h"
 #import "ZincBundleDeleteTask.h"
 #import "ZincSourceUpdateTask.h"
 #import "ZincCatalogUpdateTask.h"
 #import "ZincFileDownloadTask.h"
 #import "ZincGarbageCollectTask.h"
+#import "ZincRepoIndexUpdateTask.h"
 #import "ZincOperationQueueGroup.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
@@ -42,10 +43,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @property (nonatomic, retain) NSURL* url;
 
-// runtime state
-@property (nonatomic, retain) ZincRepoIndex* repoIndex;
-@property (nonatomic, retain) NSMutableDictionary* sourcesByCatalog;
+// saved state
 
+
+// runtime state
+@property (nonatomic, retain) NSMutableDictionary* sourcesByCatalog;
 @property (nonatomic, retain) NSOperationQueue* networkQueue;
 @property (nonatomic, retain) ZincOperationQueueGroup* queueGroup;
 @property (nonatomic, retain) NSTimer* refreshTimer;
@@ -54,6 +56,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
 
+- (void) startRefreshTimer;
+- (void) stopRefreshTimer;
+
 - (BOOL) createDirectoriesIfNeeded:(NSError**)outError;
 - (NSString*) catalogsPath;
 - (NSString*) manifestsPath;
@@ -61,12 +66,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) bundlesPath;
 - (NSString*) downloadsPath;
 
+- (void) queueUpdateIndex;
+
 - (NSString*) cacheKeyForCatalogId:(NSString*)identifier;
 - (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
 - (NSString*) cacheKeyForBundleId:(NSString*)identifier version:(ZincVersion)version;
 
 - (void) registerSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
-- (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId;
+- (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
 
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
 - (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro;
@@ -79,7 +86,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @implementation ZincRepo
 
 @synthesize delegate = _delegate;
-@synthesize repoIndex = _repoIndex;
+@synthesize index = _index;
 @synthesize url = _url;
 @synthesize networkQueue = _networkQueue;
 @synthesize sourcesByCatalog = _sourcesByCatalog;
@@ -101,6 +108,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
 {
+    if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
+        fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
+    }
+    
     ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue] autorelease];
     if (![repo createDirectoriesIfNeeded:outError]) {
         return nil;
@@ -109,20 +120,30 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSString* indexPath = [[fileURL path] stringByAppendingFormat:REPO_INDEX_FILE];
     if ([repo.fileManager fileExistsAtPath:indexPath]) {
         
+        NSString* jsonString = [[[NSString alloc] initWithContentsOfFile:indexPath encoding:NSUTF8StringEncoding error:outError]
+                                autorelease];
+        if (jsonString == nil) {
+            return nil;
+        }
         
-        
+        NSDictionary* jsonDict = [KSJSON deserializeString:jsonString error:outError];
+        if (jsonDict == nil) {
+            return nil;
+        }
+            
+        ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithDictionary:jsonDict] autorelease];
+        repo.index = index;
     }
-    
     return repo;
 }
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
 {
     self = [super init];
     if (self) {
         self.url = fileURL;
-        self.repoIndex = [[[ZincRepoIndex alloc] init] autorelease];
-        self.networkQueue = operationQueue;
+        self.index = [[[ZincRepoIndex alloc] init] autorelease];
+        self.networkQueue = networkQueue;
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleCloneTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
@@ -136,13 +157,25 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.loadedBundles = [NSMutableDictionary dictionary];
         self.myTasks = [NSMutableArray array];
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
-                                                             target:self
-                                                           selector:@selector(refreshTimerFired:)
-                                                           userInfo:nil
-                                                            repeats:YES];
+        [self startRefreshTimer];
     }
     return self;
+}
+
+- (void) startRefreshTimer
+{
+    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
+                                                         target:self
+                                                       selector:@selector(refreshTimerFired:)
+                                                       userInfo:nil
+                                                        repeats:YES];
+    [self.refreshTimer fire];
+}
+
+- (void) stopRefreshTimer
+{
+    [self.refreshTimer invalidate];
+    self.refreshTimer = nil;
 }
 
 - (void) refreshTimerFired:(NSTimer*)timer
@@ -166,7 +199,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void)dealloc
 {
     self.url = nil;
-    self.repoIndex = nil;
+    self.index = nil;
     // TODO: stop operations?
     self.networkQueue = nil;
     self.queueGroup = nil;
@@ -201,6 +234,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 }
 
 #pragma mark Path Helpers
+
+- (NSURL*) indexURL
+{
+    return [NSURL fileURLWithPath:[[self.url path] stringByAppendingPathComponent:REPO_INDEX_FILE]];
+}
 
 - (NSString*) catalogsPath
 {
@@ -283,21 +321,26 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 #pragma mark Sources
 
-- (void) addSourceURL:(NSURL*)url
+- (void) addSourceURL:(NSURL*)source
 {
-    @synchronized(self.repoIndex) {
-        [self.repoIndex addSourceURL:url];
-    }
+    [self.index addSourceURL:source];
+    [self queueUpdateIndex];
 }
 
-- (void) removeSourceURL:(NSURL*)url
+- (void) removeSourceURL:(NSURL*)source
 {
-    @synchronized(self.repoIndex) {
-        [self.repoIndex removeSourceURL:url];
+    @synchronized(self.sourcesByCatalog) {
+        for (NSString* catalogId in [self.sourcesByCatalog allKeys]) {
+            NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalogId];
+            [sources removeObject:source];
+        }
     }
+    
+    [self.index removeSourceURL:source];
+    [self queueUpdateIndex];
 }
 
-- (void) registerSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog
+- (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog
 {
     @synchronized(self) {
         NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalog.identifier];
@@ -307,7 +350,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         }
         // TODO: cleaner duplicate check
         for (ZincSource* existingSource in sources) {
-            if ([existingSource.url isEqual:source.url]) {
+            if ([existingSource isEqual:source]) {
                 return;
             }
         }
@@ -318,7 +361,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
-    NSSet* sourceURLs = [self.repoIndex sourceURLS];
+    NSSet* sourceURLs = [self.index sourceURLS];
     
     NSOperation* parentOp = nil;
     if (completion != nil) {
@@ -326,8 +369,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         parentOp.completionBlock = completion;
     }
     
-    for (NSURL* sourceURL in sourceURLs) {
-        ZincSource* source = [ZincSource sourceWithURL:sourceURL];
+    for (NSURL* source in sourceURLs) {
         ZincSourceUpdateTask* catalogTask = [[[ZincSourceUpdateTask alloc] initWithRepo:self source:source] autorelease];
         catalogTask = (ZincSourceUpdateTask*)[self getOrAddTask:catalogTask];
         [parentOp addDependency:catalogTask];
@@ -338,7 +380,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId
+- (NSArray*) sourcesForCatalogId:(NSString*)catalogId
 {
     return [self.sourcesByCatalog objectForKey:catalogId];
 }
@@ -358,6 +400,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) cacheKeyForBundleId:(NSString*)identifier version:(ZincVersion)version
 {
     return [[@"Bundle:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
+}
+
+#pragma mark Repo Index
+
+- (void) queueUpdateIndex
+{
+    ZincRepoIndexUpdateTask* task = [[[ZincRepoIndexUpdateTask alloc] initWithRepo:self] autorelease];
+    [self getOrAddTask:task];
 }
 
 #pragma mark Catalogs
@@ -392,7 +442,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 #pragma mark Bundles
 
-- (void) registerManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId
+- (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId
 {
     NSString* cacheKey = [self cacheKeyManifestWithBundleId:bundleId version:manifest.version];
     [self.cache setObject:manifest forKey:cacheKey];
@@ -448,11 +498,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     NSMutableArray* activeBundles = [NSMutableArray array];
     
-    NSSet* trackBundles = [self.repoIndex trackedBundleIds];
+    NSSet* trackBundles = [self.index trackedBundleIds];
     for (NSString* bundleId in trackBundles) {
-        NSString* dist = [self.repoIndex trackedDistributionForBundleId:bundleId];
+        NSString* dist = [self.index trackedDistributionForBundleId:bundleId];
         ZincVersion version = [self versionForBundleId:bundleId distribution:dist];
-        [activeBundles addObject:[ZincBundleDescriptor bundleDescriptorForId:bundleId version:version]];
+        [activeBundles addObject:[NSURL zincResourceForBundleWithId:bundleId version:version]];
     }
     
     @synchronized(self.loadedBundles) {
@@ -487,7 +537,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
 {
-    [self.repoIndex addTrackedBundleId:bundleId distribution:distro];
+    [self.index addTrackedBundleId:bundleId distribution:distro];
+    [self queueUpdateIndex];
     
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     ZincBundleCloneTask* bundleTask = [[[ZincBundleCloneTask alloc]
@@ -498,7 +549,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
-    [self.repoIndex removeTrackedBundleId:bundleId];
+    [self.index removeTrackedBundleId:bundleId];
+    [self queueUpdateIndex];
 
     // TODO: make sure it's not active!!
 
@@ -515,10 +567,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         parentOp.completionBlock = completion;
     }
     
-    NSSet* trackBundles = [self.repoIndex trackedBundleIds];
+    NSSet* trackBundles = [self.index trackedBundleIds];
     
     for (NSString* bundleId in trackBundles) {
-        NSString* distro = [self.repoIndex trackedDistributionForBundleId:bundleId];
+        NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
         ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
         if (version != ZincVersionInvalid) {
             
@@ -536,6 +588,18 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 }
 
 #pragma mark Bundles
+
+- (void) registerBundle:(NSURL*)bundleResource
+{
+    [self.index addAvailableBundle:bundleResource];
+    [self queueUpdateIndex];
+}
+
+- (void) deregisterBundle:(NSURL*)bundleResource
+{
+    [self.index removeAvailableBundle:bundleResource];
+    [self queueUpdateIndex];
+}
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
 {
@@ -558,8 +622,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
             // TODO: handle error
             
-            ZincBundleDescriptor* desc = [ZincBundleDescriptor bundleDescriptorForId:bundleId version:version];
-            [self.loadedBundles setObject:bundle forKey:desc];
+            NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
+            [self.loadedBundles setObject:bundle forKey:res];
         }
     }
     return bundle;
@@ -567,7 +631,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSBundle*) bundleWithId:(NSString*)bundleId
 {
-    NSString* distro = [self.repoIndex trackedDistributionForBundleId:bundleId];
+    NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
@@ -585,12 +649,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) suspendAllTasks
 {
+    [self stopRefreshTimer];
     [self.queueGroup setSuspended:YES];
 }
 
 - (void) resumeAllTasks
 {
     [self.queueGroup setSuspended:NO];
+    [self startRefreshTimer];
 }
 
 - (ZincTask*) taskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
@@ -605,7 +671,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return nil;
 }
 
-- (NSArray*) tasksForResource:(id<ZincResourceDescriptor>)resource
+- (NSArray*) tasksForResource:(NSURL*)resource
 {
     @synchronized(self.myTasks) {
         NSMutableArray* tasks = [NSMutableArray array];

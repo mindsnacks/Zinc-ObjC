@@ -13,7 +13,7 @@
 #import "ZincEvent.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincFileDownloadTask.h"
-#import "ZincBundleDescriptor.h"
+#import "ZincResource.h"
 
 @implementation ZincBundleCloneTask
 
@@ -22,8 +22,8 @@
 
 - (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
 {
-    ZincBundleDescriptor* desc = [ZincBundleDescriptor bundleDescriptorForId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:desc];
+    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    self = [super initWithRepo:repo resourceDescriptor:res];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;
@@ -67,7 +67,7 @@
     }
     
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
-    NSArray* sources = [self.repo sourcesForCatalogIdentifier:catalogId];
+    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
     if (sources == nil || [sources count] == 0) {
         // TODO: error, log, or requeue or SOMETHING
         return;
@@ -140,6 +140,8 @@
     }
     
     ZINC_DEBUG_LOG(@"FINISHED BUNDLE %@!", self.bundleId);
+    
+    [self.repo registerBundle:self.resource];
     
     self.finishedSuccessfully = YES;
 }

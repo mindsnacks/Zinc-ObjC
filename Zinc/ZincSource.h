@@ -7,14 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ZincResourceDescriptor.h"
+
+// TODO: add zinc prefix to everything?
 
 @class ZincCatalog;
 
-@interface ZincSource : NSObject <ZincResourceDescriptor>
-
-+ (ZincSource*) sourceWithURL:(NSURL*)url;
-@property (nonatomic, retain, readonly) NSURL* url;
+@interface NSURL (ZincSource)
 
 - (NSURL*) urlForCatalogIndex;
 - (NSURLRequest*) urlRequestForCatalogIndex;

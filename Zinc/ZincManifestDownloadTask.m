@@ -12,7 +12,7 @@
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
-#import "ZincResourceDescriptor.h"
+#import "ZincResource.h"
 #import "AFHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
@@ -25,8 +25,8 @@
 
 - (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version
 {    
-    ZincManifestDescriptor* desc = [ZincManifestDescriptor manifestDescriptorForId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:desc];
+    NSURL* res = [NSURL zincResourceForManifestWithId:bundleId version:version];
+    self = [super initWithRepo:repo resourceDescriptor:res];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;
@@ -48,7 +48,7 @@
     
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
     NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
-    ZincSource* source = [[self.repo sourcesForCatalogIdentifier:catalogId] lastObject]; // TODO: fix lastObject
+    ZincSource* source = [[self.repo sourcesForCatalogId:catalogId] lastObject]; // TODO: fix lastObject
     if (source == nil) {
         ZINC_DEBUG_LOG(@"source is nil");
         // TODO: better error
@@ -102,7 +102,7 @@
         return;
     }
 
-    [self.repo registerManifest:manifest forBundleId:self.bundleId];
+    [self.repo addManifest:manifest forBundleId:self.bundleId];
     
     self.finishedSuccessfully = YES;
 }

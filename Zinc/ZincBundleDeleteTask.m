@@ -11,7 +11,7 @@
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincManifest.h"
-#import "ZincBundleDescriptor.h"
+#import "ZincResource.h"
 
 @implementation ZincBundleDeleteTask
 
@@ -20,8 +20,8 @@
 
 - (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
 {
-    ZincBundleDescriptor* desc = [ZincBundleDescriptor bundleDescriptorForId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:desc];
+    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    self = [super initWithRepo:repo resourceDescriptor:res];
     if (self) {
         self.bundleId = bundleId;
         self.version = version;

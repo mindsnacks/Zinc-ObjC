@@ -7,7 +7,7 @@
 //
 
 #import "ZincTaskDescriptor.h"
-#import "ZincResourceDescriptor.h"
+#import "ZincResource.h"
 
 @implementation ZincTaskDescriptor
 
@@ -19,6 +19,11 @@
     self.resource = nil;
     self.method = nil;
     [super dealloc];
+}
+
+- (NSString*) stringValue
+{
+    return [NSString stringWithFormat:@"%@-%@", [self.resource absoluteString], self.method];
 }
 
 - (id)copyWithZone:(NSZone *)zone
@@ -44,6 +49,11 @@
     }
     
     return YES;    
+}
+
+- (NSUInteger)hash
+{
+    return [[self stringValue] hash];
 }
 
 @end

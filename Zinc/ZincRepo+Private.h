@@ -8,6 +8,7 @@
 
 #import "ZincRepo.h"
 
+@class ZincRepoIndex;
 @class ZincCatalog;
 @class ZincSource;
 @class ZincTask;
@@ -17,11 +18,14 @@
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 
-- (NSArray*) sourcesForCatalogIdentifier:(NSString*)catalogId;
-- (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
-- (void) registerSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
+- (NSURL*) indexURL;
+@property (nonatomic, retain) ZincRepoIndex* index;
 
-- (void) registerManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
+- (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
+- (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
+- (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
+
+- (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
 - (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
 - (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
@@ -29,10 +33,13 @@
 
 #pragma mark Bundles
 
+- (void) registerBundle:(NSURL*)bundleResource;
+- (void) deregisterBundle:(NSURL*)bundleResource;
+
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
 
 // includes all currently tracked and open bundles
-// returns ZincBundleDescriptors
+// returns NSURLs (ZincBundleDescriptors)
 - (NSArray*) activeBundles;
 
 #pragma mark Files

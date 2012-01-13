@@ -8,7 +8,7 @@
 
 #import "ZincCatalogUpdateTask.h"
 #import "ZincCatalog.h"
-#import "ZincResourceDescriptor.h"
+#import "ZincResource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
@@ -24,11 +24,11 @@
 
 - (id) initWithRepo:(ZincRepo *)repo catalog:(ZincCatalog*)catalog
 {
-    ZincCatalogDescriptor* desc = [ZincCatalogDescriptor catalogDescriptorForId:catalog.identifier];
+    NSURL* desc = [NSURL zincResourceForCatalogWithId:catalog.identifier];
     self = [super initWithRepo:repo resourceDescriptor:desc];
     if (self) {
         self.catalog = catalog;
-        self.title = @"Updating Catalog"; // TODO: localization
+        self.title = NSLocalizedString(@"Updating Catalog", @"ZincCatalogUpdateTask");
     }
     return self;
 }

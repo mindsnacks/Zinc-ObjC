@@ -9,7 +9,7 @@
 #import "ZincGarbageCollectTask.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincBundleDescriptor.h"
+#import "ZincResource.h"
 #import "ZincManifest.h"
 
 @implementation ZincGarbageCollectTask

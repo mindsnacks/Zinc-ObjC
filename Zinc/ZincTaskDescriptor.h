@@ -15,7 +15,9 @@
 
 @interface ZincTaskDescriptor : NSObject <NSCopying>
 
-@property (nonatomic, retain) id<ZincResourceDescriptor> resource;
+@property (nonatomic, retain) NSURL* resource;
 @property (nonatomic, retain) NSString* method;
+
+- (NSString*) stringValue;
 
 @end

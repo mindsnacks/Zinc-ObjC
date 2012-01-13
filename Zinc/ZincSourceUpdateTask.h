@@ -8,11 +8,9 @@
 
 #import "ZincTask.h"
 
-@class ZincSource;
-
 @interface ZincSourceUpdateTask : ZincTask
 
-- (id) initWithRepo:(ZincRepo *)repo source:(ZincSource*)source;
-@property (nonatomic, retain, readonly) ZincSource* source;
+- (id) initWithRepo:(ZincRepo *)repo source:(NSURL*)sourceURL;
+@property (nonatomic, retain, readonly) NSURL* sourceURL;
 
 @end

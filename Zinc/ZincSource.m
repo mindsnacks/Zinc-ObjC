@@ -9,38 +9,11 @@
 #import "ZincSource.h"
 #import "ZincCatalog.h"
 
-@interface ZincSource ()
-@property (nonatomic, retain, readwrite) NSURL* url;
-@end
-
-@implementation ZincSource
-
-@synthesize url = _url;
-
-+ (ZincSource*) sourceWithURL:(NSURL*)url
-{
-    // TODO: validate URL
-    ZincSource* remote = [[[ZincSource alloc] init] autorelease];
-    remote.url = url;
-    return remote;
-}
-
-- (void)dealloc
-{
-    self.url = nil;
-    [super dealloc];
-}
-
-- (id)copyWithZone:(NSZone *)zone
-{
-    ZincSource* newsource = [[ZincSource allocWithZone:zone] init];
-    newsource.url = [[self.url copy] autorelease];
-    return newsource;
-}
+@implementation NSURL (ZincSource)
 
 - (NSURL*) urlForCatalogIndex
 {
-    return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self.url] absoluteURL];
+    return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self] absoluteURL];
 }
 
 - (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
@@ -62,7 +35,7 @@
 {
     NSString* manifest = [NSString stringWithFormat:@"%@-%d.json.gz", name, version];
     NSString* manifestPath = [NSString stringWithFormat:@"manifests/%@", manifest];
-    NSURL* manifestURL = [NSURL URLWithString:manifestPath relativeToURL:self.url];
+    NSURL* manifestURL = [NSURL URLWithString:manifestPath relativeToURL:self];
     return [manifestURL absoluteURL];
 }
 
@@ -98,7 +71,7 @@
     }
     NSString* relativePath = [relativeDir stringByAppendingPathComponent:file];
     
-    return [[NSURL URLWithString:relativePath relativeToURL:self.url] absoluteURL];
+    return [[NSURL URLWithString:relativePath relativeToURL:self] absoluteURL];
 }
 
 - (NSURL*) urlForFileWithSHA:(NSString*)sha

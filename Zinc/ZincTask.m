@@ -27,7 +27,7 @@
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(id<ZincResourceDescriptor>)resource
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource
 {
     self = [super init];
     if (self) {
@@ -65,7 +65,7 @@
     return NSStringFromClass(self);
 }
 
-+ (ZincTaskDescriptor*) taskDescriptorForResource:(id<ZincResourceDescriptor>)resource
++ (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
     ZincTaskDescriptor* td = [[[ZincTaskDescriptor alloc] init] autorelease];
     td.method = [self taskMethod];

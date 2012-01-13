@@ -7,6 +7,8 @@
 //
 
 #import "ZincRepoIndex.h"
+#import "KSJSON.h"
+#import "ZincResource.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
@@ -19,6 +21,25 @@
 @synthesize mySourceURLs = _mySourceURLs;
 @synthesize myTrackedBundles = _myTrackedBundles;
 @synthesize myAvailableBundles = _myAvailableBundles;
+
+- (id)init 
+{
+    self = [super init];
+    if (self) {
+        self.mySourceURLs = [NSMutableSet set];
+        self.myTrackedBundles = [NSMutableDictionary dictionary];
+        self.myAvailableBundles = [NSMutableSet set];
+    }
+    return self;
+}
+
+- (void)dealloc
+{
+    self.mySourceURLs = nil;
+    self.myTrackedBundles = nil;
+    self.myAvailableBundles = nil;
+    [super dealloc];
+}
 
 - (void) addSourceURL:(NSURL*)url
 {
@@ -75,17 +96,17 @@
     return key;
 }
 
-- (void) addAvailableBundle:(ZincBundleDescriptor*)bundleDesc
+- (void) addAvailableBundle:(NSURL*)bundleResouce
 {
     @synchronized(self.myAvailableBundles) {
-        [self.myAvailableBundles addObject:bundleDesc];
+        [self.myAvailableBundles addObject:bundleResouce];
     }
 }
 
-- (void) removeAvailableBundle:(ZincBundleDescriptor*)bundleDesc
+- (void) removeAvailableBundle:(NSURL*)bundleResouce
 {
     @synchronized(self.myAvailableBundles) {
-        [self.myAvailableBundles removeObject:bundleDesc];
+        [self.myAvailableBundles removeObject:bundleResouce];
     }
 }
 
@@ -98,9 +119,65 @@
     return set;
 }
 
-//- (id) initWithDictionary:(NSDictionary*)dict;
-//- (NSDictionary*) dictionaryRepresentation;
-//- (NSString*) jsonRepresentation:(NSError**)outError;
+- (id) initWithDictionary:(NSDictionary*)dict
+{
+    self = [self init];
+    if (self) {
+
+        self.mySourceURLs = [NSMutableSet setWithArray:[dict objectForKey:@"sources"]];
+        NSArray* sourceURLs = [dict objectForKey:@"sources"];
+        for (NSString* sourceURL in sourceURLs) {
+            [self.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
+        }
+        
+        self.myTrackedBundles = [[[dict objectForKey:@"tracked_bundles"] mutableCopy] autorelease];
+        
+        NSDictionary* availBundles = [dict objectForKey:@"available_bundles"];
+        for (NSString* bundleId in [availBundles allKeys]) {
+            NSArray* versions = [availBundles objectForKey:bundleId];
+            for (NSNumber* version in versions) {
+                NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:[version integerValue]];
+                [self.myAvailableBundles addObject:bundleRes];
+            }
+        }
+    }
+    return self;
+}
+
+- (NSDictionary*) dictionaryRepresentation
+{
+    // TODO: should I synchronize this too?
+    
+    NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+
+    NSMutableArray* sourceURLs = [NSMutableArray arrayWithCapacity:[self.mySourceURLs count]];
+    for (NSURL* sourceURL in self.mySourceURLs) {
+        [sourceURLs addObject:[sourceURL absoluteString]];
+    }
+    [dict setObject:sourceURLs forKey:@"sources"];
+        
+    [dict setObject:self.myTrackedBundles forKey:@"tracked_bundles"];
+    
+    NSMutableDictionary* availBundles = [NSMutableDictionary dictionary];
+    for (NSURL* bundleRes in self.myAvailableBundles) {
+        
+        NSMutableArray* versions = [availBundles objectForKey:[bundleRes zincBundleId]];
+        if (versions == nil) {
+            versions = [NSMutableArray array];
+            [availBundles setObject:versions forKey:[bundleRes zincBundleId]];
+        }
+        [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];
+    }
+    
+    [dict setObject:availBundles forKey:@"available_bundles"];
+    
+    return dict;
+}
+
+- (NSString*) jsonRepresentation:(NSError**)outError
+{
+    return [KSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+}
 
 
 @end

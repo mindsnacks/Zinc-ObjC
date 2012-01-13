@@ -9,8 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "Zinc.h"
 
-@class ZincBundleDescriptor;
-
 @interface ZincRepoIndex : NSObject
 
 - (id) init;
@@ -24,8 +22,8 @@
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
 
-- (void) addAvailableBundle:(ZincBundleDescriptor*)bundleDesc;
-- (void) removeAvailableBundle:(ZincBundleDescriptor*)bundleDesc;
+- (void) addAvailableBundle:(NSURL*)bundleDesc;
+- (void) removeAvailableBundle:(NSURL*)bundleDesc;
 - (NSSet*) availableBundles;
 
 #pragma mark Encoding
