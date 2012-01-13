@@ -52,8 +52,6 @@
 		B327071F14BCE758004E3244 /* ZincFileDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B327071D14BCE756004E3244 /* ZincFileDownloadTask.m */; };
 		B327D4B114AE6F410051416F /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4AF14AE6F410051416F /* sha1.c */; };
 		B327D4B214AE6F410051416F /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B014AE6F410051416F /* sha1.h */; };
-		B327D4B514AE72FF0051416F /* NSData_Base64Extensions.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B314AE72FF0051416F /* NSData_Base64Extensions.h */; };
-		B327D4B614AE72FF0051416F /* NSData_Base64Extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = B327D4B414AE72FF0051416F /* NSData_Base64Extensions.m */; };
 		B327D4B914AE754C0051416F /* Base64Transcoder.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4B714AE754C0051416F /* Base64Transcoder.c */; };
 		B327D4BA14AE754C0051416F /* Base64Transcoder.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B814AE754C0051416F /* Base64Transcoder.h */; };
 		B327D4BF14AE75DC0051416F /* ZincFileManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B327D4BC14AE75C20051416F /* ZincFileManagerTest.m */; };
@@ -237,8 +235,6 @@
 		B327071D14BCE756004E3244 /* ZincFileDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincFileDownloadTask.m; sourceTree = "<group>"; };
 		B327D4AF14AE6F410051416F /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = Dependencies/sha1/sha1.c; sourceTree = SOURCE_ROOT; };
 		B327D4B014AE6F410051416F /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = Dependencies/sha1/sha1.h; sourceTree = SOURCE_ROOT; };
-		B327D4B314AE72FF0051416F /* NSData_Base64Extensions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NSData_Base64Extensions.h; path = Dependencies/sha1/NSData_Base64Extensions.h; sourceTree = SOURCE_ROOT; };
-		B327D4B414AE72FF0051416F /* NSData_Base64Extensions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NSData_Base64Extensions.m; path = Dependencies/sha1/NSData_Base64Extensions.m; sourceTree = SOURCE_ROOT; };
 		B327D4B714AE754C0051416F /* Base64Transcoder.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Base64Transcoder.c; path = Dependencies/sha1/Base64Transcoder.c; sourceTree = SOURCE_ROOT; };
 		B327D4B814AE754C0051416F /* Base64Transcoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Base64Transcoder.h; path = Dependencies/sha1/Base64Transcoder.h; sourceTree = SOURCE_ROOT; };
 		B327D4BB14AE75C20051416F /* ZincFileManagerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincFileManagerTest.h; sourceTree = "<group>"; };
@@ -406,8 +402,8 @@
 		B3105720148D942E0069F0D5 /* KSJSON */ = {
 			isa = PBXGroup;
 			children = (
-				B3549DCE148D957900DD63D1 /* KSJSON.m */,
 				B3105721148D94480069F0D5 /* KSJSON.h */,
+				B3549DCE148D957900DD63D1 /* KSJSON.m */,
 				B3549DD4148D959C00DD63D1 /* Source */,
 			);
 			name = KSJSON;
@@ -438,8 +434,6 @@
 				B327D4B814AE754C0051416F /* Base64Transcoder.h */,
 				B327D4AF14AE6F410051416F /* sha1.c */,
 				B327D4B014AE6F410051416F /* sha1.h */,
-				B327D4B314AE72FF0051416F /* NSData_Base64Extensions.h */,
-				B327D4B414AE72FF0051416F /* NSData_Base64Extensions.m */,
 			);
 			name = sha1;
 			sourceTree = "<group>";
@@ -602,8 +596,8 @@
 		B38742F91489B830004B227B = {
 			isa = PBXGroup;
 			children = (
-				B387430E1489B830004B227B /* Demo */,
 				B340F972148D52D800206F86 /* Zinc */,
+				B387430E1489B830004B227B /* Demo */,
 				B340F984148D52D800206F86 /* ZincTests */,
 				B31056F7148D934B0069F0D5 /* Dependencies */,
 				B38743071489B830004B227B /* Frameworks */,
@@ -720,7 +714,6 @@
 				B3AE4649149C1D3400767CBD /* UIImageView+AFNetworking.h in Headers */,
 				B3AE464D149C1FA800767CBD /* ZincSource.h in Headers */,
 				B327D4B214AE6F410051416F /* sha1.h in Headers */,
-				B327D4B514AE72FF0051416F /* NSData_Base64Extensions.h in Headers */,
 				B327D4BA14AE754C0051416F /* Base64Transcoder.h in Headers */,
 				B326A94814B11B7E00CED8DF /* NSData+Zinc.h in Headers */,
 				B326A96614B3985700CED8DF /* MANotificationCenterAdditions.h in Headers */,
@@ -943,7 +936,6 @@
 				B3AE464A149C1D3400767CBD /* UIImageView+AFNetworking.m in Sources */,
 				B3AE464E149C1FA800767CBD /* ZincSource.m in Sources */,
 				B327D4B114AE6F410051416F /* sha1.c in Sources */,
-				B327D4B614AE72FF0051416F /* NSData_Base64Extensions.m in Sources */,
 				B327D4B914AE754C0051416F /* Base64Transcoder.c in Sources */,
 				B326A94914B11B7E00CED8DF /* NSData+Zinc.m in Sources */,
 				B326A96714B3985700CED8DF /* MANotificationCenterAdditions.m in Sources */,
