@@ -24,7 +24,7 @@
 - (NSString*) zincBundleId;
 - (ZincVersion) zincBundleVersion;
 
-+ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha;
++ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId;
 - (BOOL) isZincFileResource;
 - (NSString*) zincFileSHA;
 

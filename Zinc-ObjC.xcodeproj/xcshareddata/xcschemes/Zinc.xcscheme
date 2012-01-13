@@ -16,7 +16,7 @@
                BlueprintIdentifier = "B340F96F148D52D800206F86"
                BuildableName = "libZinc.a"
                BlueprintName = "Zinc"
-               ReferencedContainer = "container:ZincObjC.xcodeproj">
+               ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -34,7 +34,7 @@
                BlueprintIdentifier = "B340F97C148D52D800206F86"
                BuildableName = "ZincTests.octest"
                BlueprintName = "ZincTests"
-               ReferencedContainer = "container:ZincObjC.xcodeproj">
+               ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>

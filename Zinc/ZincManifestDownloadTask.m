@@ -20,25 +20,28 @@
 
 @implementation ZincManifestDownloadTask
 
-@synthesize bundleId = _bundleId;
-@synthesize version = _version;
-
-- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version
-{    
-    NSURL* res = [NSURL zincResourceForManifestWithId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:res];
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
+{
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
-        self.bundleId = bundleId;
-        self.version = version;
-        // TODO: title?
+        self.title = NSLocalizedString(@"Updating Manifest", @"ZincManifestDownloadTask");
     }
     return self;
 }
 
 - (void)dealloc 
 {
-    self.bundleId = nil;
     [super dealloc];
+}
+
+- (NSString*) bundleId
+{
+    return [self.resource zincBundleId];
+}
+
+- (ZincVersion) version
+{
+    return [self.resource zincBundleVersion];
 }
 
 - (void) main

@@ -18,21 +18,19 @@
 @synthesize bundleId = _bundleId;
 @synthesize version = _version;
 
-- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
-{
-    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:res];
-    if (self) {
-        self.bundleId = bundleId;
-        self.version = version;
-    }
-    return self;
-}
-
 - (void)dealloc
 {
-    self.bundleId = nil;
     [super dealloc];
+}
+
+- (NSString*) bundleId
+{
+    return [self.resource zincBundleId];
+}
+
+- (ZincVersion) version
+{
+    return [self.resource zincBundleVersion];
 }
 
 - (void) main

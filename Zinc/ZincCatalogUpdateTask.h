@@ -12,7 +12,6 @@
 
 @interface ZincCatalogUpdateTask : ZincTask
 
-- (id) initWithRepo:(ZincRepo *)repo catalog:(ZincCatalog*)catalog;
-@property (nonatomic, retain, readonly) ZincCatalog* catalog;
+@property (readonly) ZincCatalog* catalog;
 
 @end

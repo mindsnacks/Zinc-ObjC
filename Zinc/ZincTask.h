@@ -14,8 +14,12 @@
 
 @interface ZincTask : NSOperation
 
++ (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo;
++ (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo input:(id)input;
+
 @property (nonatomic, assign, readonly) ZincRepo* repo;
 @property (nonatomic, retain, readonly) NSURL* resource;
+@property (nonatomic, retain, readonly) id input;
 
 @property (readonly, retain) NSString* title;
 
@@ -33,6 +37,8 @@
 @interface ZincTask ()
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
+
 @property (retain) NSMutableArray* suboperations;
 - (void) addOperation:(NSOperation*)operation;
 //- (void) waitForSuboperations;

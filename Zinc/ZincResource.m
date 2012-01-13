@@ -36,10 +36,17 @@
 
 - (NSString*) zincCatalogId
 {
-    if (![self isZincCatalogResource]) {
-        return nil;
+    if ([self isZincCatalogResource]) {
+        return [[self path] substringFromIndex:1];
+
+    } else if ([self isZincFileResource]) {
+        NSString* catalogId = [self path];
+        catalogId = [catalogId stringByDeletingLastPathComponent]; // strip version
+        catalogId = [catalogId substringFromIndex:1]; // strip leading /
+        return catalogId;
     }
-    return [[self path] substringFromIndex:1];
+    
+    return nil;
 }
 
 + (NSURL*) zincResourceForManifestWithId:(NSString*)bundleId version:(ZincVersion)version
@@ -88,9 +95,9 @@
     return [version integerValue];
 }
 
-+ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha
++ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId
 {
-    NSString* path = [@"/" stringByAppendingString:sha];
+    NSString* path = [NSString stringWithFormat:@"/%@/%@", catalogId, sha];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"object" path:path] autorelease];
 }
 
@@ -105,7 +112,7 @@
         return nil;
     }
     
-    return [[self path] substringFromIndex:1];
+    return [[self path] lastPathComponent];
 }
 
 @end

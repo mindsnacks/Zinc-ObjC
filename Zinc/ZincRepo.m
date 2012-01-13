@@ -16,6 +16,7 @@
 #import "ZincCatalog.h"
 #import "ZincEvent.h"
 #import "ZincResource.h"
+#import "ZincTaskDescriptor.h"
 #import "ZincBundleCloneTask.h"
 #import "ZincBundleDeleteTask.h"
 #import "ZincSourceUpdateTask.h"
@@ -389,9 +390,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     for (NSURL* source in sourceURLs) {
-        ZincSourceUpdateTask* catalogTask = [[[ZincSourceUpdateTask alloc] initWithRepo:self source:source] autorelease];
-        catalogTask = (ZincSourceUpdateTask*)[self getOrAddTask:catalogTask];
-        [parentOp addDependency:catalogTask];
+        ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
+        ZincTask* task = (ZincSourceUpdateTask*)[self queueTaskForDescriptor:taskDesc];
+        [parentOp addDependency:task];
     }
     
     if (completion != nil) {
@@ -425,8 +426,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) queueUpdateIndex
 {
-    ZincRepoIndexUpdateTask* task = [[[ZincRepoIndexUpdateTask alloc] initWithRepo:self] autorelease];
-    [self getOrAddTask:task];
+    ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self indexURL]];
+    [self queueTaskForDescriptor:taskDesc];
 }
 
 #pragma mark Catalogs
@@ -568,10 +569,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     if (![self isBundleAvailable:bundleId version:version]) {
         
-        ZincBundleCloneTask* bundleTask = [[[ZincBundleCloneTask alloc]
-                                            initWithRepo:self bundleId:bundleId version:version]
-                                           autorelease];
-        [self getOrAddTask:bundleTask];
+        NSURL* bundleDesc = [NSURL zincResourceForBundleWithId:bundleId version:version];
+        ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleDesc];
+        [self queueTaskForDescriptor:taskDesc];
     }
 }
 
@@ -604,10 +604,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             continue;
         }
         
-        ZincBundleCloneTask* bundleTask = [[[ZincBundleCloneTask alloc]
-                                            initWithRepo:self bundleId:bundleId version:version]
-                                           autorelease];
-        bundleTask = (ZincBundleCloneTask*)[self getOrAddTask:bundleTask];
+        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+        ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
+        ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
         [parentOp addDependency:bundleTask];
     }
     
@@ -618,8 +617,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) deleteBundleWithId:(NSString*)bundleId version:(ZincVersion)version
 {
-    ZincBundleDeleteTask* deleteTask = [[[ZincBundleDeleteTask alloc] initWithRepo:self bundleId:bundleId version:version] autorelease];
-    [self getOrAddTask:deleteTask];  
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
+    [self queueTaskForDescriptor:taskDesc];
 }
 
 // TODO: make sure it's not active!!
@@ -734,22 +734,24 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (ZincTask*) getOrAddTask:(ZincTask*)task
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
 {
     @synchronized(self.myTasks) {
         
-        NSArray* tasksMatchingResource = [self tasksForResource:task.resource];
+        NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
         
         // look for an exact match
         ZincTask* existingTask = nil;
         for (ZincTask* resourceTask in tasksMatchingResource) {
-            if ([[resourceTask taskDescriptor] isEqual:[task taskDescriptor]]) {
+            if ([[resourceTask taskDescriptor] isEqual:taskDescriptor]) {
                 existingTask = resourceTask;
             }
         }
         
         // if no exact match found, add task and depends for all other resource-matching
         if (existingTask == nil) {
+            
+            ZincTask* task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
             
             for (ZincTask* resourceTask in tasksMatchingResource) {
                 if (resourceTask != existingTask) {
@@ -764,10 +766,15 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
         } else {
             
-            ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, task);
+            ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
             return existingTask;
         }
     }
+}
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
+{
+    return [self queueTaskForDescriptor:taskDescriptor input:nil];
 }
 
 -  (void) removeTask:(ZincTask*)task

@@ -9,10 +9,30 @@
 #import "ZincTaskDescriptor.h"
 #import "ZincResource.h"
 
+@interface ZincTaskDescriptor ()
+@property (nonatomic, retain, readwrite) NSURL* resource;
+@property (nonatomic, retain, readwrite) NSString* method;
+@end
+
 @implementation ZincTaskDescriptor
 
 @synthesize resource = _resource;
 @synthesize method = _method;
+
+- (id) initWithResource:(NSURL*)resource method:(NSString*)method
+{
+    self = [super init];
+    if (self) {
+        self.resource = resource;
+        self.method = method;
+    }
+    return self;
+}
+
++ (id) taskDescriptorWithResource:(NSURL*)resource method:(NSString*)method
+{
+    return [[[self alloc] initWithResource:resource method:method] autorelease];
+}
 
 - (void)dealloc 
 {
@@ -54,6 +74,11 @@
 - (NSUInteger)hash
 {
     return [[self stringValue] hash];
+}
+
+- (NSString*) description
+{
+    return [self stringValue];
 }
 
 @end

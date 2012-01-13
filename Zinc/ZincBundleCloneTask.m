@@ -9,6 +9,8 @@
 #import "ZincBundleCloneTask.h"
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
+#import "ZincResource.h"
+#import "ZincTaskDescriptor.h"
 #import "ZincManifestDownloadTask.h"
 #import "ZincEvent.h"
 #import "NSFileManager+Zinc.h"
@@ -17,24 +19,19 @@
 
 @implementation ZincBundleCloneTask
 
-@synthesize bundleId = _bundleId;
-@synthesize version = _version;
-
-- (id)initWithRepo:(ZincRepo *)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
-{
-    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
-    self = [super initWithRepo:repo resourceDescriptor:res];
-    if (self) {
-        self.bundleId = bundleId;
-        self.version = version;
-    }
-    return self;
-}
-
 - (void)dealloc
 {
-    self.bundleId = nil;
     [super dealloc];
+}
+
+- (NSString*) bundleId
+{
+    return [self.resource zincBundleId];
+}
+
+- (ZincVersion) version
+{
+    return [self.resource zincBundleVersion];
 }
 
 - (void) main
@@ -44,17 +41,18 @@
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
-    ZincManifestDownloadTask* manifestOp = nil;
+    ZincTask* manifestDownloadTask = nil;
     
     // if the manifest doesn't exist, get it. 
     if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
-        manifestOp = [[[ZincManifestDownloadTask alloc] initWithRepo:self.repo bundleId:self.bundleId version:self.version] autorelease];
-        manifestOp = (ZincManifestDownloadTask*)[self.repo getOrAddTask:manifestOp];
+        NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleId version:self.version];
+        ZincTaskDescriptor* taskDesc = [ZincManifestDownloadTask taskDescriptorForResource:manifestRes];
+        manifestDownloadTask = [self.repo queueTaskForDescriptor:taskDesc];
     }
     
-    if (manifestOp != nil) {
-        [manifestOp waitUntilFinished];
-        if (!manifestOp.finishedSuccessfully) {
+    if (manifestDownloadTask != nil) {
+        [manifestDownloadTask waitUntilFinished];
+        if (!manifestDownloadTask.finishedSuccessfully) {
             // TODO: add events?
             return;
         }
@@ -82,14 +80,10 @@
         // check if file is missing
         if (![fm fileExistsAtPath:path]) {
             
-            // queue redownload
-            ZincSource* source = [sources lastObject]; // TODO: fix lastobject
-            NSAssert(source, @"source is nil");
-            ZincTask* fileOp = 
-            [[[ZincFileDownloadTask alloc] initWithRepo:self.repo
-                                               source:source
-                                                  sha:sha] autorelease];
-            fileOp = [self.repo getOrAddTask:fileOp];
+            // queue redownload            
+            NSURL* fileRes = [NSURL zincResourceForFileWithSHA:sha inCatalogId:catalogId];
+            ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
+            ZincTask* fileOp = [self.repo queueTaskForDescriptor:fileTaskDesc];
             [fileOps addObject:fileOp];
         }
     }

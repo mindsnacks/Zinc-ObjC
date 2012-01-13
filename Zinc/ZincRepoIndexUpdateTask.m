@@ -16,10 +16,9 @@
 
 @implementation ZincRepoIndexUpdateTask
 
-- (id) initWithRepo:(ZincRepo *)repo
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
-    NSURL* res = [repo indexURL];
-    self = [super initWithRepo:repo resourceDescriptor:res];
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
         self.title = NSLocalizedString(@"Updating Index", @"ZincRepoIndexUpdateTask");
     }

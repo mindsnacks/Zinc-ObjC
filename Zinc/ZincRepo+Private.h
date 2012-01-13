@@ -12,6 +12,7 @@
 @class ZincCatalog;
 @class ZincSource;
 @class ZincTask;
+@class ZincTaskDescriptor;
 @class ZincManifest;
 
 @interface ZincRepo ()
@@ -46,7 +47,8 @@
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
 
-- (ZincTask*) getOrAddTask:(ZincTask*)task;
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
 - (void) addOperation:(NSOperation*)operation;
 
 #pragma mark Paths

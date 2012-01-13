@@ -19,25 +19,14 @@
 
 @implementation ZincFileDownloadTask
 
-@synthesize source = _source;
-@synthesize sha = _sha;
-
-- (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha
-{
-    NSURL* res = [NSURL zincResourceForFileWithSHA:sha];
-    self = [super initWithRepo:repo resourceDescriptor:res];
-    if (self) {
-        self.source = souce;
-        self.sha = sha;
-    }
-    return self;
-}
-
 - (void)dealloc
 {
-    self.source = nil;
-    self.sha = nil;
     [super dealloc];
+}
+
+- (NSString*) sha
+{
+    return [self.resource zincFileSHA];
 }
 
 - (void) main
@@ -51,7 +40,10 @@
         ext = @"gz";
     }
     
-    NSURLRequest* request = [self.source urlRequestForFileWithSHA:self.sha extension:ext];
+    NSArray* sources = [self.repo sourcesForCatalogId:[self.resource zincCatalogId]];
+    ZincSource* source = [sources objectAtIndex:0]; // TODO: fix this
+    
+    NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
     if (request == nil) {
         // TODO: better error
         NSAssert(0, @"request is nil");
@@ -137,6 +129,8 @@
     if (uncompressedPath != nil) {
         [fm removeItemAtPath:uncompressedPath error:NULL];
     }
+    
+    self.finishedSuccessfully = YES;
 }
 
 

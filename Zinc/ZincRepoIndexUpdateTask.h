@@ -10,6 +10,4 @@
 
 @interface ZincRepoIndexUpdateTask : ZincTask
 
-- (id) initWithRepo:(ZincRepo *)repo;
-
 @end

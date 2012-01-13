@@ -17,19 +17,13 @@
 #import "ZincCatalogUpdateTask.h"
 #import "ZincResource.h"
 
-@interface ZincSourceUpdateTask ()
-@property (nonatomic, retain, readwrite) NSURL* sourceURL;
-@end
-
 @implementation ZincSourceUpdateTask
 
-@synthesize sourceURL = _sourceURL;
 
-- (id) initWithRepo:(ZincRepo *)repo source:(NSURL*)source
+- (id) initWithRepo:(ZincRepo *)repo resourceDescriptor:(NSURL *)resource input:(id)input
 {
-    self = [super initWithRepo:repo resourceDescriptor:source];
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
-        self.sourceURL = source;
         self.title = @"Updating Source"; // TODO: localization
     }
     return self;
@@ -37,8 +31,12 @@
 
 - (void)dealloc 
 {
-    self.sourceURL = nil;
     [super dealloc];
+}
+
+- (NSURL*) sourceURL
+{
+    return self.resource;
 }
 
 - (void) main
@@ -78,8 +76,10 @@
         return;
     }
     
-    ZincCatalogUpdateTask* catalogTask = [[[ZincCatalogUpdateTask alloc] initWithRepo:self.repo catalog:catalog] autorelease];
-    catalogTask = (ZincCatalogUpdateTask*)[self.repo getOrAddTask:catalogTask];
+    NSURL* catalogRes = [NSURL zincResourceForCatalogWithId:catalog.identifier];
+    ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
+    
+    ZincTask* catalogTask = [self.repo queueTaskForDescriptor:taskDesc input:catalog];
     [catalogTask waitUntilFinished];
     
     if (!catalogTask.finishedSuccessfully) {

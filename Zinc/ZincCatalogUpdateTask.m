@@ -14,20 +14,12 @@
 #import "ZincEvent.h"
 #import "NSData+Zinc.h"
 
-@interface ZincCatalogUpdateTask ()
-@property (nonatomic, retain, readwrite) ZincCatalog* catalog;
-@end
-
 @implementation ZincCatalogUpdateTask
 
-@synthesize catalog = _catalog;
-
-- (id) initWithRepo:(ZincRepo *)repo catalog:(ZincCatalog*)catalog
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
-    NSURL* desc = [NSURL zincResourceForCatalogWithId:catalog.identifier];
-    self = [super initWithRepo:repo resourceDescriptor:desc];
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
-        self.catalog = catalog;
         self.title = NSLocalizedString(@"Updating Catalog", @"ZincCatalogUpdateTask");
     }
     return self;
@@ -35,8 +27,12 @@
 
 - (void)dealloc 
 {
-    self.catalog = nil;
     [super dealloc];
+}
+
+- (ZincCatalog*) catalog
+{
+    return self.input;
 }
 
 - (void) main

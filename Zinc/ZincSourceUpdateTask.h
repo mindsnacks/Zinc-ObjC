@@ -10,7 +10,6 @@
 
 @interface ZincSourceUpdateTask : ZincTask
 
-- (id) initWithRepo:(ZincRepo *)repo source:(NSURL*)sourceURL;
-@property (nonatomic, retain, readonly) NSURL* sourceURL;
+@property (readonly) NSURL* sourceURL;
 
 @end

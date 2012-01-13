@@ -8,15 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
-//extern NSString* const kZincTaskMethodWrite;
-//extern NSString* const kZincTaskMethodDelete;
-
 @protocol ZincResourceDescriptor;
 
 @interface ZincTaskDescriptor : NSObject <NSCopying>
 
-@property (nonatomic, retain) NSURL* resource;
-@property (nonatomic, retain) NSString* method;
+/* method should always be the classname. Do not override. Did not call it
+ * "className" directly because that method is already defined on NSObject on
+ * OS X.
+ */
+
++ (id) taskDescriptorWithResource:(NSURL*)resource method:(NSString*)method;
+- (id) initWithResource:(NSURL*)resource method:(NSString*)method;
+
+@property (nonatomic, retain, readonly) NSURL* resource;
+@property (nonatomic, retain, readonly) NSString* method;
 
 - (NSString*) stringValue;
 

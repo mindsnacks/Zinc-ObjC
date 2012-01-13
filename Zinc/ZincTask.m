@@ -13,7 +13,8 @@
 
 @interface ZincTask ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) id<ZincResourceDescriptor>* resource;
+@property (nonatomic, retain, readwrite) NSURL* resource;
+@property (nonatomic, retain, readwrite) id input;
 @property (nonatomic, retain) NSMutableArray* myEvents;
 @end
 
@@ -21,21 +22,40 @@
 
 @synthesize repo = _repo;
 @synthesize resource = _resource;
+@synthesize input = _input;
 @synthesize suboperations = _suboperations;
 @synthesize supertask = _supertask;
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
 {
     self = [super init];
     if (self) {
         self.repo = repo;
         self.resource = resource;
+        self.input = input;
         self.myEvents = [NSMutableArray array];
     }
     return self;
+}
+
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource
+{
+    return [self initWithRepo:repo resourceDescriptor:resource input:nil];
+}
+
++ (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo input:(id)input
+{
+    Class taskClass = NSClassFromString([taskDesc method]);
+    ZincTask* task = [[[taskClass alloc] initWithRepo:repo resourceDescriptor:taskDesc.resource input:input] autorelease];
+    return task;
+}
+
++ (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo
+{
+    return [self taskWithDescriptor:taskDesc repo:repo];
 }
 
 - (void)dealloc 
@@ -44,6 +64,7 @@
     self.myEvents = nil;
     self.repo = nil;
     self.resource = nil;
+    self.input = nil;
     [super dealloc];
 }
 
@@ -67,10 +88,7 @@
 
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
-    ZincTaskDescriptor* td = [[[ZincTaskDescriptor alloc] init] autorelease];
-    td.method = [self taskMethod];
-    td.resource = resource;
-    return td;
+    return [ZincTaskDescriptor taskDescriptorWithResource:resource method:[self taskMethod]];
 }
 
 - (ZincTaskDescriptor*) taskDescriptor

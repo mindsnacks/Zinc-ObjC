@@ -12,8 +12,10 @@
 
 @interface ZincFileDownloadTask : ZincTask
 
-- (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha;
-@property (nonatomic, retain) ZincSource* source;
-@property (nonatomic, retain) NSString* sha;
+//- (id)initWithRepo:(ZincRepo*)repo source:(ZincSource*)souce sha:(NSString*)sha;
+//@property (nonatomic, retain) ZincSource* source;
+//@property (nonatomic, retain) NSString* sha;
+
+@property (readonly) NSString* sha;
 
 @end
