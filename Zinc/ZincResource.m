@@ -72,8 +72,8 @@
     }
     
     NSString* bundleId = [self path];
-    bundleId = [bundleId stringByDeletingLastPathComponent]; // string version
-    bundleId = [bundleId substringFromIndex:1]; // string leading /
+    bundleId = [bundleId stringByDeletingLastPathComponent]; // strip version
+    bundleId = [bundleId substringFromIndex:1]; // strip leading /
     return bundleId;
 }
 

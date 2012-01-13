@@ -124,8 +124,8 @@
     self = [self init];
     if (self) {
 
-        self.mySourceURLs = [NSMutableSet setWithArray:[dict objectForKey:@"sources"]];
         NSArray* sourceURLs = [dict objectForKey:@"sources"];
+        self.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
         for (NSString* sourceURL in sourceURLs) {
             [self.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
         }
@@ -133,6 +133,7 @@
         self.myTrackedBundles = [[[dict objectForKey:@"tracked_bundles"] mutableCopy] autorelease];
         
         NSDictionary* availBundles = [dict objectForKey:@"available_bundles"];
+        self.myAvailableBundles = [NSMutableSet setWithCapacity:[availBundles count]];
         for (NSString* bundleId in [availBundles allKeys]) {
             NSArray* versions = [availBundles objectForKey:bundleId];
             for (NSNumber* version in versions) {
@@ -146,27 +147,30 @@
 
 - (NSDictionary*) dictionaryRepresentation
 {
-    // TODO: should I synchronize this too?
-    
     NSMutableDictionary* dict = [NSMutableDictionary dictionary];
 
-    NSMutableArray* sourceURLs = [NSMutableArray arrayWithCapacity:[self.mySourceURLs count]];
-    for (NSURL* sourceURL in self.mySourceURLs) {
-        [sourceURLs addObject:[sourceURL absoluteString]];
+    @synchronized(self.mySourceURLs) {
+        NSMutableArray* sourceURLs = [NSMutableArray arrayWithCapacity:[self.mySourceURLs count]];
+        for (NSURL* sourceURL in self.mySourceURLs) {
+            [sourceURLs addObject:[sourceURL absoluteString]];
+        }
+        [dict setObject:sourceURLs forKey:@"sources"];
     }
-    [dict setObject:sourceURLs forKey:@"sources"];
         
     [dict setObject:self.myTrackedBundles forKey:@"tracked_bundles"];
     
     NSMutableDictionary* availBundles = [NSMutableDictionary dictionary];
-    for (NSURL* bundleRes in self.myAvailableBundles) {
-        
-        NSMutableArray* versions = [availBundles objectForKey:[bundleRes zincBundleId]];
-        if (versions == nil) {
-            versions = [NSMutableArray array];
-            [availBundles setObject:versions forKey:[bundleRes zincBundleId]];
+    
+    @synchronized(self.myAvailableBundles) {
+        for (NSURL* bundleRes in self.myAvailableBundles) {
+            
+            NSMutableArray* versions = [availBundles objectForKey:[bundleRes zincBundleId]];
+            if (versions == nil) {
+                versions = [NSMutableArray array];
+                [availBundles setObject:versions forKey:[bundleRes zincBundleId]];
+            }
+            [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];
         }
-        [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];
     }
     
     [dict setObject:availBundles forKey:@"available_bundles"];

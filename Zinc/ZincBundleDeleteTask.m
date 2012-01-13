@@ -148,6 +148,8 @@
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
+    
+    [self.repo deregisterBundle:self.resource];
 
     self.finishedSuccessfully = YES;
 }
