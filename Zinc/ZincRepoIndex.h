@@ -9,6 +9,19 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
+/*
+ downloading
+ available
+ deleting
+ */
+
+typedef enum {
+    ZincBundleStateUnknown   = 0,
+    ZincBundleStateCloning   = 1,
+    ZincBundleStateAvailable = 2,
+    ZincBundleStateDeleting  = 3,
+} ZincBundleState;
+
 @interface ZincRepoIndex : NSObject
 
 - (id) init;
@@ -22,11 +35,15 @@
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
 
-- (void) addAvailableBundle:(NSURL*)bundleDesc;
-- (void) removeAvailableBundle:(NSURL*)bundleDesc;
+- (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
+- (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
+- (void) removeBundle:(NSURL*)bundleResource;
+
+//- (void) addAvailableBundle:(NSURL*)bundleDesc;
 - (NSSet*) availableBundles;
 
 #pragma mark Encoding
+
 - (id) initWithDictionary:(NSDictionary*)dict;
 - (NSDictionary*) dictionaryRepresentation;
 - (NSString*) jsonRepresentation:(NSError**)outError;

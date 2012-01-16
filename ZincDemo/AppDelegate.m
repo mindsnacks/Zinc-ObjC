@@ -18,6 +18,11 @@
 @synthesize window = _window;
 @synthesize viewController = _viewController;
 
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
+{
+    NSLog(@"%@", event);
+}
+
 - (void)dealloc
 {
     [_window release];
@@ -44,6 +49,7 @@
                        [NSURL fileURLWithPath:
                         [AMGetApplicationDocumentsDirectory()
                          stringByAppendingPathComponent:@"zinc"]] error:&error] retain];
+    repo.delegate = self;
     
     self.viewController.repo = repo;
     

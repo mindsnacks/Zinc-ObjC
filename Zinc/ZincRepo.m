@@ -34,7 +34,7 @@
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
-#define FILES_DIR @"files"
+#define FILES_DIR @"objects"
 #define BUNDLES_DIR @"bundles"
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
@@ -44,9 +44,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @interface ZincRepo ()
 
 @property (nonatomic, retain) NSURL* url;
-
-// saved state
-
 
 // runtime state
 @property (nonatomic, retain) NSMutableDictionary* sourcesByCatalog;
@@ -68,7 +65,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) bundlesPath;
 - (NSString*) downloadsPath;
 
-- (void) queueUpdateIndex;
+- (void) queueIndexSave;
 
 - (NSString*) cacheKeyForCatalogId:(NSString*)identifier;
 - (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
@@ -323,10 +320,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         
         ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] %@", (int)blockself, error);
         
-        ZincErrorEvent* errorEvent = [[[ZincErrorEvent alloc] initWithError:error source:blockself] autorelease];
+        ZincErrorEvent* errorEvent = [ZincErrorEvent eventWithError:error source:self];
         [[NSNotificationCenter defaultCenter] postNotificationName:ZincEventNotification object:errorEvent];
         
-        [blockself.delegate zincRepo:blockself didEncounterError:error];
+        [blockself.delegate zincRepo:blockself didReceiveEvent:errorEvent];
     }];
 }
 
@@ -345,7 +342,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) addSourceURL:(NSURL*)source
 {
     [self.index addSourceURL:source];
-    [self queueUpdateIndex];
+    [self queueIndexSave];
 }
 
 - (void) removeSourceURL:(NSURL*)source
@@ -358,7 +355,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     [self.index removeSourceURL:source];
-    [self queueUpdateIndex];
+    [self queueIndexSave];
 }
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog
@@ -425,7 +422,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 #pragma mark Repo Index
 
-- (void) queueUpdateIndex
+- (void) queueIndexSave
 {
     ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self indexURL]];
     [self queueTaskForDescriptor:taskDesc];
@@ -571,7 +568,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
 {
     [self.index addTrackedBundleId:bundleId distribution:distro];
-    [self queueUpdateIndex];
+    [self queueIndexSave];
 
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     if (![self isBundleAvailable:bundleId version:version]) {
@@ -585,7 +582,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
     [self.index removeTrackedBundleId:bundleId];
-    [self queueUpdateIndex];  
+    [self queueIndexSave];  
 }
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
@@ -629,8 +626,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [self queueTaskForDescriptor:taskDesc];
 }
 
-// TODO: make sure it's not active!!
-
 #pragma mark Bundles
 
 - (BOOL) isBundleAvailable:(NSString*)bundleId version:(ZincVersion)version
@@ -645,16 +640,16 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return NO;
 }
 
-- (void) registerBundle:(NSURL*)bundleResource
+- (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status
 {
-    [self.index addAvailableBundle:bundleResource];
-    [self queueUpdateIndex];
+    [self.index setState:status forBundle:bundleResource];
+    [self queueIndexSave];
 }
 
 - (void) deregisterBundle:(NSURL*)bundleResource
 {
-    [self.index removeAvailableBundle:bundleResource];
-    [self queueUpdateIndex];
+    [self.index removeBundle:bundleResource];
+    [self queueIndexSave];
 }
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
@@ -794,6 +789,17 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         }
     }
 }
+
+- (void) logEvent:(ZincEvent*)event
+{
+    __block typeof(self) blockself = self;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)]) {
+            [blockself.delegate zincRepo:blockself didReceiveEvent:event];
+        }
+    }];
+}
+
 
 #pragma mark KVO
 

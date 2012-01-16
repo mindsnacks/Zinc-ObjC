@@ -84,7 +84,8 @@
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
         downloadOp.outputStream = outStream;
         
-        ZINC_DEBUG_LOG(@"Downloading %@", [request URL]);
+        //ZINC_DEBUG_LOG(@"Downloading %@", [request URL]);
+        [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
         
         [self addOperation:downloadOp];
         [downloadOp waitUntilFinished];
@@ -92,6 +93,8 @@
         if (!downloadOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
             continue;
+        } else {
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
         }
         
         NSString* targetPath = [self.repo pathForFileWithSHA:self.sha];

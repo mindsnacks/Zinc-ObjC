@@ -35,6 +35,8 @@
 
 - (void) main
 {
+    [self.repo registerBundle:self.resource status:ZincBundleStateDeleting];
+    
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
 
@@ -125,10 +127,12 @@
                 NSString* shaPath = [self.repo pathForFileWithSHA:sha];
                 
                 if (shaPath != nil) {
-                    ZINC_DEBUG_LOG(@"REMOVING %@", shaPath);
+                    //ZINC_DEBUG_LOG(@"REMOVING %@", shaPath);
                     if (![fm removeItemAtPath:shaPath error:&error]) {
                         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                         continue;
+                    } else {
+                        [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:self]];
                     }
                 }
             }
@@ -139,12 +143,17 @@
     if (![fm removeItemAtPath:bundlePath error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
+    } else {
+        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
     
     // finally remove the manifest
     if(![self.repo removeManifestForBundleId:self.bundleId version:self.version error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
+    } else {
+        // TODO: fix! we don't have a manifest path directly!
+        //[self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
     
     [self.repo deregisterBundle:self.resource];

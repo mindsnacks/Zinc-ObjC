@@ -7,6 +7,7 @@
 //
 
 #import "ZincRepo.h"
+#import "ZincRepoIndex.h"
 
 @class ZincRepoIndex;
 @class ZincCatalog;
@@ -35,7 +36,7 @@
 
 #pragma mark Bundles
 
-- (void) registerBundle:(NSURL*)bundleResource;
+- (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
@@ -57,6 +58,10 @@
 - (NSString*) filesPath;
 - (NSString*) bundlesPath;
 - (NSString*) downloadsPath;
+
+#pragma mark Events
+
+- (void) logEvent:(ZincEvent*)event;
 
 @end
 

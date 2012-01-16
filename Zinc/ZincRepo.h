@@ -15,6 +15,7 @@
 
 @protocol ZincRepoDelegate;
 @class ZincBundle;
+@class ZincEvent;
 
 @interface ZincRepo : NSObject
 
@@ -54,6 +55,6 @@
 
 @protocol ZincRepoDelegate <NSObject>
 
-- (void) zincRepo:(ZincRepo*)repo didEncounterError:(NSError*)error;
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
 
 @end

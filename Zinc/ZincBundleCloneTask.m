@@ -37,7 +37,9 @@
 
 - (void) main
 {
-    ZINC_DEBUG_LOG(@"CLONING BUNDLE %@!", self.bundleId);
+    [self.repo registerBundle:self.resource status:ZincBundleStateCloning];
+    
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource]];
     
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
@@ -134,9 +136,9 @@
         }
     }
     
-    ZINC_DEBUG_LOG(@"FINISHED BUNDLE %@!", self.bundleId);
+    [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
     
-    [self.repo registerBundle:self.resource];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource]];
     
     self.finishedSuccessfully = YES;
 }
