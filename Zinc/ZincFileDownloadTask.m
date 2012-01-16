@@ -52,7 +52,7 @@
         return;
     }
     
-    for (ZincSource* source in sources) {
+    for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         
@@ -105,10 +105,17 @@
             }
         } 
         
-        NSString* sourceSha = [fm zinc_sha1ForPath:uncompressedPath];
-        if (![sourceSha isEqualToString:self.sha]) {
+        NSString* actualSha = [fm zinc_sha1ForPath:uncompressedPath];
+        if (![actualSha isEqualToString:self.sha]) {
             
-            // TODO: LOG SOME BAD EVENT!
+            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                    self.sha, @"expectedSHA",
+                    actualSha, @"actualSHA",
+                    source, @"source",
+                    nil];
+            error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
             
         } else {
             

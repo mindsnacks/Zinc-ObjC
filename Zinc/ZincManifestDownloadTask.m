@@ -62,13 +62,15 @@
         return;
     }
     
-    for (ZincSource* source in sources) {
+    for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
         
         AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
         [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
         
+        ZINC_DEBUG_LOG(@"Downloading %@", [request URL]);
+
         [self addOperation:requestOp];
         [requestOp waitUntilFinished];
         if (!requestOp.hasAcceptableStatusCode) {

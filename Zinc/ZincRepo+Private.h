@@ -10,7 +10,6 @@
 
 @class ZincRepoIndex;
 @class ZincCatalog;
-@class ZincSource;
 @class ZincTask;
 @class ZincTaskDescriptor;
 @class ZincManifest;

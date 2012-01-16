@@ -74,7 +74,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
 - (NSString*) cacheKeyForBundleId:(NSString*)identifier version:(ZincVersion)version;
 
-- (void) registerSource:(ZincSource*)source forCatalog:(ZincCatalog*)catalog;
+- (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
 - (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
 
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
@@ -370,7 +370,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             [self.sourcesByCatalog setObject:sources forKey:catalog.identifier];
         }
         // TODO: cleaner duplicate check
-        for (ZincSource* existingSource in sources) {
+        for (NSURL* existingSource in sources) {
             if ([existingSource isEqual:source]) {
                 return;
             }
