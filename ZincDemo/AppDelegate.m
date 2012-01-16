@@ -20,7 +20,7 @@
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {
-    NSLog(@"%@", event);
+    //NSLog(@"%@", event);
 }
 
 - (void)dealloc

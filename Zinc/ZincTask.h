@@ -24,10 +24,13 @@
 
 @property (readonly, retain) NSString* title;
 
-//@property (assign) ZincTask* supertask;
 @property (readonly) NSArray* subtasks;
 
+/* just the events logged on this task */
 @property (readonly) NSArray* events;
+
+/* all events including events from subtasks */
+- (NSArray*) getAllEvents;
 
 - (double) progress;
 
@@ -39,8 +42,6 @@
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
-
-//@property (retain) NSMutableArray* suboperations;
 
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;

@@ -23,8 +23,6 @@
 @synthesize repo = _repo;
 @synthesize resource = _resource;
 @synthesize input = _input;
-//@synthesize suboperations = _suboperations;
-//@synthesize supertask = _supertask;
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
@@ -60,7 +58,6 @@
 
 - (void)dealloc 
 {
-//    self.suboperations = nil;
     self.myEvents = nil;
     self.repo = nil;
     self.resource = nil;
@@ -106,7 +103,6 @@
     if (self.isCancelled) return nil;
     
     ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:[NSArray arrayWithObject:self]];
-//    [self.suboperations addObject:task];
     return task;
 }
 
@@ -146,6 +142,18 @@
 - (NSArray*) events
 {
     return [NSArray arrayWithArray:self.myEvents];
+}
+
+- (NSArray*) getAllEvents
+{
+    NSMutableArray* allEvents = [NSMutableArray array];
+    for (ZincTask* task in self.subtasks) {
+        [allEvents addObjectsFromArray:[task events]];
+    }
+    [allEvents addObjectsFromArray:self.myEvents];
+    
+    NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
+    return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
 }
 
 @end
