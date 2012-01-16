@@ -24,9 +24,3 @@ enum  {
     #define ZINC_DEBUG_LOG NSLog
 #endif
 
-#import "ZincErrors.h"
-
-
-#pragma mark Notifications
-
-extern NSString* const ZincEventNotification;

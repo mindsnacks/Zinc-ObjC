@@ -16,6 +16,7 @@
 #import "AFHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
+#import "ZincErrors.h"
 #import "KSJSON.h"
 
 @implementation ZincManifestDownloadTask
@@ -51,62 +52,66 @@
     
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
     NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
-    ZincSource* source = [[self.repo sourcesForCatalogId:catalogId] lastObject]; // TODO: fix lastObject
-    if (source == nil) {
-        ZINC_DEBUG_LOG(@"source is nil");
-        // TODO: better error
-        return;
-    }
     
-    NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
-    if (request == nil) {
-        // TODO: better error
-        NSAssert(0, @"request is nil");
-        return;
-    }
-    
-    AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-    [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [self addOperation:requestOp];
-    [requestOp waitUntilFinished];
-    if (!requestOp.hasAcceptableStatusCode) {
-        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
-        return;
-    }
-    
-    NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
-    if (uncompressed == nil) {
-        // TODO: set error
-        NSAssert(NO, @"gunzip failed");
-        return;
-    }
-    
-    NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-    id json = [KSJSON deserializeString:jsonString error:&error];
-    if (json == nil) {
+    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
+    if (sources == nil || [sources count] == 0) {
+        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                              catalogId, @"catalogId", nil];
+        error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
-    NSData* data = [[manifest jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
-    if (data == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return;
+    for (ZincSource* source in sources) {
+        
+        NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
+        
+        AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+        [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
+        
+        [self addOperation:requestOp];
+        [requestOp waitUntilFinished];
+        if (!requestOp.hasAcceptableStatusCode) {
+            [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
+            continue;
+        }
+        
+        NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
+        if (uncompressed == nil) {
+            error = ZincError(ZINC_ERR_DECOMPRESS_FAILED);
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
+        id json = [KSJSON deserializeString:jsonString error:&error];
+        if (json == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
+        NSData* data = [[manifest jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+        if (data == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        NSString* path = [self.repo pathForManifestWithBundleId:self.bundleId version:manifest.version];
+        
+        // try remove existing. it shouldn't exist, but being defensive.
+        [fm removeItemAtPath:path error:NULL];
+        
+        if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        [self.repo addManifest:manifest forBundleId:self.bundleId];
+        
+        self.finishedSuccessfully = YES;
+        
+        break; // make sure to break out of the loop when we finish successfully 
     }
-    
-    NSString* path = [self.repo pathForManifestWithBundleId:self.bundleId version:manifest.version];
-    
-    // try remove existing. it shouldn't exist, but being defensive.
-    [fm removeItemAtPath:path error:NULL];
-    
-    if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return;
-    }
-
-    [self.repo addManifest:manifest forBundleId:self.bundleId];
-    
-    self.finishedSuccessfully = YES;
 }
 @end

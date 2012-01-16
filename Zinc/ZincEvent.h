@@ -14,6 +14,10 @@ typedef enum {
     ZincEventTypeCatalogUpdate,
 } ZincEventType;
 
+#pragma mark Notifications
+
+extern NSString* const ZincEventNotification;
+
 @interface ZincEvent : NSObject
 
 - (id) initWithType:(ZincEventType)type source:(id)source;
