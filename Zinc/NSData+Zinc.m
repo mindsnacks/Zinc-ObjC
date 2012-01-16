@@ -7,7 +7,7 @@
 //
 
 #import "NSData+Zinc.h"
-#import "Zinc.h"
+#import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "sha1.h"
 #include <zlib.h>

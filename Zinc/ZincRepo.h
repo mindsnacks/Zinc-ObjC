@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ZincBundle.h"
+#import "ZincGlobals.h"
 
 #define kZincRepoDefaultNetworkOperationCount (5)
 #define kZincRepoDefaultAutoRefreshInterval (10)

@@ -1,15 +1,15 @@
 //
-//  Zinc.m
-//  Zinc
+//  ZincUtils.m
+//  Zinc-ObjC
 //
-//  Created by Andy Mroczkowski on 12/5/11.
-//  Copyright (c) 2011 MindSnacks. All rights reserved.
+//  Created by Andy Mroczkowski on 1/15/12.
+//  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "Zinc.h"
+#import "ZincUtils.h"
 #import <sys/xattr.h> // for AddSkipBackupAttributeToFile
 
- void ZincAddSkipBackupAttributeToFile(NSURL * url)
+void ZincAddSkipBackupAttributeToFile(NSURL * url)
 {
     u_int8_t b = 1;
     setxattr([[url path] fileSystemRepresentation], "com.apple.MobileBackup", &b, 1, 0, 0);
@@ -34,6 +34,3 @@ NSString* ZincGetApplicationCacheDirectory(void)
     }
     return dir;
 }
-
-
-NSString* const ZincEventNotification = @"ZincEventNotification";

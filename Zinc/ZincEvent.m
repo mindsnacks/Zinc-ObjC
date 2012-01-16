@@ -8,6 +8,8 @@
 
 #import "ZincEvent.h"
 
+NSString* const ZincEventNotification = @"ZincEventNotification";
+
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
 @property (nonatomic, retain, readwrite) id source;

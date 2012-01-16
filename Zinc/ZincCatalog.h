@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Zinc.h"
+#import "ZincGlobals.h"
 
 @interface ZincCatalog : NSObject
 

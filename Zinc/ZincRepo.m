@@ -25,6 +25,7 @@
 #import "ZincGarbageCollectTask.h"
 #import "ZincRepoIndexUpdateTask.h"
 #import "ZincOperationQueueGroup.h"
+#import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "KSJSON.h"

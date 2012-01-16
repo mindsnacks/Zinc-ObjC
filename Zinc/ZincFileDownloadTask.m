@@ -7,12 +7,12 @@
 //
 
 #import "ZincFileDownloadTask.h"
-#import "Zinc.h"
 #import "ZincSource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincResource.h"
+#import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "AFHTTPRequestOperation.h"
@@ -32,7 +32,7 @@
 - (void) main
 {
     NSError* error = nil;
-    BOOL gz = YES;
+    BOOL gz = NO;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
     NSString* ext = nil;

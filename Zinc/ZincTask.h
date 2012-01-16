@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZincGlobals.h"
 
 @class ZincRepo;
 @class ZincEvent;

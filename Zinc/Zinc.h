@@ -1,42 +1,14 @@
 //
 //  Zinc.h
-//  Zinc
+//  Zinc-ObjC
 //
-//  Created by Andy Mroczkowski on 12/5/11.
-//  Copyright (c) 2011 MindSnacks. All rights reserved.
+//  Created by Andy Mroczkowski on 1/15/12.
+//  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-
-#define kZincPackageName @"com.mindsnacks.zinc"
-
-typedef NSInteger ZincFormat;
-typedef NSInteger ZincVersion;
-
-enum  {
-    ZincFormatInvalid = -1,
-};
-
-enum  {
-    ZincVersionInvalid = -1,
-};
-
-
-typedef void (^ZCBasicBlock)(id result, NSError* error);
-
-typedef BOOL (^ZincPassFailBlock)(void);
-
-#ifndef ZINC_DEBUG_LOG
-    #define ZINC_DEBUG_LOG NSLog
-#endif
-
+#import "ZincGlobals.h"
 #import "ZincErrors.h"
-
-#pragma mark Utility Functions
-
-extern void ZincAddSkipBackupAttributeToFile(NSURL* url);
-extern NSString* ZincGetApplicationDocumentsDirectory(void);
-extern NSString* ZincGetApplicationCacheDirectory(void);
-
-#pragma mark Notifications
-
-extern NSString* const ZincEventNotification;
+#import "ZincRepo.h"
+#import "ZincBundle.h"
+#import "ZincEvent.h"
+#import "UIImage+Zinc.h"

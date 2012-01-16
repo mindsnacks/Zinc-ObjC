@@ -14,5 +14,5 @@
 
     #import "AMFoundation.h"
     #define ZINC_DEBUG_LOG LOG_INFO
-    #import "Zinc.h"
+    #import "ZincGlobals.h"
 #endif

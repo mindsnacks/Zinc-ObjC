@@ -8,6 +8,7 @@
 
 #import "ZincBundleCloneTask.h"
 #import "ZincRepo+Private.h"
+#import "ZincBundle.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
 #import "ZincTaskDescriptor.h"

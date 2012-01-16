@@ -7,7 +7,7 @@
 //
 
 #import "ZincTask.h"
-#import "Zinc.h"
+#import "ZincGlobals.h"
 
 @interface ZincBundleCloneTask : ZincTask
 
