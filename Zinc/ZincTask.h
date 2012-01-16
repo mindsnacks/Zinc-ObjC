@@ -24,7 +24,7 @@
 
 @property (readonly, retain) NSString* title;
 
-@property (assign) ZincTask* supertask;
+//@property (assign) ZincTask* supertask;
 @property (readonly) NSArray* subtasks;
 
 @property (readonly) NSArray* events;
@@ -40,8 +40,14 @@
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
 
-@property (retain) NSMutableArray* suboperations;
+//@property (retain) NSMutableArray* suboperations;
+
+- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
+- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
+
+/* Current for network ops ONLY. Consider refactoring to clean up the API */
 - (void) addOperation:(NSOperation*)operation;
+
 //- (void) waitForSuboperations;
 
 - (void) addEvent:(ZincEvent*)event;

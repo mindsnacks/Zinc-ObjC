@@ -49,8 +49,11 @@
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
 
+#pragma mark Tasks
+
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies;
 - (void) addOperation:(NSOperation*)operation;
 
 #pragma mark Paths

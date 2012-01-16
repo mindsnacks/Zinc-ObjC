@@ -127,7 +127,6 @@
                 NSString* shaPath = [self.repo pathForFileWithSHA:sha];
                 
                 if (shaPath != nil) {
-                    //ZINC_DEBUG_LOG(@"REMOVING %@", shaPath);
                     if (![fm removeItemAtPath:shaPath error:&error]) {
                         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                         continue;

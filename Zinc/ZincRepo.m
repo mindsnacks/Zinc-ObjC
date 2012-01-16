@@ -736,7 +736,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
 {
     @synchronized(self.myTasks) {
         
@@ -750,10 +751,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             }
         }
         
+        ZincTask* task = nil;
+        
         // if no exact match found, add task and depends for all other resource-matching
         if (existingTask == nil) {
             
-            ZincTask* task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
+            task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
             
             for (ZincTask* resourceTask in tasksMatchingResource) {
                 if (resourceTask != existingTask) {
@@ -769,9 +772,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         } else {
             
             ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
-            return existingTask;
+            task = existingTask;
         }
+        
+        for (NSOperation* dep in dependencies) {
+            [task addDependency:dep];
+        }
+        
+        return task;
     }
+}
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
+{
+    return [self queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
 }
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor

@@ -79,7 +79,7 @@
     NSURL* catalogRes = [NSURL zincResourceForCatalogWithId:catalog.identifier];
     ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
     
-    ZincTask* catalogTask = [self.repo queueTaskForDescriptor:taskDesc input:catalog];
+    ZincTask* catalogTask = [self queueSubtaskForDescriptor:taskDesc input:catalog];
     [catalogTask waitUntilFinished];
     
     if (!catalogTask.finishedSuccessfully) {

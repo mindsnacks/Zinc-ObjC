@@ -84,7 +84,6 @@
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
         downloadOp.outputStream = outStream;
         
-        //ZINC_DEBUG_LOG(@"Downloading %@", [request URL]);
         [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
         
         [self addOperation:downloadOp];

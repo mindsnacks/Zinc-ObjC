@@ -50,7 +50,7 @@
     if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
         NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleId version:self.version];
         ZincTaskDescriptor* taskDesc = [ZincManifestDownloadTask taskDescriptorForResource:manifestRes];
-        manifestDownloadTask = [self.repo queueTaskForDescriptor:taskDesc];
+        manifestDownloadTask = [self queueSubtaskForDescriptor:taskDesc];
     }
     
     if (manifestDownloadTask != nil) {
@@ -86,7 +86,7 @@
             // queue redownload            
             NSURL* fileRes = [NSURL zincResourceForFileWithSHA:sha inCatalogId:catalogId];
             ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
-            ZincTask* fileOp = [self.repo queueTaskForDescriptor:fileTaskDesc];
+            ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc];
             [fileOps addObject:fileOp];
         }
     }

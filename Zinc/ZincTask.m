@@ -23,8 +23,8 @@
 @synthesize repo = _repo;
 @synthesize resource = _resource;
 @synthesize input = _input;
-@synthesize suboperations = _suboperations;
-@synthesize supertask = _supertask;
+//@synthesize suboperations = _suboperations;
+//@synthesize supertask = _supertask;
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
@@ -60,7 +60,7 @@
 
 - (void)dealloc 
 {
-    self.suboperations = nil;
+//    self.suboperations = nil;
     self.myEvents = nil;
     self.repo = nil;
     self.resource = nil;
@@ -72,7 +72,7 @@
 {
     @synchronized(self) {
         [super cancel];
-        [self.suboperations makeObjectsPerformSelector:@selector(cancel)];
+        [self.dependencies makeObjectsPerformSelector:@selector(cancel)];
     }
 }
 
@@ -96,25 +96,35 @@
     return [[self class] taskDescriptorForResource:self.resource];    
 }
 
+- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
+{
+    return [self queueSubtaskForDescriptor:taskDescriptor input:nil];
+}
+
+- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
+{
+    if (self.isCancelled) return nil;
+    
+    ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:[NSArray arrayWithObject:self]];
+//    [self.suboperations addObject:task];
+    return task;
+}
+
+
 - (void) addOperation:(NSOperation*)operation
 {
     @synchronized(self) {
         
         if (self.isCancelled) return;
         
-        if ([operation isKindOfClass:[ZincTask class]]) {
-            ZincTask* task = (ZincTask*)operation;
-            task.supertask = self;
-        }
-        
-        [self.suboperations addObject:operation];
+        [self addDependency:operation];
         [self.repo addOperation:operation];
     }
 }
 
 - (NSArray*) subtasks
 {
-    return [self.suboperations filteredArrayUsingPredicate:
+    return [self.dependencies filteredArrayUsingPredicate:
             [NSPredicate predicateWithBlock:^(id obj, NSDictionary* bindings) {
         return [obj isKindOfClass:[ZincTask class]];
     }]];
