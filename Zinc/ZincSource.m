@@ -62,7 +62,7 @@
 
 - (NSURL*) urlForFileWithSHA:(NSString*)sha extension:(NSString*)extension
 {
-    NSString* relativeDir = [NSString stringWithFormat:@"files/%@/%@/",
+    NSString* relativeDir = [NSString stringWithFormat:@"objects/%@/%@/",
                               [sha substringWithRange:NSMakeRange(0, 2)],
                              [sha substringWithRange:NSMakeRange(2, 2)]];
     NSString* file = sha;

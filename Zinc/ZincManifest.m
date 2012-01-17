@@ -10,6 +10,9 @@
 #import "ZincManifest.h"
 #import "KSJSON.h"
 
+NSString* const ZincFileFormatRaw = @"raw";
+NSString* const ZincFileFormatGZ = @"gz";
+
 @interface ZincManifest ()
 @property (nonatomic, retain) NSDictionary* files;
 @end
@@ -48,7 +51,12 @@
 
 - (NSString*) shaForFile:(NSString*)path
 {
-    return [self.files objectForKey:path];
+    return [[self.files objectForKey:path] objectForKey:@"sha"];
+}
+
+- (NSArray*) formatsForFile:(NSString*)path
+{
+    return [[[self.files objectForKey:path] objectForKey:@"formats"] allKeys];
 }
 
 - (NSArray*) allFiles
@@ -58,14 +66,13 @@
 
 - (NSArray*) allSHAs
 {
-    return [self.files allValues];
+    return [[self.files allValues] valueForKeyPath:@"sha"];
 }
 
 - (NSUInteger) fileCount
 {
     return [self.files count];
 }
-
 
 - (NSDictionary*) dictionaryRepresentation
 {            

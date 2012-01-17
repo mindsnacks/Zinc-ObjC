@@ -544,10 +544,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
 {
+    NSError* error = nil;
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
     NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
-    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:NULL];
+    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
     if (catalog == nil) {
+        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
         return ZincVersionInvalid;
     }
     return [catalog versionForBundleName:bundleName distribution:distro];

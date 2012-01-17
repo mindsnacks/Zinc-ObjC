@@ -18,6 +18,8 @@
 #import "ZincErrors.h"
 #import "AFHTTPRequestOperation.h"
 
+#import "ZincManifest.h" // TODO: tmp for formats only?
+
 @implementation ZincFileDownloadTask
 
 - (void)dealloc
@@ -36,6 +38,12 @@
     BOOL gz = NO;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
+    NSArray* formats = (NSArray*)[self input];
+    
+    if ([formats containsObject:ZincFileFormatGZ]) {
+        gz = YES;
+    }
+        
     NSString* ext = nil;
     if (gz) {
         ext = @"gz";

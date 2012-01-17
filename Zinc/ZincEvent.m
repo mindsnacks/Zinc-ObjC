@@ -99,12 +99,21 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 + (id) eventWithError:(NSError*)error source:(id)source attributes:(NSDictionary*)attributes;
 {
     return [[[ZincErrorEvent alloc] initWithError:error source:source attributes:attributes] autorelease];
-
 }
 
 + (NSString*) name
 {
     return @"ERROR";
+}
+
+- (NSString*) description
+{
+    NSString* desc = [NSString stringWithFormat:@"%@: %@ ", [[self class] name], self.error];
+    for (NSString* k in self.attributes) {
+        desc  = [desc stringByAppendingFormat:@" '%@'='%@'",
+                 k, [self.attributes objectForKey:k]];
+    }
+    return desc;
 }
 
 @end

@@ -49,8 +49,7 @@
     [self addOperation:requestOp];
     [requestOp waitUntilFinished];
     if (![requestOp hasAcceptableStatusCode]) {
-        // TODO: error;
-        NSAssert(NO, @"request failed");
+        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
         return;
     }
     

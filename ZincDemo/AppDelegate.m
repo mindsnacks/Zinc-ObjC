@@ -20,7 +20,7 @@
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {
-    //NSLog(@"%@", event);
+    NSLog(@"%@", event);
 }
 
 - (void)dealloc
@@ -74,7 +74,7 @@
     //    p1 = [bundle pathForResource:@"audio/night-out-3" ofType:@"caf"];
     //    NSLog(@"%@", p1);
     
-    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french/"]];
+    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french2/"]];
     
     [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers" distribution:@"master"];
     [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AtThePharmacy" distribution:@"master"];

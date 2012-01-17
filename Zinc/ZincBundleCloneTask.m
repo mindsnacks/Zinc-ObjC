@@ -74,19 +74,23 @@
         return;
     }
     
-    NSArray* SHAs = [manifest allSHAs];
-    NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[SHAs count]];
+    NSArray* files = [manifest allFiles];
+    NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
     
-    for (NSString* sha in SHAs) {
+    for (NSString* file in files) {
+        
+        NSString* sha = [manifest shaForFile:file];
         NSString* path = [self.repo pathForFileWithSHA:sha];
         
         // check if file is missing
         if (![fm fileExistsAtPath:path]) {
             
+            NSArray* formats = [manifest formatsForFile:file];
+            
             // queue redownload            
             NSURL* fileRes = [NSURL zincResourceForFileWithSHA:sha inCatalogId:catalogId];
             ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
-            ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc];
+            ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
             [fileOps addObject:fileOp];
         }
     }

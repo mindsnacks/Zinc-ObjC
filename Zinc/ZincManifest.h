@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
+extern NSString* const ZincFileFormatRaw;
+extern NSString* const ZincFileFormatGZ;
+
 @interface ZincManifest : NSObject
 
 - (id) init;
@@ -18,6 +21,8 @@
 @property (nonatomic, assign) ZincVersion version;
 
 - (NSString*) shaForFile:(NSString*)path;
+- (NSArray*) formatsForFile:(NSString*)path;
+
 - (NSArray*) allFiles;
 - (NSArray*) allSHAs;
 - (NSUInteger) fileCount;
