@@ -21,11 +21,14 @@
 + (NSURL*) zincResourceForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
 - (BOOL) isZincBundleResource;
 
++ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version;
+- (BOOL) isZincArchiveResource;
+
 - (NSString*) zincBundleId;
 - (ZincVersion) zincBundleVersion;
 
-+ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId;
-- (BOOL) isZincFileResource;
-- (NSString*) zincFileSHA;
++ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId;
+- (BOOL) isZincObjectResource;
+- (NSString*) zincObjectSHA;
 
 @end

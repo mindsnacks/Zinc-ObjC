@@ -39,7 +39,7 @@
     if ([self isZincCatalogResource]) {
         return [[self path] substringFromIndex:1];
 
-    } else if ([self isZincFileResource]) {
+    } else if ([self isZincObjectResource]) {
         NSString* catalogId = [self path];
         catalogId = [catalogId stringByDeletingLastPathComponent]; // strip version
         catalogId = [catalogId substringFromIndex:1]; // strip leading /
@@ -72,9 +72,22 @@
 
 }
 
++ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version
+{
+    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleId, version];
+    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"archive" path:path] autorelease];
+}
+
+- (BOOL) isZincArchiveResource
+{
+    return [self isZincResourceOfType:@"archive"];
+}
+
 - (NSString*) zincBundleId
 {
-    if (![self isZincManifestResource] && ![self isZincBundleResource]) {
+    if (![self isZincManifestResource] &&
+        ![self isZincBundleResource] &&
+        ![self isZincArchiveResource]) {
         return nil;
     }
     
@@ -86,7 +99,9 @@
 
 - (ZincVersion) zincBundleVersion
 {
-    if (![self isZincManifestResource] && ![self isZincBundleResource]) {
+    if (![self isZincManifestResource] &&
+        ![self isZincBundleResource] &&
+        ![self isZincArchiveResource]) {
         return ZincVersionInvalid;
     }
     
@@ -95,20 +110,20 @@
     return [version integerValue];
 }
 
-+ (NSURL*) zincResourceForFileWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId
++ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId
 {
     NSString* path = [NSString stringWithFormat:@"/%@/%@", catalogId, sha];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"object" path:path] autorelease];
 }
 
-- (BOOL) isZincFileResource
+- (BOOL) isZincObjectResource
 {
     return [self isZincResourceOfType:@"object"];
 }
 
-- (NSString*) zincFileSHA
+- (NSString*) zincObjectSHA
 {
-    if (![self isZincFileResource]) {
+    if (![self isZincObjectResource]) {
         return nil;
     }
     

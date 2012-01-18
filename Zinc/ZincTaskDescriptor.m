@@ -43,7 +43,7 @@
 
 - (NSString*) stringValue
 {
-    return [NSString stringWithFormat:@"%@-%@", [self.resource absoluteString], self.method];
+    return [NSString stringWithFormat:@"%@|%@", [self.resource absoluteString], self.method];
 }
 
 - (id)copyWithZone:(NSZone *)zone

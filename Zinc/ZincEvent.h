@@ -17,6 +17,8 @@ typedef enum {
     ZincEventTypeDownloadComplete,
     ZincEventTypeBundleCloneBegin,
     ZincEventTypeBundleCloneComplete,
+    ZincEventTypeArchiveExtractBegin,
+    ZincEventTypeArchiveExtractComplete,
 } ZincEventType;
 
 #pragma mark Notifications
@@ -86,5 +88,21 @@ extern NSString* const ZincEventNotification;
 
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource;
 @property (readonly) NSURL* bundleResource;
+
+@end
+
+
+@interface ZincAchiveExtractBeginEvent : ZincEvent 
+
++ (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource;
+@property (readonly) NSURL* archiveResource;
+
+@end
+
+
+@interface ZincAchiveExtractCompleteEvent : ZincEvent 
+
++ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource;
+@property (readonly) NSURL* archiveResource;
 
 @end

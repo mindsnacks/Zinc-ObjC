@@ -20,4 +20,6 @@
 
 - (NSString*) zinc_sha1ForPath:(NSString*)path;
 
+- (BOOL) zinc_gzipInflate:(NSString*)sourcePath destination:(NSString*)destPath  error:(NSError**)outError;
+
 @end

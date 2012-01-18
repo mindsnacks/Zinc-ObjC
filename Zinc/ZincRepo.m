@@ -24,6 +24,7 @@
 #import "ZincFileDownloadTask.h"
 #import "ZincGarbageCollectTask.h"
 #import "ZincRepoIndexUpdateTask.h"
+#import "ZincArchiveExtractOperation.h"
 #import "ZincOperationQueueGroup.h"
 #import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
@@ -153,6 +154,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self.queueGroup setMaxConcurrentOperationCount:10 forClass:[ZincFileDownloadTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincSourceUpdateTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincBundleDeleteTask class]];
+        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
         self.fileManager = [[[NSFileManager alloc] init] autorelease];
         self.cache = [[[NSCache alloc] init] autorelease];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
@@ -304,28 +306,29 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha
 {
-    NSString* relativePath = [NSString stringWithFormat:@"%@/%@/%@",
-                              [sha substringWithRange:NSMakeRange(0, 2)],
-                              [sha substringWithRange:NSMakeRange(2, 2)],
-                              sha];
-    return [[self filesPath] stringByAppendingPathComponent:relativePath];
+//    NSString* relativePath = [NSString stringWithFormat:@"%@/%@/%@",
+//                              [sha substringWithRange:NSMakeRange(0, 2)],
+//                              [sha substringWithRange:NSMakeRange(2, 2)],
+//                              sha];
+//    return [[self filesPath] stringByAppendingPathComponent:relativePath];
+    return [[self filesPath] stringByAppendingPathComponent:sha];
 }
 
 #pragma mark Internal Operations
 
-- (void) handleError:(NSError*)error
-{
-    __block typeof(self) blockself = self;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        
-        ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] %@", (int)blockself, error);
-        
-        ZincErrorEvent* errorEvent = [ZincErrorEvent eventWithError:error source:self];
-        [[NSNotificationCenter defaultCenter] postNotificationName:ZincEventNotification object:errorEvent];
-        
-        [blockself.delegate zincRepo:blockself didReceiveEvent:errorEvent];
-    }];
-}
+//- (void) handleError:(NSError*)error
+//{
+//    __block typeof(self) blockself = self;
+//    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//        
+//        ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] %@", (int)blockself, error);
+//        
+//        ZincErrorEvent* errorEvent = [ZincErrorEvent eventWithError:error source:self];
+//        [[NSNotificationCenter defaultCenter] postNotificationName:ZincEventNotification object:errorEvent];
+//        
+//        [blockself.delegate zincRepo:blockself didReceiveEvent:errorEvent];
+//    }];
+//}
 
 - (void) addOperation:(NSOperation*)operation
 {
@@ -773,7 +776,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
         } else {
             
-            ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
+            //ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
             task = existingTask;
         }
         

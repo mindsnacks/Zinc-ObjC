@@ -45,10 +45,14 @@
     
     //    Zincself.repo* zc = [Zincself.repo defaultself.repo];
     NSError* error = nil;
-    ZincRepo* repo = [[ZincRepo repoWithURL:
-                       [NSURL fileURLWithPath:
-                        [AMGetApplicationDocumentsDirectory()
-                         stringByAppendingPathComponent:@"zinc"]] error:&error] retain];
+    
+    NSURL* repoURL = [NSURL fileURLWithPath:
+                      [AMGetApplicationDocumentsDirectory()
+                       stringByAppendingPathComponent:@"zinc"]];
+    
+    NSLog(@"repo path: %@", [repoURL path]);
+    
+    ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
     
     self.viewController.repo = repo;
@@ -74,66 +78,65 @@
     //    p1 = [bundle pathForResource:@"audio/night-out-3" ofType:@"caf"];
     //    NSLog(@"%@", p1);
     
-    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french2/"]];
-    
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AtThePharmacy" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicAdjectives" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicGreetings" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicPrepositions" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BodyParts" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.french.CestVsIlEst" distribution:@"master"];
+    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french3/"]];    
     
     [repo refreshSourcesWithCompletion:^{
-      
+        
         NSLog(@"refreshed!");
+        
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AdvancedNumbers" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.AtThePharmacy" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicAdjectives" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicGreetings" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BasicPrepositions" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.BodyParts" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.CestVsIlEst" distribution:@"master"];
+        
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.CommandsInFrench" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Comparisons" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.DaysAndColors" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Emotions" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.ExploringTheCity" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.ExpressionsWithEtre" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.FrequencyExpressions" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.GettingAroundTown" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.GoingShopping" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.IntroToNumbers" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.IntroducingGender" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.IntroducingPlural" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.LearnWhatYouEat" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.LetsGoToTheRestaurant" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.LikesAndDislikes" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.MonthsAndSeasons" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.MoreAdvancedNumbers" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.MoreGreetings" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.MoreShopping" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Nightlife" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.PluralAdjectives" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Possessives" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.PostOfficeAndTheBank" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.ProfessionsAndTitles" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Regular-erVerbs" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.Regular-irVerbs" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.SportyVocabulary" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.TaxiAdventures" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.TheFamily" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.TheHouse" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.TheWeather" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.TimeAndDate" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.ToTheMovies" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingAller" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingAvoir" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingAvoirSomeMore" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingEtre" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingFaire" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingMettre" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.UsingPrendre" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.VacationPart2" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.VacationSurvivalPhrases" distribution:@"master"];
+        [repo beginTrackingBundleWithId:@"com.mindsnacks.french.VacationTime" distribution:@"master"];
     }];
     
-    
-    
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.CommandsInFrench" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Comparisons" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.DaysAndColors" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Emotions" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.ExploringTheCity" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.ExpressionsWithEtre" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.FrequencyExpressions" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.GettingAroundTown" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.GoingShopping" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.IntroToNumbers" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.IntroducingGender" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.IntroducingPlural" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.LearnWhatYouEat" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.LetsGoToTheRestaurant" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.LikesAndDislikes" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.MonthsAndSeasons" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.MoreAdvancedNumbers" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.MoreGreetings" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.MoreShopping" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Nightlife" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.PluralAdjectives" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Possessives" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.PostOfficeAndTheBank" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.ProfessionsAndTitles" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Regular-erVerbs" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.Regular-irVerbs" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.SportyVocabulary" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.TaxiAdventures" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.TheFamily" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.TheHouse" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.TheWeather" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.TimeAndDate" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.ToTheMovies" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingAller" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingAvoir" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingAvoirSomeMore" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingEtre" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingFaire" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingMettre" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.UsingPrendre" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.VacationPart2" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.VacationSurvivalPhrases" distribution:@"master"];
-//    [zc addTrackedBundleWithId:@"com.mindsnacks.french.VacationTime" distribution:@"master"];
     
     return YES;
 }

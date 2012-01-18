@@ -12,10 +12,10 @@
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincResource.h"
-#import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "ZincErrors.h"
+#import "ZincUtils.h"
 #import "AFHTTPRequestOperation.h"
 
 #import "ZincManifest.h" // TODO: tmp for formats only?
@@ -29,7 +29,7 @@
 
 - (NSString*) sha
 {
-    return [self.resource zincFileSHA];
+    return [self.resource zincObjectSHA];
 }
 
 - (void) main
@@ -64,7 +64,7 @@
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         
-        NSString* uncompressedPath = [ZincGetApplicationCacheDirectory() stringByAppendingPathComponent:self.sha];
+        NSString* uncompressedPath = [[self.repo downloadsPath] stringByAppendingPathComponent:self.sha];
         NSString* compressedPath = [uncompressedPath stringByAppendingPathExtension:@"gz"];
         
         if ([fm fileExistsAtPath:uncompressedPath]) {

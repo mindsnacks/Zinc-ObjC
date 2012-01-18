@@ -69,7 +69,7 @@
         AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
         [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
         
-        ZINC_DEBUG_LOG(@"Downloading %@", [request URL]);
+        [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:[request URL]]];
 
         [self addOperation:requestOp];
         [requestOp waitUntilFinished];
@@ -77,6 +77,8 @@
             [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
             continue;
         }
+        
+        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL]]];
         
         NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
         if (uncompressed == nil) {

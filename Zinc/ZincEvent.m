@@ -233,3 +233,49 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 }
 
 @end
+
+
+@implementation ZincAchiveExtractBeginEvent
+
++ (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource
+{
+    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          archiveResource, @"archiveResource", nil];
+    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:nil attributes:attr] autorelease];
+    
+}
+
++ (NSString*) name
+{
+    return @"EXTRACT-BEGIN";
+}
+
+- (NSURL*) archiveResource
+{
+    return [self.attributes objectForKey:@"archiveResource"];
+}
+
+@end
+
+
+@implementation ZincAchiveExtractCompleteEvent
+
++ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource
+{
+    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          archiveResource, @"archiveResource", nil];
+    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:nil attributes:attr] autorelease];
+    
+}
+
++ (NSString*) name
+{
+    return @"EXTRACT-COMPLETE";
+}
+
+- (NSURL*) archiveResource
+{
+    return [self.attributes objectForKey:@"archiveResource"];
+}
+
+@end

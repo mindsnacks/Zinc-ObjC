@@ -95,4 +95,19 @@
     return [self getRequestForURL:fileURL];
 }
 
+- (NSURL*) urlForArchivedBundleName:(NSString*)name version:(NSInteger)version
+{
+    NSString* filename = [NSString stringWithFormat:@"%@-%d.tar", name, version];
+    NSString* relativePath = [@"archives" stringByAppendingPathComponent:filename];
+    
+    return [[NSURL URLWithString:relativePath relativeToURL:self] absoluteURL];
+}
+
+- (NSURLRequest*) urlRequestForArchivedBundleName:(NSString*)name version:(NSInteger)version
+{
+    NSURL* archiveURL = [self urlForArchivedBundleName:name version:version];
+    return [self getRequestForURL:archiveURL];
+}
+
+
 @end

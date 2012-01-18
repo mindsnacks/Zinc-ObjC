@@ -12,4 +12,4 @@
 	url = https://github.com/mikeash/MAZeroingWeakRef
 [submodule "Dependencies/Light-Untar-for-iOS"]
 	path = Dependencies/Light-Untar-for-iOS
-	url = https://github.com/mhausherr/Light-Untar-for-iOS.git
+	url = git@github.com:mindsnacks/Light-Untar-for-iOS.git

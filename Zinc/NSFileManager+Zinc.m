@@ -31,10 +31,10 @@
 
 - (BOOL) zinc_createDirectoryIfNeededAtPath:(NSString*)path error:(NSError**)outError
 {
-    if (![self zinc_directoryExistsAtPath:path]) {
+//    if (![self zinc_directoryExistsAtPath:path]) {
         if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:outError]) {
             return NO;
-        }
+//        }
     }
     return YES;
 }
@@ -57,5 +57,19 @@
     [data release];
     return sha;
 }
+
+- (BOOL) zinc_gzipInflate:(NSString*)sourcePath destination:(NSString*)destPath  error:(NSError**)outError
+{
+    NSData* compressed = [[[NSData alloc] initWithContentsOfFile:sourcePath options:0 error:outError] autorelease];
+    if (compressed == nil) return NO;
+                    
+    NSData* uncompressed = [compressed zinc_gzipInflate];
+    if (![uncompressed writeToFile:destPath options:0 error:outError]) {
+        return NO;
+    }
+
+    return YES;
+}
+
 
 @end
