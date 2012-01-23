@@ -32,7 +32,6 @@
 #import "KSJSON.h"
 #import "AFNetworking.h"
 #import "MAWeakDictionary.h"
-
 #import "ZincSerialQueueProxy.h"
 
 #define CATALOGS_DIR @"catalogs"
