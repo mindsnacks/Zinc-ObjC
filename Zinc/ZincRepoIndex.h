@@ -9,14 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
-/*
- downloading
- available
- deleting
- */
 
 typedef enum {
-    ZincBundleStateUnknown   = 0,
+    ZincBundleStateNone      = 0,
     ZincBundleStateCloning   = 1,
     ZincBundleStateAvailable = 2,
     ZincBundleStateDeleting  = 3,
@@ -39,7 +34,7 @@ typedef enum {
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
 
-//- (void) addAvailableBundle:(NSURL*)bundleDesc;
+- (NSSet*) cloningBundles;
 - (NSSet*) availableBundles;
 
 #pragma mark Encoding

@@ -18,12 +18,12 @@
     
     NSString* path = TEST_RESOURCE_PATH(@"meep-1.json");
     
-    NSString* string = [[[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error] autorelease];
-    if (string == nil) {
+    NSString* jsonString = [[[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error] autorelease];
+    if (jsonString == nil) {
         STFail(@"%@", error);
     }
                     
-    NSDictionary* dict = [KSJSON deserializeString:string error:&error];
+    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -47,6 +47,144 @@
     
     NSString* firstFormat = [allFormats objectAtIndex:0];
     STAssertEqualObjects(firstFormat, ZincFileFormatGZ, @"format is wrong");
+}
+
+- (void) testBestFormatForFileRawOnly
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\" \
+    }";
+    
+    NSError* error = nil;
+    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+
+    NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg"];
+    STAssertTrue([bestFormat isEqualToString:ZincFileFormatRaw], @"should be raw");
+}
+
+- (void) testBestFormatForFileGZOnly
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"formats\": { \
+                    \"gz\": { \
+                        \"size\": 3578 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\" \
+    }";
+    
+    NSError* error = nil;
+    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+    
+    NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg" withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
+    STAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
+}
+
+- (void) testBestFormatForFileGZAndRaw
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\" \
+    }";
+    
+    NSError* error = nil;
+    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+    
+    NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg" withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
+    STAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
+}
+
+- (void) testFileSize
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\" \
+    }";
+    
+    NSError* error = nil;
+    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+
+    NSUInteger size = [manifest sizeForFile:@"meep.jpg" format:ZincFileFormatGZ];
+    STAssertTrue(size == 123, @"size is wrong");
 }
 
 @end

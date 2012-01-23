@@ -9,26 +9,25 @@
 #import "ZincRepoIndex.h"
 #import "KSJSON.h"
 #import "ZincResource.h"
+#import "ZincDeepCopying.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
-@property (nonatomic, retain) NSMutableDictionary* myTrackedBundles;
-@property (nonatomic, retain) NSMutableDictionary* myBundleStatus;
+@property (nonatomic, retain) NSMutableDictionary* myBundles;
 @end
+
 
 @implementation ZincRepoIndex
 
 @synthesize mySourceURLs = _mySourceURLs;
-@synthesize myTrackedBundles = _myTrackedBundles;
-@synthesize myBundleStatus = _myBundleStatus;
+@synthesize myBundles = _myBundles;
 
 - (id)init 
 {
     self = [super init];
     if (self) {
         self.mySourceURLs = [NSMutableSet set];
-        self.myTrackedBundles = [NSMutableDictionary dictionary];
-        self.myBundleStatus = [NSMutableDictionary dictionary];
+        self.myBundles = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -36,8 +35,7 @@
 - (void)dealloc
 {
     self.mySourceURLs = nil;
-    self.myTrackedBundles = nil;
-    self.myBundleStatus = nil;
+    self.myBundles = nil;
     [super dealloc];
 }
 
@@ -52,10 +50,7 @@
     if (![self.mySourceURLs isEqualToSet:other.mySourceURLs]) {
         return NO;
     }
-    if (![self.myTrackedBundles isEqualToDictionary:other.myTrackedBundles]) {
-        return NO;
-    }
-    if (![self.myBundleStatus isEqualToDictionary:other.myBundleStatus]) {
+    if (![self.myBundles isEqualToDictionary:other.myBundles]) {
         return NO;
     }
     
@@ -85,66 +80,123 @@
     }
 }
 
+- (NSMutableDictionary*)bundleInfoDictForId:(NSString*)bundleId createIfMissing:(BOOL)create
+{
+    NSMutableDictionary* bundleInfo = [self.myBundles objectForKey:bundleId];
+    if (bundleInfo == nil && create) {
+        bundleInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+        [bundleInfo setObject:[NSMutableDictionary dictionaryWithCapacity:2] forKey:@"versions"];
+        [self.myBundles setObject:bundleInfo forKey:bundleId];
+    }
+    return bundleInfo;
+}
+
 - (void) addTrackedBundleId:(NSString*)bundleId distribution:(NSString*)distro
 {
-    @synchronized(self.myTrackedBundles) {
-        [self.myTrackedBundles setObject:distro forKey:bundleId];
+    @synchronized(self.myBundles) {
+        NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
+        [bundleInfo setObject:distro forKey:@"tracking"];
     }
 }
 
 - (void) removeTrackedBundleId:(NSString*)bundleId
 {
-    @synchronized(self.myTrackedBundles) {
-        [self.myTrackedBundles removeObjectForKey:bundleId];
+    @synchronized(self.myBundles) {
+        NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:NO];
+        [bundleInfo removeObjectForKey:@"tracking"];
     }
 }
 
 - (NSSet*) trackedBundleIds
 {
-    NSSet* set = nil;
-    @synchronized(self.myTrackedBundles) {
-        set = [NSSet setWithArray:[self.myTrackedBundles allKeys]];
+    NSMutableSet* set  = nil;
+    @synchronized(self.myBundles) {
+        set = [NSMutableSet setWithCapacity:[self.myBundles count]];
+        NSArray* allBundleIds = [self.myBundles allKeys];
+        for (NSString* bundleId in allBundleIds) {
+            NSString* distro = [self trackedDistributionForBundleId:bundleId];
+            if (distro != nil) {
+                [set addObject:bundleId];
+            }
+        }
     }
     return set;
 }
 
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId
 {
-    NSString* key = nil;
-    @synchronized(self.myTrackedBundles) {
-        key = [self.myTrackedBundles objectForKey:bundleId];
+    NSString* distro = nil;
+    @synchronized(self.myBundles) {
+        distro = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
     }
-    return key;
+    return distro;
 }
 
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource
 {
-    @synchronized(self.myBundleStatus) {
-        [self.myBundleStatus setObject:[NSNumber numberWithInteger:state] forKey:bundleResource];
+    @synchronized(self.myBundles) {
+        NSString* bundleId = [bundleResource zincBundleId];
+        ZincVersion bundleVersion = [bundleResource zincBundleVersion];
+        NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
+        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+        [versionInfo setObject:[NSNumber numberWithInteger:state] 
+                        forKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]];
     }
 }
 
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource
 {
-    @synchronized(self.myBundleStatus) {
-        return [[self.myBundleStatus objectForKey:bundleResource] integerValue];
+    ZincBundleState state = ZincBundleStateNone;
+    @synchronized(self.myBundles) {
+        NSString* bundleId = [bundleResource zincBundleId];
+        ZincVersion bundleVersion = [bundleResource zincBundleVersion];
+        NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:NO];
+        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+        state = [[versionInfo objectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]] integerValue];
     }
+    return state;
 }
 
 - (void) removeBundle:(NSURL*)bundleResource
 {
-    @synchronized(self.myBundleStatus) {
-        [self.myBundleStatus removeObjectForKey:bundleResource];
+    @synchronized(self.myBundles) {
+        NSString* bundleId = [bundleResource zincBundleId];
+        ZincVersion bundleVersion = [bundleResource zincBundleVersion];
+        NSDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:NO];
+        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+        [versionInfo removeObjectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]];
     }
+}
+
+- (NSSet*) bundlesWithState:(ZincBundleState)targetState
+{
+    NSMutableSet* set = nil;
+    @synchronized(self.myBundles) {
+        set = [NSMutableSet set];
+        NSArray* allBundleIds = [self.myBundles allKeys];
+        for (NSString* bundleId in allBundleIds) {
+            NSDictionary* bundleInfo = [self.myBundles objectForKey:bundleId];
+            NSDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+            NSArray* allVersions = [versionInfo allKeys];
+            for (NSNumber* version in allVersions) {
+                ZincBundleState state = [[versionInfo objectForKey:version] integerValue];
+                if (state == targetState) {
+                    [set addObject:[NSURL zincResourceForBundleWithId:bundleId version:[version integerValue]]];
+                }
+            }
+        }
+    }
+    return set;
 }
 
 - (NSSet*) availableBundles
 {
-    @synchronized(self.myBundleStatus) {
-        return [self.myBundleStatus keysOfEntriesPassingTest:^BOOL(id key, id obj, BOOL *stop) {
-            return [obj integerValue] == ZincBundleStateAvailable;
-        }];
-    }
+    return [self bundlesWithState:ZincBundleStateAvailable];
+}
+
+- (NSSet*) cloningBundles
+{
+    return [self bundlesWithState:ZincBundleStateCloning];
 }
 
 - (id) initWithDictionary:(NSDictionary*)dict
@@ -158,14 +210,14 @@
             [self.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
         }
         
-        self.myTrackedBundles = [[[dict objectForKey:@"tracked_bundles"] mutableCopy] autorelease];
-        
-        NSDictionary* bundleStatus = [dict objectForKey:@"bundle_status"];
-        self.myBundleStatus = [NSMutableDictionary dictionaryWithCapacity:[bundleStatus count]];
-        for (NSString* bundleResString in [bundleStatus allKeys]) {
-            NSURL* bundleRes = [NSURL URLWithString:bundleResString];
-            [self.myBundleStatus setObject:[bundleStatus objectForKey:bundleResString] forKey:bundleRes];
+        NSMutableDictionary* bundles = [dict objectForKey:@"bundles"];
+        if (bundles != nil) {
+            bundles = [bundles zinc_deepMutableCopy];
+        } else {
+            bundles = [NSMutableDictionary dictionary];
         }
+        
+        self.myBundles = bundles;
     }
     return self;
 }
@@ -182,19 +234,10 @@
         [dict setObject:sourceURLs forKey:@"sources"];
     }
         
-    @synchronized(self.myTrackedBundles) {
-        [dict setObject:[[self.myTrackedBundles copy] autorelease] forKey:@"tracked_bundles"];
+    @synchronized(self.myBundles) {
+        [dict setObject:[self.myBundles zinc_deepCopy] forKey:@"bundles"];
     }
-    
-    NSMutableDictionary* bundleStatus = [NSMutableDictionary dictionary];
-    
-    @synchronized(self.myBundleStatus) {
-        for (NSURL* bundleRes in self.myBundleStatus) {
-            [bundleStatus setObject:[self.myBundleStatus objectForKey:bundleRes] forKey:[bundleRes absoluteString]];
-        }
-        [dict setObject:bundleStatus forKey:@"bundle_status"];
-    }
-    
+
     return dict;
 }
 

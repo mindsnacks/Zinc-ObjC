@@ -43,15 +43,15 @@
 - (void) testAddTrackedBundle
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    [i1 addTrackedBundleId:@"bundle" distribution:@"prod"];
-    STAssertTrue([[i1 trackedDistributionForBundleId:@"bundle"] isEqualToString:@"prod"], @"distro not found");
+    [i1 addTrackedBundleId:@"com.foo.bundle" distribution:@"prod"];
+    STAssertTrue([[i1 trackedDistributionForBundleId:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
     
     [self _testDictionaryRoundtrip:i1];
 }
 
 - (void) testAvailableBundle
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateAvailable forBundle:bundleRes];
@@ -64,7 +64,7 @@
 
 - (void) testUnavailableBundle
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateCloning forBundle:bundleRes];
@@ -77,7 +77,7 @@
 
 - (void) testSetBundleState
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateCloning forBundle:bundleRes];

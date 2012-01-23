@@ -35,10 +35,15 @@
 
 - (void) main
 {
-    [self.repo registerBundle:self.resource status:ZincBundleStateDeleting];
-    
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+
+    if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
+        // exit early
+        [self.repo deregisterBundle:self.resource];
+        self.finishedSuccessfully = YES;
+        return;
+    }
 
     ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
@@ -102,42 +107,6 @@
     
 #endif
     
-    NSDirectoryEnumerator* dirEnum = [fm enumeratorAtPath:bundlePath];
-    
-    // first pass, scan to find any shared sha-based files to delete
-    for (NSString *thePath in dirEnum) {
-        
-        NSString* fullPath = [bundlePath stringByAppendingPathComponent:thePath];
-        
-        NSDictionary* attr = [fm attributesOfItemAtPath:fullPath error:&error];
-        if (attr == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-            continue;
-        }
-        
-        if ([[attr objectForKey:NSFileType] isEqualToString:NSFileTypeRegular]) {
-            
-            NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
-            
-            // check the link count. if it's 2, it means the only links are the
-            // one in this bundle, and the original in files/<sha>
-            if ([linkCount integerValue] == 2) {
-                
-                NSString* sha = [manifest shaForFile:thePath];
-                NSString* shaPath = [self.repo pathForFileWithSHA:sha];
-                
-                if (shaPath != nil) {
-                    if (![fm removeItemAtPath:shaPath error:&error]) {
-                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                        continue;
-                    } else {
-                        [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:self]];
-                    }
-                }
-            }
-        }
-    }
-    
     // remove the bundle dir    
     if (![fm removeItemAtPath:bundlePath error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
@@ -145,6 +114,65 @@
     } else {
         [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
+    
+    NSArray* allSHAs = [manifest allSHAs];
+    for (NSString* sha in allSHAs) {
+        
+        NSString* shaPath = [self.repo pathForFileWithSHA:sha];
+
+        NSDictionary* attr = [fm attributesOfItemAtPath:shaPath error:&error];
+        if (attr == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
+        if ([linkCount integerValue] == 1) {
+            if (![fm removeItemAtPath:shaPath error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                continue;
+            } else {
+                [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:self]];
+            }
+        }
+    }
+
+//    // next scan for any objects to delete
+//    NSDirectoryEnumerator* dirEnum = [fm enumeratorAtPath:bundlePath];
+//    for (NSString *thePath in dirEnum) {
+//        
+//        NSString* fullPath = [bundlePath stringByAppendingPathComponent:thePath];
+//        
+//        NSDictionary* attr = [fm attributesOfItemAtPath:fullPath error:&error];
+//        if (attr == nil) {
+//            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+//            continue;
+//        }
+//        
+//        if ([[attr objectForKey:NSFileType] isEqualToString:NSFileTypeRegular]) {
+//            
+//            NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
+//            
+//            // check the link count. if it's 2, it means the only links are the
+//            // one in this bundle, and the original in files/<sha>
+//            if ([linkCount integerValue] == 1) {
+//                
+//                NSString* sha = [manifest shaForFile:thePath];
+//                NSString* shaPath = [self.repo pathForFileWithSHA:sha];
+//                
+//                if (shaPath != nil) {
+//                    if (![fm removeItemAtPath:shaPath error:&error]) {
+//                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+//                        continue;
+//                    } else {
+//                        [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:self]];
+//                    }
+//                }
+//            }
+//        }
+//    }
+    
+
     
     // finally remove the manifest
     if(![self.repo removeManifestForBundleId:self.bundleId version:self.version error:&error]) {

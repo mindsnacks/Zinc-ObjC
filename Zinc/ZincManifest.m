@@ -59,6 +59,30 @@ NSString* const ZincFileFormatGZ = @"gz";
     return [[[self.files objectForKey:path] objectForKey:@"formats"] allKeys];
 }
 
+- (NSString*) bestFormatForFile:(NSString*)path withPreferredFormats:(NSArray*)preferredFormats
+{
+    NSArray* formats = [self formatsForFile:path];
+    for (NSString* preferredFormat in preferredFormats) {
+        if ([formats containsObject:preferredFormat]) {
+            return preferredFormat;
+        }
+    }
+    return nil;
+}
+
+- (NSString*) bestFormatForFile:(NSString*)path
+{
+    return [self bestFormatForFile:path withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
+}
+
+- (NSUInteger) sizeForFile:(NSString*)path format:(NSString*)format 
+{
+    return [[[[[self.files objectForKey:path] 
+               objectForKey:@"formats"] 
+              objectForKey:format ]
+             objectForKey:@"size"] unsignedIntegerValue];
+}
+
 - (NSArray*) allFiles
 {
     return [self.files allKeys];

@@ -48,6 +48,7 @@
 #pragma mark Files
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
+- (BOOL) hasFileWithSHA:(NSString*)sha;
 
 #pragma mark Tasks
 

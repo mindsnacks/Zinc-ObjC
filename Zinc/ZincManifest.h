@@ -22,6 +22,9 @@ extern NSString* const ZincFileFormatGZ;
 
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) formatsForFile:(NSString*)path;
+- (NSString*) bestFormatForFile:(NSString*)path withPreferredFormats:(NSArray*)formats;
+- (NSString*) bestFormatForFile:(NSString*)path;
+- (NSUInteger) sizeForFile:(NSString*)path format:(NSString*)format;
 
 - (NSArray*) allFiles;
 - (NSArray*) allSHAs;

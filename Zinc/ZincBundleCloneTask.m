@@ -38,8 +38,6 @@
 
 - (void) main
 {
-    [self.repo registerBundle:self.resource status:ZincBundleStateCloning];
-    
     [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource]];
     
     NSError* error = nil;
@@ -68,8 +66,25 @@
         return;
     }
     
-    BOOL getAchive = YES;
+    NSUInteger totalSize = 0;
+    NSUInteger missingSize = 0;
     
+    NSArray* allFiles = [manifest allFiles];
+    NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
+    
+    for (NSString* path in allFiles) {
+        NSString* format = [manifest bestFormatForFile:path];
+        // TODO: check if format is nil
+        NSUInteger size = [manifest sizeForFile:path format:format];
+        totalSize += size;
+        if (![self.repo hasFileWithSHA:[manifest shaForFile:path]]) {
+            missingSize += size;
+            [missingFiles addObject:path];
+        }
+    }
+    
+    BOOL getAchive = ((double)missingSize / totalSize > 0.5);
+
     if (getAchive) { // ARCHIVE MODE
         
         NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
@@ -87,22 +102,15 @@
         NSArray* files = [manifest allFiles];
         NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
         
-        for (NSString* file in files) {
-            
+        for (NSString* file in missingFiles) {
+
             NSString* sha = [manifest shaForFile:file];
-            NSString* path = [self.repo pathForFileWithSHA:sha];
+            NSArray* formats = [manifest formatsForFile:file];
             
-            // check if file is missing
-            if (![fm fileExistsAtPath:path]) {
-                
-                NSArray* formats = [manifest formatsForFile:file];
-                
-                // queue redownload            
-                NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
-                ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
-                ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
-                [fileOps addObject:fileOp];
-            }
+            NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
+            ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
+            ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
+            [fileOps addObject:fileOp];
         }
         
         BOOL allSuccessful = YES;
@@ -118,7 +126,6 @@
     }
     
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
-    NSArray* allFiles = [manifest allFiles];
     for (NSString* file in allFiles) {
         NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
         NSString* fileDir = [filePath stringByDeletingLastPathComponent];
