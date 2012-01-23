@@ -21,7 +21,9 @@ enum
     
     ZINC_ERR_MISSING_INDEX_FILE                   = 2001,
     ZINC_ERR_INVALID_FORMAT                       = 2002,
-    ZINC_ERR_INVALID_MANIFEST_FORMAT              = 2101,
+    ZINC_ERR_INVALID_REPO_FORMAT                  = 2101,
+    ZINC_ERR_INVALID_MANIFEST_FORMAT              = 2102,
+
     
     ZINC_ERR_NO_SOURCES_FOR_CATALOG               = 3101,
 

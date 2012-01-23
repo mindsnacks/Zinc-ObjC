@@ -137,12 +137,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             return nil;
         }
             
-        ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithDictionary:jsonDict] autorelease];
+        ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
+        if (index == nil) {
+            return nil;
+        }
         repo.index = index;
     }
-    
-//    ZincSerialQueueProxy* indexProxy = [[[ZincSerialQueueProxy alloc] initWithTarget:repo.index] autorelease];
-//    repo.indexProxy = (ZincRepoIndex*) indexProxy;
     
     [repo startRefreshTimer];
     
@@ -176,9 +176,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) setIndex:(ZincRepoIndex *)index
 {
-    ZincSerialQueueProxy* proxy = [[ZincSerialQueueProxy alloc] initWithTarget:index];
-    [_index release];
-    _index = (ZincRepoIndex*)proxy;
+    [_index autorelease];
+    
+    if (index != nil) {
+        ZincSerialQueueProxy* proxy = [[ZincSerialQueueProxy alloc] initWithTarget:index];
+        _index = (ZincRepoIndex*)proxy;
+    } else {
+        _index = nil;
+    }
 }
 
 - (ZincSerialQueueProxy*) indexProxy

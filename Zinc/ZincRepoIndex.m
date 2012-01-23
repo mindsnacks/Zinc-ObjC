@@ -10,6 +10,7 @@
 #import "KSJSON.h"
 #import "ZincResource.h"
 #import "ZincDeepCopying.h"
+#import "ZincErrors.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
@@ -199,27 +200,35 @@
     return [self bundlesWithState:ZincBundleStateCloning];
 }
 
-- (id) initWithDictionary:(NSDictionary*)dict
++ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError
 {
-    self = [self init];
-    if (self) {
-
-        NSArray* sourceURLs = [dict objectForKey:@"sources"];
-        self.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
-        for (NSString* sourceURL in sourceURLs) {
-            [self.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
+    int format = [[dict objectForKey:@"format"] intValue];
+    if (format != 1) {
+        if (outError != NULL) {
+            *outError = ZincError(ZINC_ERR_INVALID_REPO_FORMAT);
         }
-        
-        NSMutableDictionary* bundles = [dict objectForKey:@"bundles"];
-        if (bundles != nil) {
-            bundles = [bundles zinc_deepMutableCopy];
-        } else {
-            bundles = [NSMutableDictionary dictionary];
-        }
-        
-        self.myBundles = bundles;
+        [self autorelease];
+        return nil;
     }
-    return self;
+    
+    ZincRepoIndex* index = [[[ZincRepoIndex alloc] init] autorelease];
+    
+    NSArray* sourceURLs = [dict objectForKey:@"sources"];
+    index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
+    for (NSString* sourceURL in sourceURLs) {
+        [index.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
+    }
+    
+    NSMutableDictionary* bundles = [dict objectForKey:@"bundles"];
+    if (bundles != nil) {
+        bundles = [bundles zinc_deepMutableCopy];
+    } else {
+        bundles = [NSMutableDictionary dictionary];
+    }
+    
+    index.myBundles = bundles;
+    
+    return index;
 }
 
 - (NSDictionary*) dictionaryRepresentation
@@ -237,6 +246,8 @@
     @synchronized(self.myBundles) {
         [dict setObject:[self.myBundles zinc_deepCopy] forKey:@"bundles"];
     }
+    
+    [dict setObject:[NSNumber numberWithInt:1] forKey:@"format"];
 
     return dict;
 }

@@ -39,7 +39,7 @@ typedef enum {
 
 #pragma mark Encoding
 
-- (id) initWithDictionary:(NSDictionary*)dict;
++ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;
 - (NSDictionary*) dictionaryRepresentation;
 - (NSString*) jsonRepresentation:(NSError**)outError;
 
