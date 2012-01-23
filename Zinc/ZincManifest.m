@@ -10,9 +10,6 @@
 #import "ZincManifest.h"
 #import "KSJSON.h"
 
-NSString* const ZincFileFormatRaw = @"raw";
-NSString* const ZincFileFormatGZ = @"gz";
-
 @interface ZincManifest ()
 @property (nonatomic, retain) NSDictionary* files;
 @end

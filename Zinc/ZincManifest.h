@@ -9,9 +9,6 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
-extern NSString* const ZincFileFormatRaw;
-extern NSString* const ZincFileFormatGZ;
-
 @interface ZincManifest : NSObject
 
 - (id) init;

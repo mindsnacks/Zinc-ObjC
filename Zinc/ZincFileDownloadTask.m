@@ -18,7 +18,6 @@
 #import "ZincUtils.h"
 #import "AFHTTPRequestOperation.h"
 
-#import "ZincManifest.h" // TODO: tmp for formats only?
 
 @implementation ZincFileDownloadTask
 

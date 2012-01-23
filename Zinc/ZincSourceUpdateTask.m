@@ -16,6 +16,7 @@
 #import "ZincSource.h"
 #import "ZincCatalogUpdateTask.h"
 #import "ZincResource.h"
+#import "ZincErrors.h"
 
 @implementation ZincSourceUpdateTask
 
@@ -57,8 +58,7 @@
     
     NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
     if (uncompressed == nil) {
-        // TODO: real error
-        NSAssert(NO, @"gunzip failed");
+        [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_DECOMPRESS_FAILED) source:self]];
         return;
     }
     

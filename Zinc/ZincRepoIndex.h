@@ -23,7 +23,7 @@ typedef enum {
 
 - (void) addSourceURL:(NSURL*)url;
 - (void) removeSourceURL:(NSURL*)url;
-- (NSSet*) sourceURLS;
+- (NSSet*) sourceURLs;
 
 - (void) addTrackedBundleId:(NSString*)bundleId distribution:(NSString*)distro;
 - (void) removeTrackedBundleId:(NSString*)bundleId;

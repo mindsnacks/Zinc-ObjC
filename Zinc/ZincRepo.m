@@ -33,6 +33,8 @@
 #import "AFNetworking.h"
 #import "MAWeakDictionary.h"
 
+#import "ZincSerialQueueProxy.h"
+
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
 #define FILES_DIR @"objects"
@@ -55,6 +57,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
+
+@property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
 - (void) startRefreshTimer;
 - (void) stopRefreshTimer;
@@ -103,7 +107,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
-    
     NSOperationQueue* operationQueue = [[[NSOperationQueue alloc] init] autorelease];
     [operationQueue setMaxConcurrentOperationCount:kZincRepoDefaultNetworkOperationCount];
     return [self repoWithURL:fileURL networkOperationQueue:operationQueue error:outError];
@@ -137,6 +140,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithDictionary:jsonDict] autorelease];
         repo.index = index;
     }
+    
+//    ZincSerialQueueProxy* indexProxy = [[[ZincSerialQueueProxy alloc] initWithTarget:repo.index] autorelease];
+//    repo.indexProxy = (ZincRepoIndex*) indexProxy;
+    
+    [repo startRefreshTimer];
+    
     return repo;
 }
 
@@ -161,9 +170,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.loadedBundles = [[[MAWeakDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
-        [self startRefreshTimer];
     }
     return self;
+}
+
+- (void) setIndex:(ZincRepoIndex *)index
+{
+    ZincSerialQueueProxy* proxy = [[ZincSerialQueueProxy alloc] initWithTarget:index];
+    [_index release];
+    _index = (ZincRepoIndex*)proxy;
+}
+
+- (ZincSerialQueueProxy*) indexProxy
+{
+    return (ZincSerialQueueProxy*)self.index;
 }
 
 - (void) startRefreshTimer
@@ -184,7 +204,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) checkForBundleDeletion
 {
-    @synchronized(self.index) {
+    [self.indexProxy executeBlock:^{
         
         NSSet* cloningBundles = [self.index cloningBundles];
         if ([cloningBundles count] > 1) {
@@ -201,7 +221,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 [self deleteBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
             }
         }
-    }
+    }];
 }
 
 - (void) refreshTimerFired:(NSTimer*)timer
@@ -377,7 +397,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
-    NSSet* sourceURLs = [self.index sourceURLS];
+    NSSet* sourceURLs = [self.index sourceURLs];
     
     NSOperation* parentOp = nil;
     if (completion != nil) {
@@ -520,14 +540,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     NSMutableSet* activeBundles = [NSMutableSet set];
     
-    @synchronized(self.index) {
+    [self.indexProxy executeBlock:^{
         NSSet* trackBundles = [self.index trackedBundleIds];
         for (NSString* bundleId in trackBundles) {
             NSString* dist = [self.index trackedDistributionForBundleId:bundleId];
             ZincVersion version = [self versionForBundleId:bundleId distribution:dist];
             [activeBundles addObject:[NSURL zincResourceForBundleWithId:bundleId version:version]];
         }
-    }
+    }];
     
     @synchronized(self.loadedBundles) {
         for (NSURL* bundleRes in [self.loadedBundles allKeys]) {
@@ -569,7 +589,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
 {
-    @synchronized(self.index) {
+    [self.indexProxy executeBlock:^{
+        
         [self.index addTrackedBundleId:bundleId distribution:distro];
         [self queueIndexSave];
         
@@ -582,15 +603,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
             [self queueTaskForDescriptor:taskDesc];
         }
-    }
+    }];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
-    @synchronized(self.index) {
-        [self.index removeTrackedBundleId:bundleId];
-        [self queueIndexSave];  
-    }
+    [self.index removeTrackedBundleId:bundleId];
+    [self queueIndexSave];  
 }
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
@@ -601,7 +620,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         parentOp.completionBlock = completion;
     }
     
-    @synchronized(self.index) {
+    [self.indexProxy executeBlock:^{
         
         NSSet* trackBundles = [self.index trackedBundleIds];
         
@@ -627,7 +646,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
             [parentOp addDependency:bundleTask];
         }
-    }
+    }];
+
     
     if (completion != nil) {
         [self addOperation:parentOp];
@@ -674,8 +694,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             NSString* path = [self pathForBundleWithId:bundleId version:version];
             bundle = [[[ZincBundle alloc] initWithBundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
-            
-            // TODO: handle error
             
             NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
             [self.loadedBundles setObject:bundle forKey:res];
@@ -738,7 +756,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         return tasks;
     }
 }
-
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
 {

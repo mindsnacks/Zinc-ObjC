@@ -59,12 +59,12 @@
 
 - (void) addSourceURL:(NSURL*)url
 {
-    @synchronized(self.sourceURLS) {
+    @synchronized(self.mySourceURLs) {
         [self.mySourceURLs addObject:url];
     }
 }
 
-- (NSSet*) sourceURLS
+- (NSSet*) sourceURLs
 {
     NSSet* urls = nil;
     @synchronized(self.mySourceURLs) {

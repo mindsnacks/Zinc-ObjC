@@ -18,6 +18,7 @@
 #import "ZincFileDownloadTask.h"
 #import "ZincArchiveDownloadTask.h"
 #import "ZincResource.h"
+#import "ZincErrors.h"
 
 @implementation ZincBundleCloneTask
 
@@ -55,7 +56,7 @@
     if (manifestDownloadTask != nil) {
         [manifestDownloadTask waitUntilFinished];
         if (!manifestDownloadTask.finishedSuccessfully) {
-            // TODO: add events?
+            // ???: add an event?
             return;
         }
     }
@@ -73,8 +74,13 @@
     NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
     
     for (NSString* path in allFiles) {
+        
         NSString* format = [manifest bestFormatForFile:path];
-        // TODO: check if format is nil
+        if (format == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_INVALID_FORMAT) source:self]];
+            return;
+        }
+        
         NSUInteger size = [manifest sizeForFile:path format:format];
         totalSize += size;
         if (![self.repo hasFileWithSHA:[manifest shaForFile:path]]) {

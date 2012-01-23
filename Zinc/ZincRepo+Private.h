@@ -18,9 +18,10 @@
 @interface ZincRepo ()
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
+@property (nonatomic, retain) ZincRepoIndex* index;
+
 
 - (NSURL*) indexURL;
-@property (nonatomic, retain) ZincRepoIndex* index;
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
 - (NSArray*) sourcesForCatalogId:(NSString*)catalogId;

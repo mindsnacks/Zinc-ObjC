@@ -15,9 +15,6 @@
 
 @implementation ZincBundleDeleteTask
 
-@synthesize bundleId = _bundleId;
-@synthesize version = _version;
-
 - (void)dealloc
 {
     [super dealloc];
@@ -115,6 +112,7 @@
         [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
     
+    // scan for sha-based objects to remove
     NSArray* allSHAs = [manifest allSHAs];
     for (NSString* sha in allSHAs) {
         
@@ -136,51 +134,15 @@
             }
         }
     }
-
-//    // next scan for any objects to delete
-//    NSDirectoryEnumerator* dirEnum = [fm enumeratorAtPath:bundlePath];
-//    for (NSString *thePath in dirEnum) {
-//        
-//        NSString* fullPath = [bundlePath stringByAppendingPathComponent:thePath];
-//        
-//        NSDictionary* attr = [fm attributesOfItemAtPath:fullPath error:&error];
-//        if (attr == nil) {
-//            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-//            continue;
-//        }
-//        
-//        if ([[attr objectForKey:NSFileType] isEqualToString:NSFileTypeRegular]) {
-//            
-//            NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
-//            
-//            // check the link count. if it's 2, it means the only links are the
-//            // one in this bundle, and the original in files/<sha>
-//            if ([linkCount integerValue] == 1) {
-//                
-//                NSString* sha = [manifest shaForFile:thePath];
-//                NSString* shaPath = [self.repo pathForFileWithSHA:sha];
-//                
-//                if (shaPath != nil) {
-//                    if (![fm removeItemAtPath:shaPath error:&error]) {
-//                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-//                        continue;
-//                    } else {
-//                        [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:self]];
-//                    }
-//                }
-//            }
-//        }
-//    }
-    
-
     
     // finally remove the manifest
     if(![self.repo removeManifestForBundleId:self.bundleId version:self.version error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     } else {
-        // TODO: fix! we don't have a manifest path directly!
-        //[self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
+        // kinda odd to ask for the path after deleting, but thats how the API works ATM
+        NSString* bundlePath = [self.repo pathForManifestWithBundleId:self.bundleId version:self.version];
+        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
     
     [self.repo deregisterBundle:self.resource];
