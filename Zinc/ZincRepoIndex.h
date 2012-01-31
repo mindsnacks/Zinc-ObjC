@@ -8,14 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
-
-
-typedef enum {
-    ZincBundleStateNone      = 0,
-    ZincBundleStateCloning   = 1,
-    ZincBundleStateAvailable = 2,
-    ZincBundleStateDeleting  = 3,
-} ZincBundleState;
+#import "ZincRepo.h"
 
 @interface ZincRepoIndex : NSObject
 

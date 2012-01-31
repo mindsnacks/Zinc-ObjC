@@ -13,6 +13,19 @@
 #define kZincRepoDefaultAutoRefreshInterval (10)
 #define kZincRepoDefaultCacheCount (20)
 
+typedef enum {
+    ZincBundleStateNone      = 0,
+    ZincBundleStateCloning   = 1,
+    ZincBundleStateAvailable = 2,
+    ZincBundleStateDeleting  = 3,
+} ZincBundleState;
+
+extern NSString* const ZincRepoBundleStatusChangeNotification;
+extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
+extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
+
+extern NSString* const ZincRepoBundleWillDeleteNotification;
+
 @protocol ZincRepoDelegate;
 @class ZincBundle;
 @class ZincEvent;

@@ -41,6 +41,11 @@
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
+NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
+NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
+NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
+NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
+
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @interface ZincRepo ()
@@ -679,11 +684,26 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status
 {
     [self.index setState:status forBundle:bundleResource];
+    
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [bundleResource zincBundleId],ZincRepoBundleChangeNotifiationBundleIdKey,
+                              [NSNumber numberWithInteger:status], ZincRepoBundleChangeNotifiationStatusKey,
+                              nil];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoBundleStatusChangeNotification
+                                                        object:self userInfo:userInfo];
     [self queueIndexSave];
 }
 
 - (void) deregisterBundle:(NSURL*)bundleResource
 {
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              [bundleResource zincBundleId],ZincRepoBundleChangeNotifiationBundleIdKey,
+                              nil];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoBundleWillDeleteNotification
+                                                        object:self userInfo:userInfo];
+
     [self.index removeBundle:bundleResource];
     [self queueIndexSave];
 }
