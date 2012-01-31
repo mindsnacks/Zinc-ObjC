@@ -40,8 +40,9 @@
 
 @interface ZincTask ()
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
+// Designated Initializer
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
 
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;

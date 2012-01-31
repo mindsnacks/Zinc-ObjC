@@ -22,6 +22,17 @@
 
 @implementation ZincBundleCloneTask
 
+@synthesize archiveDownloadTheshold = _archiveDownloadTheshold;
+
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
+{
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
+    if (self) {
+        _archiveDownloadTheshold = kZincBundleCloneTaskDefaultArchiveTreshold;
+    }
+    return self;
+}
+
 - (void)dealloc
 {
     [super dealloc];
@@ -89,7 +100,7 @@
         }
     }
     
-    BOOL getAchive = ((double)missingSize / totalSize > 0.5);
+    BOOL getAchive = ((double)missingSize / totalSize > self.archiveDownloadTheshold);
 
     if (getAchive) { // ARCHIVE MODE
         

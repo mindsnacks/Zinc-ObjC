@@ -9,9 +9,13 @@
 #import "ZincTask.h"
 #import "ZincGlobals.h"
 
+#define kZincBundleCloneTaskDefaultArchiveTreshold (0.5)
+
 @interface ZincBundleCloneTask : ZincTask
 
 @property (readonly) NSString* bundleId;
 @property (readonly) ZincVersion version;
+
+@property (assign) float archiveDownloadTheshold;
 
 @end

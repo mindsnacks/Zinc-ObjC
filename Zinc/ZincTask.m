@@ -27,7 +27,7 @@
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
     self = [super init];
     if (self) {
