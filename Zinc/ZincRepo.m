@@ -242,6 +242,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
         }];
     }];
+
+//    @synchronized(self.myTasks) {
+//        for (ZincTask* task in self.myTasks) {
+//            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
+//                ZINC_DEBUG_LOG(@"%@ : %f", task, task.progress);
+//            }
+//        }
+//    }
     
     //    ZincGarbageCollectTask* gc = [[[ZincGarbageCollectTask alloc] initWithRepo:self] autorelease];
     //    [self getOrAddTask:gc];
@@ -352,11 +360,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) addOperation:(NSOperation*)operation
 {
     if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
-        
-//        AFURLConnectionOperation* connOp = (AFURLConnectionOperation*)operation;
-//        [connOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
-//            NSLog(@"%d/%d = %d%%", totalBytesRead, totalBytesExpectedToRead, (int)((float)totalBytesRead/totalBytesExpectedToRead*100));
-//        }];
         
         [self.networkQueue addOperation:operation];
     

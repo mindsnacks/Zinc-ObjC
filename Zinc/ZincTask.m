@@ -73,9 +73,23 @@
     }
 }
 
+- (NSInteger) currentProgressValue
+{
+    return [[self.subtasks valueForKeyPath:@"@sum.currentProgressValue"] integerValue];
+}
+
+- (NSInteger) maxProgressValue
+{
+    return [[self.subtasks valueForKeyPath:@"@sum.maxProgressValue"] integerValue];
+}
+
 - (double) progress
 {
-    return -1;
+    NSInteger max = [self maxProgressValue];
+    if (max > 0) {
+        return (double)self.currentProgressValue / max;
+    }
+    return 0;
 }
 
 + (NSString*) taskMethod
@@ -103,6 +117,7 @@
     if (self.isCancelled) return nil;
     
     ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:[NSArray arrayWithObject:self]];
+    [self addDependency:task];
     return task;
 }
 
