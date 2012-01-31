@@ -20,9 +20,14 @@
 #import "ZincResource.h"
 #import "ZincErrors.h"
 
+@interface ZincBundleCloneTask ()
+@property (assign) NSInteger totalBytesToDownload;
+@end
+
 @implementation ZincBundleCloneTask
 
 @synthesize archiveDownloadTheshold = _archiveDownloadTheshold;
+@synthesize totalBytesToDownload = _totalBytesToDownload;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -100,46 +105,50 @@
         }
     }
     
-    BOOL getAchive = ((double)missingSize / totalSize > self.archiveDownloadTheshold);
-
-    if (getAchive) { // ARCHIVE MODE
+    if (missingSize > 0) {
         
-        NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
-        ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
-        ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:nil];
+        self.totalBytesToDownload = missingSize;
+        BOOL getAchive = ((double)missingSize / totalSize > self.archiveDownloadTheshold);
         
-        [archiveOp waitUntilFinished];
-        if (!archiveOp.finishedSuccessfully) {
-            return;
-        }
-    
-    } else { // INVIDIDUAL FILE MODE
-        
-        NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
-        NSArray* files = [manifest allFiles];
-        NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
-        
-        for (NSString* file in missingFiles) {
-
-            NSString* sha = [manifest shaForFile:file];
-            NSArray* formats = [manifest formatsForFile:file];
+        if (getAchive) { // ARCHIVE MODE
             
-            NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
-            ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
-            ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
-            [fileOps addObject:fileOp];
-        }
-        
-        BOOL allSuccessful = YES;
-        
-        for (ZincTask* op in fileOps) {
-            [op waitUntilFinished];
-            if (!op.finishedSuccessfully) {
-                allSuccessful = NO;
+            NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
+            ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
+            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:nil];
+            
+            [archiveOp waitUntilFinished];
+            if (!archiveOp.finishedSuccessfully) {
+                return;
             }
+            
+        } else { // INVIDIDUAL FILE MODE
+            
+            NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
+            NSArray* files = [manifest allFiles];
+            NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
+            
+            for (NSString* file in missingFiles) {
+                
+                NSString* sha = [manifest shaForFile:file];
+                NSArray* formats = [manifest formatsForFile:file];
+                
+                NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
+                ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
+                ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
+                [fileOps addObject:fileOp];
+            }
+            
+            BOOL allSuccessful = YES;
+            
+            for (ZincTask* op in fileOps) {
+                [op waitUntilFinished];
+                if (!op.finishedSuccessfully) {
+                    allSuccessful = NO;
+                }
+            }
+            
+            if (!allSuccessful) return;
         }
-        
-        if (!allSuccessful) return;
     }
     
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
