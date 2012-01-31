@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincFileDownloadTask.h"
+#import "ZincObjectDownloadTask.h"
 #import "ZincSource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
@@ -19,7 +19,7 @@
 #import "AFHTTPRequestOperation.h"
 
 
-@implementation ZincFileDownloadTask
+@implementation ZincObjectDownloadTask
 
 - (void)dealloc
 {

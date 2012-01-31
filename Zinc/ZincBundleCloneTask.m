@@ -15,7 +15,7 @@
 #import "ZincManifestDownloadTask.h"
 #import "ZincEvent.h"
 #import "NSFileManager+Zinc.h"
-#import "ZincFileDownloadTask.h"
+#import "ZincObjectDownloadTask.h"
 #import "ZincArchiveDownloadTask.h"
 #import "ZincResource.h"
 #import "ZincErrors.h"
@@ -133,7 +133,7 @@
                 NSArray* formats = [manifest formatsForFile:file];
                 
                 NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
-                ZincTaskDescriptor* fileTaskDesc = [ZincFileDownloadTask taskDescriptorForResource:fileRes];
+                ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
                 ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
                 [fileOps addObject:fileOp];
             }

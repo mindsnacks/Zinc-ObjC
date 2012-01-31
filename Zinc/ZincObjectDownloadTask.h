@@ -8,7 +8,7 @@
 
 #import "ZincTask.h"
 
-@interface ZincFileDownloadTask : ZincTask
+@interface ZincObjectDownloadTask : ZincTask
 
 @property (readonly) NSString* sha;
 

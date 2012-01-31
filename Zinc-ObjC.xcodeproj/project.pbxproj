@@ -50,8 +50,8 @@
 		B327071314BCCB94004E3244 /* ZincSourceUpdateTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B327071114BCCB8B004E3244 /* ZincSourceUpdateTask.m */; };
 		B327071614BCE12D004E3244 /* ZincManifestDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B327071414BCE12B004E3244 /* ZincManifestDownloadTask.h */; };
 		B327071714BCE12D004E3244 /* ZincManifestDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B327071514BCE12C004E3244 /* ZincManifestDownloadTask.m */; };
-		B327071E14BCE758004E3244 /* ZincFileDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B327071C14BCE754004E3244 /* ZincFileDownloadTask.h */; };
-		B327071F14BCE758004E3244 /* ZincFileDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B327071D14BCE756004E3244 /* ZincFileDownloadTask.m */; };
+		B327071E14BCE758004E3244 /* ZincObjectDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B327071C14BCE754004E3244 /* ZincObjectDownloadTask.h */; };
+		B327071F14BCE758004E3244 /* ZincObjectDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B327071D14BCE756004E3244 /* ZincObjectDownloadTask.m */; };
 		B327D4B114AE6F410051416F /* sha1.c in Sources */ = {isa = PBXBuildFile; fileRef = B327D4AF14AE6F410051416F /* sha1.c */; };
 		B327D4B214AE6F410051416F /* sha1.h in Headers */ = {isa = PBXBuildFile; fileRef = B327D4B014AE6F410051416F /* sha1.h */; };
 		B327D4BF14AE75DC0051416F /* ZincFileManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B327D4BC14AE75C20051416F /* ZincFileManagerTest.m */; };
@@ -250,8 +250,8 @@
 		B327071114BCCB8B004E3244 /* ZincSourceUpdateTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincSourceUpdateTask.m; sourceTree = "<group>"; };
 		B327071414BCE12B004E3244 /* ZincManifestDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifestDownloadTask.h; sourceTree = "<group>"; };
 		B327071514BCE12C004E3244 /* ZincManifestDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifestDownloadTask.m; sourceTree = "<group>"; };
-		B327071C14BCE754004E3244 /* ZincFileDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincFileDownloadTask.h; sourceTree = "<group>"; };
-		B327071D14BCE756004E3244 /* ZincFileDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincFileDownloadTask.m; sourceTree = "<group>"; };
+		B327071C14BCE754004E3244 /* ZincObjectDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincObjectDownloadTask.h; sourceTree = "<group>"; };
+		B327071D14BCE756004E3244 /* ZincObjectDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincObjectDownloadTask.m; sourceTree = "<group>"; };
 		B327D4AF14AE6F410051416F /* sha1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sha1.c; path = Dependencies/sha1/sha1.c; sourceTree = SOURCE_ROOT; };
 		B327D4B014AE6F410051416F /* sha1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sha1.h; path = Dependencies/sha1/sha1.h; sourceTree = SOURCE_ROOT; };
 		B327D4BB14AE75C20051416F /* ZincFileManagerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincFileManagerTest.h; sourceTree = "<group>"; };
@@ -704,8 +704,8 @@
 				B3215E2914BE7E3B00FC7FA7 /* ZincCatalogUpdateTask.m */,
 				B327071414BCE12B004E3244 /* ZincManifestDownloadTask.h */,
 				B327071514BCE12C004E3244 /* ZincManifestDownloadTask.m */,
-				B327071C14BCE754004E3244 /* ZincFileDownloadTask.h */,
-				B327071D14BCE756004E3244 /* ZincFileDownloadTask.m */,
+				B327071C14BCE754004E3244 /* ZincObjectDownloadTask.h */,
+				B327071D14BCE756004E3244 /* ZincObjectDownloadTask.m */,
 				B3316A2814C648F000AEAD6C /* ZincArchiveDownloadTask.h */,
 				B3316A2914C648F000AEAD6C /* ZincArchiveDownloadTask.m */,
 				B3316A2C14C6754200AEAD6C /* ZincArchiveExtractOperation.h */,
@@ -838,7 +838,7 @@
 				B327070E14BCC723004E3244 /* ZincTask.h in Headers */,
 				B327071214BCCB94004E3244 /* ZincSourceUpdateTask.h in Headers */,
 				B327071614BCE12D004E3244 /* ZincManifestDownloadTask.h in Headers */,
-				B327071E14BCE758004E3244 /* ZincFileDownloadTask.h in Headers */,
+				B327071E14BCE758004E3244 /* ZincObjectDownloadTask.h in Headers */,
 				B3EACD8614BD4907004D90EC /* ZincGarbageCollectTask.h in Headers */,
 				B3CEEC0214BE0F270023DF5B /* ZincBundleDeleteTask.h in Headers */,
 				B3215E2214BE5AF800FC7FA7 /* ZincTaskDescriptor.h in Headers */,
@@ -1065,7 +1065,7 @@
 				B327070F14BCC724004E3244 /* ZincTask.m in Sources */,
 				B327071314BCCB94004E3244 /* ZincSourceUpdateTask.m in Sources */,
 				B327071714BCE12D004E3244 /* ZincManifestDownloadTask.m in Sources */,
-				B327071F14BCE758004E3244 /* ZincFileDownloadTask.m in Sources */,
+				B327071F14BCE758004E3244 /* ZincObjectDownloadTask.m in Sources */,
 				B3EACD8714BD4907004D90EC /* ZincGarbageCollectTask.m in Sources */,
 				B3CEEC0314BE0F270023DF5B /* ZincBundleDeleteTask.m in Sources */,
 				B3215E2314BE5AF800FC7FA7 /* ZincTaskDescriptor.m in Sources */,
