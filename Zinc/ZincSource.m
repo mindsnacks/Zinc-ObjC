@@ -83,9 +83,6 @@
 {
     NSURL* fileURL = [self urlForFileWithSHA:sha extension:extension];
     NSMutableURLRequest* request = [self getRequestForURL:fileURL];
-//    if ([extension isEqualToString:@"gz"]) {
-//        [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-//    }
     return request;
 }
 

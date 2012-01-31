@@ -36,17 +36,6 @@
     [super dealloc];
 }
 
-//- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
-//{
-//    return [(id)self.nsbundle methodSignatureForSelector:aSelector];
-//}
-//
-//- (void)forwardInvocation:(NSInvocation *)anInvocation
-//{
-//    [anInvocation setTarget:self.nsbundle];
-//    [anInvocation invoke];
-//}
-
 - (NSURL *)URLForResource:(NSString *)name withExtension:(NSString *)ext
 {
     NSString* p = [name stringByAppendingPathExtension:ext];
