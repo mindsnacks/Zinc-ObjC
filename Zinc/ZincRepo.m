@@ -21,7 +21,7 @@
 #import "ZincBundleDeleteTask.h"
 #import "ZincSourceUpdateTask.h"
 #import "ZincCatalogUpdateTask.h"
-#import "ZincFileDownloadTask.h"
+#import "ZincObjectDownloadTask.h"
 #import "ZincGarbageCollectTask.h"
 #import "ZincRepoIndexUpdateTask.h"
 #import "ZincArchiveExtractOperation.h"
@@ -158,7 +158,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleCloneTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:10 forClass:[ZincFileDownloadTask class]];
+        [self.queueGroup setMaxConcurrentOperationCount:10 forClass:[ZincObjectDownloadTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincSourceUpdateTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincBundleDeleteTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
@@ -352,6 +352,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) addOperation:(NSOperation*)operation
 {
     if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
+        
+//        AFURLConnectionOperation* connOp = (AFURLConnectionOperation*)operation;
+//        [connOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
+//            NSLog(@"%d/%d = %d%%", totalBytesRead, totalBytesExpectedToRead, (int)((float)totalBytesRead/totalBytesExpectedToRead*100));
+//        }];
+        
         [self.networkQueue addOperation:operation];
     
     } else {

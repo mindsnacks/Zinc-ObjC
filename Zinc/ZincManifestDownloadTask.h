@@ -6,12 +6,12 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
+#import "ZincDownloadTask.h"
 #import "ZincGlobals.h"
 
 @class ZincRepo;
 
-@interface ZincManifestDownloadTask : ZincTask
+@interface ZincManifestDownloadTask : ZincDownloadTask
 
 @property (readonly) NSString* bundleId;
 @property (readonly) ZincVersion version;

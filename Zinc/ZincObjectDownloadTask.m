@@ -7,6 +7,7 @@
 //
 
 #import "ZincObjectDownloadTask.h"
+#import "ZincDownloadTask+Private.h"
 #import "ZincSource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
@@ -18,8 +19,16 @@
 #import "ZincUtils.h"
 #import "AFHTTPRequestOperation.h"
 
+@interface ZincObjectDownloadTask ()
+@property (readwrite) NSInteger bytesRead;
+@property (readwrite) NSInteger totalBytesToRead;
+@end
+
 
 @implementation ZincObjectDownloadTask
+
+@synthesize bytesRead = _bytesRead;
+@synthesize totalBytesToRead = _totalBytesToRead;
 
 - (void)dealloc
 {
@@ -61,8 +70,6 @@
     
     for (NSURL* source in sources) {
         
-        NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
-        
         NSString* uncompressedPath = [[self.repo downloadsPath] stringByAppendingPathComponent:self.sha];
         NSString* compressedPath = [uncompressedPath stringByAppendingPathExtension:@"gz"];
         
@@ -85,15 +92,9 @@
             downloadPath = compressedPath;
         }
         
-        AFHTTPRequestOperation* downloadOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-        downloadOp.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
-        
+        NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        downloadOp.outputStream = outStream;
-        
-        [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
-        
-        [self addOperation:downloadOp];
+        AFHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream];
         [downloadOp waitUntilFinished];
         
         if (!downloadOp.hasAcceptableStatusCode) {

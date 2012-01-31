@@ -7,6 +7,7 @@
 //
 
 #import "ZincManifestDownloadTask.h"
+#import "ZincDownloadTask+Private.h"
 #import "ZincBundle.h"
 #import "ZincSource.h"
 #import "ZincRepo.h"
@@ -65,13 +66,7 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
-        
-        AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-        [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-        
-        [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:[request URL]]];
-
-        [self addOperation:requestOp];
+        AFHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil];
         [requestOp waitUntilFinished];
         if (!requestOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];

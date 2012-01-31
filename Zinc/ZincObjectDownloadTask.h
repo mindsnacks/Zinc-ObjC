@@ -6,10 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
+#import "ZincDownloadTask.h"
 
-@interface ZincObjectDownloadTask : ZincTask
+@interface ZincObjectDownloadTask : ZincDownloadTask
 
 @property (readonly) NSString* sha;
+
+@property (readonly) NSInteger bytesRead;
+@property (readonly) NSInteger totalBytesToRead;
 
 @end

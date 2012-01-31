@@ -7,6 +7,7 @@
 //
 
 #import "ZincArchiveDownloadTask.h"
+#import "ZincDownloadTask+Private.h"
 #import "ZincResource.h"
 #import "ZincBundle.h"
 #import "ZincRepo+Private.h"
@@ -60,16 +61,8 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version];
-        
-        AFHTTPRequestOperation* downloadOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-        downloadOp.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
-        
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        downloadOp.outputStream = outStream;
-        
-        [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
-        
-        [self addOperation:downloadOp];
+        AFHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream];
         [downloadOp waitUntilFinished];
         
         if (!downloadOp.hasAcceptableStatusCode) {
