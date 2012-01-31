@@ -13,11 +13,6 @@
 
 @interface ZincManifestDownloadTask : ZincTask
 
-//- (id)initWithRepo:(ZincRepo*)repo bundleId:(NSString*)bundleId version:(ZincVersion)version;
-
-//@property (nonatomic, retain) NSString* bundleId;
-//@property (nonatomic, assign) ZincVersion version;
-
 @property (readonly) NSString* bundleId;
 @property (readonly) ZincVersion version;
 
