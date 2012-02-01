@@ -44,6 +44,8 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
 
++ (BOOL) repoExistsAtURL:(NSURL*)fileURL;
+
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 

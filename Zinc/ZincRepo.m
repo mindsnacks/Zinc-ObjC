@@ -156,6 +156,16 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return repo;
 }
 
++ (BOOL) repoExistsAtURL:(NSURL*)fileURL
+{
+    NSString* path = [fileURL path];
+    if (![[path lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
+        path = [path stringByAppendingPathComponent:REPO_INDEX_FILE];
+    }
+    return [[NSFileManager defaultManager] fileExistsAtPath:path];
+}
+
+
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
 {
     self = [super init];
