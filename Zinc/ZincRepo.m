@@ -41,10 +41,13 @@
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
-NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
 NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
+
+NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
+NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
+NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
@@ -239,6 +242,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     [blockself refreshSourcesWithCompletion:^{
         
+        [blockself resumeBundleActions];
+
         [blockself refreshBundlesWithCompletion:^{
             
             [self checkForBundleDeletion];
@@ -275,6 +280,36 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     [super dealloc];
 }
+
+#pragma mark Notifications
+
+- (void) postNotification:(NSString*)notificationName userInfo:(NSDictionary*)userInfo
+{
+    __block typeof(self) blockself = self;
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [[NSNotificationCenter defaultCenter] postNotificationName:notificationName
+                                                            object:blockself
+                                                          userInfo:userInfo];
+    }];
+}
+
+- (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId state:(ZincBundleState)state
+{
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
+                              [NSNumber numberWithInteger:state], ZincRepoBundleChangeNotifiationStatusKey,
+                              nil];
+    [self postNotification:notificationName userInfo:userInfo];
+}
+
+- (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId
+{
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
+                              nil];
+    [self postNotification:notificationName userInfo:userInfo];
+}
+
 
 #pragma mark Filesystem Utilities
 
@@ -622,12 +657,30 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             [self queueTaskForDescriptor:taskDesc];
         }
     }];
+    
+    [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
+    [self postNotification:ZincRepoBundleWillStopTrackingNotification bundleId:bundleId];
+    
     [self.index removeTrackedBundleId:bundleId];
     [self queueIndexSave];  
+}
+
+- (NSSet*) trackedBundleIds
+{
+    return [self.index trackedBundleIds];
+}
+
+- (void) resumeBundleActions
+{
+    [self.indexProxy executeBlock:^{
+        for (NSURL* bundleRes in [self.index cloningBundles]) {
+            [self queueTaskForDescriptor:[ZincBundleCloneTask taskDescriptorForResource:bundleRes]];
+        }
+    }];
 }
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
@@ -684,26 +737,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status
 {
     [self.index setState:status forBundle:bundleResource];
-    
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [bundleResource zincBundleId],ZincRepoBundleChangeNotifiationBundleIdKey,
-                              [NSNumber numberWithInteger:status], ZincRepoBundleChangeNotifiationStatusKey,
-                              nil];
-
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoBundleStatusChangeNotification
-                                                        object:self userInfo:userInfo];
+    [self postNotification:ZincRepoBundleStatusChangeNotification bundleId:[bundleResource zincBundleId] state:status];
     [self queueIndexSave];
 }
 
 - (void) deregisterBundle:(NSURL*)bundleResource
 {
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              [bundleResource zincBundleId],ZincRepoBundleChangeNotifiationBundleIdKey,
-                              nil];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoBundleWillDeleteNotification
-                                                        object:self userInfo:userInfo];
-
+    [self postNotification:ZincRepoBundleWillDeleteNotification bundleId:[bundleResource zincBundleId]];
     [self.index removeBundle:bundleResource];
     [self queueIndexSave];
 }
@@ -733,6 +773,18 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         }
     }
     return bundle;
+}
+
+- (ZincBundleState) stateForBundleWithId:(NSString*)bundleId 
+{
+    __block ZincBundleState state;
+    [self.indexProxy executeBlock:^{
+        NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
+        ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
+        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+        state = [self.index stateForBundle:bundleRes];
+    }];
+    return state;
 }
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId

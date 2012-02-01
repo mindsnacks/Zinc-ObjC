@@ -10,12 +10,12 @@
 #import "ZincRepo.h"
 
 
-@class ViewController;
+//@class ViewController;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate, ZincRepoDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-@property (strong, nonatomic) ViewController *viewController;
+@property (strong, nonatomic) UIViewController *viewController;
 
 @end

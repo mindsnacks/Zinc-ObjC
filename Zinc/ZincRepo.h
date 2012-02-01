@@ -20,10 +20,19 @@ typedef enum {
     ZincBundleStateDeleting  = 3,
 } ZincBundleState;
 
-extern NSString* const ZincRepoBundleStatusChangeNotification;
+static NSString* ZincBundleStateName[] = {
+    @"None",
+    @"Cloning",
+    @"Available",
+    @"Deleting",
+};
+
 extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
 extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
 
+extern NSString* const ZincRepoBundleStatusChangeNotification;
+extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
+extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 @protocol ZincRepoDelegate;
@@ -52,7 +61,11 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
+- (NSSet*) trackedBundleIds;
+
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+
+- (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 

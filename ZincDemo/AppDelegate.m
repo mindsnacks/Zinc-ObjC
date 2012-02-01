@@ -8,7 +8,8 @@
 
 #import "AppDelegate.h"
 
-#import "ViewController.h"
+//#import "ViewController.h"
+#import "BundleListViewController.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 
@@ -34,9 +35,7 @@
 {
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
-    self.viewController = [[[ViewController alloc] initWithNibName:@"ViewController" bundle:nil] autorelease];
-    self.window.rootViewController = self.viewController;
-    [self.window makeKeyAndVisible];
+//    self.viewController = [[[ViewController alloc] initWithNibName:@"ViewController" bundle:nil] autorelease];
     
     //    NSString* dir = [[NSBundle mainBundle] pathForResource:@"Nightlife" ofType:nil];
     //    
@@ -55,7 +54,7 @@
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
     
-    self.viewController.repo = repo;
+//    self.viewController.repo = repo;
     
 //    [[NSFileManager defaultManager] removeItemAtURL:repo.url error:NULL];
     
@@ -136,6 +135,11 @@
         [repo beginTrackingBundleWithId:@"com.mindsnacks.french.VacationSurvivalPhrases" distribution:@"master"];
         [repo beginTrackingBundleWithId:@"com.mindsnacks.french.VacationTime" distribution:@"master"];
     }];
+    
+    BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
+    self.viewController = bundleListViewController;
+    self.window.rootViewController = bundleListViewController;
+    [self.window makeKeyAndVisible];
     
     
     return YES;

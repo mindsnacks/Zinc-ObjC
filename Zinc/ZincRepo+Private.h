@@ -20,7 +20,6 @@
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 @property (nonatomic, retain) ZincRepoIndex* index;
 
-
 - (NSURL*) indexURL;
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
