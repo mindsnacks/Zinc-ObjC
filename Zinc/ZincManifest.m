@@ -98,7 +98,7 @@
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
-    [d setObject:self.bundleName forKey:@"bundle_name"];
+    [d setObject:self.bundleName forKey:@"bundle"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
     return d;

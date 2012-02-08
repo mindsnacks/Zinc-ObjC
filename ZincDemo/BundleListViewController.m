@@ -8,6 +8,7 @@
 
 #import "BundleListViewController.h"
 #import "Zinc.h"
+#import "BundleDetailViewController.h"
 
 @interface BundleListViewController ()
 @property (nonatomic, retain, readwrite) ZincRepo* repo;
@@ -55,8 +56,8 @@
 
 - (void) bundleWillDeleteNotification:(NSNotification *)note
 {
-    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
-    [self.bundleIds removeObject:bundleId];
+//    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
+    //[self.bundleIds removeObject:bundleId];
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -89,6 +90,8 @@
 {
     [super viewDidLoad];
 
+    self.title = @"Bundles";
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
@@ -219,6 +222,14 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      [detailViewController release];
      */
+
+    NSString* bundleId = [self.bundleIds objectAtIndex:[indexPath row]];
+    ZincBundle* bundle = [self.repo bundleWithId:bundleId];
+
+    BundleDetailViewController* vc = [[[BundleDetailViewController alloc] initWithBundle:bundle repo:self.repo] autorelease];
+    [self.navigationController pushViewController:vc animated:YES];
 }
+
+
 
 @end

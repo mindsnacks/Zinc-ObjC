@@ -129,6 +129,8 @@
 		B3CEEC0314BE0F270023DF5B /* ZincBundleDeleteTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CEEC0114BE0F270023DF5B /* ZincBundleDeleteTask.m */; };
 		B3D2CA1814C5FC1A00717B2E /* ZincManifestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D2CA1714C5FC1A00717B2E /* ZincManifestTests.m */; };
 		B3D8E6F214D8B84D00D993F0 /* BundleListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D8E6F114D8B84D00D993F0 /* BundleListViewController.m */; };
+		B3DB05CE14DA0DB600438665 /* BundleDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */; };
+		B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */; };
 		B3E46AB614C0DEDA00030349 /* UIImageZincTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46AB514C0DEDA00030349 /* UIImageZincTests.m */; };
 		B3E46B5614C3DF7900030349 /* ZincUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E46B5414C3DF7800030349 /* ZincUtils.h */; };
 		B3E46B5714C3DF7900030349 /* ZincUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46B5514C3DF7800030349 /* ZincUtils.m */; };
@@ -352,6 +354,9 @@
 		B3D2CA1714C5FC1A00717B2E /* ZincManifestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifestTests.m; sourceTree = "<group>"; };
 		B3D8E6F014D8B84D00D993F0 /* BundleListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleListViewController.h; sourceTree = "<group>"; };
 		B3D8E6F114D8B84D00D993F0 /* BundleListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BundleListViewController.m; sourceTree = "<group>"; };
+		B3DB05CB14DA0DB600438665 /* BundleDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleDetailViewController.h; sourceTree = "<group>"; };
+		B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BundleDetailViewController.m; sourceTree = "<group>"; };
+		B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BundleDetailViewController.xib; sourceTree = "<group>"; };
 		B3E46AB414C0DEDA00030349 /* UIImageZincTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageZincTests.h; sourceTree = "<group>"; };
 		B3E46AB514C0DEDA00030349 /* UIImageZincTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageZincTests.m; sourceTree = "<group>"; };
 		B3E46B5414C3DF7800030349 /* ZincUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincUtils.h; sourceTree = "<group>"; };
@@ -650,6 +655,9 @@
 				B38743181489B830004B227B /* AppDelegate.m */,
 				B3D8E6F014D8B84D00D993F0 /* BundleListViewController.h */,
 				B3D8E6F114D8B84D00D993F0 /* BundleListViewController.m */,
+				B3DB05CB14DA0DB600438665 /* BundleDetailViewController.h */,
+				B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */,
+				B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */,
 				B387431A1489B830004B227B /* ViewController.h */,
 				B387431B1489B830004B227B /* ViewController.m */,
 				B387431D1489B830004B227B /* ViewController.xib */,
@@ -1026,6 +1034,7 @@
 			files = (
 				B38743131489B830004B227B /* InfoPlist.strings in Resources */,
 				B387431F1489B830004B227B /* ViewController.xib in Resources */,
+				B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1125,6 +1134,7 @@
 				B38743191489B830004B227B /* AppDelegate.m in Sources */,
 				B387431C1489B830004B227B /* ViewController.m in Sources */,
 				B3D8E6F214D8B84D00D993F0 /* BundleListViewController.m in Sources */,
+				B3DB05CE14DA0DB600438665 /* BundleDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
