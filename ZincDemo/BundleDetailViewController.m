@@ -62,15 +62,25 @@
     self.bundleVersionLabel.text = [NSString stringWithFormat:@"%d", self.bundle.version];
     
     self.title = [NSString stringWithFormat:@"%@-%d", [ZincBundle bundleNameFromBundleId:self.bundle.bundleId], self.bundle.version];
-    
-//    ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundle.bundleId
-//                                                             version:self.bundle.version];
+
+    [self.bundle.repo bundleWithId:self.bundle.bundleId];
     
     ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundle.bundleId version:self.bundle.version error:NULL];
     
     NSString* manifestString = [[manifest dictionaryRepresentation] description];
     
     self.manifestTextView.text = manifestString;
+    
+    NSBundle* bundle = [self.bundle NSBundle];
+    NSString* path1 = [bundle pathForResource:@"Advanced Numbers" ofType:@"js"];
+    NSLog(@"path1: %@", path1);
+    NSString* path2 = [bundle pathForResource:@"Advanced Numbers.js"];
+    NSLog(@"path2: %@", path2);
+    
+    NSString* audioPath = [bundle pathForResource:@"audio/more-adv-numbers-20" ofType:@"caf"];
+    NSLog(@"audioPath: %@", audioPath);
+    
+    NSLog(@"id %@", self.bundle.bundleId);
 }
 
 - (void)viewDidUnload

@@ -24,15 +24,8 @@
 @property (nonatomic, retain, readonly) NSString* bundleId;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
-#pragma mark NSBundle-like access
+- (NSURL*) resource;
 
-//- (NSURL *)URLForResource:(NSString *)name withExtension:(NSString *)ext;
-//- (NSURL *)URLForResource:(NSString *)name;
-
-//- (NSString *)pathForResource:(NSString *)name ofType:(NSString *)ext;
-//- (NSString *)pathForResource:(NSString *)name;
-
-/* DON'T retain this */
 - (NSBundle*) NSBundle;
 
 #pragma mark Utility

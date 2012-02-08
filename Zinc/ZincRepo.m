@@ -31,7 +31,6 @@
 #import "NSData+Zinc.h"
 #import "KSJSON.h"
 #import "AFNetworking.h"
-#import "MAWeakDictionary.h"
 #import "ZincSerialQueueProxy.h"
 
 #define CATALOGS_DIR @"catalogs"
@@ -60,7 +59,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSOperationQueue* networkQueue;
 @property (nonatomic, retain) ZincOperationQueueGroup* queueGroup;
 @property (nonatomic, retain) NSTimer* refreshTimer;
-@property (nonatomic, retain) MAWeakDictionary* loadedBundles;
+@property (nonatomic, retain) NSMutableDictionary* loadedBundles;
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
@@ -78,6 +77,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) downloadsPath;
 
 - (void) queueIndexSave;
+- (void) resumeBundleActions;
 
 - (NSString*) cacheKeyForCatalogId:(NSString*)identifier;
 - (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
@@ -185,7 +185,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.cache.countLimit = kZincRepoDefaultCacheCount;
         self.refreshInterval = kZincRepoDefaultAutoRefreshInterval;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
-        self.loadedBundles = [[[MAWeakDictionary alloc] init] autorelease];
+        self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
     }
     return self;
@@ -615,7 +615,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.loadedBundles) {
         for (NSURL* bundleRes in [self.loadedBundles allKeys]) {
             // make sure to request the object, and check if the ref is now nil
-            ZincBundle* bundle = [self.loadedBundles objectForKey:bundleRes];
+            ZincBundle* bundle = [[self.loadedBundles objectForKey:bundleRes] pointerValue];
             if (bundle != nil) {
                 [activeBundles addObject:bundleRes];
             }
@@ -623,6 +623,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     return activeBundles;
+}
+
+- (void) bundleWillDeallocate:(ZincBundle*)bundle
+{
+    @synchronized(self.loadedBundles) {
+        [self.loadedBundles removeObjectForKey:[bundle resource]];
+    }
 }
 
 - (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
@@ -768,9 +775,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (ZincBundle*) bundleWithId:(NSString*)bundleId version:(ZincVersion)version
 {
     ZincBundle* bundle = nil;
+    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
     
     @synchronized(self.loadedBundles) {
-        bundle = [self.loadedBundles objectForKey:bundleId];
+        bundle = [[self.loadedBundles objectForKey:res] pointerValue];
         
         if (bundle == nil) {
             
@@ -778,11 +786,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             bundle = [[[ZincBundle alloc] initWithRepo:self bundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
             
-            NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
-            [self.loadedBundles setObject:bundle forKey:res];
+            [self.loadedBundles setObject:[NSValue valueWithPointer:bundle] forKey:res];
         }
     }
-    return bundle;
+    return [[bundle retain] autorelease];
 }
 
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId 

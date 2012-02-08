@@ -8,6 +8,8 @@
 
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
+#import "ZincResource.h"
+#import "ZincRepo+Private.h"
 
 @interface ZincBundle ()
 @property (nonatomic, retain, readwrite) ZincRepo* repo;
@@ -37,7 +39,7 @@
 
 - (void) dealloc 
 {
-    // TODO: notify dealloc
+    [self.repo bundleWillDeallocate:self];
     self.repo = nil;
     self.bundle = nil;
     self.bundleId = nil;
@@ -45,26 +47,14 @@
     [super dealloc];
 }
 
-//- (NSURL *)URLForResource:(NSString *)name withExtension:(NSString *)ext
-//{
-//    NSString* p = [name stringByAppendingPathExtension:ext];
-//    return [self URLForResource:p];
-//}
-
-- (NSURL *)URLForResource:(NSString *)name
+- (NSURL*) resource
 {
-    return [self.url URLByAppendingPathComponent:name];
+    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
 }
-
-//- (NSString *)pathForResource:(NSString *)name ofType:(NSString *)ext
-//{
-//    NSString* p = [name stringByAppendingPathExtension:ext];
-//    return [self pathForResource:p];
-//}
-
-- (NSString *)pathForResource:(NSString *)name
+ 
+- (BOOL)isKindOfClass:(Class)aClass
 {
-    return [[self.url path] stringByAppendingPathComponent:name];
+    return aClass == [ZincBundle class] || aClass == [NSBundle class];
 }
 
 - (NSBundle*) NSBundle
@@ -75,11 +65,7 @@
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
 {
-    id target = self;
-    if (![self respondsToSelector:@selector(aSelector)]) {
-        target = self.bundle;
-    }
-    return [target methodSignatureForSelector:aSelector];
+    return [self.bundle methodSignatureForSelector:aSelector];
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation
@@ -116,12 +102,15 @@
 
 - (NSURL *)URLForResource:(NSString *)name
 {
-    return [[self bundleURL] URLByAppendingPathComponent:name];
+    return [NSURL fileURLWithPath:
+            [self pathForResource:name]];
 }
 
 - (NSString *)pathForResource:(NSString *)name
 {
-    return [[[self bundleURL] path] stringByAppendingPathComponent:name];
+    NSString* base = [name stringByDeletingPathExtension];
+    NSString* ext = [name pathExtension];
+    return [self pathForResource:base ofType:ext];
 }
 
 @end

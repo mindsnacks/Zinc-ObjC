@@ -45,6 +45,8 @@
 // returns NSURLs (ZincBundleDescriptors)
 - (NSSet*) activeBundles;
 
+- (void) bundleWillDeallocate:(ZincBundle*)bundle;
+
 #pragma mark Files
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
