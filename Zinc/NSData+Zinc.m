@@ -9,30 +9,15 @@
 #import "NSData+Zinc.h"
 #import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
-#import "sha1.h"
+#import <CommonCrypto/CommonDigest.h>
 #include <zlib.h>
 
 @implementation NSData (Zinc)
 
 - (NSString*) zinc_sha1
 {
-    uint8_t* buffer = (uint8_t*)[self bytes];
-    NSUInteger remaining = [self length];
-    
-    SHA1_CTX context;
-    SHA1Init(&context);
-
-//#define SHA_READ_BUFFER_SIZE (16384)
-//    while (remaining > 0) {
-//        NSUInteger chunkSize = MIN(remaining, SHA_READ_BUFFER_SIZE);
-//        SHA1Update(&context, buffer, chunkSize);
-//        remaining -= chunkSize;
-//        buffer += chunkSize;
-//    }
-    
-    SHA1Update(&context, buffer, remaining);
-    unsigned char digest[20];
-    SHA1Final(digest, &context);
+    uint8_t digest[CC_SHA1_DIGEST_LENGTH];
+    CC_SHA1([self bytes], [self length], digest);
     
     char finalhash[40];
     char hexval[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
