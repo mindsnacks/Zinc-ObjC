@@ -775,7 +775,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (bundle == nil) {
             
             NSString* path = [self pathForBundleWithId:bundleId version:version];
-            bundle = [[[ZincBundle alloc] initWithBundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
+            bundle = [[[ZincBundle alloc] initWithRepo:self bundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
             
             NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];

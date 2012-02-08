@@ -10,4 +10,6 @@
 
 @interface ZincBundle ()
 
+- (id) initWithRepo:(ZincRepo*)repo bundleId:(NSString*)bundleId version:(ZincVersion)version bundleURL:(NSURL*)bundleURL;
+
 @end
