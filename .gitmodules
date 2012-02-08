@@ -7,9 +7,6 @@
 [submodule "Dependencies/AFNetworking"]
 	path = Dependencies/AFNetworking
 	url = https://github.com/gowalla/AFNetworking.git
-[submodule "Dependencies/MAZeroingWeakRef"]
-	path = Dependencies/MAZeroingWeakRef
-	url = https://github.com/mikeash/MAZeroingWeakRef
 [submodule "Dependencies/Light-Untar-for-iOS"]
 	path = Dependencies/Light-Untar-for-iOS
 	url = git@github.com:mindsnacks/Light-Untar-for-iOS.git
