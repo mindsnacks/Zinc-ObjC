@@ -29,8 +29,8 @@
 #import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
-#import "KSJSON.h"
-#import "AFNetworking.h"
+#import "ZincKSJSON.h"
+#import "ZincAFHTTPRequestOperation.h"
 #import "ZincSerialQueueProxy.h"
 
 #define CATALOGS_DIR @"catalogs"
@@ -139,7 +139,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             return nil;
         }
         
-        NSDictionary* jsonDict = [KSJSON deserializeString:jsonString error:outError];
+        NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
         if (jsonDict == nil) {
             return nil;
         }
@@ -409,7 +409,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) addOperation:(NSOperation*)operation
 {
-    if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
+    if ([operation isKindOfClass:[ZincAFURLConnectionOperation class]]) {
         
         [self.networkQueue addOperation:operation];
     
@@ -524,7 +524,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (jsonString == nil) {
         return nil;
     }
-    NSDictionary* jsonDict = [KSJSON deserializeString:jsonString error:outError];
+    NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
     if (jsonDict == nil) {
         return nil;
     }
@@ -578,7 +578,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (jsonString == nil) {
         return nil;
     }
-    NSDictionary* jsonDict = [KSJSON deserializeString:jsonString error:outError];
+    NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
     if (jsonDict == nil) {
         return nil;
     }

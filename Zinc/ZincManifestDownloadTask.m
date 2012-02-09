@@ -14,11 +14,11 @@
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
-#import "AFHTTPRequestOperation.h"
+#import "ZincAFHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
-#import "KSJSON.h"
+#import "ZincKSJSON.h"
 
 @implementation ZincManifestDownloadTask
 
@@ -66,7 +66,7 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
-        AFHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil];
+        ZincAFHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil];
         [requestOp waitUntilFinished];
         if (!requestOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
@@ -83,7 +83,7 @@
         }
         
         NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-        id json = [KSJSON deserializeString:jsonString error:&error];
+        id json = [ZincKSJSON deserializeString:jsonString error:&error];
         if (json == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;

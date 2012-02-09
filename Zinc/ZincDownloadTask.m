@@ -8,7 +8,7 @@
 
 #import "ZincDownloadTask.h"
 #import "ZincDownloadTask+Private.h"
-#import "AFHTTPRequestOperation.h"
+#import "ZincAFHTTPRequestOperation.h"
 #import "ZincEvent.h"
 
 @implementation ZincDownloadTask
@@ -16,9 +16,9 @@
 @synthesize bytesRead = _bytesRead;
 @synthesize totalBytesToRead = totalBytesToRead;
 
-- (AFHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream
+- (ZincAFHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream
 {
-    AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    ZincAFHTTPRequestOperation* requestOp = [[[ZincAFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     requestOp.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
     requestOp.outputStream = outputStream;
     

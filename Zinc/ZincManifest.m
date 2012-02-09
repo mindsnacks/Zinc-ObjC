@@ -8,7 +8,7 @@
 
 
 #import "ZincManifest.h"
-#import "KSJSON.h"
+#import "ZincKSJSON.h"
 
 @interface ZincManifest ()
 @property (nonatomic, retain) NSDictionary* files;
@@ -107,7 +107,7 @@
 // TODO: refactor
 - (NSString*) jsonRepresentation:(NSError**)outError
 {
-    return [KSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
 }
 
 

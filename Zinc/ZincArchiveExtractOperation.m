@@ -52,7 +52,7 @@
         [fm removeItemAtPath:untarDir error:NULL];
     };
 
-    if (![fm createFilesAndDirectoriesAtPath:untarDir withTarPath:self.archivePath error:&error]) {
+    if (![fm zinc_createFilesAndDirectoriesAtPath:untarDir withTarPath:self.archivePath error:&error]) {
         self.error = error;
         cleanup();
         return;

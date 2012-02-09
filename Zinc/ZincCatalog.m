@@ -7,7 +7,7 @@
 //
 
 #import "ZincCatalog.h"
-#import "KSJSON.h"
+#import "ZincKSJSON.h"
 
 @implementation ZincCatalog
 
@@ -57,7 +57,7 @@
 // TODO: refactor
 - (NSString*) jsonRepresentation:(NSError**)outError
 {
-    return [KSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
 }
 
 - (NSString*) description
@@ -86,7 +86,7 @@
  
 + (ZincCatalog*) catalogFromJSONString:(NSString*)string error:(NSError**)outError
 {
-    id json = [KSJSON deserializeString:string error:outError];
+    id json = [ZincKSJSON deserializeString:string error:outError];
     if (json == nil) {
         return nil;
     }
