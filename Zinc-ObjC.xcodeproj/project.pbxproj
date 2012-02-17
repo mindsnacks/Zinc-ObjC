@@ -748,7 +748,7 @@
 		B38742FB1489B830004B227B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0420;
+				LastUpgradeCheck = 0430;
 				ORGANIZATIONNAME = MindSnacks;
 			};
 			buildConfigurationList = B38742FE1489B830004B227B /* Build configuration list for PBXProject "Zinc-ObjC" */;
