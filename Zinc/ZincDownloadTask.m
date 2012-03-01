@@ -8,18 +8,20 @@
 
 #import "ZincDownloadTask.h"
 #import "ZincDownloadTask+Private.h"
-#import "ZincAFHTTPRequestOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "ZincEvent.h"
+#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPStreamOperation.h"
 
 @implementation ZincDownloadTask
 
 @synthesize bytesRead = _bytesRead;
 @synthesize totalBytesToRead = totalBytesToRead;
 
-- (ZincAFHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream
+- (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream
 {
-    ZincAFHTTPRequestOperation* requestOp = [[[ZincAFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-    requestOp.acceptableStatusCodes = [NSIndexSet indexSetWithIndex:200];
+    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
+//    ZincHTTPStreamOperation* requestOp = [[[ZincHTTPStreamOperation alloc] initWithURL:[request URL]] autorelease];
     requestOp.outputStream = outputStream;
     
     __block typeof(self) blockself = self;

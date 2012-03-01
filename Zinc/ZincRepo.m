@@ -30,7 +30,7 @@
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "ZincKSJSON.h"
-#import "ZincAFHTTPRequestOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "ZincSerialQueueProxy.h"
 
 #define CATALOGS_DIR @"catalogs"
@@ -409,10 +409,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) addOperation:(NSOperation*)operation
 {
-    if ([operation isKindOfClass:[ZincAFURLConnectionOperation class]]) {
-        
+    if ([operation isKindOfClass:[ZincNetworkOperation class]]) {
         [self.networkQueue addOperation:operation];
-    
     } else {
         [self.queueGroup addOperation:operation];
     }

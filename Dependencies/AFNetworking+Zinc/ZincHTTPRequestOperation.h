@@ -21,26 +21,48 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "ZincAFURLConnectionOperation.h"
+#import "ZincNetworkOperation.h"
 
 /**
  `AFHTTPRequestOperation` is a subclass of `AFURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
  */
-@interface ZincAFHTTPRequestOperation : ZincAFURLConnectionOperation {
+@interface ZincHTTPRequestOperation : ZincNetworkOperation {
 @private
     NSIndexSet *_acceptableStatusCodes;
     NSSet *_acceptableContentTypes;
-    NSError *_HTTPError;
+    
+    NSData *_responseData;
+    NSInteger _totalBytesRead;
+    NSMutableData *_dataAccumulator;
 }
 
-///----------------------------------------------
-/// @name Getting HTTP URL Connection Information
-///----------------------------------------------
+
+///----------------------------
+/// @name Getting Response Data
+///----------------------------
 
 /**
- The last HTTP response received by the operation's connection.
+ The data received during the request. 
  */
-@property (readonly, nonatomic, retain) NSHTTPURLResponse *response;
+@property (readonly, nonatomic, retain) NSData *responseData;
+
+/**
+ The string representation of the response data.
+ 
+ @discussion This method uses the string encoding of the response, or if UTF-8 if not specified, to construct a string from the response data.
+ */
+//@property (readonly, nonatomic, copy) NSString *responseString;
+
+///------------------------
+/// @name Accessing Streams
+///------------------------
+
+/**
+ The output stream that is used to write data received until the request is finished.
+ 
+ @discussion By default, data is accumulated into a buffer that is stored into `responseData` upon completion of the request. When `outputStream` is set, the data will not be accumulated into an internal buffer, and as a result, the `responseData` property of the completed request will be `nil`.
+ */
+@property (nonatomic, retain) NSOutputStream *outputStream;
 
 
 ///----------------------------------------------------------
@@ -71,13 +93,6 @@
  */
 @property (readonly) BOOL hasAcceptableContentType;
 
-/**
- A Boolean value determining whether or not the class can process the specified request. For example, `AFJSONRequestOperation` may check to make sure the content type was `application/json` or the URL path extension was `.json`.
- 
- @param urlRequest The request that is determined to be supported or not supported for this class.
- */
-+ (BOOL)canProcessRequest:(NSURLRequest *)urlRequest;
-
 ///-----------------------------------------------------------
 /// @name Setting Completion Block Success / Failure Callbacks
 ///-----------------------------------------------------------
@@ -90,7 +105,31 @@
  
  @discussion This method should be overridden in subclasses in order to specify the response object passed into the success block.
  */
-- (void)setCompletionBlockWithSuccess:(void (^)(ZincAFHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(ZincAFHTTPRequestOperation *operation, NSError *error))failure;
+- (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPRequestOperation *operation, id responseObject))success
+                              failure:(void (^)(ZincHTTPRequestOperation *operation, NSError *error))failure;
+
+
+
+///---------------------------------
+/// @name Setting Progress Callbacks
+///---------------------------------
+
+/**
+ Sets a callback to be called when an undetermined number of bytes have been uploaded to the server.
+ 
+ @param block A block object to be called when an undetermined number of bytes have been uploaded to the server. This block has no return value and takes three arguments: the number of bytes read since the last time the upload progress block was called, the total bytes read, and the total bytes expected to be read during the request, as initially determined by the expected content size of the `NSHTTPURLResponse` object. This block may be called multiple times.
+ 
+ @see setUploadProgressBlock
+ */
+- (void)setDownloadProgressBlock:(void (^)(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead))block;
+
 
 @end
+
+
+typedef void (^ZincURLConnectionOperationProgressBlock)(NSInteger bytes, NSInteger totalBytes, NSInteger totalBytesExpected);
+
+
+
+
+

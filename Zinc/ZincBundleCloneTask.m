@@ -110,7 +110,7 @@
         self.totalBytesToDownload = missingSize;
         BOOL getAchive = ((double)missingSize / totalSize > self.archiveDownloadTheshold);
         
-        if (getAchive) { // ARCHIVE MODE
+        if (NO && getAchive) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];

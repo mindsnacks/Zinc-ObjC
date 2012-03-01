@@ -7,7 +7,7 @@
 //
 
 #import "ZincSourceUpdateTask.h"
-#import "ZincAFHTTPRequestOperation.h"
+#import "ZincHTTPURLConnectionOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincCatalog.h"
 #import "ZincRepo.h"
@@ -45,7 +45,7 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    ZincAFHTTPRequestOperation* requestOp = [[[ZincAFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
     [self addOperation:requestOp];
     [requestOp waitUntilFinished];

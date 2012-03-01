@@ -21,23 +21,8 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "ZincHTTPRequestOperation.h"
 
-/**
- Indicates an error occured in AFNetworking.
- 
- @discussion Error codes for AFNetworkingErrorDomain correspond to codes in NSURLErrorDomain.
- */
-extern NSString * const AFNetworkingErrorDomain;
-
-/**
- Posted when an operation begins executing.
- */
-extern NSString * const AFNetworkingOperationDidStartNotification;
-
-/**
- Posted when an operation finishes.
- */
-extern NSString * const AFNetworkingOperationDidFinishNotification;
 
 /**
  `AFURLConnectionOperation` is an `NSOperation` that implements NSURLConnection delegate methods.
@@ -73,29 +58,16 @@ extern NSString * const AFNetworkingOperationDidFinishNotification;
  
  @warning Subclasses are strongly discouraged from overriding `setCompletionBlock:`, as `AFURLConnectionOperation`'s implementation includes a workaround to mitigate retain cycles, and what Apple rather ominously refers to as "The Deallocation Problem" (See http://developer.apple.com/library/ios/technotes/tn2109/_index.html#//apple_ref/doc/uid/DTS40010274-CH1-SUBSECTION11) 
  */
-@interface ZincAFURLConnectionOperation : NSOperation {
+@interface ZincHTTPURLConnectionOperation : ZincHTTPRequestOperation {
 @private
-    NSSet *_runLoopModes;
     
     NSURLConnection *_connection;
     NSURLRequest *_request;
     NSHTTPURLResponse *_response;
-    NSError *_error;
-
-    NSData *_responseData;
-    NSInteger _totalBytesRead;
-    NSMutableData *_dataAccumulator;
-    NSOutputStream *_outputStream;
+    NSError *_HTTPError;
 }
 
-///-------------------------------
-/// @name Accessing Run Loop Modes
-///-------------------------------
 
-/**
- The run loop modes in which the operation will run on the network thread. By default, this is a single-member set containing `NSRunLoopCommonModes`.
- */
-@property (nonatomic, retain) NSSet *runLoopModes;
 
 ///-----------------------------------------
 /// @name Getting URL Connection Information
@@ -111,48 +83,26 @@ extern NSString * const AFNetworkingOperationDidFinishNotification;
  */
 @property (readonly, nonatomic, retain) NSURLResponse *response;
 
-/**
- The error, if any, that occured in the lifecycle of the request.
- */
-@property (readonly, nonatomic, retain) NSError *error;
 
-///----------------------------
-/// @name Getting Response Data
-///----------------------------
+///----------------------------------------------
+/// @name Getting HTTP URL Connection Information
+///----------------------------------------------
 
 /**
- The data received during the request. 
+ The last HTTP response received by the operation's connection.
  */
-@property (readonly, nonatomic, retain) NSData *responseData;
+@property (readonly, nonatomic, retain) NSHTTPURLResponse *HTTPResponse;
 
-/**
- The string representation of the response data.
- 
- @discussion This method uses the string encoding of the response, or if UTF-8 if not specified, to construct a string from the response data.
- */
-@property (readonly, nonatomic, copy) NSString *responseString;
 
-///------------------------
-/// @name Accessing Streams
-///------------------------
-
-/**
- The input stream used to read data to be sent during the request. 
- 
- @discussion This property acts as a proxy to the `HTTPBodyStream` property of `request`.
- */
-@property (nonatomic, retain) NSInputStream *inputStream;
-
-/**
- The output stream that is used to write data received until the request is finished.
- 
- @discussion By default, data is accumulated into a buffer that is stored into `responseData` upon completion of the request. When `outputStream` is set, the data will not be accumulated into an internal buffer, and as a result, the `responseData` property of the completed request will be `nil`.
- */
-@property (nonatomic, retain) NSOutputStream *outputStream;
 
 ///------------------------------------------------------
 /// @name Initializing an AFURLConnectionOperation Object
 ///------------------------------------------------------
+
+///**
+// Initializes with a basic GET request for the URL
+// */
+//- (id) initWithURL:(NSURL*)url;
 
 /**
  Initializes and returns a newly allocated operation object with a url connection configured with the specified url request.
@@ -162,27 +112,5 @@ extern NSString * const AFNetworkingOperationDidFinishNotification;
  @discussion This is the designated initializer.
  */
 - (id)initWithRequest:(NSURLRequest *)urlRequest;
-
-///---------------------------------
-/// @name Setting Progress Callbacks
-///---------------------------------
-
-/**
- Sets a callback to be called when an undetermined number of bytes have been downloaded from the server.
- 
- @param block A block object to be called when an undetermined number of bytes have been downloaded from the server. This block has no return value and takes three arguments: the number of bytes written since the last time the upload progress block was called, the total bytes written, and the total bytes expected to be written during the request, as initially determined by the length of the HTTP body. This block may be called multiple times.
- 
- @see setDownloadProgressBlock
- */
-- (void)setUploadProgressBlock:(void (^)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite))block;
-
-/**
- Sets a callback to be called when an undetermined number of bytes have been uploaded to the server.
- 
- @param block A block object to be called when an undetermined number of bytes have been uploaded to the server. This block has no return value and takes three arguments: the number of bytes read since the last time the upload progress block was called, the total bytes read, and the total bytes expected to be read during the request, as initially determined by the expected content size of the `NSHTTPURLResponse` object. This block may be called multiple times.
- 
- @see setUploadProgressBlock
- */
-- (void)setDownloadProgressBlock:(void (^)(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead))block;
 
 @end

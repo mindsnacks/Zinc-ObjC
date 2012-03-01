@@ -17,7 +17,7 @@
 #import "NSData+Zinc.h"
 #import "ZincErrors.h"
 #import "ZincUtils.h"
-#import "ZincAFHTTPRequestOperation.h"
+#import "ZincHTTPRequestOperation.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;
@@ -94,7 +94,7 @@
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincAFHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream];
+        ZincHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream];
         [downloadOp waitUntilFinished];
         
         if (!downloadOp.hasAcceptableStatusCode) {
