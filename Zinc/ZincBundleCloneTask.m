@@ -26,14 +26,14 @@
 
 @implementation ZincBundleCloneTask
 
-@synthesize archiveDownloadTheshold = _archiveDownloadTheshold;
+@synthesize httpOverheadConstant = _httpOverheadConstant;
 @synthesize totalBytesToDownload = _totalBytesToDownload;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
     self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
-        _archiveDownloadTheshold = kZincBundleCloneTaskDefaultArchiveTreshold;
+        _httpOverheadConstant = kZincBundleCloneTaskDefaultHTTPOverheadConstant;
     }
     return self;
 }
@@ -51,6 +51,11 @@
 - (ZincVersion) version
 {
     return [self.resource zincBundleVersion];
+}
+
+- (double) downloadCostForTotalSize:(NSUInteger)totalSize connectionCount:(NSUInteger)connectionCount
+{
+    return (double)self.httpOverheadConstant * connectionCount + totalSize;
 }
 
 - (void) main
@@ -108,9 +113,11 @@
     if (missingSize > 0) {
         
         self.totalBytesToDownload = missingSize;
-        BOOL getAchive = ((double)missingSize / totalSize > self.archiveDownloadTheshold);
         
-        if (NO && getAchive) { // ARCHIVE MODE
+        double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
+        double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
+
+        if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
