@@ -6,6 +6,15 @@ Objective-C client for Zinc asset distribution system.
 
 - Write a lot more words in here.
 
+## Acknowledgements
+
+Zinc-ObjC incorporates code from the following:
+
+ - [AFNetworking](https://github.com/AFNetworking/AFNetworking)
+ - [KSJSON](https://github.com/kstenerud/KSJSON)
+ - [AMFoundation](https://github.com/amrox/AMFoundation)
+ - [Light-Untar-for-iOS](https://github.com/mhausherr/Light-Untar-for-iOS)
+
 ## License
 
 Zinc-ObjC is distributed under a BSD-style license.
