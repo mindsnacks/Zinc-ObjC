@@ -2,6 +2,10 @@
 
 Objective-C client for Zinc asset distribution system.
 
+## Status:
+
+Zinc-ObjC is under *active* and should be considering 'alpha' at best.
+
 ## TODO:
 
 - Write a lot more words in here.
