@@ -8,16 +8,21 @@
 
 #import "BundleDetailViewController.h"
 #import "Zinc.h"
+
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
+#import "ImageFileViewController.h"
+
+@interface BundleDetailViewController ()
+@property (nonatomic, retain) NSArray* files;
+@end
 
 @implementation BundleDetailViewController
 
+@synthesize tableView = _tableView;
 @synthesize bundle = _bundle;
 @synthesize repo = _repo;
-@synthesize bundleNameLabel = _bundleNameLabel;
-@synthesize bundleVersionLabel = _bundleVersionLabel;
-@synthesize manifestTextView = _manifestTextView;
+@synthesize files = _files;
 
 - (id) initWithBundle:(ZincBundle*)bundle repo:(ZincRepo*)repo
 {
@@ -30,8 +35,10 @@
 }
 
 - (void)dealloc {
+    [_files release];
     [_bundle release];
     [_repo release];
+    [_tableView release];
     [super dealloc];
 }
 
@@ -58,8 +65,6 @@
 {
     [super viewDidLoad];
     
-    self.bundleNameLabel.text = self.bundle.bundleId;
-    self.bundleVersionLabel.text = [NSString stringWithFormat:@"%d", self.bundle.version];
     
     self.title = [NSString stringWithFormat:@"%@-%d", [ZincBundle bundleNameFromBundleId:self.bundle.bundleId], self.bundle.version];
 
@@ -67,20 +72,22 @@
     
     ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundle.bundleId version:self.bundle.version error:NULL];
     
-    NSString* manifestString = [[manifest dictionaryRepresentation] description];
+    self.files = [[manifest allFiles] sortedArrayUsingSelector:@selector(compare:)];
     
-    self.manifestTextView.text = manifestString;
-    
-    NSBundle* bundle = [self.bundle NSBundle];
-    NSString* path1 = [bundle pathForResource:@"Advanced Numbers" ofType:@"js"];
-    NSLog(@"path1: %@", path1);
-    NSString* path2 = [bundle pathForResource:@"Advanced Numbers.js"];
-    NSLog(@"path2: %@", path2);
-    
-    NSString* audioPath = [bundle pathForResource:@"audio/more-adv-numbers-20" ofType:@"caf"];
-    NSLog(@"audioPath: %@", audioPath);
-    
-    NSLog(@"id %@", self.bundle.bundleId);
+//    NSString* manifestString = [[manifest dictionaryRepresentation] description];
+//    
+//    self.manifestTextView.text = manifestString;
+//    
+//    NSBundle* bundle = [self.bundle NSBundle];
+//    NSString* path1 = [bundle pathForResource:@"Advanced Numbers" ofType:@"js"];
+//    NSLog(@"path1: %@", path1);
+//    NSString* path2 = [bundle pathForResource:@"Advanced Numbers.js"];
+//    NSLog(@"path2: %@", path2);
+//    
+//    NSString* audioPath = [bundle pathForResource:@"audio/more-adv-numbers-20" ofType:@"caf"];
+//    NSLog(@"audioPath: %@", audioPath);
+//    
+//    NSLog(@"id %@", self.bundle.bundleId);
 }
 
 - (void)viewDidUnload
@@ -90,10 +97,69 @@
     // e.g. self.myOutlet = nil;
 }
 
+- (void) viewDidAppear:(BOOL)animated
+{
+    [self.tableView deselectRowAtIndexPath:
+     [self.tableView indexPathForSelectedRow]
+                                  animated:YES];
+
+    [super viewDidAppear:animated];
+}
+
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
+
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return [self.files count];
+}
+
+- (void)configureCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
+{
+    NSString* file = [self.files objectAtIndex:[indexPath row]];
+    cell.textLabel.text = file;
+}
+
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *CellIdentifier = @"Cell";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.font = [UIFont systemFontOfSize:14];
+    }
+    
+    [self configureCell:cell atIndexPath:indexPath];
+    return cell;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString* file = [self.files objectAtIndex:[indexPath row]];
+    
+    if ([[file pathExtension] isEqualToString:@"jpg"] || [[file pathExtension] isEqualToString:@"png"]) {
+
+        NSString* path = [self.bundle pathForResource:file];
+        
+        UIImage* image = [[[UIImage alloc] initWithContentsOfFile:path] autorelease];
+    
+        ImageFileViewController* vc = [[[ImageFileViewController alloc] initWithImage:image] autorelease];
+        [self.navigationController pushViewController:vc animated:YES];
+    }
+    
+}
+
 
 @end

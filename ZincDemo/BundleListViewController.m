@@ -222,7 +222,7 @@
      [self.navigationController pushViewController:detailViewController animated:YES];
      [detailViewController release];
      */
-
+    
     NSString* bundleId = [self.bundleIds objectAtIndex:[indexPath row]];
     ZincBundle* bundle = [self.repo bundleWithId:bundleId];
 

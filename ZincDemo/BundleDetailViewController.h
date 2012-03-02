@@ -11,14 +11,12 @@
 @class ZincBundle;
 @class ZincRepo;
 
-@interface BundleDetailViewController : UIViewController
+@interface BundleDetailViewController : UIViewController <UITableViewDelegate, UITableViewDataSource>
 
 - (id) initWithBundle:(ZincBundle*)bundle repo:(ZincRepo*)repo;
 @property (nonatomic, retain, readonly) ZincBundle* bundle;
 @property (nonatomic, retain, readonly) ZincRepo* repo;
 
-@property (nonatomic, retain) IBOutlet UILabel* bundleNameLabel;
-@property (nonatomic, retain) IBOutlet UILabel* bundleVersionLabel;
-@property (nonatomic, retain) IBOutlet UITextView* manifestTextView;
+@property (nonatomic, retain) IBOutlet UITableView* tableView;
 
 @end

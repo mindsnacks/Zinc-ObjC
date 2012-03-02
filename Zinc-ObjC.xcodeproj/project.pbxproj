@@ -53,6 +53,8 @@
 		B32EEB1114FEDCEE005F9917 /* ZincHTTPStreamOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B32EEB0F14FEDCEE005F9917 /* ZincHTTPStreamOperation.h */; };
 		B32EEB1214FEDCEE005F9917 /* ZincHTTPStreamOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B32EEB1014FEDCEE005F9917 /* ZincHTTPStreamOperation.m */; };
 		B32EEB1814FEFB66005F9917 /* ZincHTTPRequestOperation+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B32EEB1714FEFB66005F9917 /* ZincHTTPRequestOperation+Private.h */; };
+		B32EEBC71500490D005F9917 /* ImageFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B32EEBC51500490D005F9917 /* ImageFileViewController.m */; };
+		B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B32EEBC61500490D005F9917 /* ImageFileViewController.xib */; };
 		B3316A2A14C648F000AEAD6C /* ZincArchiveDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3316A2814C648F000AEAD6C /* ZincArchiveDownloadTask.h */; };
 		B3316A2B14C648F000AEAD6C /* ZincArchiveDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3316A2914C648F000AEAD6C /* ZincArchiveDownloadTask.m */; };
 		B3316A2E14C6754400AEAD6C /* ZincArchiveExtractOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3316A2C14C6754200AEAD6C /* ZincArchiveExtractOperation.h */; };
@@ -187,6 +189,9 @@
 		B32EEB0F14FEDCEE005F9917 /* ZincHTTPStreamOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincHTTPStreamOperation.h; sourceTree = "<group>"; };
 		B32EEB1014FEDCEE005F9917 /* ZincHTTPStreamOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincHTTPStreamOperation.m; sourceTree = "<group>"; };
 		B32EEB1714FEFB66005F9917 /* ZincHTTPRequestOperation+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincHTTPRequestOperation+Private.h"; sourceTree = "<group>"; };
+		B32EEBC41500490D005F9917 /* ImageFileViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageFileViewController.h; sourceTree = "<group>"; };
+		B32EEBC51500490D005F9917 /* ImageFileViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageFileViewController.m; sourceTree = "<group>"; };
+		B32EEBC61500490D005F9917 /* ImageFileViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageFileViewController.xib; sourceTree = "<group>"; };
 		B3316A2814C648F000AEAD6C /* ZincArchiveDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincArchiveDownloadTask.h; sourceTree = "<group>"; };
 		B3316A2914C648F000AEAD6C /* ZincArchiveDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincArchiveDownloadTask.m; sourceTree = "<group>"; };
 		B3316A2C14C6754200AEAD6C /* ZincArchiveExtractOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincArchiveExtractOperation.h; sourceTree = "<group>"; };
@@ -522,6 +527,9 @@
 				B3DB05CB14DA0DB600438665 /* BundleDetailViewController.h */,
 				B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */,
 				B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */,
+				B32EEBC41500490D005F9917 /* ImageFileViewController.h */,
+				B32EEBC51500490D005F9917 /* ImageFileViewController.m */,
+				B32EEBC61500490D005F9917 /* ImageFileViewController.xib */,
 				B387431A1489B830004B227B /* ViewController.h */,
 				B387431B1489B830004B227B /* ViewController.m */,
 				B387431D1489B830004B227B /* ViewController.xib */,
@@ -809,6 +817,7 @@
 				B38743131489B830004B227B /* InfoPlist.strings in Resources */,
 				B387431F1489B830004B227B /* ViewController.xib in Resources */,
 				B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */,
+				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -897,6 +906,7 @@
 				B387431C1489B830004B227B /* ViewController.m in Sources */,
 				B3D8E6F214D8B84D00D993F0 /* BundleListViewController.m in Sources */,
 				B3DB05CE14DA0DB600438665 /* BundleDetailViewController.m in Sources */,
+				B32EEBC71500490D005F9917 /* ImageFileViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
