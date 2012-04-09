@@ -14,6 +14,7 @@ typedef enum {
     ZincEventTypeCatalogUpdate,
     ZincEventTypeDelete,
     ZincEventTypeDownloadBegin,
+    ZincEventTypeDownloadProgress,
     ZincEventTypeDownloadComplete,
     ZincEventTypeBundleCloneBegin,
     ZincEventTypeBundleCloneComplete,
@@ -65,6 +66,14 @@ extern NSString* const ZincEventNotification;
 + (id) downloadBeginEventForURL:(NSURL*)url;
 @property (readonly) NSURL* url;
 
+@end
+
+@interface ZincDownloadProgressEvent : ZincEvent 
+
++ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context;
+@property (readonly) NSURL* url;
+@property (readonly) float progress;
+@property (readonly) id context;
 @end
 
 

@@ -165,6 +165,41 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
                           
 @end
 
+@implementation ZincDownloadProgressEvent
+
++ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context
+{
+    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          url, @"url",
+                          [NSNumber numberWithFloat:progress], @"progress",
+                          context ?: [NSNull null], @"context", nil];
+    
+    return [[[self alloc] initWithType:ZincEventTypeDownloadProgress source:nil attributes:attr] autorelease];
+    
+}
+
++ (NSString*) name
+{
+    return @"DOWNLOAD-PROGRESSS";
+}
+
+- (NSURL*) url
+{
+    return [self.attributes objectForKey:@"url"];
+}
+
+- (float)progress
+{
+    return [[self.attributes objectForKey:@"progress"] floatValue];
+}
+
+- (id)context
+{
+    return [self.attributes objectForKey:@"context"];
+}
+
+@end
+
 
 @implementation ZincDownloadCompleteEvent
 

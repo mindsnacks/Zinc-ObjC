@@ -94,7 +94,7 @@
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream];
+        ZincHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream context:nil];
         [downloadOp waitUntilFinished];
         
         if (!downloadOp.hasAcceptableStatusCode) {

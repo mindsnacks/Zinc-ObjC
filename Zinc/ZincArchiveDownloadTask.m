@@ -64,8 +64,9 @@
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream];
+        ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream context:self.bundleId];
         [downloadOp waitUntilFinished];
+        sleep(10);
         
         if (!downloadOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
