@@ -34,7 +34,7 @@
     
     __block typeof(self) blockself = self;
     [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
-        float progress = ((float)totalBytesRead/totalBytesExpectedToRead*100);
+        float progress = ((float)totalBytesRead/totalBytesExpectedToRead);
 //        ZINC_DEBUG_LOG(@"%@   %d/%d = %d%%", [request URL], totalBytesRead, totalBytesExpectedToRead, (int)progress);
         
         blockself.bytesRead = totalBytesRead;

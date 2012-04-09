@@ -15,4 +15,6 @@
 - (id) initWithRepo:(ZincRepo *)repo;
 @property (nonatomic, retain, readonly) ZincRepo* repo;
 
+- (void)bundleWithId:(NSString *)bundleId didDownloadToProgress:(float)progress;
+
 @end
