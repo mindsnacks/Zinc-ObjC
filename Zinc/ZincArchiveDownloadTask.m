@@ -58,6 +58,8 @@
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
+    [[NSFileManager defaultManager] createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
+    
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version];
@@ -79,7 +81,7 @@
         [extractOp waitUntilFinished];
         
         if (extractOp.error != nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
             continue;
         }
         
