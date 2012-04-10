@@ -10,6 +10,13 @@
 
 NSString* const ZincEventNotification = @"ZincEventNotification";
 
+NSString *const kZincEventAtributesURLKey = @"url";
+NSString *const kZincEventAtributesPathKey = @"path";
+NSString *const kZincEventAtributesBundleResourceKey = @"bundleResource";
+NSString *const kZincEventAtributesArchiveResourceKey = @"archiveResource";
+NSString *const kZincEventAtributesProgressKey = @"progress";
+NSString *const kZincEventAtributesContextKey = @"context";
+
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
 @property (nonatomic, retain, readwrite) id source;
@@ -118,13 +125,12 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 @end
 
-
 @implementation ZincDeleteEvent
 
 + (id) deleteEventForPath:(NSString*)path source:(id)source
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          path, @"path", nil];
+                          path, kZincEventAtributesPathKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeDelete source:source attributes:attr] autorelease];
 }
 
@@ -135,20 +141,17 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSString*) path
 {
-    return [self.attributes objectForKey:@"path"];
-    
+    return [self.attributes objectForKey:kZincEventAtributesPathKey];
 }
 
 @end
-
-
 
 @implementation ZincDownloadBeginEvent
 
 + (id) downloadBeginEventForURL:(NSURL*)url
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, @"url", nil];
+                          url, kZincEventAtributesURLKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeDownloadBegin source:nil attributes:attr] autorelease];
 
 }
@@ -160,7 +163,7 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) url
 {
-    return [self.attributes objectForKey:@"url"];
+    return [self.attributes objectForKey:kZincEventAtributesURLKey];
 }
                           
 @end
@@ -170,12 +173,11 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 + (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, @"url",
-                          [NSNumber numberWithFloat:progress], @"progress",
-                          context ?: [NSNull null], @"context", nil];
+                          url, kZincEventAtributesURLKey,
+                          [NSNumber numberWithFloat:progress], kZincEventAtributesProgressKey,
+                          context ?: [NSNull null], kZincEventAtributesContextKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeDownloadProgress source:nil attributes:attr] autorelease];
-    
 }
 
 + (NSString*) name
@@ -185,28 +187,28 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) url
 {
-    return [self.attributes objectForKey:@"url"];
+    return [self.attributes objectForKey:kZincEventAtributesURLKey];
 }
 
 - (float)progress
 {
-    return [[self.attributes objectForKey:@"progress"] floatValue];
+    return [[self.attributes objectForKey:kZincEventAtributesProgressKey] floatValue];
 }
 
 - (id)context
 {
-    return [self.attributes objectForKey:@"context"];
+    return [self.attributes objectForKey:kZincEventAtributesContextKey];
 }
 
 @end
-
 
 @implementation ZincDownloadCompleteEvent
 
 + (id) downloadCompleteEventForURL:(NSURL*)url
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, @"url", nil];
+                          url, kZincEventAtributesURLKey, nil];
+    
     return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:nil attributes:attr] autorelease];
     
 }
@@ -218,20 +220,19 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) url
 {
-    return [self.attributes objectForKey:@"url"];
+    return [self.attributes objectForKey:kZincEventAtributesURLKey];
 }
 
 @end
-
 
 @implementation ZincBundleCloneBeginEvent
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          bundleResource, @"bundleResource", nil];
-    return [[[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:nil attributes:attr] autorelease];
+                          bundleResource, kZincEventAtributesBundleResourceKey, nil];
     
+    return [[[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:nil attributes:attr] autorelease];
 }
 
 + (NSString*) name
@@ -241,20 +242,19 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) bundleResource
 {
-    return [self.attributes objectForKey:@"bundleResource"];
+    return [self.attributes objectForKey:kZincEventAtributesBundleResourceKey];
 }
 
 @end
-
 
 @implementation ZincBundleCloneCompleteEvent
 
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          bundleResource, @"bundleResource", nil];
-    return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:nil attributes:attr] autorelease];
+                          bundleResource, kZincEventAtributesBundleResourceKey, nil];
     
+    return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:nil attributes:attr] autorelease];
 }
 
 + (NSString*) name
@@ -264,18 +264,17 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) bundleResource
 {
-    return [self.attributes objectForKey:@"bundleResource"];
+    return [self.attributes objectForKey:kZincEventAtributesBundleResourceKey];
 }
 
 @end
-
 
 @implementation ZincAchiveExtractBeginEvent
 
 + (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          archiveResource, @"archiveResource", nil];
+                          archiveResource, kZincEventAtributesArchiveResourceKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:nil attributes:attr] autorelease];
     
 }
@@ -287,18 +286,17 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) archiveResource
 {
-    return [self.attributes objectForKey:@"archiveResource"];
+    return [self.attributes objectForKey:kZincEventAtributesArchiveResourceKey];
 }
 
 @end
-
 
 @implementation ZincAchiveExtractCompleteEvent
 
 + (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          archiveResource, @"archiveResource", nil];
+                          archiveResource, kZincEventAtributesArchiveResourceKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:nil attributes:attr] autorelease];
     
 }
@@ -310,7 +308,7 @@ NSString* const ZincEventNotification = @"ZincEventNotification";
 
 - (NSURL*) archiveResource
 {
-    return [self.attributes objectForKey:@"archiveResource"];
+    return [self.attributes objectForKey:kZincEventAtributesArchiveResourceKey];
 }
 
 @end

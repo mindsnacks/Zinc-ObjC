@@ -22,6 +22,13 @@ typedef enum {
     ZincEventTypeArchiveExtractComplete,
 } ZincEventType;
 
+extern NSString *const kZincEventAtributesURLKey;
+extern NSString *const kZincEventAtributesPathKey;
+extern NSString *const kZincEventAtributesBundleResourceKey;
+extern NSString *const kZincEventAtributesArchiveResourceKey;
+extern NSString *const kZincEventAtributesProgressKey;
+extern NSString *const kZincEventAtributesContextKey;
+
 #pragma mark Notifications
 
 extern NSString* const ZincEventNotification;

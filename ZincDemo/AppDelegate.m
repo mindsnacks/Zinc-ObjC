@@ -28,14 +28,14 @@
     switch (event.type)
     {
         case ZincEventTypeDownloadBegin:
-            NSLog(@"start download of %@", [[event attributes] valueForKey:@"url"]);
+            NSLog(@"start download of %@", [[event attributes] valueForKey:kZincEventAtributesURLKey]);
             break;
         case ZincEventTypeDownloadProgress:
             NSLog(@"Download progress of %@", event);
-            [self.viewController bundleWithId:[event.attributes valueForKey:@"context"] didDownloadToProgress:[[event.attributes valueForKey:@"progress"] floatValue]];
+            [self.viewController bundleWithId:[event.attributes valueForKey:kZincEventAtributesContextKey] didDownloadToProgress:[[event.attributes valueForKey:kZincEventAtributesProgressKey] floatValue]];
             break;
         case ZincEventTypeDownloadComplete:
-            NSLog(@"finished download of %@", [[event attributes] valueForKey:@"url"]);
+            NSLog(@"finished download of %@", [[event attributes] valueForKey:kZincEventAtributesURLKey]);
             break;
         case ZincEventTypeBundleCloneComplete:
             NSLog(@"bundle clone complete");
