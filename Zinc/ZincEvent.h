@@ -31,7 +31,16 @@ extern NSString *const kZincEventAtributesContextKey;
 
 #pragma mark Notifications
 
-extern NSString* const ZincEventNotification;
+extern NSString *const kZincEventErrorNotification;
+extern NSString *const kZincEventBundleUpdateNotification;
+extern NSString *const kZincEventDeleteNotification;
+extern NSString *const kZincEventDownloadBeginNotification;
+extern NSString *const kZincEventDownloadProgressNotification;
+extern NSString *const kZincEventDownloadCompleteNotification;
+extern NSString *const kZincEventBundleCloneBeginNotification;
+extern NSString *const kZincEventBundleCloneCompleteNotification;
+extern NSString *const kZincEventArchiveExtractBeginNotification;
+extern NSString *const kZincEventArchiveExtractCompleteNotification;
 
 @interface ZincEvent : NSObject
 
@@ -45,7 +54,7 @@ extern NSString* const ZincEventNotification;
 @property (nonatomic, retain, readonly) id source;
 @property (nonatomic, retain, readonly) NSDate* timestamp;
 @property (nonatomic, retain, readonly) NSDictionary* attributes;
-           
+
 @end
 
 

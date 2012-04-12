@@ -120,6 +120,7 @@
 		B3EACD8714BD4907004D90EC /* ZincGarbageCollectTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */; };
 		B3F8AF76148EFCDF00CB92B5 /* ZincRepo.h in Headers */ = {isa = PBXBuildFile; fileRef = B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */; };
 		B3F8AF77148EFCDF00CB92B5 /* ZincRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */; };
+		D00356D9153760220021627E /* ZincEvent+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = D00356D8153760220021627E /* ZincEvent+Private.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -278,6 +279,7 @@
 		B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincGarbageCollectTask.m; sourceTree = "<group>"; };
 		B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepo.h; sourceTree = "<group>"; };
 		B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepo.m; sourceTree = "<group>"; };
+		D00356D8153760220021627E /* ZincEvent+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincEvent+Private.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -646,6 +648,7 @@
 				B3215E3114BF7C6100FC7FA7 /* ZincRepoIndex.m */,
 				B340F99A148D563000206F86 /* ZincBundle+Private.h */,
 				B340F994148D543B00206F86 /* ZincBundle.m */,
+				D00356D8153760220021627E /* ZincEvent+Private.h */,
 				B327068014B77FAB004E3244 /* ZincEvent.m */,
 				B3AE464B149C1FA700767CBD /* ZincSource.h */,
 				B3AE464C149C1FA700767CBD /* ZincSource.m */,
@@ -712,6 +715,7 @@
 				B3AD8B7514FD7E7800B5F9ED /* ZincNetworkOperation.h in Headers */,
 				B32EEB1114FEDCEE005F9917 /* ZincHTTPStreamOperation.h in Headers */,
 				B32EEB1814FEFB66005F9917 /* ZincHTTPRequestOperation+Private.h in Headers */,
+				D00356D9153760220021627E /* ZincEvent+Private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,8 +7,7 @@
 //
 
 #import "ZincEvent.h"
-
-NSString* const ZincEventNotification = @"ZincEventNotification";
+#import "ZincEvent+Private.h"
 
 NSString *const kZincEventAtributesURLKey = @"url";
 NSString *const kZincEventAtributesPathKey = @"path";
@@ -16,6 +15,17 @@ NSString *const kZincEventAtributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAtributesArchiveResourceKey = @"archiveResource";
 NSString *const kZincEventAtributesProgressKey = @"progress";
 NSString *const kZincEventAtributesContextKey = @"context";
+
+NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
+NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
+NSString *const kZincEventDeleteNotification = @"ZincEventDeleteNotification";
+NSString *const kZincEventDownloadBeginNotification = @"ZincEventDownloadBeginNotification";
+NSString *const kZincEventDownloadProgressNotification = @"ZincEvenDownloadProgressNotification";
+NSString *const kZincEventDownloadCompleteNotification = @"ZincEventDownloadCompleteNotification";
+NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneBeginNotification";
+NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
+NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveExtractBeginNotification";
+NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
 
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
@@ -59,6 +69,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
 + (NSString*) name
 {
     return @"EVENT";
+}
+
++ (NSString *)notificationName
+{
+    return nil;
 }
 
 - (NSString*) description
@@ -113,6 +128,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
     return @"ERROR";
 }
 
++ (NSString *)notificationName
+{
+    return kZincEventErrorNotification;
+}
+
 - (NSString*) description
 {
     NSString* desc = [NSString stringWithFormat:@"%@: %@ ", [[self class] name], self.error];
@@ -139,6 +159,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
     return @"DELETE";
 }
 
++ (NSString *)notificationName
+{
+    return kZincEventDeleteNotification;
+}
+
 - (NSString*) path
 {
     return [self.attributes objectForKey:kZincEventAtributesPathKey];
@@ -159,6 +184,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
 + (NSString*) name
 {
     return @"DOWNLOAD-BEGIN";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventDownloadBeginNotification;
 }
 
 - (NSURL*) url
@@ -183,6 +213,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
 + (NSString*) name
 {
     return @"DOWNLOAD-PROGRESSS";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventDownloadProgressNotification;
 }
 
 - (NSURL*) url
@@ -218,6 +253,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
     return @"DOWNLOAD-COMPLETE";
 }
 
++ (NSString *)notificationName
+{
+    return kZincEventDownloadCompleteNotification;
+}
+
 - (NSURL*) url
 {
     return [self.attributes objectForKey:kZincEventAtributesURLKey];
@@ -238,6 +278,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
 + (NSString*) name
 {
     return @"CLONE-BEGIN";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventBundleCloneBeginNotification;
 }
 
 - (NSURL*) bundleResource
@@ -262,6 +307,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
     return @"CLONE-COMPLETE";
 }
 
++ (NSString *)notificationName
+{
+    return kZincEventBundleCloneCompleteNotification;
+}
+
 - (NSURL*) bundleResource
 {
     return [self.attributes objectForKey:kZincEventAtributesBundleResourceKey];
@@ -284,6 +334,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
     return @"EXTRACT-BEGIN";
 }
 
++ (NSString *)notificationName
+{
+    return kZincEventArchiveExtractBeginNotification;
+}
+
 - (NSURL*) archiveResource
 {
     return [self.attributes objectForKey:kZincEventAtributesArchiveResourceKey];
@@ -304,6 +359,11 @@ NSString *const kZincEventAtributesContextKey = @"context";
 + (NSString*) name
 {
     return @"EXTRACT-COMPLETE";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventArchiveExtractCompleteNotification;
 }
 
 - (NSURL*) archiveResource

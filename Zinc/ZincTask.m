@@ -9,6 +9,7 @@
 #import "ZincTask.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
+#import "ZincEvent+Private.h"
 #import "ZincTaskDescriptor.h"
 
 @interface ZincTask ()
@@ -148,9 +149,17 @@
 //    }
 //}
 
+- (void)postEventNotification:(ZincEvent *)event
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self.repo userInfo:event.attributes];
+}
+
 - (void) addEvent:(ZincEvent*)event
 {
     [self.myEvents addObject:event];
+    
+    [self postEventNotification:event];
+    
     [self.repo logEvent:event];
 }
 
