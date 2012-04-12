@@ -25,30 +25,6 @@
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {    
-    switch (event.type)
-    {
-        case ZincEventTypeDownloadBegin:
-            NSLog(@"start download of %@", [[event attributes] valueForKey:kZincEventAtributesURLKey]);
-            break;
-        case ZincEventTypeDownloadProgress:
-            NSLog(@"Download progress of %@", event);
-            [self.viewController bundleWithId:[event.attributes valueForKey:kZincEventAtributesContextKey] didDownloadToProgress:[[event.attributes valueForKey:kZincEventAtributesProgressKey] floatValue]];
-            break;
-        case ZincEventTypeDownloadComplete:
-            NSLog(@"finished download of %@", [[event attributes] valueForKey:kZincEventAtributesURLKey]);
-            break;
-        case ZincEventTypeBundleCloneComplete:
-            NSLog(@"bundle clone complete");
-            break;
-        case ZincEventTypeArchiveExtractComplete:
-            NSLog(@"Extract complete");
-            break;
-        case ZincEventTypeError:
-            NSLog(@"Error: %@", [event attributes]);
-            break;
-        default:
-            break;
-    }
 }
 
 - (void)dealloc

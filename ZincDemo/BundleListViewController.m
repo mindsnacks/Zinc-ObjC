@@ -42,6 +42,7 @@
                                                  selector:@selector(bundleWillDeleteNotification:) 
                                                      name:ZincRepoBundleWillDeleteNotification
                                                    object:_repo];
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bundleDownloadProgressNotification:) name:kZincEventDownloadProgressNotification object:_repo];
     }
     return self;
 }
@@ -53,6 +54,16 @@
     [self.tableView reloadData];
 }
 
+- (void)bundleDownloadProgressNotification:(NSNotification *)note
+{
+    float progress = [[note.userInfo valueForKey:kZincEventAtributesProgressKey] floatValue];
+    NSString *bundleId = [note.userInfo valueForKey:kZincEventAtributesContextKey];
+    
+    [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
+    
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId] inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+}
+
 - (void) bundleStatusChangeNotification:(NSNotification *)note
 {
     [self.tableView reloadData];
@@ -62,13 +73,6 @@
 {
 //    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
     //[self.bundleIds removeObject:bundleId];
-}
-
-- (void)bundleWithId:(NSString *)bundleId didDownloadToProgress:(float)progress
-{
-    [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
-    
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId] inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (id)initWithStyle:(UITableViewStyle)style
