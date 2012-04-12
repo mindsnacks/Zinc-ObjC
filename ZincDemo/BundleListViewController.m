@@ -56,8 +56,8 @@
 
 - (void)bundleDownloadProgressNotification:(NSNotification *)note
 {
-    float progress = [[note.userInfo valueForKey:kZincEventAtributesProgressKey] floatValue];
-    NSString *bundleId = [note.userInfo valueForKey:kZincEventAtributesContextKey];
+    float progress = [[note.userInfo valueForKey:kZincEventAttributesProgressKey] floatValue];
+    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
     
     [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
     

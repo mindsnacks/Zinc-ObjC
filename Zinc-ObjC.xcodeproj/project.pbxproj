@@ -171,8 +171,8 @@
 		B3215E3A14BFC6DA00FC7FA7 /* ZincResourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincResourceTests.m; sourceTree = "<group>"; };
 		B326A94614B11B7E00CED8DF /* NSData+Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Zinc.h"; sourceTree = "<group>"; };
 		B326A94714B11B7E00CED8DF /* NSData+Zinc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Zinc.m"; sourceTree = "<group>"; };
-		B327067F14B77FAB004E3244 /* ZincEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincEvent.h; sourceTree = "<group>"; };
-		B327068014B77FAB004E3244 /* ZincEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincEvent.m; sourceTree = "<group>"; };
+		B327067F14B77FAB004E3244 /* ZincEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ZincEvent.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B327068014B77FAB004E3244 /* ZincEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZincEvent.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B32706C714BAA5BD004E3244 /* ZincRepo+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincRepo+Private.h"; sourceTree = "<group>"; };
 		B327070814BC20F7004E3244 /* ZincBundleCloneTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleCloneTask.h; sourceTree = "<group>"; };
 		B327070914BC20F8004E3244 /* ZincBundleCloneTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleCloneTask.m; sourceTree = "<group>"; };
@@ -264,7 +264,7 @@
 		B3D2CA1614C5FC1A00717B2E /* ZincManifestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifestTests.h; sourceTree = "<group>"; };
 		B3D2CA1714C5FC1A00717B2E /* ZincManifestTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifestTests.m; sourceTree = "<group>"; };
 		B3D8E6F014D8B84D00D993F0 /* BundleListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleListViewController.h; sourceTree = "<group>"; };
-		B3D8E6F114D8B84D00D993F0 /* BundleListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BundleListViewController.m; sourceTree = "<group>"; };
+		B3D8E6F114D8B84D00D993F0 /* BundleListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = BundleListViewController.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B3DB05CB14DA0DB600438665 /* BundleDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BundleDetailViewController.h; sourceTree = "<group>"; };
 		B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BundleDetailViewController.m; sourceTree = "<group>"; };
 		B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BundleDetailViewController.xib; sourceTree = "<group>"; };
