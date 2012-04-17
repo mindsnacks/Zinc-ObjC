@@ -58,7 +58,7 @@
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
-    [[NSFileManager defaultManager] createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
+    [fm createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
     
     for (NSURL* source in sources) {
         
