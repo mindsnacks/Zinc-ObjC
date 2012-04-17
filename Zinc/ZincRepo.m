@@ -15,6 +15,7 @@
 #import "ZincSource.h"
 #import "ZincCatalog.h"
 #import "ZincEvent.h"
+#import "ZincEvent+Private.h"
 #import "ZincResource.h"
 #import "ZincTaskDescriptor.h"
 #import "ZincBundleCloneTask.h"
@@ -939,8 +940,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     __block typeof(self) blockself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)]) {
-            [blockself.delegate zincRepo:blockself didReceiveEvent:event];
-        }
+            [blockself.delegate zincRepo:blockself didReceiveEvent:event];        }
+        
+         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:event.attributes];        
     }];
 }
 

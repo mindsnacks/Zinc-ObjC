@@ -58,11 +58,13 @@
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
+    [fm createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
+    
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream];
+        ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream context:self.bundleId];
         [downloadOp waitUntilFinished];
         
         if (!downloadOp.hasAcceptableStatusCode) {
@@ -79,7 +81,7 @@
         [extractOp waitUntilFinished];
         
         if (extractOp.error != nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
             continue;
         }
         
