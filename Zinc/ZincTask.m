@@ -151,6 +151,7 @@
 - (void) addEvent:(ZincEvent*)event
 {
     [self.myEvents addObject:event];
+    
     [self.repo logEvent:event];
 }
 

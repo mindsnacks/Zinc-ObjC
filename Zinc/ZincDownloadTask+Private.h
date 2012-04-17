@@ -16,6 +16,7 @@
 @property (readwrite) NSInteger totalBytesToRead;
 
 - (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request
-                                          outputStream:(NSOutputStream *)outputStream;
+                                          outputStream:(NSOutputStream *)outputStream
+                                                 context:(id)context;
 
 @end

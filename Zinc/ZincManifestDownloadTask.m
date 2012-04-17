@@ -66,7 +66,7 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForBundleName:bundleName version:self.version];
-        ZincHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil];
+        ZincHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil context:nil];
         [requestOp waitUntilFinished];
         if (!requestOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
