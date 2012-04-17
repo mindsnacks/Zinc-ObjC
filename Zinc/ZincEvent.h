@@ -111,8 +111,9 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context;
 @property (readonly) NSURL* bundleResource;
+@property (readonly) id context;
 
 @end
 
@@ -127,7 +128,7 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 
 @interface ZincAchiveExtractCompleteEvent : ZincEvent 
 
-+ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource;
++ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context;
 @property (readonly) NSURL* archiveResource;
-
+@property (readonly) id context;
 @end

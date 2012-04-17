@@ -294,10 +294,11 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 
 @implementation ZincBundleCloneCompleteEvent
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          bundleResource, kZincEventAttributesBundleResourceKey, nil];
+                          bundleResource, kZincEventAttributesBundleResourceKey,
+                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:nil attributes:attr] autorelease];
 }
@@ -315,6 +316,11 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 - (NSURL*) bundleResource
 {
     return [self.attributes objectForKey:kZincEventAttributesBundleResourceKey];
+}
+
+- (id)context
+{
+    return [self.attributes objectForKey:kZincEventAttributesContextKey];
 }
 
 @end
@@ -348,10 +354,11 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 
 @implementation ZincAchiveExtractCompleteEvent
 
-+ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource
++ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          archiveResource, kZincEventAttributesArchiveResourceKey, nil];
+                          archiveResource, kZincEventAttributesArchiveResourceKey,
+                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:nil attributes:attr] autorelease];
     
 }
@@ -369,6 +376,11 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 - (NSURL*) archiveResource
 {
     return [self.attributes objectForKey:kZincEventAttributesArchiveResourceKey];
+}
+
+- (id)context
+{
+    return [self.attributes objectForKey:kZincEventAttributesContextKey];
 }
 
 @end

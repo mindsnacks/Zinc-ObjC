@@ -192,7 +192,7 @@
     
     [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
     
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource]];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource context:self.bundleId]];
     
     self.finishedSuccessfully = YES;
 }

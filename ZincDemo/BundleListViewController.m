@@ -35,14 +35,17 @@
                                                      name:ZincRepoBundleDidBeginTrackingNotification
                                                    object:_repo];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(bundleStatusChangeNotification:) 
-                                                     name:ZincRepoBundleStatusChangeNotification
-                                                   object:_repo];
-        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(bundleWillDeleteNotification:) 
                                                      name:ZincRepoBundleWillDeleteNotification
                                                    object:_repo];
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bundleDownloadProgressNotification:) name:kZincEventDownloadProgressNotification object:_repo];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(bundleDownloadProgressNotification:)
+                                                     name:kZincEventDownloadProgressNotification
+                                                   object:_repo];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(bundleCloneCompleteNotification:)
+                                                     name:kZincEventBundleCloneCompleteNotification
+                                                   object:_repo];
     }
     return self;
 }
@@ -61,12 +64,18 @@
     
     [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
     
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId] inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
+                                                                                       inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationNone];
 }
 
-- (void) bundleStatusChangeNotification:(NSNotification *)note
+- (void)bundleCloneCompleteNotification:(NSNotification *)note
 {
-    [self.tableView reloadData];
+    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
+
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
+                                                                                       inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void) bundleWillDeleteNotification:(NSNotification *)note
@@ -121,7 +130,6 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (cell == nil) {
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
-        //cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     }
     
     NSString* bundleId = [self.bundleIds objectAtIndex:[indexPath row]];
@@ -133,14 +141,18 @@
 
     if (state == ZincBundleStateCloning)
     {
-        NSNumber *downloadProgress = [self.bundleProgress valueForKey:bundleId];
-        if (downloadProgress)
+        double downloadProgress = [[self.bundleProgress valueForKey:bundleId] doubleValue];
+        
+        if (downloadProgress == 1)
         {
-            cellDetailText = [cellDetailText stringByAppendingFormat:@" (%d%%)", (int)([downloadProgress floatValue] * 100)];
+            cellDetailText = @"Unpacking";
+        }
+        else
+        {
+            cellDetailText = [cellDetailText stringByAppendingFormat:@" (%d%%)", (int)(downloadProgress * 100)];
         }
     }
     
-//    cell.textLabel.text = [NSString stringWithFormat:@"%@ - %@", bundleName, ZincBundleStateName[state]];
     cell.textLabel.text = bundleName;
     cell.detailTextLabel.text = cellDetailText;
     

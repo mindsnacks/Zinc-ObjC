@@ -85,7 +85,7 @@
             continue;
         }
         
-        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource]];
+        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleId]];
         
         self.finishedSuccessfully = YES;
     }

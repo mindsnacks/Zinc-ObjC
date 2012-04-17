@@ -939,8 +939,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     __block typeof(self) blockself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)]) {
-            [blockself.delegate zincRepo:blockself didReceiveEvent:event];        }
+        if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
+            [blockself.delegate zincRepo:blockself didReceiveEvent:event];
         
          [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:event.attributes];        
     }];
