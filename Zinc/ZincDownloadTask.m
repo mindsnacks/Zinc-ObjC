@@ -27,20 +27,36 @@
 - (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
     ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
-//    ZincHTTPStreamOperation* requestOp = [[[ZincHTTPStreamOperation alloc] initWithURL:[request URL]] autorelease];
+    
     requestOp.outputStream = outputStream;
     
     self.context = context;
     
     __block typeof(self) blockself = self;
+    __block float lastNotifiedProgressRounded = -1.0f;
+    
+    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.1f;
+    __block NSTimeInterval lastTimeEventSentDate = 0;
+    
     [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
-        float progress = ((float)totalBytesRead/totalBytesExpectedToRead);
-//        ZINC_DEBUG_LOG(@"%@   %d/%d = %d%%", [request URL], totalBytesRead, totalBytesExpectedToRead, (int)progress);
+        float newProgress = ((float)totalBytesRead/totalBytesExpectedToRead);
+        float newProgressRounded = roundf(100 * newProgress) / 100;
         
-        blockself.bytesRead = totalBytesRead;
-        blockself.totalBytesToRead = totalBytesExpectedToRead;
+        NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         
-        [blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:progress context:context]];
+        NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
+        
+        // Decrease the ammount of events sent by only sending significant value changes with a minimum time offset
+        if (newProgressRounded != lastNotifiedProgressRounded && timeSinceLastEventSent >= minTimeOffsetBetweenEventSends)
+        {
+            lastNotifiedProgressRounded = newProgressRounded;
+            lastTimeEventSentDate = currentDate;
+            
+            blockself.bytesRead = totalBytesRead;
+            blockself.totalBytesToRead = totalBytesExpectedToRead;
+            
+            [blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:newProgress context:context]];
+        }
     }];
     
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
