@@ -46,8 +46,11 @@
         
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
-        // Decrease the ammount of events sent by only sending significant value changes with a minimum time offset
-        if (newProgressRounded != lastNotifiedProgressRounded && timeSinceLastEventSent >= minTimeOffsetBetweenEventSends)
+        BOOL progressIncreasedSinceLastNotification = newProgressRounded != lastNotifiedProgressRounded;
+        BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
+        
+        // Decrease the amount of events sent by only sending significant value changes with a minimum time offset
+        if (progressIncreasedSinceLastNotification && enoughTimePassedSinceLastNotification)
         {
             lastNotifiedProgressRounded = newProgressRounded;
             lastTimeEventSentDate = currentDate;
