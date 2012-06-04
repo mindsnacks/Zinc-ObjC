@@ -15,8 +15,9 @@
 
 - (void) _testDictionaryRoundtrip:(ZincRepoIndex*)index
 {
+    NSError* error = nil;
     NSDictionary* dict = [index dictionaryRepresentation];
-    ZincRepoIndex* index2 = [[[ZincRepoIndex alloc] initWithDictionary:dict] autorelease];
+    ZincRepoIndex* index2 = [ZincRepoIndex repoIndexFromDictionary:dict error:&error];
     STAssertEqualObjects(index, index2, @"objects should be equal");
 }
 
@@ -34,7 +35,7 @@
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 addSourceURL:[NSURL URLWithString:@"http://mindsnacks.com"]];
     
-    BOOL contains = [[i1 sourceURLS] containsObject:[NSURL URLWithString:@"http://mindsnacks.com"]];
+    BOOL contains = [[i1 sourceURLs] containsObject:[NSURL URLWithString:@"http://mindsnacks.com"]];
     STAssertTrue(contains, @"URL not found");
     
     [self _testDictionaryRoundtrip:i1];

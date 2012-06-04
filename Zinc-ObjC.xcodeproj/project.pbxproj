@@ -101,6 +101,7 @@
 		B3AE4615149C0DDC00767CBD /* ZincCatalog.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE4613149C0DDC00767CBD /* ZincCatalog.m */; };
 		B3AE464D149C1FA800767CBD /* ZincSource.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE464B149C1FA700767CBD /* ZincSource.h */; };
 		B3AE464E149C1FA800767CBD /* ZincSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE464C149C1FA700767CBD /* ZincSource.m */; };
+		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3BE1CD914D79ECA00C61515 /* ZincDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BE1CDC14D79F0900C61515 /* ZincDownloadTask+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */; };
@@ -228,7 +229,7 @@
 		B340FA06148D628300206F86 /* ZincTests-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincTests-Prefix.pch"; sourceTree = "<group>"; };
 		B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SenTestCase+MethodSwizzling.h"; sourceTree = "<group>"; };
 		B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SenTestCase+MethodSwizzling.m"; sourceTree = "<group>"; };
-		B340FA0D148D6F0F00206F86 /* TestUtility-Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; path = "TestUtility-Zinc.h"; sourceTree = "<group>"; };
+		B340FA0D148D6F0F00206F86 /* TestUtility-Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestUtility-Zinc.h"; sourceTree = "<group>"; };
 		B340FA0E148D7DC100206F86 /* ZincErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincErrors.h; sourceTree = "<group>"; };
 		B340FA13148D801A00206F86 /* libAMFoundation_iOS.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAMFoundation_iOS.a; path = "AMFoundation/build/Release-iphoneos/libAMFoundation_iOS.a"; sourceTree = "<group>"; };
 		B3549DED148DB80900DD63D1 /* ZincManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifest.h; sourceTree = "<group>"; };
@@ -295,6 +296,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */,
 				B3215E3814BFC68D00FC7FA7 /* libz.dylib in Frameworks */,
 				B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */,
 				B340F97F148D52D800206F86 /* UIKit.framework in Frameworks */,

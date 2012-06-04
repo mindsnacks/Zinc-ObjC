@@ -8,7 +8,7 @@
 
 #import "ZincManifestTests.h"
 #import "ZincManifest.h"
-#import "KSJSON.h"
+#import "ZincKSJSON.h"
 
 @implementation ZincManifestTests
 
@@ -23,7 +23,7 @@
         STFail(@"%@", error);
     }
                     
-    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -68,7 +68,7 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -101,7 +101,7 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -137,7 +137,7 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -173,7 +173,7 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [KSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
