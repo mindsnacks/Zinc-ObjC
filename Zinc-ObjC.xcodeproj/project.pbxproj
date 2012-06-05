@@ -102,6 +102,8 @@
 		B3AE464D149C1FA800767CBD /* ZincSource.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE464B149C1FA700767CBD /* ZincSource.h */; };
 		B3AE464E149C1FA800767CBD /* ZincSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE464C149C1FA700767CBD /* ZincSource.m */; };
 		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
+		B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */; };
+		B3B7BAA3157D87BC00613B8B /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */; };
 		B3BE1CD914D79ECA00C61515 /* ZincDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BE1CDC14D79F0900C61515 /* ZincDownloadTask+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */; };
@@ -257,6 +259,8 @@
 		B3AE4613149C0DDC00767CBD /* ZincCatalog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincCatalog.m; sourceTree = "<group>"; };
 		B3AE464B149C1FA700767CBD /* ZincSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincSource.h; sourceTree = "<group>"; };
 		B3AE464C149C1FA700767CBD /* ZincSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincSource.m; sourceTree = "<group>"; };
+		B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sphalerite.jpg; sourceTree = "<group>"; };
+		B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "sphalerite@2x.jpg"; sourceTree = "<group>"; };
 		B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadTask.h; sourceTree = "<group>"; };
 		B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadTask.m; sourceTree = "<group>"; };
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
@@ -386,6 +390,8 @@
 		B340F96B148D521000206F86 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */,
+				B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -824,6 +830,8 @@
 				B387431F1489B830004B227B /* ViewController.xib in Resources */,
 				B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */,
 				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
+				B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */,
+				B3B7BAA3157D87BC00613B8B /* sphalerite@2x.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
