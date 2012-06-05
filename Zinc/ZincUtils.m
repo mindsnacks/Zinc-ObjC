@@ -17,20 +17,26 @@ void ZincAddSkipBackupAttributeToFile(NSURL * url)
 
 NSString* ZincGetApplicationDocumentsDirectory(void)
 {
-    NSString* dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    if([dir length] == 0) {
-        [NSException raise:@"Documents dir not found"
-                    format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
+    static NSString* dir = nil;
+    if (dir == nil) {
+        dir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        if([dir length] == 0) {
+            [NSException raise:@"Documents dir not found"
+                        format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
+        }
     }
     return dir;
 }
 
 NSString* ZincGetApplicationCacheDirectory(void)
 {
-    NSString* dir =  [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    if([dir length] == 0) {
-        [NSException raise:@"Caches dir not found"
-                    format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
+    static NSString* dir = nil;
+    if (dir == nil) {
+        dir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        if([dir length] == 0) {
+            [NSException raise:@"Caches dir not found"
+                        format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
+        }
     }
     return dir;
 }

@@ -8,23 +8,9 @@
 
 #import "UIImage+Zinc.h"
 #import "ZincBundle.h"
+#import "ZincUtils.h"
 
 @implementation UIImage (Zinc)
-
-static NSCache* _imageCache;
-
-+ (NSCache*) zincImageCache
-{
-    if (_imageCache == nil) {
-        @synchronized(@"ZincImageCache") {
-            if (_imageCache == nil) {
-                _imageCache = [[NSCache alloc] init];
-                _imageCache.countLimit = 10; // TODO: fix arbitrary number
-            }
-        }
-    }
-    return _imageCache;
-}
 
 + (NSString*) zinc2xPathForImagePath:(NSString*)path
 {
@@ -71,64 +57,41 @@ static NSCache* _imageCache;
     }
     
     UIImage* image = nil;
+    NSMutableArray* imageNames = [NSMutableArray arrayWithObject:name];
     
-    image = [_imageCache objectForKey:name];
-    if (image != nil) {
-        return image;
-    }
-
     BOOL isRetina = ([UIScreen mainScreen].scale == 2.0);
-    
     if (isRetina) {
         NSString* retinaName = [[self class] zinc2xPathForImagePath:name];
-        NSString* retinaPath = [bundle pathForResource:[retinaName stringByDeletingPathExtension]
-                                                ofType:[retinaName pathExtension]];
-        image = [UIImage imageWithContentsOfFile:retinaPath];
+        [imageNames insertObject:retinaName atIndex:0];
     }
     
-    if (image == nil) { 
-        NSString* regularName = [[self class] zinc1xPathForImagePath:name];
-        NSString* regularPath = [bundle pathForResource:[regularName stringByDeletingPathExtension]
-                                                 ofType:[regularName pathExtension]];
-        image = [UIImage imageWithContentsOfFile:regularPath];
+    NSString* bundlePath = [bundle bundlePath];
+    NSString* relParentDir = nil;
+    NSArray* searchDirs = [NSArray arrayWithObjects:ZincGetApplicationDocumentsDirectory(), ZincGetApplicationCacheDirectory(), nil];
+    
+    for (NSString* pathPrefix in searchDirs) {
+        if ([bundlePath hasPrefix:pathPrefix]) {
+            relParentDir = [bundlePath stringByReplacingOccurrencesOfString:pathPrefix withString:
+                            [NSString stringWithFormat:@"../%@", [pathPrefix lastPathComponent]]];
+            break;
+        }
     }
     
-    if (image != nil) {
-        [_imageCache setObject:image forKey:name];
+    if (relParentDir != nil) {
+        for (NSString* imageName in imageNames) {
+            NSString* imagePath = [relParentDir stringByAppendingPathComponent:imageName];
+            image = [UIImage imageNamed:imagePath];
+            if (imageName != nil) break;
+        }
+    }
+    
+    // if the image is still nil, try to load without the cache
+    if (image == nil) {
+        image = [UIImage imageWithContentsOfFile:
+                 [bundlePath stringByAppendingPathComponent:name]];
     }
     
     return image;
 }
-
-//+ (UIImage *)imageNamed:(NSString *)name inZincBundle:(ZincBundle*)bundle
-//{
-//    UIImage* image = nil;
-//    
-//    image = [_imageCache objectForKey:name];
-//    if (image != nil) {
-//        return image;
-//    }
-//    
-//    BOOL isRetina = ([UIScreen mainScreen].scale == 2.0);
-//    
-//    if (isRetina) {
-//        NSString* retinaName = [[self class] zinc2xPathForImagePath:name];
-//        NSString* retinaPath = [bundle pathForResource:retinaName];
-//        image = [UIImage imageWithContentsOfFile:retinaPath];
-//    }
-//    
-//    if (image == nil) { 
-//        NSString* regularName = [[self class] zinc1xPathForImagePath:name];
-//        [
-//        image = [UIImage imageWithContentsOfFile:regularPath];
-//    }
-//    
-//    if (image != nil) {
-//        [_imageCache setObject:image forKey:name];
-//    }
-//    
-//    return image;
-//}
-
 
 @end
