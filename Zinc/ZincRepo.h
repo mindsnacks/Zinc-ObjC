@@ -36,6 +36,7 @@ extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 @protocol ZincRepoDelegate;
+@class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
 
@@ -61,6 +62,7 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 #pragma mark Bundles
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
+- (BOOL) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrapManifestPath:(NSString*)manifestPath error:(NSError**)outError;
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (NSSet*) trackedBundleIds;
@@ -70,6 +72,8 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
+
+//- (BOOL) bootstrapFromMainBundleUsingManifestWithPath:(NSString*)manifestPath error:(NSError**)outError;
 
 #pragma mark Tasks
 

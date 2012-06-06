@@ -637,11 +637,22 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
     NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
-    if (catalog == nil) {
-        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return ZincVersionInvalid;
+
+    if (catalog != nil) {
+        return [catalog versionForBundleName:bundleName distribution:distro];
+
+    } else {
+        // there might be a local version
+        NSArray* localBundes = [[self.index localBundles] allObjects];
+        for (NSURL* localBundleRes in localBundes) {
+            if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
+                return [localBundleRes zincBundleVersion];
+            }
+        }
     }
-    return [catalog versionForBundleName:bundleName distribution:distro];
+    
+    [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+    return ZincVersionInvalid;
 }
 
 - (BOOL) hasManifestForBundleId:(NSString *)bundleId distribution:(NSString*)distro
@@ -664,13 +675,17 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self queueIndexSave];
         
         ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
-        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
-        ZincBundleState state = [self.index stateForBundle:bundleRes];
-        
-        if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
-            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
-            [self queueTaskForDescriptor:taskDesc];
+
+        if (version != ZincVersionInvalid) { // can't find in current source list
+            
+            NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+            ZincBundleState state = [self.index stateForBundle:bundleRes];
+            
+            if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
+                [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
+                ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
+                [self queueTaskForDescriptor:taskDesc];
+            }
         }
     }];
     
@@ -746,6 +761,79 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
     ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
     [self queueTaskForDescriptor:taskDesc];
+}
+
+- (BOOL) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrapManifestPath:(NSString*)manifestPath error:(NSError**)outError
+{
+    // read manifest
+    if (![manifestPath isAbsolutePath]) {
+        manifestPath = [[NSBundle mainBundle] pathForResource:manifestPath ofType:nil];
+    }
+    
+    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
+    if (jsonString == nil) {
+        return NO;
+    }
+
+    // copy manifest to repo
+    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
+    if (![self.fileManager copyItemAtPath:manifestPath toPath:manifestRepoPath error:outError]) {
+        return NO;
+    }
+    
+    // make sha-based links in the repo to files inside the main bundle
+    NSArray* allFiles = [manifest allFiles];
+    for (NSString* file in allFiles) {
+        NSString* sha = [manifest shaForFile:file];
+        NSString* srcPath = [[NSBundle mainBundle] pathForResource:file ofType:nil];
+        NSString* dstPath = [self pathForFileWithSHA:sha];
+        if (![self.fileManager linkItemAtPath:srcPath toPath:dstPath error:outError]) {
+            // TODO: make error
+            return NO;
+        }
+    }
+    
+    NSString* bundlePath = [self pathForBundleWithId:manifest.bundleId version:manifest.version];
+    for (NSString* file in allFiles) {
+        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
+        NSString* fileDir = [filePath stringByDeletingLastPathComponent];
+        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fileDir error:outError]) {
+            // TODO: error
+            return NO;
+        }
+        
+        NSString* shaPath = [self pathForFileWithSHA:[manifest shaForFile:file]];
+        BOOL createLink = NO;
+        if ([self.fileManager fileExistsAtPath:filePath]) {
+            NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:NULL];
+            if (![dst isEqualToString:shaPath]) {
+                if (![self.fileManager removeItemAtPath:filePath error:outError]) {
+                    // TODO: error
+                    return NO;
+                }
+                createLink = YES;
+            }
+        } else {
+            createLink = YES;
+        }
+        
+        if (createLink) {
+            if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:outError]) {
+                /// TODO: error
+                return NO;
+            }
+        }
+    }
+    
+    NSURL *bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
+    [self.index addLocalBundle:bundleRes];
+    [self registerBundle:bundleRes status:ZincBundleStateAvailable];
+    
+    [self beginTrackingBundleWithId:bundleId distribution:distro];
+    
+    return YES;
 }
 
 #pragma mark Bundles
