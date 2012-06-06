@@ -94,7 +94,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) deleteBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
 
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
+- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 
 @end
 
@@ -570,7 +570,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self.fileManager fileExistsAtPath:path];
 }
 
-- (ZincManifest*) loadManifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+- (ZincManifest*) loadManifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
 {
     NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
     NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
@@ -585,12 +585,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return manifest;
 }
 
-- (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
 {
     NSString* key = [self cacheKeyManifestWithBundleId:bundleId version:version];
     ZincManifest* manifest = [self.cache objectForKey:key];
     if (manifest == nil) {
-        manifest = [self loadManifestWithBundleIdentifier:bundleId version:version error:outError];
+        manifest = [self loadManifestWithBundleId:bundleId version:version error:outError];
         if (manifest != nil) {
             [self.cache setObject:manifest forKey:key];
         }

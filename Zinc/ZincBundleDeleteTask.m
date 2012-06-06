@@ -42,7 +42,7 @@
         return;
     }
 
-    ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundleId version:self.version error:&error];
+    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;

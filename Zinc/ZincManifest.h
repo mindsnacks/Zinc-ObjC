@@ -14,7 +14,7 @@
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-@property (nonatomic, retain) NSString* bundleName;
+@property (nonatomic, retain) NSString* bundleId;
 @property (nonatomic, assign) ZincVersion version;
 
 - (NSString*) shaForFile:(NSString*)path;

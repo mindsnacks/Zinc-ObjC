@@ -16,7 +16,7 @@
 
 @implementation ZincManifest
 
-@synthesize bundleName = _bundleName;
+@synthesize bundleId = _bundleId;
 @synthesize version = _version;
 @synthesize files = _files;
 
@@ -24,7 +24,7 @@
 {
     self = [super init];
     if (self) {
-        self.bundleName = [dict objectForKey:@"bundle"];
+        self.bundleId = [dict objectForKey:@"bundle"];
         self.version = [[dict objectForKey:@"version"] integerValue];
         self.files = [dict objectForKey:@"files"];
     }
@@ -41,7 +41,7 @@
 
 - (void)dealloc
 {
-    self.bundleName = nil;
+    self.bundleId = nil;
     self.files = nil;
     [super dealloc];
 }
@@ -98,7 +98,7 @@
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
-    [d setObject:self.bundleName forKey:@"bundle"];
+    [d setObject:self.bundleId forKey:@"bundle"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
     return d;

@@ -53,7 +53,7 @@
 
     [self.bundle.repo bundleWithId:self.bundle.bundleId];
     
-    ZincManifest* manifest = [self.repo manifestWithBundleIdentifier:self.bundle.bundleId version:self.bundle.version error:NULL];
+    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundle.bundleId version:self.bundle.version error:NULL];
     
     self.files = [[manifest allFiles] sortedArrayUsingSelector:@selector(compare:)];
     

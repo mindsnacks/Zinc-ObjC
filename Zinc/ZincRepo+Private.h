@@ -31,7 +31,7 @@
 - (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
 - (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 - (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
+- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 - (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
 
 #pragma mark Bundles
