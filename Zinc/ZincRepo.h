@@ -73,8 +73,6 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-//- (BOOL) bootstrapFromMainBundleUsingManifestWithPath:(NSString*)manifestPath error:(NSError**)outError;
-
 #pragma mark Tasks
 
 @property (readonly) NSArray* tasks;
