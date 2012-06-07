@@ -34,6 +34,7 @@
     self.version = version;
     self.url = bundleURL;
     self.bundle = [NSBundle bundleWithURL:bundleURL];
+    NSAssert(self.bundle, @"bundle could not be found");
     return self;
 }
 
@@ -65,7 +66,8 @@
 
 - (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
 {
-    return [self.bundle methodSignatureForSelector:aSelector];
+    NSMethodSignature* sig = [self.bundle methodSignatureForSelector:aSelector];
+    return sig;
 }
 
 - (void)forwardInvocation:(NSInvocation *)anInvocation

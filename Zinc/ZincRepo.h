@@ -62,7 +62,7 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 #pragma mark Bundles
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (BOOL) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrapManifestPath:(NSString*)manifestPath error:(NSError**)outError;
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro localManifestPath:(NSString*)manifestPath;
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (NSSet*) trackedBundleIds;

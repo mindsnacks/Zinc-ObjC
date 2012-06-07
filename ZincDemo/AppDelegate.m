@@ -99,12 +99,9 @@
         [repo refreshSourcesWithCompletion:^{
             
             NSLog(@"refreshed!");
-            NSError* bundleBootstrapError = nil;
 
             NSString* bootstrapManifestPath = [[NSBundle mainBundle] pathForResource:@"com.mindsnacks.demo1.sphalerites-1" ofType:@"json"];
-            if (![repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" bootstrapManifestPath:bootstrapManifestPath error:&bundleBootstrapError]) {
-                abort();
-            }
+            [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" localManifestPath:bootstrapManifestPath];
             
             [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AdvancedNumbers" distribution:@"master"];
             [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AtThePharmacy" distribution:@"master"];
