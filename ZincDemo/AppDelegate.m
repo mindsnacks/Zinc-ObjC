@@ -100,7 +100,7 @@
             
             NSLog(@"refreshed!");
 
-            NSString* bootstrapManifestPath = [[NSBundle mainBundle] pathForResource:@"com.mindsnacks.demo1.sphalerites-1" ofType:@"json"];
+            NSString* bootstrapManifestPath = [[NSBundle mainBundle] pathForResource:@"com.mindsnacks.demo1.sphalerites" ofType:@"json"];
             [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" localManifestPath:bootstrapManifestPath];
             
             [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AdvancedNumbers" distribution:@"master"];

@@ -103,8 +103,6 @@
 		B3AE464E149C1FA800767CBD /* ZincSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE464C149C1FA700767CBD /* ZincSource.m */; };
 		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */; };
-		B3B7BAA3157D87BC00613B8B /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */; };
-		B3B7BAC2157D9F6A00613B8B /* com.mindsnacks.demo1.sphalerites-1.json in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAC1157D9F6A00613B8B /* com.mindsnacks.demo1.sphalerites-1.json */; };
 		B3BE1CD914D79ECA00C61515 /* ZincDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BE1CDC14D79F0900C61515 /* ZincDownloadTask+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */; };
@@ -122,6 +120,8 @@
 		B3E46BA014C4C01800030349 /* ZincRepoIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */; };
 		B3EACD8614BD4907004D90EC /* ZincGarbageCollectTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */; };
 		B3EACD8714BD4907004D90EC /* ZincGarbageCollectTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */; };
+		B3F760FF158126CB00B2C194 /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */; };
+		B3F761041582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json in Resources */ = {isa = PBXBuildFile; fileRef = B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */; };
 		B3F8AF76148EFCDF00CB92B5 /* ZincRepo.h in Headers */ = {isa = PBXBuildFile; fileRef = B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */; };
 		B3F8AF77148EFCDF00CB92B5 /* ZincRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */; };
 		D00356D9153760220021627E /* ZincEvent+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = D00356D8153760220021627E /* ZincEvent+Private.h */; };
@@ -262,7 +262,7 @@
 		B3AE464C149C1FA700767CBD /* ZincSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincSource.m; sourceTree = "<group>"; };
 		B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sphalerite.jpg; sourceTree = "<group>"; };
 		B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "sphalerite@2x.jpg"; sourceTree = "<group>"; };
-		B3B7BAC1157D9F6A00613B8B /* com.mindsnacks.demo1.sphalerites-1.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "com.mindsnacks.demo1.sphalerites-1.json"; sourceTree = "<group>"; };
+		B3B7BAC1157D9F6A00613B8B /* sphalerites-local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sphalerites-local.json"; sourceTree = "<group>"; };
 		B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadTask.h; sourceTree = "<group>"; };
 		B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadTask.m; sourceTree = "<group>"; };
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
@@ -284,6 +284,8 @@
 		B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoIndexTests.m; sourceTree = "<group>"; };
 		B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincGarbageCollectTask.h; sourceTree = "<group>"; };
 		B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincGarbageCollectTask.m; sourceTree = "<group>"; };
+		B3F76102158292B800B2C194 /* generate_manifest_from_local_file_list.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_manifest_from_local_file_list.py; sourceTree = "<group>"; };
+		B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = com.mindnsacks.demo1.sphalerites.json; sourceTree = "<group>"; };
 		B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepo.h; sourceTree = "<group>"; };
 		B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepo.m; sourceTree = "<group>"; };
 		D00356D8153760220021627E /* ZincEvent+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincEvent+Private.h"; sourceTree = "<group>"; };
@@ -394,7 +396,8 @@
 			children = (
 				B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */,
 				B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */,
-				B3B7BAC1157D9F6A00613B8B /* com.mindsnacks.demo1.sphalerites-1.json */,
+				B3B7BAC1157D9F6A00613B8B /* sphalerites-local.json */,
+				B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -412,6 +415,7 @@
 		B340F973148D52D800206F86 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				B3F76101158292B800B2C194 /* Scripts */,
 				B340F974148D52D800206F86 /* Zinc-Prefix.pch */,
 			);
 			name = "Supporting Files";
@@ -674,6 +678,14 @@
 			name = Main;
 			sourceTree = "<group>";
 		};
+		B3F76101158292B800B2C194 /* Scripts */ = {
+			isa = PBXGroup;
+			children = (
+				B3F76102158292B800B2C194 /* generate_manifest_from_local_file_list.py */,
+			);
+			path = Scripts;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -775,6 +787,7 @@
 			buildPhases = (
 				B38743001489B830004B227B /* Sources */,
 				B38743011489B830004B227B /* Frameworks */,
+				B3F761001582807C00B2C194 /* ShellScript */,
 				B38743021489B830004B227B /* Resources */,
 			);
 			buildRules = (
@@ -834,8 +847,8 @@
 				B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */,
 				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
 				B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */,
-				B3B7BAA3157D87BC00613B8B /* sphalerite@2x.jpg in Resources */,
-				B3B7BAC2157D9F6A00613B8B /* com.mindsnacks.demo1.sphalerites-1.json in Resources */,
+				B3F760FF158126CB00B2C194 /* sphalerite@2x.jpg in Resources */,
+				B3F761041582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -854,6 +867,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
+		};
+		B3F761001582807C00B2C194 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"$(SRCROOT)/ZincDemo/Resources/sphalerites-local.json",
+			);
+			outputPaths = (
+				"$(SRCROOT)/ZincDemo/Resources/com.mindnsacks.demo1.sphalerites.json",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "rm ${SCRIPT_OUTPUT_FILE_0}\n\n./Zinc/Scripts/generate_manifest_from_local_file_list.py ${SCRIPT_INPUT_FILE_0} > ${SCRIPT_OUTPUT_FILE_0}";
 		};
 /* End PBXShellScriptBuildPhase section */
 
