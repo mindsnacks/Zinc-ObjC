@@ -868,12 +868,13 @@
 			files = (
 			);
 			inputPaths = (
+				"$(SRCROOT)/ZincDemo/Resources/com.mindsnacks.demo1.sphalerites",
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Zinc/Scripts/generate_manifest_from_local_files.py -d ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH} \"${SOURCE_ROOT}/ZincDemo/Resources/com.mindsnacks.demo1.sphalerites\"";
+			shellScript = "./Zinc/Scripts/generate_manifest_from_local_files.py -x";
 		};
 /* End PBXShellScriptBuildPhase section */
 

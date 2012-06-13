@@ -14,12 +14,26 @@ def main():
 
     parser = argparse.ArgumentParser(description='')
     parser.add_argument('src_dirs', metavar='src_dir',
-            nargs='+', help='')
+            nargs='*', help='')
     parser.add_argument('-d', '--dest', dest='dest',
             help='destination directory', default='.')
+    parser.add_argument('-x', '--xcode', dest='xcode_mode', action='store_true',
+            help='Use environment variables from Xcode. Overrides other \
+            settings', default=False)
+
     args = parser.parse_args()
+
+    if args.xcode_mode:
+        dest = os.path.join(os.environ['BUILT_PRODUCTS_DIR'],
+                os.environ['UNLOCALIZED_RESOURCES_FOLDER_PATH'])
+        src_count = int(os.environ['SCRIPT_INPUT_FILE_COUNT'])
+        src_dirs = [os.environ['SCRIPT_INPUT_FILE_%d' % (i)] 
+                for i in range(src_count)]
+    else:
+        src_dirs = args.src_dirs
+        dest = args.dest
     
-    for src_dir in args.src_dirs:
+    for src_dir in src_dirs:
         src_dir = os.path.realpath(src_dir)
         bundle_id = os.path.split(src_dir)[-1]
         print bundle_id
@@ -38,7 +52,7 @@ def main():
                         os.path.getsize(rel_path))
         os.chdir(cwd)
 
-        out_file = os.path.join(args.dest, bundle_id + '.json')
+        out_file = os.path.join(dest, bundle_id + '.json')
         print out_file
         with open(out_file, 'w') as f:
             f.write(json.dumps(manifest.to_json()))
