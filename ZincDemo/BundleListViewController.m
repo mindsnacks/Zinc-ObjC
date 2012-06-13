@@ -53,8 +53,10 @@
 - (void) bundleWillBeginTrackingNotification:(NSNotification *)note
 {
     NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
-    [self.bundleIds addObject:bundleId];
-    [self.tableView reloadData];
+    if (![self.bundleIds containsObject:bundleId]) {
+        [self.bundleIds addObject:bundleId];
+        [self.tableView reloadData];
+    }
 }
 
 - (void)bundleDownloadProgressNotification:(NSNotification *)note

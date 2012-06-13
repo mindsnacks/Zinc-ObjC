@@ -22,12 +22,14 @@
 
 @interface ZincBundleCloneTask ()
 @property (assign) NSInteger totalBytesToDownload;
+@property (retain) NSFileManager* fileManager;
 @end
 
 @implementation ZincBundleCloneTask
 
 @synthesize httpOverheadConstant = _httpOverheadConstant;
 @synthesize totalBytesToDownload = _totalBytesToDownload;
+@synthesize fileManager = _fileManager;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -40,6 +42,7 @@
 
 - (void)dealloc
 {
+    [_fileManager release];
     [super dealloc];
 }
 
@@ -58,15 +61,10 @@
     return (double)self.httpOverheadConstant * connectionCount + totalSize;
 }
 
-- (void) main
+- (BOOL) prepareManifest
 {
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource]];
-    
-    NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    
     ZincTask* manifestDownloadTask = nil;
-    
+
     // if the manifest doesn't exist, get it. 
     if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
         NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleId version:self.version];
@@ -78,16 +76,14 @@
         [manifestDownloadTask waitUntilFinished];
         if (!manifestDownloadTask.finishedSuccessfully) {
             // ???: add an event?
-            return;
+            return NO;
         }
     }
-    
-    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
-    if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return;
-    }
-    
+    return YES;
+}
+
+- (BOOL) prepareObjectFilesUsingRemoteCatalogForManifest:(ZincManifest*)manifest
+{
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
     
@@ -99,7 +95,7 @@
         NSString* format = [manifest bestFormatForFile:path];
         if (format == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_INVALID_FORMAT) source:self]];
-            return;
+            return NO;
         }
         
         NSUInteger size = [manifest sizeForFile:path format:format];
@@ -116,7 +112,7 @@
         
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
-
+        
         if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
@@ -125,7 +121,7 @@
             
             [archiveOp waitUntilFinished];
             if (!archiveOp.finishedSuccessfully) {
-                return;
+                return NO;
             }
             
         } else { // INVIDIDUAL FILE MODE
@@ -154,27 +150,54 @@
                 }
             }
             
-            if (!allSuccessful) return;
+            if (!allSuccessful) return NO;
         }
     }
+    return YES;
+}
+
+- (BOOL) prepareObjectFilesUsingMainBundleForManifest:(ZincManifest*)manifest
+{
+    NSError* error = nil;
     
+    // make sha-based links in the repo to files inside the main bundle
+    NSArray* allFiles = [manifest allFiles];
+    for (NSString* file in allFiles) {
+        NSString* sha = [manifest shaForFile:file];
+        NSString* srcPath = [[NSBundle mainBundle] pathForResource:file ofType:nil];
+        NSString* dstPath = [self.repo pathForFileWithSHA:sha];
+        if (![self.fileManager fileExistsAtPath:dstPath]) {
+            if (![self.fileManager linkItemAtPath:srcPath toPath:dstPath error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                return NO;
+            }
+        }
+    }
+    return YES;
+}
+
+- (BOOL) createBundleLinksForManifest:(ZincManifest*)manifest
+{
+    NSError* error = nil;
+    
+    NSArray* allFiles = [manifest allFiles];
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
     for (NSString* file in allFiles) {
         NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
         NSString* fileDir = [filePath stringByDeletingLastPathComponent];
-        if (![fm zinc_createDirectoryIfNeededAtPath:fileDir error:&error]) {
+        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fileDir error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-            return;
+            return NO;
         }
         
         NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
         BOOL createLink = NO;
-        if ([fm fileExistsAtPath:filePath]) {
-            NSString* dst = [fm destinationOfSymbolicLinkAtPath:filePath error:NULL];
+        if ([self.fileManager fileExistsAtPath:filePath]) {
+            NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:NULL];
             if (![dst isEqualToString:shaPath]) {
-                if (![fm removeItemAtPath:filePath error:&error]) {
+                if (![self.fileManager removeItemAtPath:filePath error:&error]) {
                     [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                    return;
+                    return NO;
                 }
                 createLink = YES;
             }
@@ -183,11 +206,46 @@
         }
         
         if (createLink) {
-            if (![fm linkItemAtPath:shaPath toPath:filePath error:&error]) {
+            if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                return;
+                return NO;
             }
         }
+    }
+    return YES;
+}
+
+- (void) main
+{
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource]];
+    
+    NSError* error = nil;
+    self.fileManager = [[[NSFileManager alloc] init] autorelease];
+    
+    if (![self prepareManifest]) {
+        return;
+    }
+    
+    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
+    if (manifest == nil) {
+        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        return;
+    }
+    
+    BOOL cloneLocal = [[self.repo.index localBundles] containsObject:self.resource];
+    if (cloneLocal) {
+        if (![self prepareObjectFilesUsingMainBundleForManifest:manifest]) {
+            return;
+        }
+
+    } else {
+        if (![self prepareObjectFilesUsingRemoteCatalogForManifest:manifest]) {
+            return;
+        }
+    }
+    
+    if (![self createBundleLinksForManifest:manifest]) {
+        return;
     }
     
     [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];

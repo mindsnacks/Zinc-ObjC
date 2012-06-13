@@ -64,7 +64,7 @@
 {
     return [NSString stringWithFormat:@"<%@ 0x%x\n%@>",
 			NSStringFromClass([self class]),
-			self,
+			(unsigned int)self,
             [self dictionaryRepresentation]];
 }
 

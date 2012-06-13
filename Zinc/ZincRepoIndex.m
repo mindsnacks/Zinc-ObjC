@@ -15,6 +15,7 @@
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
 @property (nonatomic, retain) NSMutableDictionary* myBundles;
+@property (nonatomic, retain) NSMutableSet* myLocalBundles;
 @end
 
 
@@ -22,6 +23,7 @@
 
 @synthesize mySourceURLs = _mySourceURLs;
 @synthesize myBundles = _myBundles;
+@synthesize myLocalBundles = _myLocalBundles;
 
 - (id)init 
 {
@@ -29,6 +31,7 @@
     if (self) {
         self.mySourceURLs = [NSMutableSet set];
         self.myBundles = [NSMutableDictionary dictionary];
+        self.myLocalBundles = [NSMutableSet set];
     }
     return self;
 }
@@ -37,6 +40,7 @@
 {
     self.mySourceURLs = nil;
     self.myBundles = nil;
+    self.myLocalBundles = nil;
     [super dealloc];
 }
 
@@ -52,6 +56,9 @@
         return NO;
     }
     if (![self.myBundles isEqualToDictionary:other.myBundles]) {
+        return NO;
+    }
+    if (![self.myLocalBundles isEqualToSet:other.myLocalBundles]) {
         return NO;
     }
     
@@ -131,6 +138,22 @@
         distro = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
     }
     return distro;
+}
+
+- (void) addLocalBundle:(NSURL*)bundleResource
+{
+    @synchronized(self.myLocalBundles) {
+        [self.myLocalBundles addObject:bundleResource];
+    }
+}
+
+- (NSSet*) localBundles
+{
+    NSSet* localBundles = nil;
+    @synchronized(self.myLocalBundles) {
+        localBundles = [NSSet setWithSet:self.myLocalBundles];
+    }
+    return localBundles;
 }
 
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource
@@ -225,8 +248,13 @@
     } else {
         bundles = [NSMutableDictionary dictionary];
     }
-    
     index.myBundles = bundles;
+    
+    NSArray* localBundles = [dict objectForKey:@"localbundles"];
+    index.myLocalBundles = [NSMutableSet setWithCapacity:[localBundles count]];
+    for (NSString* localBundleRes in localBundles) {
+        [index.myLocalBundles addObject:[NSURL URLWithString:localBundleRes]];
+    }
     
     return index;
 }
@@ -246,8 +274,15 @@
     @synchronized(self.myBundles) {
         [dict setObject:[self.myBundles zinc_deepCopy] forKey:@"bundles"];
     }
-    
     [dict setObject:[NSNumber numberWithInt:1] forKey:@"format"];
+    
+    @synchronized(self.myLocalBundles) {
+        NSMutableArray* localBundleRes = [NSMutableArray arrayWithCapacity:[self.myLocalBundles count]];
+        for (NSURL* sourceURL in self.myLocalBundles) {
+            [localBundleRes addObject:[sourceURL absoluteString]];
+        }
+        [dict setObject:localBundleRes forKey:@"localbundles"];
+    }
 
     return dict;
 }
