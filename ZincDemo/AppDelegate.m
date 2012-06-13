@@ -26,7 +26,8 @@
 @synthesize viewController = _viewController;
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
-{    
+{   
+    NSLog(@"%@", event);
 }
 
 - (void)dealloc
@@ -98,6 +99,8 @@
         [repo refreshSourcesWithCompletion:^{
             
             NSLog(@"refreshed!");
+
+            [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" shouldBootstrapFromMainBundle:YES];
             
             [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AdvancedNumbers" distribution:@"master"];
             [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AtThePharmacy" distribution:@"master"];

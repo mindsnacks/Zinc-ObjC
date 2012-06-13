@@ -23,6 +23,9 @@
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
 
+- (void) addLocalBundle:(NSURL*)bundleResource;
+- (NSSet*) localBundles; // bundleResources
+
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;

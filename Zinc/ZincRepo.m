@@ -570,6 +570,31 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self.fileManager fileExistsAtPath:path];
 }
 
+- (ZincManifest*) importManifestWithPath:(NSString*)manifestPath error:(NSError**)outError
+{
+    // read manifest
+    //    if (![manifestPath isAbsolutePath]) {
+    //        manifestPath = [[NSBundle mainBundle] pathForResource:manifestPath ofType:nil];
+    //    }
+    
+    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    // copy manifest to repo
+    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
+    if (![self.fileManager fileExistsAtPath:manifestRepoPath]) {
+        if (![self.fileManager copyItemAtPath:manifestPath toPath:manifestRepoPath error:outError]) {
+            return nil;
+        }
+    }
+    
+    return manifest;
+}
+
 - (ZincManifest*) loadManifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
 {
     NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
@@ -637,11 +662,22 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
     NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
-    if (catalog == nil) {
-        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return ZincVersionInvalid;
+
+    if (catalog != nil) {
+        return [catalog versionForBundleName:bundleName distribution:distro];
+
+    } else {
+        // there might be a local version
+        NSArray* localBundes = [[self.index localBundles] allObjects];
+        for (NSURL* localBundleRes in localBundes) {
+            if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
+                return [localBundleRes zincBundleVersion];
+            }
+        }
     }
-    return [catalog versionForBundleName:bundleName distribution:distro];
+    
+    [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+    return ZincVersionInvalid;
 }
 
 - (BOOL) hasManifestForBundleId:(NSString *)bundleId distribution:(NSString*)distro
@@ -656,25 +692,64 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro localManifestPath:(NSString*)manifestPath
 {
     [self.indexProxy executeBlock:^{
         
         [self.index addTrackedBundleId:bundleId distribution:distro];
         [self queueIndexSave];
-        
+
+        NSURL* bundleRes = nil;
         ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
-        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
-        ZincBundleState state = [self.index stateForBundle:bundleRes];
+        if (version != ZincVersionInvalid) { // found in a remote catalog
+            
+            bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+
+        }  else { // attempt to find local bundle
+            
+            if (manifestPath != nil) {
+                NSError* error = nil;
+                ZincManifest* manifest = [self importManifestWithPath:manifestPath error:&error];
+                
+                if (manifest == nil) {
+                    [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+
+                } else {
+                    bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
+                    [self.index addLocalBundle:bundleRes];
+
+                    [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
+                    ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
+                    [self queueTaskForDescriptor:taskDesc];
+                }
+            }
+        }
         
-        if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
-            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
-            [self queueTaskForDescriptor:taskDesc];
+        if (bundleRes != nil) {
+            ZincBundleState state = [self.index stateForBundle:bundleRes];
+            if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
+                [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
+                ZincTaskDescriptor* taskDesc = [ZincBundleCloneTask taskDescriptorForResource:bundleRes];
+                [self queueTaskForDescriptor:taskDesc];
+            }
         }
     }];
     
     [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
+}
+
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
+{
+    return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:nil];
+}
+
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro shouldBootstrapFromMainBundle:(BOOL)shouldBootstrap
+{
+    NSString* localManifestPath = nil;
+    if (shouldBootstrap) {
+        localManifestPath = [[NSBundle mainBundle] pathForResource:bundleId ofType:@"json"];
+    }
+    return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:localManifestPath];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
