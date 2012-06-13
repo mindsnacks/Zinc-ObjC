@@ -743,6 +743,15 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:nil];
 }
 
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro shouldBootstrapFromMainBundle:(BOOL)shouldBootstrap
+{
+    NSString* localManifestPath = nil;
+    if (shouldBootstrap) {
+        localManifestPath = [[NSBundle mainBundle] pathForResource:bundleId ofType:@"json"];
+    }
+    return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:localManifestPath];
+}
+
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
     [self postNotification:ZincRepoBundleWillStopTrackingNotification bundleId:bundleId];

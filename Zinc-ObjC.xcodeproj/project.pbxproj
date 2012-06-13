@@ -94,6 +94,8 @@
 		B387431F1489B830004B227B /* ViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B387431D1489B830004B227B /* ViewController.xib */; };
 		B38A06F314C0DADC00AEC367 /* UIImage+Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B38A06F114C0DADC00AEC367 /* UIImage+Zinc.h */; };
 		B38A06F414C0DADC00AEC367 /* UIImage+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B38A06F214C0DADC00AEC367 /* UIImage+Zinc.m */; };
+		B393432D1588144200C81A4F /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432B1588144200C81A4F /* sphalerite.jpg */; };
+		B393432E1588144200C81A4F /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432C1588144200C81A4F /* sphalerite@2x.jpg */; };
 		B3AD8B7214FD7CBD00B5F9ED /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3AD8B7514FD7E7800B5F9ED /* ZincNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AD8B7314FD7E7800B5F9ED /* ZincNetworkOperation.h */; };
 		B3AD8B7614FD7E7800B5F9ED /* ZincNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AD8B7414FD7E7800B5F9ED /* ZincNetworkOperation.m */; };
@@ -102,7 +104,6 @@
 		B3AE464D149C1FA800767CBD /* ZincSource.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AE464B149C1FA700767CBD /* ZincSource.h */; };
 		B3AE464E149C1FA800767CBD /* ZincSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE464C149C1FA700767CBD /* ZincSource.m */; };
 		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
-		B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */; };
 		B3BE1CD914D79ECA00C61515 /* ZincDownloadTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BE1CDC14D79F0900C61515 /* ZincDownloadTask+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */; };
@@ -120,8 +121,6 @@
 		B3E46BA014C4C01800030349 /* ZincRepoIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */; };
 		B3EACD8614BD4907004D90EC /* ZincGarbageCollectTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */; };
 		B3EACD8714BD4907004D90EC /* ZincGarbageCollectTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */; };
-		B3F760FF158126CB00B2C194 /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */; };
-		B3F761041582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json in Resources */ = {isa = PBXBuildFile; fileRef = B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */; };
 		B3F8AF76148EFCDF00CB92B5 /* ZincRepo.h in Headers */ = {isa = PBXBuildFile; fileRef = B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */; };
 		B3F8AF77148EFCDF00CB92B5 /* ZincRepo.m in Sources */ = {isa = PBXBuildFile; fileRef = B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */; };
 		D00356D9153760220021627E /* ZincEvent+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = D00356D8153760220021627E /* ZincEvent+Private.h */; };
@@ -253,6 +252,8 @@
 		B387431E1489B830004B227B /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/ViewController.xib; sourceTree = "<group>"; };
 		B38A06F114C0DADC00AEC367 /* UIImage+Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Zinc.h"; sourceTree = "<group>"; };
 		B38A06F214C0DADC00AEC367 /* UIImage+Zinc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Zinc.m"; sourceTree = "<group>"; };
+		B393432B1588144200C81A4F /* sphalerite.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = sphalerite.jpg; path = com.mindsnacks.demo1.sphalerites/sphalerite.jpg; sourceTree = "<group>"; };
+		B393432C1588144200C81A4F /* sphalerite@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "sphalerite@2x.jpg"; path = "com.mindsnacks.demo1.sphalerites/sphalerite@2x.jpg"; sourceTree = "<group>"; };
 		B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B3AD8B7314FD7E7800B5F9ED /* ZincNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = ZincNetworkOperation.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B3AD8B7414FD7E7800B5F9ED /* ZincNetworkOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = ZincNetworkOperation.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
@@ -260,9 +261,6 @@
 		B3AE4613149C0DDC00767CBD /* ZincCatalog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincCatalog.m; sourceTree = "<group>"; };
 		B3AE464B149C1FA700767CBD /* ZincSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincSource.h; sourceTree = "<group>"; };
 		B3AE464C149C1FA700767CBD /* ZincSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincSource.m; sourceTree = "<group>"; };
-		B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = sphalerite.jpg; sourceTree = "<group>"; };
-		B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "sphalerite@2x.jpg"; sourceTree = "<group>"; };
-		B3B7BAC1157D9F6A00613B8B /* sphalerites-local.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "sphalerites-local.json"; sourceTree = "<group>"; };
 		B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadTask.h; sourceTree = "<group>"; };
 		B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadTask.m; sourceTree = "<group>"; };
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
@@ -285,7 +283,6 @@
 		B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincGarbageCollectTask.h; sourceTree = "<group>"; };
 		B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincGarbageCollectTask.m; sourceTree = "<group>"; };
 		B3F76102158292B800B2C194 /* generate_manifest_from_local_file_list.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_manifest_from_local_file_list.py; sourceTree = "<group>"; };
-		B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = com.mindnsacks.demo1.sphalerites.json; sourceTree = "<group>"; };
 		B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepo.h; sourceTree = "<group>"; };
 		B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepo.m; sourceTree = "<group>"; };
 		D00356D8153760220021627E /* ZincEvent+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincEvent+Private.h"; sourceTree = "<group>"; };
@@ -394,10 +391,8 @@
 		B340F96B148D521000206F86 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				B3B7BAA0157D87BC00613B8B /* sphalerite.jpg */,
-				B3B7BAA1157D87BC00613B8B /* sphalerite@2x.jpg */,
-				B3B7BAC1157D9F6A00613B8B /* sphalerites-local.json */,
-				B3F761031582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json */,
+				B393432B1588144200C81A4F /* sphalerite.jpg */,
+				B393432C1588144200C81A4F /* sphalerite@2x.jpg */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -846,9 +841,8 @@
 				B387431F1489B830004B227B /* ViewController.xib in Resources */,
 				B3DB05CF14DA0DB600438665 /* BundleDetailViewController.xib in Resources */,
 				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
-				B3B7BAA2157D87BC00613B8B /* sphalerite.jpg in Resources */,
-				B3F760FF158126CB00B2C194 /* sphalerite@2x.jpg in Resources */,
-				B3F761041582BEEA00B2C194 /* com.mindnsacks.demo1.sphalerites.json in Resources */,
+				B393432D1588144200C81A4F /* sphalerite.jpg in Resources */,
+				B393432E1588144200C81A4F /* sphalerite@2x.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -874,14 +868,12 @@
 			files = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/ZincDemo/Resources/sphalerites-local.json",
 			);
 			outputPaths = (
-				"$(SRCROOT)/ZincDemo/Resources/com.mindnsacks.demo1.sphalerites.json",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rm ${SCRIPT_OUTPUT_FILE_0}\n\n./Zinc/Scripts/generate_manifest_from_local_file_list.py ${SCRIPT_INPUT_FILE_0} > ${SCRIPT_OUTPUT_FILE_0}";
+			shellScript = "./Zinc/Scripts/generate_manifest_from_local_files.py -d ${BUILT_PRODUCTS_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH} \"${SOURCE_ROOT}/ZincDemo/Resources/com.mindsnacks.demo1.sphalerites\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 
