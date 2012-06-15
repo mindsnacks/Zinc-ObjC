@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
+// TODO: rename to NSURL (ZincCatalog)?
 // TODO: add zinc prefix to everything?
 
 @class ZincCatalog;

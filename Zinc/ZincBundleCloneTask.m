@@ -161,7 +161,7 @@
     NSError* error = nil;
     
     // make sha-based links in the repo to files inside the main bundle
-    NSArray* allFiles = [manifest allFiles];
+    NSArray* allFiles = [manifest allFiles];    
     for (NSString* file in allFiles) {
         NSString* sha = [manifest shaForFile:file];
         NSString* srcPath = [[NSBundle mainBundle] pathForResource:file ofType:nil];
