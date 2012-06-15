@@ -664,7 +664,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
 
     if (catalog != nil) {
-        return [catalog versionForBundleName:bundleName distribution:distro];
+        return [catalog versionForBundleId:bundleName distribution:distro];
 
     } else {
         // there might be a local version
@@ -688,7 +688,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (catalog == nil) {
         return NO;
     }
-    ZincVersion version = [catalog versionForBundleName:bundleName distribution:distro];
+    ZincVersion version = [catalog versionForBundleId:bundleName distribution:distro];
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 

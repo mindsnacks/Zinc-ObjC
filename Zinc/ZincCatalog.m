@@ -13,8 +13,7 @@
 
 @synthesize identifier = _identifier;
 @synthesize format = _format;
-@synthesize bundles = _bundles;
-@synthesize distributions = _distributions;
+@synthesize bundleInfoById = _bundles;
 
 - (id)init {
     self = [super init];
@@ -25,8 +24,7 @@
 
 - (void)dealloc {
     self.identifier = nil;
-    self.bundles = nil;
-    self.distributions = nil;
+    self.bundleInfoById = nil;
     [super dealloc];
 }
 
@@ -38,8 +36,7 @@
     if (self) {
         self.identifier = [dict objectForKey:@"id"]; 
         self.format = [[dict objectForKey:@"format"] integerValue];
-        self.bundles = [dict objectForKey:@"bundles"];
-        self.distributions = [dict objectForKey:@"distributions"];
+        self.bundleInfoById = [dict objectForKey:@"bundles"];
     }
     return self;
 }
@@ -49,8 +46,7 @@
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:4];
     [d setObject:self.identifier forKey:@"id"];
     [d setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
-    [d setObject:self.bundles forKey:@"bundles"];
-    [d setObject:self.distributions forKey:@"distributions"];
+    [d setObject:self.bundleInfoById forKey:@"bundles"];
     return d;
 }
 
@@ -70,9 +66,12 @@
 
 #pragma mark -
 
-- (NSInteger) versionForBundleName:(NSString*)bundleName distribution:(NSString*)distro
+- (NSInteger) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
 {
-    NSNumber* version = [[self.distributions objectForKey:distro] objectForKey:bundleName];
+    NSDictionary* bundleInfo = [self.bundleInfoById objectForKey:bundleId];
+    
+    NSNumber* version = [[bundleInfo objectForKey:@"distributions"]
+                         objectForKey:distro];
     if (version != nil) {
         return [version integerValue];
     }
