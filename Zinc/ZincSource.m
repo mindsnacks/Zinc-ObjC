@@ -39,7 +39,7 @@
     return [manifestURL absoluteURL];
 }
 
-- (NSURLRequest*) urlRequestForBundleName:(NSString*)name version:(NSInteger)version
+- (NSURLRequest*) zincManifestURLRequestForBundleId:(NSString*)name version:(NSInteger)version
 {
     NSURL* manifestURL = [self urlForBundleName:name version:version];
     return [self getRequestForURL:manifestURL];
