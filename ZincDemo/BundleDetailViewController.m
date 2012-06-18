@@ -118,7 +118,9 @@
 {
     NSString* file = [self.files objectAtIndex:[indexPath row]];
     
-    if ([[file pathExtension] isEqualToString:@"jpg"] || [[file pathExtension] isEqualToString:@"png"]) {
+    if ([[file pathExtension] isEqualToString:@"jpg"] ||
+        [[file pathExtension] isEqualToString:@"jpeg"] ||
+        [[file pathExtension] isEqualToString:@"png"]) {
 
         NSString* path = [self.bundle pathForResource:file];
         
