@@ -50,41 +50,6 @@
     return self;
 }
 
-- (void) bundleWillBeginTrackingNotification:(NSNotification *)note
-{
-    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
-    if (![self.bundleIds containsObject:bundleId]) {
-        [self.bundleIds addObject:bundleId];
-        [self.tableView reloadData];
-    }
-}
-
-- (void)bundleDownloadProgressNotification:(NSNotification *)note
-{
-    float progress = [[note.userInfo valueForKey:kZincEventAttributesProgressKey] floatValue];
-    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
-    
-    [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
-    
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
-                                                                                       inSection:0]]
-                          withRowAnimation:UITableViewRowAnimationNone];
-}
-
-- (void)bundleCloneCompleteNotification:(NSNotification *)note
-{
-    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
-
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
-                                                                                       inSection:0]]
-                          withRowAnimation:UITableViewRowAnimationNone];
-}
-
-- (void) bundleWillDeleteNotification:(NSNotification *)note
-{
-//    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
-    //[self.bundleIds removeObject:bundleId];
-}
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -109,6 +74,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithTitle:@"Debug"
+                                                                              style:UIBarButtonItemStylePlain 
+                                                                             target:self
+                                                                             action:@selector(debugAction:)] autorelease];
+    
 
     self.title = @"Bundles";
 }
@@ -176,6 +147,51 @@
 
     BundleDetailViewController* vc = [[[BundleDetailViewController alloc] initWithBundle:bundle repo:self.repo] autorelease];
     [self.navigationController pushViewController:vc animated:YES];
+}
+
+#pragma mark - Actions
+
+- (void) debugAction:(id)sender
+{
+    [self.repo stopTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites"];
+}
+
+#pragma mark - Notifications
+
+- (void) bundleWillBeginTrackingNotification:(NSNotification *)note
+{
+    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
+    if (![self.bundleIds containsObject:bundleId]) {
+        [self.bundleIds addObject:bundleId];
+        [self.tableView reloadData];
+    }
+}
+
+- (void)bundleDownloadProgressNotification:(NSNotification *)note
+{
+    float progress = [[note.userInfo valueForKey:kZincEventAttributesProgressKey] floatValue];
+    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
+    
+    [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
+    
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
+                                                                                       inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)bundleCloneCompleteNotification:(NSNotification *)note
+{
+    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
+    
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
+                                                                                       inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void) bundleWillDeleteNotification:(NSNotification *)note
+{
+    //    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
+    //[self.bundleIds removeObject:bundleId];
 }
 
 

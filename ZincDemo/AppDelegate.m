@@ -91,24 +91,28 @@
     
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
+    
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" shouldBootstrapFromMainBundle:YES];
+
 
     if (needToBootStrap) {
         
-        [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french4/"]];    
+        //[repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/french4/"]];    
+        //[repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
         
         [repo refreshSourcesWithCompletion:^{
             
             NSLog(@"refreshed!");
 
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" shouldBootstrapFromMainBundle:YES];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" shouldBootstrapFromMainBundle:YES];
             
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AdvancedNumbers" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AtThePharmacy" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicAdjectives" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicGreetings" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicPrepositions" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BodyParts" distribution:@"master"];
-            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.CestVsIlEst" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AdvancedNumbers" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.AtThePharmacy" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicAdjectives" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicGreetings" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BasicPrepositions" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.BodyParts" distribution:@"master"];
+//            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.CestVsIlEst" distribution:@"master"];
             
 //            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.CommandsInFrench" distribution:@"master"];
 //            [repo beginTrackingBundleWithId:@"com.mindsnacks.french4.Comparisons" distribution:@"master"];

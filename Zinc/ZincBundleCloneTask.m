@@ -167,7 +167,7 @@
         NSString* srcPath = [[NSBundle mainBundle] pathForResource:file ofType:nil];
         NSString* dstPath = [self.repo pathForFileWithSHA:sha];
         if (![self.fileManager fileExistsAtPath:dstPath]) {
-            if (![self.fileManager linkItemAtPath:srcPath toPath:dstPath error:&error]) {
+            if (![self.fileManager createSymbolicLinkAtPath:dstPath withDestinationPath:srcPath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 return NO;
             }

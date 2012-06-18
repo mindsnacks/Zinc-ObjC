@@ -118,14 +118,19 @@
         
         NSString* shaPath = [self.repo pathForFileWithSHA:sha];
 
+        // see notes below
         NSDictionary* attr = [fm attributesOfItemAtPath:shaPath error:&error];
         if (attr == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;
         }
         
+        // don't delete _symbolic_ links, and only delete hard-linked files if
+        // their reference count is 1
+        
         NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
-        if ([linkCount integerValue] == 1) {
+        NSString* type = [attr objectForKey:NSFileType];
+        if (![type isEqualToString:NSFileTypeSymbolicLink] && [linkCount integerValue] == 1) {
             if (![fm removeItemAtPath:shaPath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
@@ -151,3 +156,12 @@
 }
 
 @end
+
+
+/*
+ Relevant attributes for SYMLINKS
+{
+    NSFileReferenceCount = 1;
+    NSFileType = NSFileTypeSymbolicLink;
+}
+ */

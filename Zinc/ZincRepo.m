@@ -660,22 +660,23 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     NSError* error = nil;
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
 
     if (catalog != nil) {
-        return [catalog versionForBundleId:bundleName distribution:distro];
-
-    } else {
-        // there might be a local version
-        NSArray* localBundes = [[self.index localBundles] allObjects];
-        for (NSURL* localBundleRes in localBundes) {
-            if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
-                return [localBundleRes zincBundleVersion];
-            }
+        ZincVersion catalogVersion = [catalog versionForBundleId:bundleId distribution:distro];
+        if (catalogVersion != ZincVersionInvalid) {
+            return catalogVersion;
         }
     }
-    
+
+    // there might be a local version
+    NSArray* localBundes = [[self.index localBundles] allObjects];
+    for (NSURL* localBundleRes in localBundes) {
+        if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
+            return [localBundleRes zincBundleVersion];
+        }
+    }
+        
     [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
     return ZincVersionInvalid;
 }
