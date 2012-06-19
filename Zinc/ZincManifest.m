@@ -11,7 +11,7 @@
 #import "ZincKSJSON.h"
 
 @interface ZincManifest ()
-@property (nonatomic, retain) NSDictionary* files;
+@property (nonatomic, retain) NSMutableDictionary* files;
 @end
 
 @implementation ZincManifest
@@ -26,7 +26,7 @@
     if (self) {
         self.bundleId = [dict objectForKey:@"bundle"];
         self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [dict objectForKey:@"files"];
+        self.files = [[[dict objectForKey:@"files"] mutableCopy] autorelease];
     }
     return self;
 }
@@ -35,6 +35,7 @@
 {
     self = [super init];
     if (self) {
+        self.files = [NSMutableDictionary dictionary];
     }
     return self;
 }

@@ -10,6 +10,8 @@
 #import "ZincRepo.h"
 #import "ZincEvent.h"
 #import "ZincResource.h"
+#import "ZincManifest.h"
+#import "ZincRepo+Private.h"
 
 @interface NSMutableArray (ZincTestEventCollector) <ZincRepoDelegate>
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
@@ -81,35 +83,37 @@
 
 - (void) testBootstrappingBundle
 {
-    NSString* repoDir = TEST_CREATE_TMP_DIR(@"repo");
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:repoDir];
-    STAssertTrue(exists, @"repo dir doesn't exist");
-    
-    NSURL* repoURL = [NSURL fileURLWithPath:repoDir];
     NSError* error = nil;
+
+    NSString* repoDir = TEST_CREATE_TMP_DIR(@"repo");
+    NSLog(@"%@", repoDir);
+    NSURL* repoURL = [NSURL fileURLWithPath:repoDir];    
     ZincRepo* repo = [ZincRepo repoWithURL:repoURL error:&error];
     STAssertNotNil(repo, @"%@", error);
+    
+    NSString* bundleId = @"com.mindsnacks.demo1.sphalerites";
     
     repo.refreshInterval = 0;
     NSMutableArray* eventSink = [NSMutableArray array];
     repo.delegate = eventSink;
-    [repo resumeAllTasks];
     
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" 
+    [repo beginTrackingBundleWithId:bundleId
                        distribution:@"master" 
                bootstrapUsingBundle:[NSBundle bundleForClass:[self class]]];
     
+    [repo resumeAllTasks];
+
     TEST_WAIT_UNTIL_TRUE([eventSink didReceiveEventOfType:ZincEventTypeBundleCloneComplete]);
     
     NSArray* receivedEvents = [eventSink eventsOfType:ZincEventTypeBundleCloneComplete];
     STAssertTrue([receivedEvents count] == 1, @"shoudl be 1 clone complete event");
     
     ZincBundleCloneCompleteEvent* event = (ZincBundleCloneCompleteEvent*)[receivedEvents objectAtIndex:0];
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.mindsnacks.demo1.sphalerites" version:0];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:0];
     
     STAssertTrue([event.bundleResource isEqual:bundleRes], @"resource wrong");
 
-    id bundle = [repo bundleWithId:@"com.mindsnacks.demo1.sphalerites"];
+    id bundle = [repo bundleWithId:bundleId];
     STAssertNotNil(bundle, @"bundle should not be nil");
 }
 
@@ -119,11 +123,49 @@
     // begin tracking a bundle, with the bootstrap option
     // it should overwrite any existing bootstrapped version
     
-    NSString* tmpDir = TEST_CREATE_TMP_DIR(NSStringFromSelector(_cmd));
-    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:tmpDir];
-    STAssertTrue(exists, @"tmp dir doesn't exist");
+    NSError* error = nil;
+
+    NSString* repoDir = TEST_CREATE_TMP_DIR(@"repo");
+    NSLog(@"%@", repoDir);
+    NSURL* repoURL = [NSURL fileURLWithPath:repoDir];    
+    ZincRepo* repo = [ZincRepo repoWithURL:repoURL error:&error];
+    STAssertNotNil(repo, @"%@", error);
     
+    repo.refreshInterval = 0;
+    NSMutableArray* eventSink = [NSMutableArray array];
+    repo.delegate = eventSink;
     
+    NSString* bundleId = @"com.mindsnacks.demo1.sphalerites";
+    
+    // hack up the pre-existing bundle state
+    
+    // install a dummy manifest
+    ZincManifest* oldManifest = [[[ZincManifest alloc] init] autorelease];
+    oldManifest.bundleId = bundleId;
+    oldManifest.version = 0;
+    
+    NSString* manifestPath = [repo pathForManifestWithBundleId:oldManifest.bundleId version:oldManifest.version];
+    
+    NSString* oldManifestJSON = [oldManifest jsonRepresentation:&error];
+    if (oldManifestJSON == nil) {
+        STFail(@"error: @%", error);
+    }
+
+    // register the bundle
+    [repo registerBundle:[NSURL zincResourceForBundleWithId:bundleId version:0] status:ZincBundleStateAvailable];
+    
+    [repo beginTrackingBundleWithId:bundleId
+                       distribution:@"master" 
+               bootstrapUsingBundle:[NSBundle bundleForClass:[self class]]];
+    
+    [repo resumeAllTasks];
+    
+    TEST_WAIT_UNTIL_TRUE([eventSink didReceiveEventOfType:ZincEventTypeBundleCloneComplete]);
+    
+    NSString* newManifestJSON = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
+    STAssertNotNil(newManifestJSON, @"error: %@");
+    
+    STAssertFalse([oldManifestJSON isEqualToString:newManifestJSON], @"manifests should not be equal");
 }
 
 - (void)tearDown
