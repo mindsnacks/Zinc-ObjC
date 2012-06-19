@@ -32,7 +32,6 @@
 /* all events including events from subtasks */
 - (NSArray*) getAllEvents;
 
-
 - (NSInteger) currentProgressValue;
 - (NSInteger) maxProgressValue;
 

@@ -8,6 +8,38 @@
 
 #import "ZincFunctionalTests.h"
 #import "ZincRepo.h"
+#import "ZincEvent.h"
+#import "ZincResource.h"
+
+@interface NSMutableArray (ZincTestEventCollector) <ZincRepoDelegate>
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
+- (NSArray*) eventsOfType:(NSString*)type source:(id)source;
+- (BOOL) didReceiveEventOfType:(NSString*)type source:(id)source;
+@end
+
+@implementation NSMutableArray (ZincTestEventCollector)
+
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
+{
+    NSLog(@"%@", event);
+    [self addObject:event];
+}
+
+- (NSArray*) eventsOfType:(NSInteger)type
+{
+    return [self filteredArrayUsingPredicate:
+            [NSPredicate predicateWithFormat:@"type = %d", type]];
+}
+
+- (BOOL) didReceiveEventOfType:(NSInteger)type
+{
+    return [[self eventsOfType:type] count] > 0;
+}
+
+
+@end
+
+
 
 @implementation ZincFunctionalTests
 
@@ -46,6 +78,53 @@
 //    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path];
 //    STAssertTrue(exists, @"file does not exist");
 //}
+
+- (void) testBootstrappingBundle
+{
+    NSString* repoDir = TEST_CREATE_TMP_DIR(@"repo");
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:repoDir];
+    STAssertTrue(exists, @"repo dir doesn't exist");
+    
+    NSURL* repoURL = [NSURL fileURLWithPath:repoDir];
+    NSError* error = nil;
+    ZincRepo* repo = [ZincRepo repoWithURL:repoURL error:&error];
+    STAssertNotNil(repo, @"%@", error);
+    
+    repo.refreshInterval = 0;
+    NSMutableArray* eventSink = [NSMutableArray array];
+    repo.delegate = eventSink;
+    [repo resumeAllTasks];
+    
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" 
+                       distribution:@"master" 
+               bootstrapUsingBundle:[NSBundle bundleForClass:[self class]]];
+    
+    TEST_WAIT_UNTIL_TRUE([eventSink didReceiveEventOfType:ZincEventTypeBundleCloneComplete]);
+    
+    NSArray* receivedEvents = [eventSink eventsOfType:ZincEventTypeBundleCloneComplete];
+    STAssertTrue([receivedEvents count] == 1, @"shoudl be 1 clone complete event");
+    
+    ZincBundleCloneCompleteEvent* event = (ZincBundleCloneCompleteEvent*)[receivedEvents objectAtIndex:0];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.mindsnacks.demo1.sphalerites" version:0];
+    
+    STAssertTrue([event.bundleResource isEqual:bundleRes], @"resource wrong");
+
+    id bundle = [repo bundleWithId:@"com.mindsnacks.demo1.sphalerites"];
+    STAssertNotNil(bundle, @"bundle should not be nil");
+}
+
+- (void) testThatBootstrappingBundleOverwritesPreexistingBootstrappedBundle
+{
+    // set up a local repo with some files and a version 0 manifest
+    // begin tracking a bundle, with the bootstrap option
+    // it should overwrite any existing bootstrapped version
+    
+    NSString* tmpDir = TEST_CREATE_TMP_DIR(NSStringFromSelector(_cmd));
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:tmpDir];
+    STAssertTrue(exists, @"tmp dir doesn't exist");
+    
+    
+}
 
 - (void)tearDown
 {

@@ -23,15 +23,19 @@
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
 
-- (void) addLocalBundle:(NSURL*)bundleResource;
-- (NSSet*) localBundles; // bundleResources
-
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
 
 - (NSSet*) cloningBundles;
 - (NSSet*) availableBundles;
+
+/*
+ * Returns a _sorted_ array of available bundle versions
+ */
+- (NSArray*) availableVersionsForBundleId:(NSString*)bundleId;
+
+- (ZincVersion) newestAvailableVersionForBundleId:(NSString*)bundleId;
 
 #pragma mark Encoding
 
