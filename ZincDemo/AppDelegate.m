@@ -92,8 +92,10 @@
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
     
-    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" shouldBootstrapFromMainBundle:YES];
+//    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" bootstrapUsingBundle:[NSBundle mainBundle]];
+    
+    [repo resumeAllTasks];
 
 //    if (needToBootStrap) {
 //        

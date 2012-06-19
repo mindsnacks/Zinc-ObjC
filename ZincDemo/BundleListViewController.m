@@ -153,7 +153,9 @@
 
 - (void) debugAction:(id)sender
 {
-    [self.repo stopTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites"];
+    [self.repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
+
+//    [self.repo stopTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites"];
 }
 
 #pragma mark - Notifications
