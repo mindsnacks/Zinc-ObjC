@@ -15,8 +15,8 @@
 
 @interface NSMutableArray (ZincTestEventCollector) <ZincRepoDelegate>
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
-- (NSArray*) eventsOfType:(NSString*)type source:(id)source;
-- (BOOL) didReceiveEventOfType:(NSString*)type source:(id)source;
+- (NSArray*) eventsOfType:(NSInteger)type;
+- (BOOL) didReceiveEventOfType:(NSInteger)type;
 @end
 
 @implementation NSMutableArray (ZincTestEventCollector)

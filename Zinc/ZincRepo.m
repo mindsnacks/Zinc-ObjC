@@ -79,6 +79,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) downloadsPath;
 
 - (void) queueIndexSave;
+- (ZincTask*) queueGarbageCollectTask;
 - (void) resumeBundleActions;
 
 - (NSString*) cacheKeyForCatalogId:(NSString*)identifier;
@@ -145,7 +146,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (jsonDict == nil) {
             return nil;
         }
-            
+        
         ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
         if (index == nil) {
             return nil;
@@ -155,7 +156,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     [repo.queueGroup setSuspended:YES];
     
-    // TODO: queue garbage collect here?
+    [repo queueGarbageCollectTask];
     
     return repo;
 }
@@ -185,6 +186,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincSourceUpdateTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincBundleDeleteTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
+        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincGarbageCollectTask class]];
         self.fileManager = [[[NSFileManager alloc] init] autorelease];
         self.cache = [[[NSCache alloc] init] autorelease];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
@@ -268,23 +270,23 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [blockself refreshSourcesWithCompletion:^{
         
         [blockself resumeBundleActions];
-
+        
         [blockself refreshBundlesWithCompletion:^{
             
             [self checkForBundleDeletion];
-
+            
             ZINC_DEBUG_LOG(@"tick");
             
         }];
     }];
-
-//    @synchronized(self.myTasks) {
-//        for (ZincTask* task in self.myTasks) {
-//            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
-//                ZINC_DEBUG_LOG(@"%@ : %f", task, task.progress);
-//            }
-//        }
-//    }
+    
+    //    @synchronized(self.myTasks) {
+    //        for (ZincTask* task in self.myTasks) {
+    //            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
+    //                ZINC_DEBUG_LOG(@"%@ : %f", task, task.progress);
+    //            }
+    //        }
+    //    }
     
     //    ZincGarbageCollectTask* gc = [[[ZincGarbageCollectTask alloc] initWithRepo:self] autorelease];
     //    [self getOrAddTask:gc];
@@ -673,16 +675,16 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (ZincVersion) catalogVersionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
 {
     NSError* error = nil;
-
+    
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
     if (catalog != nil) {
         ZincVersion catalogVersion = [catalog versionForBundleId:bundleId distribution:distro];
         return catalogVersion;
     }
-//    else {
-//        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-//    }
+    //    else {
+    //        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+    //    }
     
     return ZincVersionInvalid;
 }
@@ -701,16 +703,16 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     return [[availableVersions lastObject] integerValue];
-
-//    // there might be a local version
-//    NSArray* localBundes = [[self.index localBundles] allObjects];
-//    for (NSURL* localBundleRes in localBundes) {
-//        if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
-//            return [localBundleRes zincBundleVersion];
-//        }
-//    }
-//        
-//    return ZincVersionInvalid;
+    
+    //    // there might be a local version
+    //    NSArray* localBundes = [[self.index localBundles] allObjects];
+    //    for (NSURL* localBundleRes in localBundes) {
+    //        if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
+    //            return [localBundleRes zincBundleVersion];
+    //        }
+    //    }
+    //        
+    //    return ZincVersionInvalid;
 }
 
 - (BOOL) hasManifestForBundleId:(NSString *)bundleId distribution:(NSString*)distro
@@ -733,7 +735,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self queueIndexSave];
         
         ZincTask* bootstrapTask = nil;
-
+        
         if (manifestPath != nil) {
             
             NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
@@ -755,7 +757,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (catalogVersion != ZincVersionInvalid) { // found in a remote catalog
             
             NSURL* catalogBundleRes = [NSURL zincResourceForBundleWithId:bundleId version:catalogVersion];
-
+            
             ZincBundleState state = [self.index stateForBundle:catalogBundleRes];
             if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
                 [self.index setState:ZincBundleStateCloning forBundle:catalogBundleRes];
@@ -839,7 +841,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             [parentOp addDependency:bundleTask];
         }
     }];
-
+    
     
     if (completion != nil) {
         [self addOperation:parentOp];
@@ -963,9 +965,53 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
+- (NSArray*) tasksWithMethod:(NSString*)method
 {
     @synchronized(self.myTasks) {
+        return [self.myTasks filteredArrayUsingPredicate:
+                [NSPredicate predicateWithFormat:@"method = %@", method]];
+    }
+}
+
+
+- (void) queueTask:(ZincTask*)task
+{
+    @synchronized(self.myTasks) {
+        [self.myTasks addObject:task];
+        [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
+        [self addOperation:task];
+    }
+}
+
+- (ZincTask*) queueGarbageCollectTask
+{
+    ZincTask* task = nil;
+    
+    BOOL hasExistingGarbageCollectTasks = 
+    [[[self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]] operations] count] > 0;
+    
+    if (!hasExistingGarbageCollectTasks) {
+        
+        task = [[ZincGarbageCollectTask alloc] initWithRepo:self resourceDescriptor:self.url];
+        
+        for (NSOperation* existingTask in self.myTasks) {
+            [task addDependency:existingTask];
+        }
+        
+        [self queueTask:task];
+    }
+    return task;
+}
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
+{
+    ZincTask* task = nil;
+    
+    if ([taskDescriptor.method isEqualToString:NSStringFromClass([ZincGarbageCollectTask class])]) {
+        
+        task = [self queueGarbageCollectTask];
+        
+    } else {
         
         NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
         
@@ -977,33 +1023,32 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             }
         }
         
-        ZincTask* task = nil;
-        
         // if no exact match found, add task and depends for all other resource-matching
         if (existingTask == nil) {
             
             task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
             
             for (ZincTask* resourceTask in tasksMatchingResource) {
-                if (resourceTask != existingTask) {
+                if (resourceTask != task) {
                     [task addDependency:resourceTask];
                 }
             }
             
             // !!!: special case for bundle clone tasks
-            if ([existingTask isKindOfClass:[ZincBundleCloneTask class]]) {
-                NSArray* deleteOps = [[self.queueGroup getQueueForClass:[ZincBundleDeleteTask class]]
-                                      operations];
-                
+            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
+                NSArray* deleteOps = [[self.queueGroup getQueueForClass:[ZincBundleDeleteTask class]] operations];
                 for (NSOperation* deleteOp in deleteOps) {
-                    [existingTask addDependency:deleteOp];
+                    [task addDependency:deleteOp];
                 }
             }
             
-            [self.myTasks addObject:task];
-            [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
-            [self addOperation:task];
-            return task;
+            // !!!: special case for garbage collect tasks
+            NSArray* garbageCollectOps = [[self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]]  operations];
+            for (NSOperation* garbageCollectOp in garbageCollectOps) {
+                [task addDependency:garbageCollectOp];
+            }
+            
+            [self queueTask:task];
             
         } else {
             
@@ -1011,12 +1056,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             task = existingTask;
         }
         
+        // add all explicit dependencies
         for (NSOperation* dep in dependencies) {
             [task addDependency:dep];
         }
-        
-        return task;
     }
+    
+    return task;
 }
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
@@ -1047,7 +1093,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
             [blockself.delegate zincRepo:blockself didReceiveEvent:event];
         
-         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:event.attributes];        
+        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:event.attributes];        
     }];
 }
 

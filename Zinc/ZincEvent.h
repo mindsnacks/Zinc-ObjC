@@ -20,6 +20,8 @@ typedef enum {
     ZincEventTypeBundleCloneComplete,
     ZincEventTypeArchiveExtractBegin,
     ZincEventTypeArchiveExtractComplete,
+    ZincEventTypeGarbageCollectBegin,
+    ZincEventTypeGarbageCollectComplete,
 } ZincEventType;
 
 extern NSString *const kZincEventAttributesURLKey;
@@ -41,6 +43,8 @@ extern NSString *const kZincEventBundleCloneBeginNotification;
 extern NSString *const kZincEventBundleCloneCompleteNotification;
 extern NSString *const kZincEventArchiveExtractBeginNotification;
 extern NSString *const kZincEventArchiveExtractCompleteNotification;
+extern NSString *const kZincEventGarbageCollectionBeginNotification;
+extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincEvent : NSObject
 
@@ -131,4 +135,19 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 + (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context;
 @property (readonly) NSURL* archiveResource;
 @property (readonly) id context;
+
+@end
+
+
+@interface ZincGarbageCollectionBeginEvent : ZincEvent
+
++ (id) event;
+
+@end
+
+
+@interface ZincGarbageCollectionCompleteEvent : ZincEvent
+
++ (id) event;
+
 @end
