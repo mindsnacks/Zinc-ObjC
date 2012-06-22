@@ -19,7 +19,7 @@
 - (NSURLRequest*) urlRequestForCatalogIndex;
 
 - (NSURL*) urlForBundleName:(NSString*)name version:(NSInteger)version;
-- (NSURLRequest*) zincManifestURLRequestForBundleId:(NSString*)name version:(NSInteger)version;
+- (NSURLRequest*) zincManifestURLRequestForBundleName:(NSString*)name version:(NSInteger)version;
 
 - (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog;
 - (NSURLRequest*) urlRequestForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)index;

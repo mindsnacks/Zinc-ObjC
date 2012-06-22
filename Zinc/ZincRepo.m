@@ -267,6 +267,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     __block typeof(self) blockself = self;
     
+    ZINC_DEBUG_LOG(@"<fire>");
+
+    
     [blockself refreshSourcesWithCompletion:^{
         
         [blockself resumeBundleActions];
@@ -275,7 +278,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
             [self checkForBundleDeletion];
             
-            ZINC_DEBUG_LOG(@"tick");
+            ZINC_DEBUG_LOG(@"</fire>");
             
         }];
     }];
@@ -601,7 +604,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     // copy manifest to repo
     NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
-    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
+    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleName version:manifest.version];
     if (![self.fileManager fileExistsAtPath:manifestRepoPath]) {
         if (![self.fileManager copyItemAtPath:manifestPath toPath:manifestRepoPath error:outError]) {
             return nil;
@@ -679,7 +682,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
     if (catalog != nil) {
-        ZincVersion catalogVersion = [catalog versionForBundleId:bundleId distribution:distro];
+        NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
+        ZincVersion catalogVersion = [catalog versionForBundleId:bundleName distribution:distro];
         return catalogVersion;
     }
     //    else {
@@ -762,7 +766,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
                 [self.index setState:ZincBundleStateCloning forBundle:catalogBundleRes];
                 ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:catalogBundleRes];
-                [self queueTaskForDescriptor:taskDesc input:nil dependencies:[NSArray arrayWithObject:bootstrapTask]];
+                NSArray* dependencies = bootstrapTask != nil ? [NSArray arrayWithObject:bootstrapTask] : nil;
+                [self queueTaskForDescriptor:taskDesc input:nil dependencies:dependencies];
             }
         }
     }];
@@ -801,7 +806,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     [self.indexProxy executeBlock:^{
         for (NSURL* bundleRes in [self.index cloningBundles]) {
-            [self queueTaskForDescriptor:[ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes]];
+            if ([bundleRes zincBundleVersion] > 0) {
+                [self queueTaskForDescriptor:[ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes]];
+            }
         }
     }];
 }

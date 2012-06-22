@@ -116,7 +116,7 @@
 {
     if (self.isCancelled) return nil;
     
-    ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:[NSArray arrayWithObject:self]];
+    ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
     [self addDependency:task];
     return task;
 }

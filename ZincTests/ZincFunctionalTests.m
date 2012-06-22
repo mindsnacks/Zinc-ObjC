@@ -135,16 +135,18 @@
     NSMutableArray* eventSink = [NSMutableArray array];
     repo.delegate = eventSink;
     
-    NSString* bundleId = @"com.mindsnacks.demo1.sphalerites";
+    NSString* catalogId = @"com.mindsnacks.demo1";
+    NSString* bundleId = @"sphalerites";
     
     // hack up the pre-existing bundle state
     
     // install a dummy manifest
     ZincManifest* oldManifest = [[[ZincManifest alloc] init] autorelease];
-    oldManifest.bundleId = bundleId;
+    oldManifest.catalogId = catalogId;
+    oldManifest.bundleName = bundleId;
     oldManifest.version = 0;
     
-    NSString* manifestPath = [repo pathForManifestWithBundleId:oldManifest.bundleId version:oldManifest.version];
+    NSString* manifestPath = [repo pathForManifestWithBundleId:oldManifest.bundleName version:oldManifest.version];
     
     NSString* oldManifestJSON = [oldManifest jsonRepresentation:&error];
     if (oldManifestJSON == nil) {

@@ -37,6 +37,11 @@
                BlueprintName = "ZincTests"
                ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "ZincFunctionalTests">
+               </Test>
+            </SkippedTests>
          </TestableReference>
       </Testables>
    </TestAction>
