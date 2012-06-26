@@ -9,14 +9,16 @@
 
 #import "ZincManifest.h"
 #import "ZincKSJSON.h"
+#import "ZincResource.h"
 
 @interface ZincManifest ()
-@property (nonatomic, retain) NSDictionary* files;
+@property (nonatomic, retain) NSMutableDictionary* files;
 @end
 
 @implementation ZincManifest
 
-@synthesize bundleId = _bundleId;
+@synthesize bundleName = _bundleName;
+@synthesize catalogId = _catalogId;
 @synthesize version = _version;
 @synthesize files = _files;
 
@@ -24,9 +26,10 @@
 {
     self = [super init];
     if (self) {
-        self.bundleId = [dict objectForKey:@"bundle"];
+        self.bundleName = [dict objectForKey:@"bundle"];
+        self.catalogId = [dict objectForKey:@"catalog"];
         self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [dict objectForKey:@"files"];
+        self.files = [[[dict objectForKey:@"files"] mutableCopy] autorelease];
     }
     return self;
 }
@@ -35,15 +38,34 @@
 {
     self = [super init];
     if (self) {
+        self.files = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
++ (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError
+{
+    NSString* jsonString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    return manifest;
+}
+
 - (void)dealloc
 {
-    self.bundleId = nil;
-    self.files = nil;
+    [_catalogId release];
+    [_bundleName release];
+    [_files release];
     [super dealloc];
+}
+
+- (NSString*) bundleId
+{
+    return [NSString stringWithFormat:@"%@.%@", self.catalogId, self.bundleName];
 }
 
 - (NSString*) shaForFile:(NSString*)path
@@ -95,10 +117,16 @@
     return [self.files count];
 }
 
+- (NSURL*) bundleResource
+{
+    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
+}
+
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
-    [d setObject:self.bundleId forKey:@"bundle"];
+    [d setObject:self.bundleName forKey:@"bundle"];
+    [d setObject:self.catalogId forKey:@"catalog"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
     return d;

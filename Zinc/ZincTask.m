@@ -58,10 +58,9 @@
 
 - (void)dealloc 
 {
-    self.myEvents = nil;
-    self.repo = nil;
-    self.resource = nil;
-    self.input = nil;
+    [_myEvents release];
+    [_resource release];
+    [_input release];
     [super dealloc];
 }
 
@@ -116,7 +115,7 @@
 {
     if (self.isCancelled) return nil;
     
-    ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:[NSArray arrayWithObject:self]];
+    ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
     [self addDependency:task];
     return task;
 }

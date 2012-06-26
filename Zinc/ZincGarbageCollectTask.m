@@ -11,12 +11,14 @@
 #import "ZincRepo+Private.h"
 #import "ZincResource.h"
 #import "ZincManifest.h"
+#import "ZincEvent.h"
 
 @implementation ZincGarbageCollectTask
 
 - (void) main
 {
-    ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- BEGIN");
+    //ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- BEGIN");
+    [self addEvent:[ZincGarbageCollectionBeginEvent event]];
     
     NSError* error = nil;
 
@@ -32,7 +34,7 @@
         
         NSNumber *isRegularFile;
         if (![theURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:&error]) {
-            // TODO: log error
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;
         }
         
@@ -40,18 +42,34 @@
             
             NSNumber *linkCount;
             if (![theURL getResourceValue:&linkCount forKey:NSURLLinkCountKey error:&error]) {
-                // TODO: log error
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
             }
             
             if ([linkCount integerValue] < 2) {
-                NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
                 [fm removeItemAtURL:theURL error:NULL];
+            }
+            
+        } else {
+            
+            NSNumber *isSymlink;
+            if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                continue;
+            }
+            
+            if ([isSymlink boolValue]) {
+                NSURL* resolvedURL = [theURL URLByResolvingSymlinksInPath];
+                if ([resolvedURL isEqual:theURL]) {
+                    // if it's the same, the symlink is invalid
+                    [fm removeItemAtURL:theURL error:NULL];
+                }
             }
         }
     }
     
-    ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- END");
+    [self addEvent:[ZincGarbageCollectionCompleteEvent event]];
+    //ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- END");
 }
 
 @end

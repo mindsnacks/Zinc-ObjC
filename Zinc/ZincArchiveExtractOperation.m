@@ -37,8 +37,8 @@
 
 - (void)dealloc 
 {
-    self.archivePath = nil;
-    self.error = nil;
+    [_archivePath release];
+    [_error release];
     [super dealloc];
 }
 

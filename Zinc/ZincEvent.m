@@ -26,6 +26,8 @@ NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneB
 NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
 NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveExtractBeginNotification";
 NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
+NSString *const kZincEventGarbageCollectionBeginNotification = @"ZincEventGarbageCollectionBeginNotification";
+NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGarbageCollectionCompleteNotification";
 
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
@@ -60,9 +62,9 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 
 - (void)dealloc
 {
-    self.source = nil;
-    self.timestamp = nil;
-    self.attributes = nil;
+    [_source release];
+    [_timestamp release];
+    [_attributes release];
     [super dealloc];
 }
 
@@ -109,7 +111,7 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 
 - (void)dealloc
 {
-    self.error = nil;
+    [_error release];
     [super dealloc];
 }
 
@@ -384,3 +386,45 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 }
 
 @end
+
+
+@implementation ZincGarbageCollectionBeginEvent
+
++ (id) event
+{
+    return [[[self alloc] initWithType:ZincEventTypeGarbageCollectBegin source:nil] autorelease];
+}
+
++ (NSString*) name
+{
+    return @"GARBAGECOLLECT-BEGIN";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventGarbageCollectionBeginNotification;
+}
+
+@end
+
+
+@implementation ZincGarbageCollectionCompleteEvent
+
++ (id) event
+{
+    return [[[self alloc] initWithType:ZincEventTypeGarbageCollectComplete source:nil] autorelease];
+}
+
++ (NSString*) name
+{
+    return @"GARBAGECOLLECT-COMPLETE";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventGarbageCollectionCompleteNotification;
+}
+@end
+
+
+

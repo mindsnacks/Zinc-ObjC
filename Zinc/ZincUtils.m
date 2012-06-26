@@ -40,3 +40,15 @@ NSString* ZincGetApplicationCacheDirectory(void)
     }
     return dir;
 }
+
+NSString* ZincCatalogIdFromBundleId(NSString* bundleId)
+{
+    NSArray* comps = [bundleId componentsSeparatedByString:@"."];
+    NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
+    return sourceId;
+}
+
+NSString* ZincBundleNameFromBundleId(NSString* bundleId)
+{
+    return [[bundleId componentsSeparatedByString:@"."] lastObject];
+}

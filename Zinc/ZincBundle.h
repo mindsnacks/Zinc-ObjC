@@ -30,6 +30,7 @@
 
 #pragma mark Utility
 
+// Deprecated, use functions in ZincUtils
 + (NSString*) catalogIdFromBundleId:(NSString*)bundleId;
 + (NSString*) bundleNameFromBundleId:(NSString*)bundleId;
 
