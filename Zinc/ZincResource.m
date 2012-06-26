@@ -7,6 +7,7 @@
 //
 
 #import "ZincResource.h"
+#import "ZincUtils.h"
 
 #define ZINC_RESOURCE_SCHEME @"zincresource"
 
@@ -38,6 +39,9 @@
 {
     if ([self isZincCatalogResource]) {
         return [[self path] substringFromIndex:1];
+        
+    } else if ([self isZincBundleResource]) {
+        return ZincCatalogIdFromBundleId([self zincBundleId]);
 
     } else if ([self isZincObjectResource]) {
         NSString* catalogId = [self path];
@@ -69,7 +73,6 @@
 - (BOOL) isZincBundleResource
 {
     return [self isZincResourceOfType:@"bundle"];
-
 }
 
 + (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version

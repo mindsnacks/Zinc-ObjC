@@ -11,11 +11,16 @@
 
 @interface ZincManifest : NSObject
 
++ (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError;
+
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-@property (nonatomic, retain) NSString* bundleId;
+@property (nonatomic, retain) NSString* bundleName;
+@property (nonatomic, retain) NSString* catalogId;
 @property (nonatomic, assign) ZincVersion version;
+
+@property (nonatomic, readonly) NSString* bundleId;
 
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) formatsForFile:(NSString*)path;
@@ -26,6 +31,8 @@
 - (NSArray*) allFiles;
 - (NSArray*) allSHAs;
 - (NSUInteger) fileCount;
+
+- (NSURL*) bundleResource;
 
 - (NSDictionary*) dictionaryRepresentation;
 - (NSString*) jsonRepresentation:(NSError**)outError;

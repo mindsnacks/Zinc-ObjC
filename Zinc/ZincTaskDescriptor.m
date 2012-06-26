@@ -36,8 +36,8 @@
 
 - (void)dealloc 
 {
-    self.resource = nil;
-    self.method = nil;
+    [_resource release];
+    [_method release];
     [super dealloc];
 }
 

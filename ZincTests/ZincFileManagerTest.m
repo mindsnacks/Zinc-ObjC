@@ -11,12 +11,6 @@
 
 @implementation ZincFileManagerTest
 
-// All code under test must be linked into the Unit Test bundle
-//- (void)testMath
-//{
-//    STAssertTrue((1 + 1) == 2, @"Compiler isn't feeling well today :-(");
-//}
-
 - (void)testSha1
 {
     NSString* path = [TEST_RESOURCE_ROOT_PATH stringByAppendingPathComponent:@"360px-Grey_square_optical_illusion.png"];   

@@ -39,7 +39,7 @@
     return [manifestURL absoluteURL];
 }
 
-- (NSURLRequest*) urlRequestForBundleName:(NSString*)name version:(NSInteger)version
+- (NSURLRequest*) zincManifestURLRequestForBundleName:(NSString*)name version:(NSInteger)version
 {
     NSURL* manifestURL = [self urlForBundleName:name version:version];
     return [self getRequestForURL:manifestURL];
@@ -47,7 +47,7 @@
 
 - (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog
 {
-    NSInteger version = [catalog versionForBundleName:name distribution:distro];
+    NSInteger version = [catalog versionForBundleId:name distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
     }

@@ -42,6 +42,9 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 @interface ZincRepo : NSObject
 
+// !!!: Note all repos start suspended. After obtaining a repo object,
+// you must all [repo resumeAllTasks]
+
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
 
@@ -62,8 +65,8 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 #pragma mark Bundles
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro shouldBootstrapFromMainBundle:(BOOL)shouldBootstrap;
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro localManifestPath:(NSString*)manifestPath;
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro automaticallyBootstrapFromPath:(NSString*)dir;
+//- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrap
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (NSSet*) trackedBundleIds;

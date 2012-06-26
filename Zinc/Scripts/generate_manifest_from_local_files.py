@@ -35,9 +35,11 @@ def main():
     
     for src_dir in src_dirs:
         src_dir = os.path.realpath(src_dir)
-        bundle_id = os.path.split(src_dir)[-1]
-        print bundle_id
-        manifest = ZincManifest(bundle_id, 0)
+        bundle_catalog_id = os.path.split(src_dir)[-1]
+        bundle_id = bundle_catalog_id.split('.')[-1]
+        catalog_id = bundle_catalog_id[:-len(bundle_id)-1]
+        print catalog_id, bundle_id
+        manifest = ZincManifest(catalog_id, bundle_id, 0)
 
         cwd = os.path.realpath(os.getcwd())
         os.chdir(src_dir)
@@ -52,7 +54,7 @@ def main():
                         os.path.getsize(rel_path))
         os.chdir(cwd)
 
-        out_file = os.path.join(dest, bundle_id + '.json')
+        out_file = os.path.join(dest, catalog_id + '.' + bundle_id + '.json')
         print out_file
         with open(out_file, 'w') as f:
             f.write(json.dumps(manifest.to_json()))
