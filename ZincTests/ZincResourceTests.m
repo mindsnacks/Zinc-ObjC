@@ -20,13 +20,12 @@
                  @"catalogId wrong");
 }
 
-//- (void) testBundleResource
-//{
-//    NSURL* bundleResource = [NSURL zincResourceForBundleWithId:@"com.mindsnacks:demo" version:1];
-//    
-//    NSString* catalogId = [bundleResource zincCatalogId];
-//    STAssertTrue([catalogId isEqual:@"com.mindsnacks"], @"catalog wrong");
-//    
-//}
+- (void) testBundleResource
+{
+    NSURL* bundleResource = [NSURL zincResourceForBundleWithId:@"com.mindsnacks.demo" version:1];
+    
+    NSString* catalogId = [bundleResource zincCatalogId];
+    STAssertTrue([catalogId isEqual:@"com.mindsnacks"], @"catalog wrong");
+}
 
 @end

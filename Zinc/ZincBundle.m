@@ -10,6 +10,7 @@
 #import "ZincBundle+Private.h"
 #import "ZincResource.h"
 #import "ZincRepo+Private.h"
+#import "ZincUtils.h"
 
 @interface ZincBundle ()
 @property (nonatomic, retain, readwrite) ZincRepo* repo;
@@ -81,14 +82,12 @@
 
 + (NSString*) catalogIdFromBundleId:(NSString*)bundleId
 {
-    NSArray* comps = [bundleId componentsSeparatedByString:@"."];
-    NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
-    return sourceId;
+    return ZincCatalogIdFromBundleId(bundleId);
 }
 
 + (NSString*) bundleNameFromBundleId:(NSString*)bundleId
 {
-    return [[bundleId componentsSeparatedByString:@"."] lastObject];
+    return ZincBundleNameFromBundleId(bundleId);
 }
 
 + (NSString*) descriptorForBundleId:(NSString*)bundleId version:(ZincVersion)version
