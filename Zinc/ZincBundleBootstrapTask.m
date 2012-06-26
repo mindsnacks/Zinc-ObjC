@@ -31,7 +31,7 @@
 
     // always remove the manifest, local versions can't be trusted
     if ([self.fileManager fileExistsAtPath:manifestRepoPath]) {
-        if (![self.fileManager removeItemAtPath:manifestPath error:outError]) {
+        if (![self.fileManager removeItemAtPath:manifestRepoPath error:outError]) {
             return nil;
         }
     }
