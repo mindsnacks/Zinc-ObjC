@@ -13,18 +13,20 @@
 
 @synthesize identifier = _identifier;
 @synthesize format = _format;
-@synthesize bundleInfoById = _bundles;
+@synthesize bundleInfoById = _bundleInfoById;
 
-- (id)init {
+- (id)init
+{
     self = [super init];
     if (self) {
     }
     return self;
 }
 
-- (void)dealloc {
-    self.identifier = nil;
-    self.bundleInfoById = nil;
+- (void)dealloc
+{
+    [_identifier release];
+    [_bundleInfoById release];
     [super dealloc];
 }
 

@@ -35,8 +35,8 @@
 
 - (void)dealloc
 {
-    self.mySourceURLs = nil;
-    self.myBundles = nil;
+    [_mySourceURLs release];
+    [_myBundles release];
     [super dealloc];
 }
 

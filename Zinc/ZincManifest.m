@@ -17,7 +17,7 @@
 
 @implementation ZincManifest
 
-@synthesize bundleName = _bundleId;
+@synthesize bundleName = _bundleName;
 @synthesize catalogId = _catalogId;
 @synthesize version = _version;
 @synthesize files = _files;
@@ -57,9 +57,9 @@
 
 - (void)dealloc
 {
-    self.catalogId = nil;
-    self.bundleName = nil;
-    self.files = nil;
+    [_catalogId release];
+    [_bundleName release];
+    [_files release];
     [super dealloc];
 }
 

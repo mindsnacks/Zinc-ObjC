@@ -62,9 +62,9 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 - (void)dealloc
 {
-    self.source = nil;
-    self.timestamp = nil;
-    self.attributes = nil;
+    [_source release];
+    [_timestamp release];
+    [_attributes release];
     [super dealloc];
 }
 
@@ -111,7 +111,7 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 - (void)dealloc
 {
-    self.error = nil;
+    [_error release];
     [super dealloc];
 }
 

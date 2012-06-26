@@ -41,10 +41,10 @@
 - (void) dealloc 
 {
     [self.repo bundleWillDeallocate:self];
-    self.repo = nil;
-    self.bundle = nil;
-    self.bundleId = nil;
-    self.url = nil;
+    [_repo release];
+    [_bundle release];
+    [_bundleId release];
+    [_url release];
     [super dealloc];
 }
 

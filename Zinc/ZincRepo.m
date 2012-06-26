@@ -298,16 +298,15 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void)dealloc
 {
-    self.url = nil;
-    self.index = nil;
+    [_url release];
+    [_index release];
     // TODO: stop operations?
-    self.networkQueue = nil;
-    self.queueGroup = nil;
-    self.sourcesByCatalog = nil;
-    self.cache = nil;
-    self.loadedBundles = nil;
-    self.myTasks = nil;
-    
+    [_networkQueue release];
+    [_queueGroup release];
+    [_sourcesByCatalog release];
+    [_cache release];
+    [_loadedBundles release];
+    [_myTasks release];
     [super dealloc];
 }
 

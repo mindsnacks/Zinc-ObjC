@@ -58,10 +58,9 @@
 
 - (void)dealloc 
 {
-    self.myEvents = nil;
-    self.repo = nil;
-    self.resource = nil;
-    self.input = nil;
+    [_myEvents release];
+    [_resource release];
+    [_input release];
     [super dealloc];
 }
 
