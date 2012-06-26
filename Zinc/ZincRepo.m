@@ -268,7 +268,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     __block typeof(self) blockself = self;
     
     ZINC_DEBUG_LOG(@"<fire>");
-
     
     [blockself refreshSourcesWithCompletion:^{
         
@@ -276,24 +275,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         
         [blockself refreshBundlesWithCompletion:^{
             
-            [self checkForBundleDeletion];
+            [blockself checkForBundleDeletion];
             
             ZINC_DEBUG_LOG(@"</fire>");
             
         }];
     }];
-    
-    //    @synchronized(self.myTasks) {
-    //        for (ZincTask* task in self.myTasks) {
-    //            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
-    //                ZINC_DEBUG_LOG(@"%@ : %f", task, task.progress);
-    //            }
-    //        }
-    //    }
-    
-    //    ZincGarbageCollectTask* gc = [[[ZincGarbageCollectTask alloc] initWithRepo:self] autorelease];
-    //    [self getOrAddTask:gc];
-    
 }
 
 - (void)dealloc
@@ -591,10 +578,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (ZincManifest*) importManifestWithPath:(NSString*)manifestPath error:(NSError**)outError
 {
     // read manifest
-    //    if (![manifestPath isAbsolutePath]) {
-    //        manifestPath = [[NSBundle mainBundle] pathForResource:manifestPath ofType:nil];
-    //    }
-    
     NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
     if (jsonString == nil) {
         return nil;
@@ -685,10 +668,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         ZincVersion catalogVersion = [catalog versionForBundleId:bundleName distribution:distro];
         return catalogVersion;
     }
-    //    else {
-    //        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-    //    }
-    
+
     return ZincVersionInvalid;
 }
 
@@ -706,16 +686,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     return [[availableVersions lastObject] integerValue];
-    
-    //    // there might be a local version
-    //    NSArray* localBundes = [[self.index localBundles] allObjects];
-    //    for (NSURL* localBundleRes in localBundes) {
-    //        if ([[localBundleRes zincBundleId] isEqualToString:bundleId]) {
-    //            return [localBundleRes zincBundleVersion];
-    //        }
-    //    }
-    //        
-    //    return ZincVersionInvalid;
 }
 
 - (BOOL) hasManifestForBundleId:(NSString *)bundleId distribution:(NSString*)distro
