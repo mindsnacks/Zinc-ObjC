@@ -94,8 +94,8 @@
     
     [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" bootstrapUsingBundle:[NSBundle mainBundle]];
     
-    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.lessons/"]];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.lessons.english-french-advanced-numbers" distribution:@"master"];
+    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master"];
 
     [repo resumeAllTasks];
 
