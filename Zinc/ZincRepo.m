@@ -1004,7 +1004,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     if (!hasExistingGarbageCollectTasks) {
         
-        task = [[ZincGarbageCollectTask alloc] initWithRepo:self resourceDescriptor:self.url];
+        task = [[[ZincGarbageCollectTask alloc] initWithRepo:self resourceDescriptor:self.url] autorelease];
         
         for (NSOperation* existingTask in self.myTasks) {
             [task addDependency:existingTask];
