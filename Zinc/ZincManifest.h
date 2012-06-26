@@ -11,6 +11,8 @@
 
 @interface ZincManifest : NSObject
 
++ (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError;
+
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
@@ -29,6 +31,8 @@
 - (NSArray*) allFiles;
 - (NSArray*) allSHAs;
 - (NSUInteger) fileCount;
+
+- (NSURL*) bundleResource;
 
 - (NSDictionary*) dictionaryRepresentation;
 - (NSString*) jsonRepresentation:(NSError**)outError;

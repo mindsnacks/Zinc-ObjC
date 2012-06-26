@@ -9,6 +9,7 @@
 
 #import "ZincManifest.h"
 #import "ZincKSJSON.h"
+#import "ZincResource.h"
 
 @interface ZincManifest ()
 @property (nonatomic, retain) NSMutableDictionary* files;
@@ -40,6 +41,18 @@
         self.files = [NSMutableDictionary dictionary];
     }
     return self;
+}
+
++ (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError
+{
+    NSString* jsonString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
+    if (jsonString == nil) {
+        return nil;
+    }
+    
+    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    return manifest;
 }
 
 - (void)dealloc
@@ -102,6 +115,11 @@
 - (NSUInteger) fileCount
 {
     return [self.files count];
+}
+
+- (NSURL*) bundleResource
+{
+    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
 }
 
 - (NSDictionary*) dictionaryRepresentation

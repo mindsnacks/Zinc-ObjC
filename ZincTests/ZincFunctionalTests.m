@@ -99,7 +99,7 @@
     
     [repo beginTrackingBundleWithId:bundleId
                        distribution:@"master" 
-               bootstrapUsingBundle:[NSBundle bundleForClass:[self class]]];
+               automaticallyBootstrapFromPath:[NSBundle bundleForClass:[self class]]];
     
     [repo resumeAllTasks];
 
@@ -158,7 +158,7 @@
     
     [repo beginTrackingBundleWithId:bundleId
                        distribution:@"master" 
-               bootstrapUsingBundle:[NSBundle bundleForClass:[self class]]];
+               automaticallyBootstrapFromPath:[NSBundle bundleForClass:[self class]]];
     
     [repo resumeAllTasks];
     

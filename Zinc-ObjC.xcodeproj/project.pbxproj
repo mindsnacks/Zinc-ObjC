@@ -125,6 +125,8 @@
 		B3E46BA014C4C01800030349 /* ZincRepoIndexTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */; };
 		B3E6EECF1590191500628816 /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432B1588144200C81A4F /* sphalerite.jpg */; };
 		B3E6EED01590191500628816 /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432C1588144200C81A4F /* sphalerite@2x.jpg */; };
+		B3E743B815998B9F0098DB19 /* com.mindsnacks.demo1.cats.json in Resources */ = {isa = PBXBuildFile; fileRef = B3E743B615998B9F0098DB19 /* com.mindsnacks.demo1.cats.json */; };
+		B3E743B915998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar in Resources */ = {isa = PBXBuildFile; fileRef = B3E743B715998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar */; };
 		B3EACD8614BD4907004D90EC /* ZincGarbageCollectTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */; };
 		B3EACD8714BD4907004D90EC /* ZincGarbageCollectTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */; };
 		B3F8AF76148EFCDF00CB92B5 /* ZincRepo.h in Headers */ = {isa = PBXBuildFile; fileRef = B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */; };
@@ -291,6 +293,8 @@
 		B3E46B5814C3E0EA00030349 /* Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Zinc.h; sourceTree = "<group>"; };
 		B3E46B9C14C4C00400030349 /* ZincRepoIndexTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoIndexTests.h; sourceTree = "<group>"; };
 		B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoIndexTests.m; sourceTree = "<group>"; };
+		B3E743B615998B9F0098DB19 /* com.mindsnacks.demo1.cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = com.mindsnacks.demo1.cats.json; sourceTree = "<group>"; };
+		B3E743B715998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar */ = {isa = PBXFileReference; lastKnownFileType = archive.tar; path = com.mindsnacks.demo1.cats.tar; sourceTree = "<group>"; };
 		B3EACD8414BD4905004D90EC /* ZincGarbageCollectTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincGarbageCollectTask.h; sourceTree = "<group>"; };
 		B3EACD8514BD4906004D90EC /* ZincGarbageCollectTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincGarbageCollectTask.m; sourceTree = "<group>"; };
 		B3F76102158292B800B2C194 /* generate_manifest_from_local_file_list.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = generate_manifest_from_local_file_list.py; sourceTree = "<group>"; };
@@ -404,6 +408,8 @@
 			children = (
 				B393432B1588144200C81A4F /* sphalerite.jpg */,
 				B393432C1588144200C81A4F /* sphalerite@2x.jpg */,
+				B3E743B615998B9F0098DB19 /* com.mindsnacks.demo1.cats.json */,
+				B3E743B715998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -864,6 +870,8 @@
 				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
 				B393432D1588144200C81A4F /* sphalerite.jpg in Resources */,
 				B393432E1588144200C81A4F /* sphalerite@2x.jpg in Resources */,
+				B3E743B815998B9F0098DB19 /* com.mindsnacks.demo1.cats.json in Resources */,
+				B3E743B915998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

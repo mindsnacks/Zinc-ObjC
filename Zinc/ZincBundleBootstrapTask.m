@@ -14,6 +14,7 @@
 #import "ZincEvent.h"
 #import "ZincErrors.h"
 #import "ZincResource.h"
+#import "ZincArchiveExtractOperation.h"
 
 @implementation ZincBundleBootstrapTask
 
@@ -78,10 +79,28 @@
     }
     
     NSString* fileRootPath = [manifestPath stringByDeletingLastPathComponent];
-    if (![self prepareObjectFileWithManifest:manifest fileRootPath:fileRootPath]) {
-        return;
+    
+    NSString* archivePath = [fileRootPath stringByAppendingPathComponent:
+                             [self.bundleId stringByAppendingPathExtension:@"tar"]];
+    
+    if ([self.fileManager fileExistsAtPath:archivePath]) {
+        
+        ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:archivePath] autorelease];
+        [self addOperation:extractOp];
+        [extractOp waitUntilFinished];
+        
+        if (extractOp.error != nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
+            return;
+        }
+        
+    } else {
+    
+        if (![self prepareObjectFileWithManifest:manifest fileRootPath:fileRootPath]) {
+            return;
+        }
     }
-
+    
     if (![self createBundleLinksForManifest:manifest]) {
         return;
     }

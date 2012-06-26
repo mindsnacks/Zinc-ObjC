@@ -731,7 +731,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro localManifestPath:(NSString*)manifestPath
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro localManifestPath:(NSString*)localManifestPath
 {
     [self.indexProxy executeBlock:^{
         
@@ -740,19 +740,24 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         
         ZincTask* bootstrapTask = nil;
         
-        if (manifestPath != nil) {
-            
+        if (localManifestPath != nil) {
+
+            NSError* error = nil;
+            ZincManifest* localManifest = [ZincManifest manifestWithPath:localManifestPath error:&error];
+            if (localManifest == nil) {
+                [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+            }
+
             NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
-            if (newestVersion <= 0) {
-                // must bootstrap
+            if (newestVersion <= 0 || localManifest.version > newestVersion) {
+                // must always bootstrap v0
                 
-                NSURL* localBundleRes = [NSURL zincResourceForBundleWithId:bundleId version:0];
-                
+                NSURL* localBundleRes = [localManifest bundleResource];
                 [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
                 ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
                 
                 NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           manifestPath, @"manifestPath", nil];
+                                           localManifestPath, @"manifestPath", nil];
                 bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
             }
         }
@@ -780,11 +785,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:nil];
 }
 
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrapUsingBundle:(NSBundle*)bundle
+- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro automaticallyBootstrapFromPath:(NSString*)dir
 {
     NSString* localManifestPath = nil;
-    if (bundle != nil) {
-        localManifestPath = [bundle pathForResource:bundleId ofType:@"json"];
+    if (dir != nil) {
+        localManifestPath = [dir stringByAppendingPathComponent:
+                             [bundleId stringByAppendingPathExtension:@"json"]];
     }
     return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:localManifestPath];
 }
