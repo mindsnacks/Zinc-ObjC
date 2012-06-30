@@ -37,13 +37,13 @@
 - (void) setUp
 {
     self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource]];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self]];
 }
 
 - (void) complete
 {
     [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource context:self.bundleId]];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     self.finishedSuccessfully = YES;
 }
 

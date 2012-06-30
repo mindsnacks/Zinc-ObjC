@@ -51,6 +51,7 @@ NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDid
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
+static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 @interface ZincRepo ()
 
@@ -715,19 +716,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             ZincManifest* localManifest = [ZincManifest manifestWithPath:localManifestPath error:&error];
             if (localManifest == nil) {
                 [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-            }
-
-            NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
-            if (newestVersion <= 0 || localManifest.version > newestVersion) {
-                // must always bootstrap v0
                 
-                NSURL* localBundleRes = [localManifest bundleResource];
-                [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
-                ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
-                
-                NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           localManifestPath, @"manifestPath", nil];
-                bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
+            } else {
+                NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
+                if (newestVersion <= 0 || localManifest.version > newestVersion) {
+                    // must always bootstrap v0
+                    
+                    NSURL* localBundleRes = [localManifest bundleResource];
+                    [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
+                    ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
+                    
+                    NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                               localManifestPath, @"manifestPath", nil];
+                    bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
+                }
             }
         }
         
@@ -922,6 +924,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [self startRefreshTimer];
 }
 
+- (BOOL) isSuspended
+{
+    return self.refreshTimer == nil;
+}
+
 - (ZincTask*) taskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
 {
     @synchronized(self.myTasks) {
@@ -961,6 +968,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.myTasks) {
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
+        [task addObserver:self forKeyPath:@"progress" options:NSKeyValueObservingOptionNew context:&kvo_taskProgress];
         [self addOperation:task];
     }
 }
@@ -1062,7 +1070,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.myTasks) {
         ZincTask* foundTask = [self taskForDescriptor:[task taskDescriptor]];
         if (foundTask != nil) {
-            [foundTask removeObserver:self forKeyPath:@"isFinished"];
+            [foundTask removeObserver:self forKeyPath:@"progress" context:&kvo_taskProgress];
+            [foundTask removeObserver:self forKeyPath:@"isFinished" context:&kvo_taskIsFinished];
             [self.myTasks removeObject:foundTask];
         }
     }
@@ -1075,10 +1084,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
             [blockself.delegate zincRepo:blockself didReceiveEvent:event];
         
-        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:event.attributes];        
+        id source = event.source != nil ? event.source : self;
+        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:source userInfo:event.attributes];        
     }];
 }
-
 
 #pragma mark KVO
 
@@ -1089,6 +1098,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (task.isFinished) {
             [self removeTask:task];
         }
+    } else if (context == &kvo_taskProgress) {
+        float progress = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
+        //NSLog(@"%@: %f%%" , object, (float)progress);
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }

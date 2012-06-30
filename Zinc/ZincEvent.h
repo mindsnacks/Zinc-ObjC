@@ -108,6 +108,7 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 @interface ZincBundleCloneBeginEvent : ZincEvent 
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource;
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source;
 @property (readonly) NSURL* bundleResource;
 
 @end
@@ -115,6 +116,7 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;

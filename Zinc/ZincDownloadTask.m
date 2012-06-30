@@ -20,7 +20,7 @@
 @implementation ZincDownloadTask
 
 @synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = totalBytesToRead;
+@synthesize totalBytesToRead = _totalBytesToRead;
 
 @synthesize context = _context;
 
@@ -33,32 +33,41 @@
     self.context = context;
     
     __block typeof(self) blockself = self;
-    __block float lastNotifiedProgressRounded = -1.0f;
+//    __block float lastNotifiedProgressRounded = -1.0f;
     
-    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.1f;
+    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.05f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
     [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
-        float newProgress = ((float)totalBytesRead/totalBytesExpectedToRead);
-        float newProgressRounded = roundf(100 * newProgress) / 100;
+        
+//        blockself.bytesRead = totalBytesRead;
+//        blockself.totalBytesToRead = totalBytesExpectedToRead;
+        
+//        [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+
+//        float newProgress = ((float)totalBytesRead/totalBytesExpectedToRead);
+//        float newProgressRounded = roundf(100 * newProgress) / 100;
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
-        
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
-        BOOL progressIncreasedSinceLastNotification = newProgressRounded != lastNotifiedProgressRounded;
+//        BOOL progressIncreasedSinceLastNotification = newProgressRounded != lastNotifiedProgressRounded;
         BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
         
         // Decrease the amount of events sent by only sending significant value changes with a minimum time offset
-        if (progressIncreasedSinceLastNotification && enoughTimePassedSinceLastNotification)
+//        if (progressIncreasedSinceLastNotification && enoughTimePassedSinceLastNotification)
+        if (enoughTimePassedSinceLastNotification)
+
         {
-            lastNotifiedProgressRounded = newProgressRounded;
+//            lastNotifiedProgressRounded = newProgressRounded;
             lastTimeEventSentDate = currentDate;
+                        
+//            blockself.bytesRead = totalBytesRead;
+//            blockself.totalBytesToRead = totalBytesExpectedToRead;
             
-            blockself.bytesRead = totalBytesRead;
-            blockself.totalBytesToRead = totalBytesExpectedToRead;
+            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
             
-            [blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:newProgress context:context]];
+            //[blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:newProgress context:context]];
         }
     }];
     
@@ -76,8 +85,32 @@
 
 - (NSInteger) maxProgressValue
 {
-    return self.totalBytesToRead;
+    return MAX(self.totalBytesToRead, self.bytesRead);
 }
+
+- (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
+{
+    [self willChangeValueForKey:@"currentProgressValue"];
+    [self willChangeValueForKey:@"maxProgressValue"];
+    self.bytesRead = currentBytes;
+    self.totalBytesToRead = totalBytes;
+    [self didChangeValueForKey:@"currentProgressValue"];
+    [self didChangeValueForKey:@"maxProgressValue"];
+}
+
+//- (void) setBytesRead:(NSInteger)bytesRead
+//{
+//    [self willChangeValueForKey:@"currentProgressValue"];
+//    _bytesRead = bytesRead;
+//    [self didChangeValueForKey:@"currentProgressValue"];
+//}
+//
+//- (void) setTotalBytesToRead:(NSInteger)totalBytesToRead
+//{
+//    [self willChangeValueForKey:@"maxProgressValue"];
+//    _totalBytesToRead = totalBytesToRead;
+//    [self didChangeValueForKey:@"maxProgressValue"];
+//}
 
 - (void)dealloc
 {

@@ -83,7 +83,8 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 - (void) suspendAllTasks;
 - (void) resumeAllTasks;
-           
+- (BOOL) isSuspended;
+       
 @end
 
 
