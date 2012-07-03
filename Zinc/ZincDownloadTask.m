@@ -45,7 +45,7 @@
         
 //        [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
 
-//        float newProgress = ((float)totalBytesRead/totalBytesExpectedToRead);
+        float newProgress = ((float)totalBytesRead/totalBytesExpectedToRead);
 //        float newProgressRounded = roundf(100 * newProgress) / 100;
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
@@ -67,7 +67,7 @@
             
             [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
             
-            //[blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:newProgress context:context]];
+            [blockself addEvent:[ZincDownloadProgressEvent downloadProgressEventForURL:request.URL withProgress:newProgress context:context]];
         }
     }];
     
@@ -97,20 +97,6 @@
     [self didChangeValueForKey:@"currentProgressValue"];
     [self didChangeValueForKey:@"maxProgressValue"];
 }
-
-//- (void) setBytesRead:(NSInteger)bytesRead
-//{
-//    [self willChangeValueForKey:@"currentProgressValue"];
-//    _bytesRead = bytesRead;
-//    [self didChangeValueForKey:@"currentProgressValue"];
-//}
-//
-//- (void) setTotalBytesToRead:(NSInteger)totalBytesToRead
-//{
-//    [self willChangeValueForKey:@"maxProgressValue"];
-//    _totalBytesToRead = totalBytesToRead;
-//    [self didChangeValueForKey:@"maxProgressValue"];
-//}
 
 - (void)dealloc
 {

@@ -35,6 +35,9 @@ extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
 extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
+extern NSString* const ZincRepoBundleCloneProgressNotification;
+extern NSString* const ZincRepoBundleCloneProgressKey;
+
 @protocol ZincRepoDelegate;
 @class ZincManifest;
 @class ZincBundle;
@@ -66,7 +69,6 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
 - (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro automaticallyBootstrapFromPath:(NSString*)dir;
-//- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro bootstrap
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (NSSet*) trackedBundleIds;

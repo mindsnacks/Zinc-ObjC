@@ -46,6 +46,8 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 extern NSString *const kZincEventGarbageCollectionBeginNotification;
 extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
+extern NSString *const kZincEventNotificationSourceKey;
+
 @interface ZincEvent : NSObject
 
 - (id) initWithType:(ZincEventType)type source:(id)source;

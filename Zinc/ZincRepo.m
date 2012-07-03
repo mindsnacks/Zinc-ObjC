@@ -44,11 +44,13 @@
 
 NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
 NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
+NSString* const ZincRepoBundleCloneProgressKey = @"progress";
 
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
+NSString* const ZincRepoBundleCloneProgressNotification = @"ZincRepoBundleCloneProgressNotification";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 static NSString* kvo_taskProgress = @"kvo_taskProgress";
@@ -308,6 +310,15 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                                                             object:blockself
                                                           userInfo:userInfo];
     }];
+}
+
+- (void) postProgressNotificationForBundleId:(NSString*)bundleId progress:(float)progress
+{
+    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
+                              [NSNumber numberWithFloat:progress], ZincRepoBundleCloneProgressKey,
+                              nil];
+    [self postNotification:ZincRepoBundleCloneProgressNotification userInfo:userInfo];
 }
 
 - (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId state:(ZincBundleState)state
@@ -1084,8 +1095,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
             [blockself.delegate zincRepo:blockself didReceiveEvent:event];
         
-        id source = event.source != nil ? event.source : self;
-        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:source userInfo:event.attributes];        
+        NSMutableDictionary* userInfo = [[event.attributes mutableCopy] autorelease];
+        if (event.source != nil) {
+            [userInfo setObject:event.source forKey:kZincEventNotificationSourceKey];
+        }
+        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];        
     }];
 }
 
@@ -1099,8 +1113,12 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             [self removeTask:task];
         }
     } else if (context == &kvo_taskProgress) {
+
+        ZincTask* task = (ZincTask*)object;
+        NSString* bundleId = [task.resource zincBundleId];
         float progress = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
-        //NSLog(@"%@: %f%%" , object, (float)progress);
+        [self postProgressNotificationForBundleId:bundleId progress:progress];
+        
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }

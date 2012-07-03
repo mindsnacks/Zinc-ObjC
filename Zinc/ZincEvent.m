@@ -29,6 +29,8 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 NSString *const kZincEventGarbageCollectionBeginNotification = @"ZincEventGarbageCollectionBeginNotification";
 NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGarbageCollectionCompleteNotification";
 
+NSString *const kZincEventNotificationSourceKey = @"source";
+
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
 @property (nonatomic, retain, readwrite) id source;
