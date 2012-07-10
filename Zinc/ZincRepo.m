@@ -769,6 +769,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro automaticallyBootstrapFromPath:(NSString*)dir
 {
+    NSParameterAssert(bundleId);
+    NSParameterAssert(distro);
+    
     NSString* localManifestPath = nil;
     if (dir != nil) {
         localManifestPath = [dir stringByAppendingPathComponent:
