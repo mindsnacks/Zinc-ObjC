@@ -25,8 +25,10 @@ enum  {
 extern NSString* const ZincFileFormatRaw;
 extern NSString* const ZincFileFormatGZ;
 
-#ifndef ZINC_DEBUG_LOG
-    #define ZINC_DEBUG_LOG NSLog
+#ifdef ZINC_DEBUG
+    #define ZINC_DEBUG_LOG(fmt, ...) (NSLog(fmt, ##__VA_ARGS__));
+#else
+	#define ZINC_DEBUG_LOG(...)
 #endif
 
 #endif
