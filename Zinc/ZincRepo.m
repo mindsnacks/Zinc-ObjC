@@ -774,8 +774,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     
     NSString* localManifestPath = nil;
     if (dir != nil) {
-        localManifestPath = [dir stringByAppendingPathComponent:
-                             [bundleId stringByAppendingPathExtension:@"json"]];
+        NSString* potentialManifestPath = [dir stringByAppendingPathComponent:
+                                           [bundleId stringByAppendingPathExtension:@"json"]];
+        if ([self.fileManager fileExistsAtPath:potentialManifestPath]) {
+            localManifestPath = potentialManifestPath;
+        }
     }
     return [self beginTrackingBundleWithId:bundleId distribution:distro localManifestPath:localManifestPath];
 }
