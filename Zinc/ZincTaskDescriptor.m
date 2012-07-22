@@ -11,7 +11,7 @@
 
 @interface ZincTaskDescriptor ()
 @property (nonatomic, retain, readwrite) NSURL* resource;
-@property (nonatomic, retain, readwrite) NSURL* action;
+@property (nonatomic, retain, readwrite) NSString* action;
 @property (nonatomic, retain, readwrite) NSString* method;
 @end
 
