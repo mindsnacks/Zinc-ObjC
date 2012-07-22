@@ -68,8 +68,9 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 #pragma mark Bundles
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro automaticallyBootstrapFromPath:(NSString*)dir;
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)path andTrack:(NSString*)distro waitUntilDone:(BOOL)wait;
 
 - (NSSet*) trackedBundleIds;
 
