@@ -12,8 +12,14 @@
 #import "ZincEvent.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincBundleDeleteTask
+
++ (NSString *)action
+{
+    return ZincTaskActionDelete;
+}
 
 - (void)dealloc
 {

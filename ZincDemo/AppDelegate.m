@@ -90,13 +90,20 @@
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
     
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" automaticallyBootstrapFromPath:[[NSBundle mainBundle] resourcePath]];
-    
-    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master" automaticallyBootstrapFromPath:[[NSBundle mainBundle] resourcePath]];
-
     [repo resumeAllTasks];
+
+    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.cats" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES]) {
+        abort();
+    }
     
+    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.sphalerites" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES]) {
+        abort();
+    }
+
+    [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master"];
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+
     BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
     
     UINavigationController* nc = [[[UINavigationController alloc] initWithRootViewController:bundleListViewController] autorelease];
@@ -104,7 +111,6 @@
     self.viewController = bundleListViewController;
     self.window.rootViewController = nc;
     [self.window makeKeyAndVisible];
-    
     
     return YES;
 }

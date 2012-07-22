@@ -12,8 +12,14 @@
 #import "ZincResource.h"
 #import "ZincManifest.h"
 #import "ZincEvent.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincGarbageCollectTask
+
++ (NSString *)action
+{
+    return ZincTaskActionUpdate;
+}
 
 - (void) main
 {

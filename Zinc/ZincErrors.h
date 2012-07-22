@@ -23,10 +23,10 @@ enum
     ZINC_ERR_INVALID_FORMAT                       = 2002,
     ZINC_ERR_INVALID_REPO_FORMAT                  = 2101,
     ZINC_ERR_INVALID_MANIFEST_FORMAT              = 2102,
-
     
     ZINC_ERR_NO_SOURCES_FOR_CATALOG               = 3101,
-
     
+    ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND         = 5101,
+
     ZINC_ERR_UNKNOWN                              = 99999,
 };
