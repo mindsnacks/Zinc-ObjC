@@ -95,6 +95,12 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return 0;
 }
 
++ (NSString *)action
+{
+    NSAssert(NO, @"subclasses must override");
+    return nil;
+}
+
 + (NSString*) taskMethod
 {
     return NSStringFromClass(self);
@@ -102,7 +108,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
-    return [ZincTaskDescriptor taskDescriptorWithResource:resource method:[self taskMethod]];
+    return [ZincTaskDescriptor taskDescriptorWithResource:resource action:[self action] method:[self taskMethod]];
 }
 
 - (ZincTaskDescriptor*) taskDescriptor

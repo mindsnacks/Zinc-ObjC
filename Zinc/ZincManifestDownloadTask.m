@@ -19,6 +19,7 @@
 #import "ZincEvent.h"
 #import "ZincErrors.h"
 #import "ZincKSJSON.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincManifestDownloadTask
 

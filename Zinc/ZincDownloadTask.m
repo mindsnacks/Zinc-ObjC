@@ -12,6 +12,7 @@
 #import "ZincEvent.h"
 #import "ZincHTTPURLConnectionOperation.h"
 #import "ZincHTTPStreamOperation.h"
+#import "ZincTaskActions.h"
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
@@ -23,6 +24,11 @@
 @synthesize totalBytesToRead = _totalBytesToRead;
 
 @synthesize context = _context;
+
++ (NSString *)action
+{
+    return ZincTaskActionUpdate;
+}
 
 - (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {

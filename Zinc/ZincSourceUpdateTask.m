@@ -17,9 +17,14 @@
 #import "ZincCatalogUpdateTask.h"
 #import "ZincResource.h"
 #import "ZincErrors.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincSourceUpdateTask
 
++ (NSString *)action
+{
+    return ZincTaskActionUpdate;
+}
 
 - (id) initWithRepo:(ZincRepo *)repo resourceDescriptor:(NSURL *)resource input:(id)input
 {

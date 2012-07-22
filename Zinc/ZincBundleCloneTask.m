@@ -13,12 +13,18 @@
 #import "ZincEvent.h"
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincBundleCloneTask
 
 @synthesize fileManager = _fileManager;
 
++ (NSString *)action
+{
+    return ZincTaskActionUpdate;
+}
 - (void)dealloc
+
 {
     [_fileManager release];
     [super dealloc];

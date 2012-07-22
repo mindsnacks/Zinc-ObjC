@@ -17,10 +17,11 @@
  * OS X.
  */
 
-+ (id) taskDescriptorWithResource:(NSURL*)resource method:(NSString*)method;
-- (id) initWithResource:(NSURL*)resource method:(NSString*)method;
++ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method;
+- (id) initWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method;
 
 @property (nonatomic, retain, readonly) NSURL* resource;
+@property (nonatomic, retain, readonly) NSString* action;
 @property (nonatomic, retain, readonly) NSString* method;
 
 - (NSString*) stringValue;
