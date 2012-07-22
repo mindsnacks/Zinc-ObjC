@@ -732,6 +732,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         if (newestVersion <= 0 || localManifest.version > newestVersion) {
             // must always bootstrap v0
             
+            NSString* currentDistro = [self.index trackedDistributionForBundleId:bundleId];
+            if (currentDistro == nil) {
+                [self.index addTrackedBundleId:bundleId distribution:ZincDistributionLocal];
+            }
+
             NSURL* localBundleRes = [localManifest bundleResource];
             [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
             ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
@@ -740,6 +745,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                                        manifesPath, @"manifestPath", nil];
             bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
         }
+        
+        [self queueIndexSave];
     }];
     
     if (wait) {
@@ -772,7 +779,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     [self.indexProxy executeBlock:^{
         
         [self.index addTrackedBundleId:bundleId distribution:distro];
-        [self queueIndexSave];
         
         ZincVersion catalogVersion = [self catalogVersionForBundleId:bundleId distribution:distro];
         if (catalogVersion != ZincVersionInvalid) { // found in a remote catalog
@@ -786,6 +792,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                 [self queueTaskForDescriptor:taskDesc];
             }
         }
+        
+        [self queueIndexSave];
     }];
     
     [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
