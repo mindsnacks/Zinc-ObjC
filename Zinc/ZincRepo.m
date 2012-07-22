@@ -34,6 +34,7 @@
 #import "ZincKSJSON.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincSerialQueueProxy.h"
+#import "ZincErrors.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -712,7 +713,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath waitUntilDone:(BOOL)wait
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath error:(NSError**)outError
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(manifesPath);
@@ -720,7 +721,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     NSError* error = nil;
     ZincManifest* localManifest = [ZincManifest manifestWithPath:manifesPath error:&error];
     if (localManifest == nil) {
-        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+        if (outError != NULL) {
+            *outError = error;   
+        }
         return NO;
     }  
     
@@ -749,17 +752,29 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         [self queueIndexSave];
     }];
     
-    if (wait) {
-        if (self.isSuspended) {
-            NSLog(@"WARNING: repo is suspended. This will likely wait forever");
-        }
-        [bootstrapTask waitUntilFinished];
-    };
-    
     return YES;
 }
 
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir waitUntilDone:(BOOL)wait
+- (void) waitForAllBootstrapTasks
+{
+    if (self.isSuspended) {
+        NSLog(@"WARNING: repo is suspended. This will likely wait forever.");
+    }
+    
+    __block NSArray* bootstrapTasks = nil;
+    @synchronized(self.myTasks) {
+        bootstrapTasks = [self.myTasks filteredArrayUsingPredicate:
+                          [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            return [evaluatedObject isKindOfClass:[ZincBundleBootstrapTask class]];
+        }]];
+    }
+    
+    for (NSOperation* task in bootstrapTasks) {
+        [task waitUntilFinished];
+    }
+}
+
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir error:(NSError**)outError
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(dir);
@@ -768,7 +783,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                                        [bundleId stringByAppendingPathExtension:@"json"]];
     if ([self.fileManager fileExistsAtPath:potentialManifestPath]) {
         
-        return [self bootstrapBundleWithId:bundleId manifestPath:potentialManifestPath  waitUntilDone:wait];
+        return [self bootstrapBundleWithId:bundleId manifestPath:potentialManifestPath  error:outError];
+    }
+    
+    if (outError != NULL) {
+        *outError = ZincError(ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND);
     }
 
     return NO;
