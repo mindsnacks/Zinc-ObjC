@@ -10,9 +10,3 @@
 
 NSString *const ZincTaskActionUpdate = @"UPDATE";
 NSString *const ZincTaskActionDelete = @"DELETE";
-
-//NSString *const ZincTaskActionGarbageCollect = @"GARBAGE-COLLECT";
-//NSString *const ZincTaskActionSourceUpdate = @"SOURCE-UPDATE";
-//NSString *const ZincTaskActionRepoIndexUpdate = @"
-//NSString *const ZincTaskActionRepoBundleClone;
-//NSString *const ZincTaskActionDownload;

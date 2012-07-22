@@ -10,10 +10,3 @@
 
 extern NSString *const ZincTaskActionUpdate;
 extern NSString *const ZincTaskActionDelete;
-
-//extern NSString *const ZincTaskActionGarbageCollect;
-//extern NSString *const ZincTaskActionSourceUpdate;
-//extern NSString *const ZincTaskActionRepoIndexUpdate;
-//extern NSString *const ZincTaskActionRepoBundleClone;
-//extern NSString *const ZincTaskActionDownload;
-
