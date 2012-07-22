@@ -11,46 +11,52 @@
 
 @interface ZincTaskDescriptor ()
 @property (nonatomic, retain, readwrite) NSURL* resource;
+@property (nonatomic, retain, readwrite) NSURL* action;
 @property (nonatomic, retain, readwrite) NSString* method;
 @end
 
 @implementation ZincTaskDescriptor
 
 @synthesize resource = _resource;
+@synthesize action = _action;
 @synthesize method = _method;
 
-- (id) initWithResource:(NSURL*)resource method:(NSString*)method
+- (id) initWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
 {
     self = [super init];
     if (self) {
         self.resource = resource;
+        self.action = action;
         self.method = method;
     }
     return self;
 }
 
-+ (id) taskDescriptorWithResource:(NSURL*)resource method:(NSString*)method
++ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
 {
-    return [[[self alloc] initWithResource:resource method:method] autorelease];
+    return [[[self alloc] initWithResource:resource action:action method:method] autorelease];
 }
 
 - (void)dealloc 
 {
     [_resource release];
+    [_action release];
     [_method release];
     [super dealloc];
 }
 
 - (NSString*) stringValue
 {
-    return [NSString stringWithFormat:@"%@|%@", [self.resource absoluteString], self.method];
+    return [NSString stringWithFormat:@"Resource=%@;Action=%@;Method=%@", 
+            [self.resource absoluteString], self.action, self.method];
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
     ZincTaskDescriptor* newdesc = [[ZincTaskDescriptor allocWithZone:zone] init];
-    newdesc.resource = [[self.resource copy] autorelease];
-    newdesc.method = [[self.method copy] autorelease];
+    newdesc.resource = [[self.resource copyWithZone:zone] autorelease];
+    newdesc.action = [[self.action copyWithZone:zone] autorelease];
+    newdesc.method = [[self.method copyWithZone:zone] autorelease];
     return newdesc;
 }
 
@@ -62,6 +68,9 @@
     
     ZincTaskDescriptor* other = (ZincTaskDescriptor*)object;
     if (![other.resource isEqual:self.resource]) {
+        return NO;
+    }
+    if (![other.action isEqual:self.action]) {
         return NO;
     }
     if (![other.method isEqual:self.method]) {

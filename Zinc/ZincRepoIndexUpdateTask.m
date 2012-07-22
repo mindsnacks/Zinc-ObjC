@@ -13,8 +13,14 @@
 #import "ZincRepoIndex.h"
 #import "ZincEvent.h"
 #import "NSData+Zinc.h"
+#import "ZincTaskActions.h"
 
 @implementation ZincRepoIndexUpdateTask
+
++ (NSString *)action
+{
+    return ZincTaskActionUpdate;
+}
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {

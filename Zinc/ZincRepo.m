@@ -712,71 +712,59 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (void) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath andTrack:(NSString*)distro waitUntilDone:(BOOL)wait
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath waitUntilDone:(BOOL)wait
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(manifesPath);
-    NSParameterAssert(distro);
  
     NSError* error = nil;
     ZincManifest* localManifest = [ZincManifest manifestWithPath:manifesPath error:&error];
     if (localManifest == nil) {
         [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-        
-    } else {
-        
-        __block ZincTask* bootstrapTask = nil;
-        
-        [self.indexProxy executeBlock:^{
-            
-            NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
-            if (newestVersion <= 0 || localManifest.version > newestVersion) {
-                // must always bootstrap v0
-                
-                NSURL* localBundleRes = [localManifest bundleResource];
-                [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
-                ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
-                
-                NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                           manifesPath, @"manifestPath", nil];
-                bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
-            }
-        }];
-        
-        if (wait) {
-            if (self.isSuspended) {
-                NSLog(@"WARNING: repo is suspended. This will likely wait forever");
-            }
-            [bootstrapTask waitUntilFinished];
-        };
-    }
+        return NO;
+    }  
     
-    [self beginTrackingBundleWithId:bundleId distribution:distro];
+    __block ZincTask* bootstrapTask = nil;
+    
+    [self.indexProxy executeBlock:^{
+        
+        NSInteger newestVersion = [self.index newestAvailableVersionForBundleId:bundleId];
+        if (newestVersion <= 0 || localManifest.version > newestVersion) {
+            // must always bootstrap v0
+            
+            NSURL* localBundleRes = [localManifest bundleResource];
+            [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
+            ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
+            
+            NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                       manifesPath, @"manifestPath", nil];
+            bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
+        }
+    }];
+    
+    if (wait) {
+        if (self.isSuspended) {
+            NSLog(@"WARNING: repo is suspended. This will likely wait forever");
+        }
+        [bootstrapTask waitUntilFinished];
+    };
+    
+    return YES;
 }
 
-- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)path andTrack:(NSString*)distro waitUntilDone:(BOOL)wait
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir waitUntilDone:(BOOL)wait
 {
     NSParameterAssert(bundleId);
-    NSParameterAssert(path);
-    NSParameterAssert(distro);
+    NSParameterAssert(dir);
     
-    NSString* localManifestPath = nil;
-    if (path != nil) {
-        NSString* potentialManifestPath = [path stringByAppendingPathComponent:
-                                           [bundleId stringByAppendingPathExtension:@"json"]];
-        if ([self.fileManager fileExistsAtPath:potentialManifestPath]) {
-            localManifestPath = potentialManifestPath;
-        }
-    }
-    
-    if (localManifestPath != nil) {
+    NSString* potentialManifestPath = [dir stringByAppendingPathComponent:
+                                       [bundleId stringByAppendingPathExtension:@"json"]];
+    if ([self.fileManager fileExistsAtPath:potentialManifestPath]) {
         
-        [self bootstrapBundleWithId:bundleId manifestPath:localManifestPath andTrack:distro waitUntilDone:wait];
-        
-    } else {
-        // no local manifest was found, just begin tracking
-        [self beginTrackingBundleWithId:bundleId distribution:distro];
+        return [self bootstrapBundleWithId:bundleId manifestPath:potentialManifestPath  waitUntilDone:wait];
     }
+
+    return NO;
 }
 
 - (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro
@@ -1042,11 +1030,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         
         NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
         
-        // look for an exact match
+        // look for task that also matches the action
         ZincTask* existingTask = nil;
-        for (ZincTask* resourceTask in tasksMatchingResource) {
-            if ([[resourceTask taskDescriptor] isEqual:taskDescriptor]) {
-                existingTask = resourceTask;
+        for (ZincTask* potentialMatchingTask in tasksMatchingResource) {
+            if ([[potentialMatchingTask taskDescriptor].action isEqual:taskDescriptor.action]) {
+                existingTask = potentialMatchingTask;
             }
         }
         
