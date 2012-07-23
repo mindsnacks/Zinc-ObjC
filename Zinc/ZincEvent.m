@@ -9,6 +9,7 @@
 #import "ZincEvent.h"
 #import "ZincEvent+Private.h"
 
+NSString *const kZincEventAttributesSourceKey = @"source";
 NSString *const kZincEventAttributesURLKey = @"url";
 NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
@@ -29,11 +30,8 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 NSString *const kZincEventGarbageCollectionBeginNotification = @"ZincEventGarbageCollectionBeginNotification";
 NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGarbageCollectionCompleteNotification";
 
-NSString *const kZincEventNotificationSourceKey = @"source";
-
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
-@property (nonatomic, retain, readwrite) id source;
 @property (nonatomic, retain, readwrite) NSDate* timestamp;
 @property (nonatomic, retain, readwrite) NSDictionary* attributes;
 @end
@@ -41,7 +39,6 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 @implementation ZincEvent
 
 @synthesize type = _type;
-@synthesize source = _source;
 @synthesize timestamp = _timestamp;
 @synthesize attributes = _attributes;
 
@@ -50,9 +47,14 @@ NSString *const kZincEventNotificationSourceKey = @"source";
     self = [super init];
     if (self) {
         self.type = type;
-        self.source = source;
         self.timestamp = [NSDate date];
-        self.attributes = attributes;
+        if (source != nil) {
+            NSMutableDictionary *mutableAttributes = [[attributes mutableCopy] autorelease];;
+            [mutableAttributes setObject:[source description] forKey:kZincEventAttributesSourceKey];
+            self.attributes = mutableAttributes;
+        } else {
+            self.attributes = attributes;
+        }
     }
     return self;
 }
@@ -64,7 +66,6 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 
 - (void)dealloc
 {
-    [_source release];
     [_timestamp release];
     [_attributes release];
     [super dealloc];
