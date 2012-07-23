@@ -92,11 +92,11 @@
     
     [repo resumeAllTasks];
 
-    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.cats" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES]) {
+    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.cats" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES error:NULL]) {
         abort();
     }
     
-    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.sphalerites" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES]) {
+    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.sphalerites" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES error:NULL]) {
         abort();
     }
 
