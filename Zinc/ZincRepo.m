@@ -1146,9 +1146,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             [blockself.delegate zincRepo:blockself didReceiveEvent:event];
         
         NSMutableDictionary* userInfo = [[event.attributes mutableCopy] autorelease];
-//        if (event.source != nil) {
-//            [userInfo setObject:event.source forKey:kZincEventNotificationSourceKey];
-//        }
         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];        
     }];
 }
