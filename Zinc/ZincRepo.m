@@ -713,7 +713,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath error:(NSError**)outError
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId manifestPath:(NSString*)manifesPath waitUntilDone:(BOOL)wait error:(NSError**)outError
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(manifesPath);
@@ -752,6 +752,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         [self queueIndexSave];
     }];
     
+    if (wait) {
+        [bootstrapTask waitUntilFinished];
+    }
+    
     return YES;
 }
 
@@ -774,7 +778,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir error:(NSError**)outError
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir waitUntilDone:(BOOL)wait error:(NSError**)outError
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(dir);
@@ -783,7 +787,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                                        [bundleId stringByAppendingPathExtension:@"json"]];
     if ([self.fileManager fileExistsAtPath:potentialManifestPath]) {
         
-        return [self bootstrapBundleWithId:bundleId manifestPath:potentialManifestPath  error:outError];
+        return [self bootstrapBundleWithId:bundleId manifestPath:potentialManifestPath  waitUntilDone:wait error:outError];
     }
     
     if (outError != NULL) {
@@ -791,6 +795,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 
     return NO;
+}
+
+- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir error:(NSError**)outError
+{
+    return [self bootstrapBundleWithId:bundleId fromDir:dir waitUntilDone:NO error:outError];
 }
 
 - (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro
