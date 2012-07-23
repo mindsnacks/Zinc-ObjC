@@ -24,6 +24,7 @@ typedef enum {
     ZincEventTypeGarbageCollectComplete,
 } ZincEventType;
 
+extern NSString *const kZincEventAttributesSourceKey;
 extern NSString *const kZincEventAttributesURLKey;
 extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
@@ -46,8 +47,6 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 extern NSString *const kZincEventGarbageCollectionBeginNotification;
 extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
-extern NSString *const kZincEventNotificationSourceKey;
-
 @interface ZincEvent : NSObject
 
 - (id) initWithType:(ZincEventType)type source:(id)source;
@@ -55,9 +54,7 @@ extern NSString *const kZincEventNotificationSourceKey;
 
 + (NSString*) name;
 
-//+ (id) eventWithType:(ZincEventType)type source:(id)source
 @property (nonatomic, assign, readonly) ZincEventType type;
-@property (nonatomic, retain, readonly) id source;
 @property (nonatomic, retain, readonly) NSDate* timestamp;
 @property (nonatomic, retain, readonly) NSDictionary* attributes;
 
