@@ -50,7 +50,7 @@
     return path;
 }
 
-+ (UIImage *)imageNamed:(NSString *)name inBundle:(id)bundle
++ (UIImage *)zinc_imageNamed:(NSString *)name inBundle:(id)bundle
 {
     if (bundle == [NSBundle mainBundle]) {
         return [self imageNamed:name];
