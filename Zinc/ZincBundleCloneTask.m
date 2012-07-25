@@ -57,16 +57,28 @@
 {
     NSError* error = nil;
     
-    NSArray* allFiles = [manifest allFiles];
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
+    NSArray* allFiles = [manifest allFiles];
+    
+    // Build a list of all dirs needed for the bundle
+    NSMutableSet* allDirs = [NSMutableSet setWithCapacity:[allFiles count]];
     for (NSString* file in allFiles) {
-        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-        NSString* fileDir = [filePath stringByDeletingLastPathComponent];
-        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fileDir error:&error]) {
+        NSString* dir = [file stringByDeletingLastPathComponent];
+        [allDirs addObject:dir];
+    }
+    
+    // Create all dirs
+    for (NSString* relativeDir in allDirs) {
+        NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
+        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             return NO;
         }
-        
+    }
+    
+    // Link files
+    for (NSString* file in allFiles) {
+        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
         NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
         BOOL createLink = NO;
         if ([self.fileManager fileExistsAtPath:filePath]) {
