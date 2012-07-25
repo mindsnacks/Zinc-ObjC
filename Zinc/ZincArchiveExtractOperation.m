@@ -46,8 +46,10 @@
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+
+    NSString* untarDir = [ZincGetUniqueTemporaryDirectory() stringByAppendingPathComponent:
+                          [[self.archivePath lastPathComponent] stringByDeletingPathExtension]];
     
-    NSString* untarDir = [self.archivePath stringByDeletingPathExtension];
     dispatch_block_t cleanup = ^{
         [fm removeItemAtPath:untarDir error:NULL];
     };

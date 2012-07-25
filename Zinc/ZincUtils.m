@@ -48,6 +48,14 @@ NSString* ZincCatalogIdFromBundleId(NSString* bundleId)
     return sourceId;
 }
 
+NSString* ZincGetUniqueTemporaryDirectory(void)
+{
+    NSString* tmpFormat = [NSTemporaryDirectory() stringByAppendingPathComponent:@"zinc.XXXXXXXX"];
+    char* tmpDirCstring = mkdtemp((char*)[tmpFormat cStringUsingEncoding:NSUTF8StringEncoding]);
+    NSString* tmpDir = [NSString stringWithCString:tmpDirCstring encoding:NSUTF8StringEncoding];
+    return tmpDir;
+}
+
 NSString* ZincBundleNameFromBundleId(NSString* bundleId)
 {
     return [[bundleId componentsSeparatedByString:@"."] lastObject];
