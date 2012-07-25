@@ -752,8 +752,16 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         [self queueIndexSave];
     }];
     
-    if (wait) {
+    if (bootstrapTask != nil && wait) {
+        
         [bootstrapTask waitUntilFinished];
+        
+        if (![bootstrapTask finishedSuccessfully]) {
+            if (outError != NULL) {
+                *outError = ZincError(ZINC_ERR_BOOTSTRAP_FAILED);
+            }
+            return NO;
+        }
     }
     
     return YES;
