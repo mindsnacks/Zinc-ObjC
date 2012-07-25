@@ -10,7 +10,8 @@
 
 #pragma mark Utility Functions
 
-extern void ZincAddSkipBackupAttributeToFile(NSURL* url);
+extern int ZincAddSkipBackupAttributeToFileWithPath(NSString * path);
+extern int ZincAddSkipBackupAttributeToFileWithURL(NSURL* url);
 extern NSString* ZincGetApplicationDocumentsDirectory(void);
 extern NSString* ZincGetApplicationCacheDirectory(void);
 extern NSString* ZincGetUniqueTemporaryDirectory(void);

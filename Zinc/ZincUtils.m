@@ -9,10 +9,16 @@
 #import "ZincUtils.h"
 #import <sys/xattr.h> // for AddSkipBackupAttributeToFile
 
-void ZincAddSkipBackupAttributeToFile(NSURL * url)
+int ZincAddSkipBackupAttributeToFileWithPath(NSString * path)
 {
     u_int8_t b = 1;
-    setxattr([[url path] fileSystemRepresentation], "com.apple.MobileBackup", &b, 1, 0, 0);
+    int result = setxattr([path fileSystemRepresentation], "com.apple.MobileBackup", &b, 1, 0, 0);
+    return result;
+}
+
+int ZincAddSkipBackupAttributeToFileWithURL(NSURL * url)
+{
+    return ZincAddSkipBackupAttributeToFileWithPath([url path]);
 }
 
 NSString* ZincGetApplicationDocumentsDirectory(void)

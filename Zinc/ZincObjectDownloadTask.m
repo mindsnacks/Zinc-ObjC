@@ -140,7 +140,7 @@
                 continue;
             }
             
-            ZincAddSkipBackupAttributeToFile([NSURL fileURLWithPath:targetPath]);
+            ZincAddSkipBackupAttributeToFileWithPath(targetPath);
             self.finishedSuccessfully = YES;
         }
         

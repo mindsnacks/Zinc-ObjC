@@ -133,7 +133,7 @@
     }
     
     if (skipBackup) {
-        ZincAddSkipBackupAttributeToFile([NSURL fileURLWithPath:path]);
+        ZincAddSkipBackupAttributeToFileWithPath(path);
     }
     return YES;
 
