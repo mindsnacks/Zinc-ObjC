@@ -11,7 +11,7 @@
 @interface UIImage (Zinc)
 
 /* bundle can be an NSBundle or ZincBundle */
-+ (UIImage *)imageNamed:(NSString *)name inBundle:(id)bundle;
++ (UIImage *)zinc_imageNamed:(NSString *)name inBundle:(id)bundle;
 
 #pragma mark Private
 

@@ -57,11 +57,11 @@
     }
          
     NSBundle* bundle = [NSBundle bundleWithPath:dstDir];
-    UIImage* image1 = [UIImage imageNamed:@"sphalerite.jpg" inBundle:bundle];
+    UIImage* image1 = [UIImage zinc_imageNamed:@"sphalerite.jpg" inBundle:bundle];
     NSAssert(image1, @"image1 is nil");
     NSLog(@"image1: %@", NSStringFromCGSize(image1.size));
     
-    UIImage* image2 = [UIImage imageNamed:@"sphalerite@2x.jpg" inBundle:bundle];
+    UIImage* image2 = [UIImage zinc_imageNamed:@"sphalerite@2x.jpg" inBundle:bundle];
     NSAssert(image2, @"image1 is nil");
     NSLog(@"image2: %@", NSStringFromCGSize(image2.size));
 
