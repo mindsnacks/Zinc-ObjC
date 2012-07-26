@@ -77,9 +77,13 @@
 #if __has_feature(objc_arc)
     #define autoreleased(X) (X)
     #define cfautoreleased(X) ((__bridge_transfer id)(X))
+    #define as_bridge __bridge
+    #define as_bridge_retained __bridge_retained
 #else
     #define autoreleased(X) [(X) autorelease]
-    #define cfautoreleased(X) [((__bridge_transfer id)(X)) autorelease]
+    #define cfautoreleased(X) [((id)(X)) autorelease]
+    #define as_bridge
+    #define as_bridge_retained
 #endif
 
 
@@ -351,7 +355,7 @@ static CFNumberRef deserializeNumber(KSJSONDeserializeContext* context)
     context->pos = ch;
     
     NSString* string = cfautoreleased(CFStringCreateWithCharacters(NULL, start, ch - start));
-    return (__bridge_retained CFNumberRef)[[NSDecimalNumber alloc] initWithString:string];
+    return (as_bridge_retained CFNumberRef)[[NSDecimalNumber alloc] initWithString:string];
 }
 
 
@@ -1407,7 +1411,7 @@ static const serializeFunction g_serializeFunctions[] =
  */
 static bool serializeObject(KSJSONSerializeContext* context, CFTypeRef objectRef)
 {
-    id object = (__bridge id) objectRef;
+    id object = (as_bridge id) objectRef;
 
     // Check the cache first.
     Class cls = object_getClass(object);
@@ -1483,7 +1487,7 @@ static bool serializeObject(KSJSONSerializeContext* context, CFTypeRef objectRef
     context.error = error;
     serializeInit(&context);
     
-    CFTypeRef objectRef = (__bridge CFTypeRef)object;
+    CFTypeRef objectRef = (as_bridge CFTypeRef)object;
     
     likely_if(serializeObject(&context, objectRef))
     {
@@ -1508,7 +1512,7 @@ static bool serializeObject(KSJSONSerializeContext* context, CFTypeRef objectRef
     {
         *error = nil;
     }
-    CFStringRef stringRef = (__bridge CFStringRef) jsonString;
+    CFStringRef stringRef = (as_bridge CFStringRef) jsonString;
     CFIndex length = CFStringGetLength(stringRef);
     unichar* start = malloc((unsigned int)length * sizeof(*start));
     unlikely_if(start == NULL)
