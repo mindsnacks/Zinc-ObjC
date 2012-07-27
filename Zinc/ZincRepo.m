@@ -35,6 +35,7 @@
 #import "ZincHTTPRequestOperation.h"
 #import "ZincSerialQueueProxy.h"
 #import "ZincErrors.h"
+#import "ZincTrackingRef.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -737,7 +738,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             
             NSString* currentDistro = [self.index trackedDistributionForBundleId:bundleId];
             if (currentDistro == nil) {
-                [self.index addTrackedBundleId:bundleId distribution:ZincDistributionLocal];
+                ZincTrackingRef* trackingRef = [ZincTrackingRef trackingRefWithDistribution:ZincDistributionLocal
+                                                                                    version:localManifest.version];
+                [self.index setTrackingRef:trackingRef forBundleId:bundleId];
             }
 
             NSURL* localBundleRes = [localManifest bundleResource];
@@ -810,29 +813,61 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self bootstrapBundleWithId:bundleId fromDir:dir waitUntilDone:NO error:outError];
 }
 
-- (void) beginTrackingBundleWithId:(NSString *)bundleId distribution:(NSString *)distro
+- (ZincTask*) beginTrackingBundleWithId:(NSString *)bundleId trackingRef:(ZincTrackingRef*)trackingRef
 {
+    NSString* catalogId = ZincCatalogIdFromBundleId(bundleId);
+    NSAssert(catalogId, @"does not appear to be a valid bundle id");
+    
+    __block ZincTask* task = nil;
+    
     [self.indexProxy executeBlock:^{
         
-        [self.index addTrackedBundleId:bundleId distribution:distro];
+        BOOL wasAleadyTracking = [self.index trackingRefForBundleId:bundleId] != nil;
+        if (!wasAleadyTracking) {
+            [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
+        }
         
-        ZincVersion catalogVersion = [self catalogVersionForBundleId:bundleId distribution:distro];
-        if (catalogVersion != ZincVersionInvalid) { // found in a remote catalog
+        [self.index setTrackingRef:trackingRef forBundleId:bundleId];
+        
+        ZincVersion version = trackingRef.version;
+        if (version != ZincVersionInvalid) {
             
-            NSURL* catalogBundleRes = [NSURL zincResourceForBundleWithId:bundleId version:catalogVersion];
+            NSURL* catalogBundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
             
             ZincBundleState state = [self.index stateForBundle:catalogBundleRes];
             if (state != ZincBundleStateCloning && state != ZincBundleStateAvailable) {
                 [self.index setState:ZincBundleStateCloning forBundle:catalogBundleRes];
                 ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:catalogBundleRes];
-                [self queueTaskForDescriptor:taskDesc];
+                task = [self queueTaskForDescriptor:taskDesc];
             }
         }
         
         [self queueIndexSave];
     }];
     
-    [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
+    return task;
+}
+
+- (ZincTask*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automatically:(BOOL)autoUpdate
+{
+    if (autoUpdate) {
+        ZincTrackingRef* trackingRef = [ZincTrackingRef trackingRefWithDistribution:distro updateAutomatically:YES];
+        return [self beginTrackingBundleWithId:bundleId trackingRef:trackingRef];
+
+    } else {
+        // NOTE TO SELF:
+        //   this currently overrides automatic tracking. That's probably not what
+        //   we want, but not sure how to clean up the API yet.
+
+        ZincVersion version = [self catalogVersionForBundleId:bundleId distribution:distro];
+        ZincTrackingRef* trackingRef = [ZincTrackingRef trackingRefWithDistribution:distro version:version];
+        return [self beginTrackingBundleWithId:bundleId trackingRef:trackingRef];
+    }
+}
+
+- (ZincTask*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro
+{
+    return [self updateBundleWithId:bundleId distribution:distro automatically:NO];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
@@ -873,20 +908,33 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         
         for (NSString* bundleId in trackBundles) {
             
-            NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
-            ZincVersion version = [self catalogVersionForBundleId:bundleId distribution:distro];
-            if (version == ZincVersionInvalid) {
+            ZincTrackingRef* trackingRef = [self.index trackingRefForBundleId:bundleId];
+            
+            ZincVersion targetVersion = ZincVersionInvalid;
+            
+            /*
+               - if auto updates are enabled, we always want to look in the catalog
+               - if not, BUT the version is invalid, it means that we weren't able to clone any version yet
+             */
+            // TODO: this really needs to be testable
+            if (trackingRef.updateAutomatically || trackingRef.version == ZincVersionInvalid) {
+                targetVersion = [self catalogVersionForBundleId:bundleId distribution:trackingRef.distribution];
+            } else {
+                targetVersion = trackingRef.version;
+            }
+            
+            if (targetVersion == ZincVersionInvalid) {
                 continue;
             };
             
-            NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+            NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:targetVersion];
             ZincBundleState state = [self.index stateForBundle:bundleRes];
             
             if (state == ZincBundleStateCloning || state == ZincBundleStateAvailable) {
                 // already downloading/downloaded
                 continue;
             }
-            
+
             [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
             
             ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];

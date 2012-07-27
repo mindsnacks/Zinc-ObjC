@@ -8,7 +8,6 @@
 
 #import "AppDelegate.h"
 
-//#import "ViewController.h"
 #import "BundleListViewController.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
@@ -101,8 +100,10 @@
     }
 
     [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+
+    [repo updateBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master" automatically:YES];
+    
+//    [repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
 
     BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
     
