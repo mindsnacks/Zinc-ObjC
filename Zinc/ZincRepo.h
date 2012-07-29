@@ -42,7 +42,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
-@class ZincTask;
+@class ZincOperation;
 
 @interface ZincRepo : NSObject
 
@@ -71,8 +71,8 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 /* returns the Task represented for the command.
  * DO NOT set the completeion block. I will fix this in a future.
  */
-- (ZincTask*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (ZincTask*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automatically:(BOOL)autoUpdate;
+- (ZincOperation*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
+- (ZincOperation*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automatically:(BOOL)autoUpdate;
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 

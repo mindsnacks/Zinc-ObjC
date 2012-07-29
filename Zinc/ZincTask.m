@@ -68,33 +68,6 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     [super dealloc];
 }
 
-- (void) cancel
-{
-    @synchronized(self) {
-        [super cancel];
-        [self.dependencies makeObjectsPerformSelector:@selector(cancel)];
-    }
-}
-
-- (NSInteger) currentProgressValue
-{
-    return [[self.subtasks valueForKeyPath:@"@sum.currentProgressValue"] integerValue];
-}
-
-- (NSInteger) maxProgressValue
-{
-    return [[self.subtasks valueForKeyPath:@"@sum.maxProgressValue"] integerValue];
-}
-
-- (double) progress
-{
-    NSInteger max = [self maxProgressValue];
-    if (max > 0) {
-        return (double)self.currentProgressValue / max;
-    }
-    return 0;
-}
-
 + (NSString *)action
 {
     NSAssert(NO, @"subclasses must override");
@@ -152,13 +125,6 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
         return [obj isKindOfClass:[ZincTask class]];
     }]];
 }
-
-//- (void) waitForSuboperations
-//{
-//    for (NSOperation* operation in self.suboperations) {
-//        [operation waitUntilFinished];
-//    }
-//}
 
 - (void) addEvent:(ZincEvent*)event
 {
