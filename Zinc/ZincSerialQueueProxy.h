@@ -14,6 +14,6 @@
 
 @property (retain, readonly) id target;
 
-- (void) executeBlock:(dispatch_block_t)block;
+- (void) withTarget:(dispatch_block_t)block;
 
 @end

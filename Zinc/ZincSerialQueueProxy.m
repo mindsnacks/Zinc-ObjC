@@ -52,7 +52,7 @@
     }
 }
 
-- (void) executeBlock:(dispatch_block_t)block
+- (void) withTarget:(dispatch_block_t)block
 {
     if (dispatch_get_current_queue() == self.queue) {
         block();   

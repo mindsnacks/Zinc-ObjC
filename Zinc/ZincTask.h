@@ -8,12 +8,13 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincOperation.h"
 
 @class ZincRepo;
 @class ZincEvent;
 @class ZincTaskDescriptor;
 
-@interface ZincTask : NSOperation
+@interface ZincTask : ZincOperation
 
 + (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo;
 + (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo input:(id)input;
@@ -32,12 +33,11 @@
 /* all events including events from subtasks */
 - (NSArray*) getAllEvents;
 
-- (NSInteger) currentProgressValue;
-- (NSInteger) maxProgressValue;
-
-- (double) progress;
+/* all errors that occurred including errors from subtasks */
+- (NSArray*) getAllErrors;
 
 @end
+
 
 #pragma mark Private
 
