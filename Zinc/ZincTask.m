@@ -10,6 +10,7 @@
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskDescriptor.h"
+#import "ZincEvent.h"
 
 @interface ZincTask ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
@@ -66,33 +67,6 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     [_resource release];
     [_input release];
     [super dealloc];
-}
-
-- (void) cancel
-{
-    @synchronized(self) {
-        [super cancel];
-        [self.dependencies makeObjectsPerformSelector:@selector(cancel)];
-    }
-}
-
-- (NSInteger) currentProgressValue
-{
-    return [[self.subtasks valueForKeyPath:@"@sum.currentProgressValue"] integerValue];
-}
-
-- (NSInteger) maxProgressValue
-{
-    return [[self.subtasks valueForKeyPath:@"@sum.maxProgressValue"] integerValue];
-}
-
-- (double) progress
-{
-    NSInteger max = [self maxProgressValue];
-    if (max > 0) {
-        return (double)self.currentProgressValue / max;
-    }
-    return 0;
 }
 
 + (NSString *)action
@@ -153,13 +127,6 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     }]];
 }
 
-//- (void) waitForSuboperations
-//{
-//    for (NSOperation* operation in self.suboperations) {
-//        [operation waitUntilFinished];
-//    }
-//}
-
 - (void) addEvent:(ZincEvent*)event
 {
     [self.myEvents addObject:event];
@@ -181,6 +148,22 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     
     NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
     return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
+}
+
+- (NSArray*) getAllErrors
+{
+    NSArray* allEvents = [self getAllEvents];
+    NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
+    for (ZincEvent* event in allEvents) {
+        if([event isKindOfClass:[ZincErrorEvent class]]) {
+            [allErrors addObject:[(ZincErrorEvent*)event error]];
+        }
+    }
+    // TODO: write a test for this
+    if ([allErrors count] == 0) {
+        return nil;
+    }
+    return allErrors;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

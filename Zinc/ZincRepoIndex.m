@@ -11,6 +11,7 @@
 #import "ZincResource.h"
 #import "ZincDeepCopying.h"
 #import "ZincErrors.h"
+#import "ZincTrackingRef.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
@@ -92,12 +93,13 @@
     return bundleInfo;
 }
 
-- (void) addTrackedBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (void) setTrackingRef:(ZincTrackingRef*)trackingRef forBundleId:(NSString*)bundleId
 {
     @synchronized(self.myBundles) {
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
-        [bundleInfo setObject:distro forKey:@"tracking"];
-    }
+        NSDictionary* trackingRefDict = [trackingRef dictionaryRepresentation];
+        [bundleInfo setObject:trackingRefDict forKey:@"tracking"];
+    }    
 }
 
 - (void) removeTrackedBundleId:(NSString*)bundleId
@@ -115,8 +117,8 @@
         set = [NSMutableSet setWithCapacity:[self.myBundles count]];
         NSArray* allBundleIds = [self.myBundles allKeys];
         for (NSString* bundleId in allBundleIds) {
-            NSString* distro = [self trackedDistributionForBundleId:bundleId];
-            if (distro != nil) {
+            ZincTrackingRef* ref = [self trackingRefForBundleId:bundleId];
+            if (ref != nil) {
                 [set addObject:bundleId];
             }
         }
@@ -124,11 +126,31 @@
     return set;
 }
 
+- (ZincTrackingRef*) trackingRefForBundleId:(NSString*)bundleId
+{
+    ZincTrackingRef* trackingRef = nil;
+    @synchronized(self.myBundles) {
+        id trackingRefObj = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        if ([trackingRefObj isKindOfClass:[NSString class]]) {
+            // !!!: temporary kludge to read old style tracking refs
+            trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
+            trackingRef.version = ZincVersionInvalid;
+            trackingRef.distribution = trackingRefObj;
+            trackingRef.updateAutomatically = YES; // all old tracking refs updated automatically
+        } else if ([trackingRefObj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* trackingRefDict = (NSDictionary*)trackingRefObj;
+            trackingRef = [ZincTrackingRef trackingRefFromDictionary:trackingRefDict];
+        }
+    }
+    return trackingRef;
+}
+
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId
 {
     NSString* distro = nil;
     @synchronized(self.myBundles) {
-        distro = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        ZincTrackingRef* trackingRef = [self trackingRefForBundleId:bundleId];
+        distro = trackingRef.distribution;
     }
     return distro;
 }
