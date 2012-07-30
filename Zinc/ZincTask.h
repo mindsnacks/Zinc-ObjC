@@ -33,6 +33,9 @@
 /* all events including events from subtasks */
 - (NSArray*) getAllEvents;
 
+/* all errors that occurred including errors from subtasks */
+- (NSArray*) getAllErrors;
+
 @end
 
 

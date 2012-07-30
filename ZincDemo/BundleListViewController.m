@@ -153,7 +153,9 @@
 
 - (void) debugAction:(id)sender
 {
-    [self.repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+    [self.repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
+        NSLog(@"updated! errors: %@", errors);
+    }];
 }
 
 #pragma mark - Notifications

@@ -10,6 +10,7 @@
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskDescriptor.h"
+#import "ZincEvent.h"
 
 @interface ZincTask ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
@@ -147,6 +148,22 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     
     NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
     return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
+}
+
+- (NSArray*) getAllErrors
+{
+    NSArray* allEvents = [self getAllEvents];
+    NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
+    for (ZincEvent* event in allEvents) {
+        if([event isKindOfClass:[ZincErrorEvent class]]) {
+            [allErrors addObject:[(ZincErrorEvent*)event error]];
+        }
+    }
+    // TODO: write a test for this
+    if ([allErrors count] == 0) {
+        return nil;
+    }
+    return allErrors;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

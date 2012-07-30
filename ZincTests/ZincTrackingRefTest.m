@@ -26,4 +26,10 @@
     STAssertEqualObjects(r1, r2, @"empty objects should be equal");
 }
 
+- (void) testReturnsNilDict
+{
+    ZincTrackingRef* r1 = [ZincTrackingRef trackingRefFromDictionary:nil];
+    STAssertNil(r1, @"should be nil");
+}
+
 @end

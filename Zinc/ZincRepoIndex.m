@@ -130,8 +130,17 @@
 {
     ZincTrackingRef* trackingRef = nil;
     @synchronized(self.myBundles) {
-        NSDictionary* trackingRefDict = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
-        trackingRef = [ZincTrackingRef trackingRefFromDictionary:trackingRefDict];
+        id trackingRefObj = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        if ([trackingRefObj isKindOfClass:[NSString class]]) {
+            // !!!: temporary kludge to read old style tracking refs
+            trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
+            trackingRef.version = ZincVersionInvalid;
+            trackingRef.distribution = trackingRefObj;
+            trackingRef.updateAutomatically = YES; // all old tracking refs updated automatically
+        } else if ([trackingRefObj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* trackingRefDict = (NSDictionary*)trackingRefObj;
+            trackingRef = [ZincTrackingRef trackingRefFromDictionary:trackingRefDict];
+        }
     }
     return trackingRef;
 }

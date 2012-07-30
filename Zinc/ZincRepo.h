@@ -42,7 +42,6 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
-@class ZincOperation;
 
 @interface ZincRepo : NSObject
 
@@ -68,17 +67,13 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 #pragma mark Bundles
 
-/* returns the Task represented for the command.
- * DO NOT set the completeion block. I will fix this in a future.
- */
-- (ZincOperation*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (ZincOperation*) updateBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automatically:(BOOL)autoUpdate;
+- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
+
+- (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
-
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir error:(NSError**)outError;
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir waitUntilDone:(BOOL)wait error:(NSError**)outError;
-- (void) waitForAllBootstrapTasks;
 
 - (NSSet*) trackedBundleIds;
 
@@ -87,6 +82,9 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
+
+// NOTE: this may be removed soon
+- (void) waitForAllBootstrapTasks;
 
 #pragma mark Tasks
 

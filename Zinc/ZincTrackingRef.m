@@ -40,6 +40,8 @@
 
 + (ZincTrackingRef*) trackingRefFromDictionary:(NSDictionary*)dict
 {
+    if (dict == nil) return nil;
+    
     ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
     ref.distribution = [dict objectForKey:kCodingKey_Distribution];
     ref.version = [[dict objectForKey:kCodingKey_Version] integerValue];

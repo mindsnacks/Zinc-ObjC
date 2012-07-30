@@ -116,4 +116,12 @@
     STAssertTrue(version == 2, @"should be 2");
 }
 
+- (void) testReturnsNilTrackingRefIfBundleIsNotTracked
+{
+    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
+    ZincTrackingRef* ref = [i1 trackingRefForBundleId:@"foo.bundle"];
+    STAssertNil(ref, @"tracking ref should be nil");
+    
+}
+
 @end
