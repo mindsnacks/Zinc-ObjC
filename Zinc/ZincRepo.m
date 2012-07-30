@@ -479,16 +479,12 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
-    dispatch_queue_t currentQueue = dispatch_get_current_queue();
-    
     NSSet* sourceURLs = [self.index sourceURLs];
     
     NSOperation* parentOp = nil;
     if (completion != nil) {
         parentOp = [[[NSOperation alloc] init] autorelease];
-        parentOp.completionBlock = ^{
-            dispatch_sync(currentQueue, completion);
-        };
+        parentOp.completionBlock = completion;
     }
     
     for (NSURL* source in sourceURLs) {
@@ -759,7 +755,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void) bootstrapBundleWithId:(NSString*)bundleId manifest:(ZincManifest*)localManifest manifestPath:(NSString*)manifesPath completionBlock:(ZincCompletionBlock)completion
 {
-    __block ZincTaskRef* taskRef = nil;
+    ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[[ZincTaskRef alloc] init] autorelease];
         taskRef.completionBlock = ^{
@@ -786,8 +782,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             
             NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
                                        manifesPath, @"manifestPath", nil];
-            ZincTask* bootstrapTask = [self queueTaskForDescriptor:taskDesc input:inputDict];
-            [taskRef addDependency:bootstrapTask];
+            ZincTask* task = [self queueTaskForDescriptor:taskDesc input:inputDict];
+            [taskRef addDependency:task];
         }
 
         [self addOperation:taskRef];
@@ -839,15 +835,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 {
-    dispatch_queue_t currentQueue = dispatch_get_current_queue();
-    
-    __block ZincTaskRef* taskRef = nil;
+    ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[[ZincTaskRef alloc] init] autorelease];
         taskRef.completionBlock = ^{
-            dispatch_sync(currentQueue, ^{
                 completion([taskRef getAllErrors]);
-            });
         };
     }
     
@@ -857,9 +849,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         ZincTrackingRef* trackingRef = [self.index trackingRefForBundleId:bundleId];
         if (trackingRef == nil) {
             if (completion != nil) {
-                dispatch_async(currentQueue, ^{
-                    completion([NSArray arrayWithObject:ZincError(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE)]);
-                });
+                completion([NSArray arrayWithObject:ZincError(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE)]);
             }
             return;
         }
@@ -867,9 +857,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         ZincVersion version = [self catalogVersionForBundleId:bundleId distribution:trackingRef.distribution];
         if (version == ZincVersionInvalid) {
             if (completion != nil) {
-                dispatch_async(currentQueue, ^{
-                    completion([NSArray arrayWithObject:ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS)]);
-                });
+                completion([NSArray arrayWithObject:ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS)]);
             }
             return;
         }
@@ -1136,58 +1124,61 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 {
     ZincTask* task = nil;
     
-    if ([taskDescriptor.method isEqualToString:NSStringFromClass([ZincGarbageCollectTask class])]) {
+    @synchronized(self) { // unfortunate that this whole method is wrapped in an synchrize, try to improve
         
-        task = [self queueGarbageCollectTask];
-        
-    } else {
-        
-        NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
-        
-        // look for task that also matches the action
-        ZincTask* existingTask = nil;
-        for (ZincTask* potentialMatchingTask in tasksMatchingResource) {
-            if ([[potentialMatchingTask taskDescriptor].action isEqual:taskDescriptor.action]) {
-                existingTask = potentialMatchingTask;
-            }
-        }
-        
-        // if no exact match found, add task and depends for all other resource-matching
-        if (existingTask == nil) {
+        if ([taskDescriptor.method isEqualToString:NSStringFromClass([ZincGarbageCollectTask class])]) {
             
-            task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
-            
-            for (ZincTask* resourceTask in tasksMatchingResource) {
-                if (resourceTask != task) {
-                    [task addDependency:resourceTask];
-                }
-            }
-            
-            // !!!: special case for bundle clone tasks
-            if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
-                NSArray* deleteOps = [[self.queueGroup getQueueForClass:[ZincBundleDeleteTask class]] operations];
-                for (NSOperation* deleteOp in deleteOps) {
-                    [task addDependency:deleteOp];
-                }
-            }
-            
-            // !!!: special case for garbage collect tasks
-            NSArray* garbageCollectOps = [[self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]]  operations];
-            for (NSOperation* garbageCollectOp in garbageCollectOps) {
-                [task addDependency:garbageCollectOp];
-            }
-            
-            [self queueTask:task];
+            task = [self queueGarbageCollectTask];
             
         } else {
             
-            //ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
-            task = existingTask;
-        }
-        
-        // add all explicit dependencies
-        for (NSOperation* dep in dependencies) {
-            [task addDependency:dep];
+            NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
+            
+            // look for task that also matches the action
+            ZincTask* existingTask = nil;
+            for (ZincTask* potentialMatchingTask in tasksMatchingResource) {
+                if ([[potentialMatchingTask taskDescriptor].action isEqual:taskDescriptor.action]) {
+                    existingTask = potentialMatchingTask;
+                }
+            }
+            
+            // if no exact match found, add task and depends for all other resource-matching
+            if (existingTask == nil) {
+                
+                task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
+                
+                for (ZincTask* resourceTask in tasksMatchingResource) {
+                    if (resourceTask != task) {
+                        [task addDependency:resourceTask];
+                    }
+                }
+                
+                // !!!: special case for bundle clone tasks
+                if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
+                    NSArray* deleteOps = [[self.queueGroup getQueueForClass:[ZincBundleDeleteTask class]] operations];
+                    for (NSOperation* deleteOp in deleteOps) {
+                        [task addDependency:deleteOp];
+                    }
+                }
+                
+                // !!!: special case for garbage collect tasks
+                NSArray* garbageCollectOps = [[self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]]  operations];
+                for (NSOperation* garbageCollectOp in garbageCollectOps) {
+                    [task addDependency:garbageCollectOp];
+                }
+                
+                [self queueTask:task];
+                
+            } else {
+                
+                //ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
+                task = existingTask;
+            }
+            
+            // add all explicit dependencies
+            for (NSOperation* dep in dependencies) {
+                [task addDependency:dep];
+            }
         }
     }
     
