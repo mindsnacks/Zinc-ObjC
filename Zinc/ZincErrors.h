@@ -6,8 +6,6 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "AMFoundation.h"
-
 #define kZincErrorDomain kZincPackageName
 
 #define ZincError(E) AMError(E, kZincErrorDomain)
