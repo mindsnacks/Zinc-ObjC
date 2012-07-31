@@ -80,21 +80,24 @@
     for (NSString* file in allFiles) {
         NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
         NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-        BOOL createLink = NO;
-        if ([self.fileManager fileExistsAtPath:filePath]) {
-            NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:NULL];
-            if (![dst isEqualToString:shaPath]) {
-                if (![self.fileManager removeItemAtPath:filePath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                    return NO;
-                }
-                createLink = YES;
-            }
-        } else {
-            createLink = YES;
+        
+        NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
+        if (shaPathDest == nil) {
+            // if it's nil, it's not a symbolic link. use the original file.
+            shaPathDest = shaPath;
         }
         
+        NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
+        BOOL dstDoesNotExist = (dst == nil);
+        BOOL dstNotEqualToShaPath = ![dst isEqualToString:shaPathDest];
+        BOOL createLink = dstDoesNotExist || dstNotEqualToShaPath;
+        
         if (createLink) {
+            // remove regardless and ignore errors. there are too many cases to
+            // handle cleanly, with non-existant files, symlinks, etc. if something
+            // fails it will be caught in the linkItemAtPath call below.
+            [self.fileManager removeItemAtPath:filePath error:NULL];
+
             if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 return NO;
