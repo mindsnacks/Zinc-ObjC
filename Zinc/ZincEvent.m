@@ -272,17 +272,18 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 @implementation ZincBundleCloneBeginEvent
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          bundleResource, kZincEventAttributesBundleResourceKey, nil];
+                          bundleResource, kZincEventAttributesBundleResourceKey,
+                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:source attributes:attr] autorelease];
 }
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context
 {
-    return [self bundleCloneBeginEventForBundleResource:bundleResource source:nil];
+    return [self bundleCloneBeginEventForBundleResource:bundleResource source:nil context:context];
 }
 
 + (NSString*) name
@@ -298,6 +299,11 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 - (NSURL*) bundleResource
 {
     return [self.attributes objectForKey:kZincEventAttributesBundleResourceKey];
+}
+
+- (id)context
+{
+    return [self.attributes objectForKey:kZincEventAttributesContextKey];
 }
 
 @end
