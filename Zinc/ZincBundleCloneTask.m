@@ -43,7 +43,7 @@
 - (void) setUp
 {
     self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self]];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self context:self.bundleId]];
 }
 
 - (void) complete
