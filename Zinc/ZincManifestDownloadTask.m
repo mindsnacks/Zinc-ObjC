@@ -90,7 +90,7 @@
         }
         
         ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
-        NSData* data = [[manifest jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+        NSData* data = [manifest jsonRepresentation:&error];
         if (data == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;

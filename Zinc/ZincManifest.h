@@ -35,6 +35,6 @@
 - (NSURL*) bundleResource;
 
 - (NSDictionary*) dictionaryRepresentation;
-- (NSString*) jsonRepresentation:(NSError**)outError;
+- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end
