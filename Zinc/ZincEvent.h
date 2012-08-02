@@ -14,7 +14,6 @@ typedef enum {
     ZincEventTypeCatalogUpdate,
     ZincEventTypeDelete,
     ZincEventTypeDownloadBegin,
-    ZincEventTypeDownloadProgress,
     ZincEventTypeDownloadComplete,
     ZincEventTypeBundleCloneBegin,
     ZincEventTypeBundleCloneComplete,
@@ -29,7 +28,6 @@ extern NSString *const kZincEventAttributesURLKey;
 extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
-extern NSString *const kZincEventAttributesProgressKey;
 extern NSString *const kZincEventAttributesContextKey;
 
 #pragma mark Notifications
@@ -38,7 +36,6 @@ extern NSString *const kZincEventErrorNotification;
 extern NSString *const kZincEventBundleUpdateNotification;
 extern NSString *const kZincEventDeleteNotification;
 extern NSString *const kZincEventDownloadBeginNotification;
-extern NSString *const kZincEventDownloadProgressNotification;
 extern NSString *const kZincEventDownloadCompleteNotification;
 extern NSString *const kZincEventBundleCloneBeginNotification;
 extern NSString *const kZincEventBundleCloneCompleteNotification;
@@ -85,14 +82,6 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 + (id) downloadBeginEventForURL:(NSURL*)url;
 @property (readonly) NSURL* url;
 
-@end
-
-@interface ZincDownloadProgressEvent : ZincEvent 
-
-+ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context;
-@property (readonly) NSURL* url;
-@property (readonly) float progress;
-@property (readonly) id context;
 @end
 
 
