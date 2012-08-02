@@ -8,7 +8,7 @@
 
 #import "ZincManifestTests.h"
 #import "ZincManifest.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 
 @implementation ZincManifestTests
 
@@ -18,12 +18,12 @@
     
     NSString* path = TEST_RESOURCE_PATH(@"meep-1.json");
     
-    NSString* jsonString = [[[NSString alloc] initWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error] autorelease];
-    if (jsonString == nil) {
+    NSData* jsonData = [[[NSData alloc] initWithContentsOfFile:path options:0 error:&error] autorelease];
+    if (jsonData == nil) {
         STFail(@"%@", error);
     }
                     
-    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -68,7 +68,8 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -101,7 +102,8 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -137,7 +139,8 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }
@@ -173,7 +176,8 @@
     }";
     
     NSError* error = nil;
-    NSDictionary* dict = [ZincKSJSON deserializeString:jsonString error:&error];
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
         STFail(@"%@", error);
     }

@@ -31,7 +31,7 @@
 #import "ZincUtils.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincSerialQueueProxy.h"
 #import "ZincErrors.h"
@@ -142,13 +142,12 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
     if ([repo.fileManager fileExistsAtPath:indexPath]) {
         
-        NSString* jsonString = [[[NSString alloc] initWithContentsOfFile:indexPath encoding:NSUTF8StringEncoding error:outError]
-                                autorelease];
-        if (jsonString == nil) {
+        NSData* jsonData = [[[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError] autorelease];
+        if (jsonData == nil) {
             return nil;
         }
-        
-        NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
+         
+        NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
         if (jsonDict == nil) {
             return nil;
         }
@@ -539,11 +538,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 - (ZincCatalog*) loadCatalogWithIdentifier:(NSString*)identifier error:(NSError**)outError
 {
     NSString* catalogPath = [[[self catalogsPath] stringByAppendingPathComponent:identifier] stringByAppendingPathExtension:@"json"];
-    NSString* jsonString = [NSString stringWithContentsOfFile:catalogPath encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:catalogPath options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
-    NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
     if (jsonDict == nil) {
         return nil;
     }
@@ -593,13 +592,13 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 - (ZincManifest*) importManifestWithPath:(NSString*)manifestPath error:(NSError**)outError
 {
     // read manifest
-    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:manifestPath options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
     
     // copy manifest to repo
-    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
     NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleName version:manifest.version];
     if (![self.fileManager fileExistsAtPath:manifestRepoPath]) {
@@ -614,11 +613,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 - (ZincManifest*) loadManifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
 {
     NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
-    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:manifestPath options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
-    NSDictionary* jsonDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
     if (jsonDict == nil) {
         return nil;
     }

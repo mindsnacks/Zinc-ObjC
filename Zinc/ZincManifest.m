@@ -8,7 +8,7 @@
 
 
 #import "ZincManifest.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 
 @interface ZincManifest ()
@@ -45,12 +45,15 @@
 
 + (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError
 {
-    NSString* jsonString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:path options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
     
-    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
+    if (manifestDict == nil) {
+        return nil;
+    }
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
     return manifest;
 }
@@ -133,9 +136,9 @@
 }
 
 // TODO: refactor
-- (NSString*) jsonRepresentation:(NSError**)outError
+- (NSData*) jsonRepresentation:(NSError**)outError
 {
-    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 
