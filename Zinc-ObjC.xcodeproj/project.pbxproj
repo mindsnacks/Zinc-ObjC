@@ -18,8 +18,6 @@
 		B3106DBD14E344DC0052438D /* ZincHTTPRequestOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B3106DB914E344DC0052438D /* ZincHTTPRequestOperation.m */; };
 		B3106DBE14E344DC0052438D /* ZincHTTPURLConnectionOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3106DBA14E344DC0052438D /* ZincHTTPURLConnectionOperation.h */; };
 		B3106DBF14E344DC0052438D /* ZincHTTPURLConnectionOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B3106DBB14E344DC0052438D /* ZincHTTPURLConnectionOperation.m */; };
-		B3106DC314E345F00052438D /* ZincKSJSON.h in Headers */ = {isa = PBXBuildFile; fileRef = B3106DC114E345F00052438D /* ZincKSJSON.h */; };
-		B3106DC414E345F00052438D /* ZincKSJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = B3106DC214E345F00052438D /* ZincKSJSON.m */; };
 		B317E4F115C9F8AF00DE9D73 /* ZincJSONSerialization.h in Headers */ = {isa = PBXBuildFile; fileRef = B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */; };
 		B317E4F215C9F8AF00DE9D73 /* ZincJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */; };
 		B3215E2214BE5AF800FC7FA7 /* ZincTaskDescriptor.h in Headers */ = {isa = PBXBuildFile; fileRef = B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */; };
@@ -162,7 +160,6 @@
 
 /* Begin PBXFileReference section */
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		B31056F5148D8E430069F0D5 /* libKSJSON.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKSJSON.a; path = "KSJSON/build/Release-iphoneos/libKSJSON.a"; sourceTree = "<group>"; };
 		B3106DA914E3404B0052438D /* AMError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMError.h; sourceTree = "<group>"; };
 		B3106DAA14E3404B0052438D /* AMFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMFoundation.h; sourceTree = "<group>"; };
 		B3106DAB14E3404B0052438D /* AMLogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMLogMacros.h; sourceTree = "<group>"; };
@@ -173,8 +170,6 @@
 		B3106DB914E344DC0052438D /* ZincHTTPRequestOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincHTTPRequestOperation.m; sourceTree = "<group>"; };
 		B3106DBA14E344DC0052438D /* ZincHTTPURLConnectionOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincHTTPURLConnectionOperation.h; sourceTree = "<group>"; };
 		B3106DBB14E344DC0052438D /* ZincHTTPURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincHTTPURLConnectionOperation.m; sourceTree = "<group>"; };
-		B3106DC114E345F00052438D /* ZincKSJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincKSJSON.h; sourceTree = "<group>"; };
-		B3106DC214E345F00052438D /* ZincKSJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincKSJSON.m; sourceTree = "<group>"; };
 		B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincJSONSerialization.h; sourceTree = "<group>"; };
 		B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincJSONSerialization.m; sourceTree = "<group>"; };
 		B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskDescriptor.h; sourceTree = "<group>"; };
@@ -364,7 +359,6 @@
 			isa = PBXGroup;
 			children = (
 				B3106DA814E3404B0052438D /* AMFoundation */,
-				B3106DC014E345F00052438D /* KSJSON+Zinc */,
 				B3106DB114E341510052438D /* Light-Untar-for-iOS+Zinc */,
 				B3106DB714E344DC0052438D /* AFNetworking+Zinc */,
 			);
@@ -409,16 +403,6 @@
 			);
 			name = "AFNetworking+Zinc";
 			path = "Dependencies/AFNetworking+Zinc";
-			sourceTree = SOURCE_ROOT;
-		};
-		B3106DC014E345F00052438D /* KSJSON+Zinc */ = {
-			isa = PBXGroup;
-			children = (
-				B3106DC114E345F00052438D /* ZincKSJSON.h */,
-				B3106DC214E345F00052438D /* ZincKSJSON.m */,
-			);
-			name = "KSJSON+Zinc";
-			path = "Dependencies/KSJSON+Zinc";
 			sourceTree = SOURCE_ROOT;
 		};
 		B340F96B148D521000206F86 /* Resources */ = {
@@ -555,7 +539,6 @@
 			children = (
 				B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */,
 				B30B763B14B75750004E6587 /* libz.dylib */,
-				B31056F5148D8E430069F0D5 /* libKSJSON.a */,
 				B340FA13148D801A00206F86 /* libAMFoundation_iOS.a */,
 				B329B05C14E3152D0091019F /* libcommonCrypto.dylib */,
 				B38743081489B830004B227B /* UIKit.framework */,
@@ -778,7 +761,6 @@
 				B3106DB514E341510052438D /* NSFileManager+Tar.h in Headers */,
 				B3106DBC14E344DC0052438D /* ZincHTTPRequestOperation.h in Headers */,
 				B3106DBE14E344DC0052438D /* ZincHTTPURLConnectionOperation.h in Headers */,
-				B3106DC314E345F00052438D /* ZincKSJSON.h in Headers */,
 				B3AD8B7514FD7E7800B5F9ED /* ZincNetworkOperation.h in Headers */,
 				B32EEB1114FEDCEE005F9917 /* ZincHTTPStreamOperation.h in Headers */,
 				B32EEB1814FEFB66005F9917 /* ZincHTTPRequestOperation+Private.h in Headers */,
@@ -989,7 +971,6 @@
 				B3106DB614E341510052438D /* NSFileManager+Tar.m in Sources */,
 				B3106DBD14E344DC0052438D /* ZincHTTPRequestOperation.m in Sources */,
 				B3106DBF14E344DC0052438D /* ZincHTTPURLConnectionOperation.m in Sources */,
-				B3106DC414E345F00052438D /* ZincKSJSON.m in Sources */,
 				B3AD8B7614FD7E7800B5F9ED /* ZincNetworkOperation.m in Sources */,
 				B32EEB1214FEDCEE005F9917 /* ZincHTTPStreamOperation.m in Sources */,
 				B396E3091590F56F00584F83 /* ZincBundleBootstrapTask.m in Sources */,
