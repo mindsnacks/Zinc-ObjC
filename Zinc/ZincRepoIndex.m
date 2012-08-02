@@ -7,7 +7,7 @@
 //
 
 #import "ZincRepoIndex.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 #import "ZincDeepCopying.h"
 #import "ZincErrors.h"
@@ -297,9 +297,9 @@
     return dict;
 }
 
-- (NSString*) jsonRepresentation:(NSError**)outError
+- (NSData*) jsonRepresentation:(NSError**)outError
 {
-    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 

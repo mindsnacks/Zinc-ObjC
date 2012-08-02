@@ -43,6 +43,6 @@
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;
 - (NSDictionary*) dictionaryRepresentation;
-- (NSString*) jsonRepresentation:(NSError**)outError;
+- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end

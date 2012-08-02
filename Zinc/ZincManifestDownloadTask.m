@@ -18,7 +18,7 @@
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincTaskActions.h"
 
 @implementation ZincManifestDownloadTask
@@ -83,8 +83,7 @@
             continue;
         }
         
-        NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-        id json = [ZincKSJSON deserializeString:jsonString error:&error];
+        id json = [ZincJSONSerialization JSONObjectWithData:uncompressed options:0 error:&error];
         if (json == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;

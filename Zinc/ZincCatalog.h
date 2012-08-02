@@ -23,13 +23,13 @@
 #pragma mark Encoding
 - (id) initWithDictionary:(NSDictionary*)dict;
 - (NSDictionary*) dictionaryRepresentation;
-- (NSString*) jsonRepresentation:(NSError**)outError;
+- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end
 
 // TODO: rename, break out, etc
 @interface ZincCatalog (JSON)
 
-+ (ZincCatalog*) catalogFromJSONString:(NSString*)string error:(NSError**)outError;
++ (ZincCatalog*) catalogFromJSONData:(NSData*)data error:(NSError**)outError;
 
 @end

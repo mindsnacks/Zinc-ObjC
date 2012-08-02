@@ -67,14 +67,14 @@
         return;
     }
     
-    NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-    ZincCatalog* catalog = [ZincCatalog catalogFromJSONString:jsonString error:&error];
+//    NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
+    ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    NSData* data = [[catalog jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* data = [catalog jsonRepresentation:&error];
     if (data == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
