@@ -23,6 +23,7 @@
 
 @interface ZincBundleRemoteCloneTask ()
 @property (assign) NSInteger totalBytesToDownload;
+@property (assign) NSInteger lastProgressValue;
 @end
 
 @implementation ZincBundleRemoteCloneTask
@@ -42,6 +43,30 @@
 - (double) downloadCostForTotalSize:(NSUInteger)totalSize connectionCount:(NSUInteger)connectionCount
 {
     return (double)self.httpOverheadConstant * connectionCount + totalSize;
+}
+
+- (BOOL) isProgressCalculated
+{
+    return self.totalBytesToDownload > 0;
+}
+
+- (NSInteger) currentProgressValue
+{
+    if (![self isProgressCalculated]) return 0;
+    
+    NSInteger curVal = [super currentProgressValue];
+    if (curVal < self.lastProgressValue) {
+        curVal = self.lastProgressValue;
+    } else if (curVal > [self maxProgressValue]) {
+        curVal = [self maxProgressValue];
+    }
+    self.lastProgressValue = curVal;
+    return curVal;
+}
+
+- (NSInteger) maxProgressValue
+{
+    return self.totalBytesToDownload;
 }
 
 - (BOOL) prepareManifest
