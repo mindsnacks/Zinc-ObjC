@@ -44,7 +44,7 @@
 {
     NSError* error = nil;
     
-    NSData* data = [[self.catalog jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+    NSData* data = [self.catalog jsonRepresentation:&error];
     if (data == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
