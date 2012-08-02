@@ -14,14 +14,12 @@ NSString *const kZincEventAttributesURLKey = @"url";
 NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
-NSString *const kZincEventAttributesProgressKey = @"progress";
 NSString *const kZincEventAttributesContextKey = @"context";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
 NSString *const kZincEventDeleteNotification = @"ZincEventDeleteNotification";
 NSString *const kZincEventDownloadBeginNotification = @"ZincEventDownloadBeginNotification";
-NSString *const kZincEventDownloadProgressNotification = @"ZincEvenDownloadProgressNotification";
 NSString *const kZincEventDownloadCompleteNotification = @"ZincEventDownloadCompleteNotification";
 NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneBeginNotification";
 NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
@@ -201,45 +199,6 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
     return [self.attributes objectForKey:kZincEventAttributesURLKey];
 }
                           
-@end
-
-@implementation ZincDownloadProgressEvent
-
-+ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context
-{
-    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, kZincEventAttributesURLKey,
-                          [NSNumber numberWithFloat:progress], kZincEventAttributesProgressKey,
-                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
-    
-    return [[[self alloc] initWithType:ZincEventTypeDownloadProgress source:nil attributes:attr] autorelease];
-}
-
-+ (NSString*) name
-{
-    return @"DOWNLOAD-PROGRESSS";
-}
-
-+ (NSString *)notificationName
-{
-    return kZincEventDownloadProgressNotification;
-}
-
-- (NSURL*) url
-{
-    return [self.attributes objectForKey:kZincEventAttributesURLKey];
-}
-
-- (float)progress
-{
-    return [[self.attributes objectForKey:kZincEventAttributesProgressKey] floatValue];
-}
-
-- (id)context
-{
-    return [self.attributes objectForKey:kZincEventAttributesContextKey];
-}
-
 @end
 
 @implementation ZincDownloadCompleteEvent
