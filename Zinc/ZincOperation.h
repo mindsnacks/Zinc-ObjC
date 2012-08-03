@@ -8,8 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-// this is the same as NSOperation default
-const double kZincOperationInitialDefaultThreadPriority = 0.5;
+// 0.5 - the same as NSOperation default
+extern double const kZincOperationInitialDefaultThreadPriority;
 
 @interface ZincOperation : NSOperation
 

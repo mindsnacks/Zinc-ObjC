@@ -8,6 +8,8 @@
 
 #import "ZincOperation.h"
 
+double const kZincOperationInitialDefaultThreadPriority = 0.5;
+
 @implementation ZincOperation
 
 double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
