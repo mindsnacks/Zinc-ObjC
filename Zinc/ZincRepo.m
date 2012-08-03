@@ -1218,6 +1218,12 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }];
 }
 
++ (void)setDefaultThreadPriority:(double)defaultThreadPriority
+{
+    [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
+}
+
+
 #pragma mark KVO
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
