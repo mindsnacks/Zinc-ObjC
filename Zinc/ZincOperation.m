@@ -10,6 +10,28 @@
 
 @implementation ZincOperation
 
+double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
+
++ (void)setDefaultThreadPriority:(double)defaultThreadPriority
+{
+    @synchronized(self) {
+        _defaultThreadPriority = defaultThreadPriority;
+    }
+}
+
++ (double)defaultThreadPriority
+{
+    return _defaultThreadPriority;
+}
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        self.threadPriority = [[self class] defaultThreadPriority];
+    }
+    return self;
+}
 
 - (NSArray*) zincDependencies
 {

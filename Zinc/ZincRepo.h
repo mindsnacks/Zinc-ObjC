@@ -93,6 +93,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (void) suspendAllTasks;
 - (void) resumeAllTasks;
 - (BOOL) isSuspended;
+
+#pragma mark Utility
+
++ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
        
 @end
 
