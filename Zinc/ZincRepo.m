@@ -757,8 +757,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[[ZincTaskRef alloc] init] autorelease];
+        __block typeof(taskRef) block_taskRef = taskRef;
         taskRef.completionBlock = ^{
-            completion([taskRef getAllErrors]);
+            completion([block_taskRef getAllErrors]);
         };
     }
     
@@ -837,8 +838,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[[ZincTaskRef alloc] init] autorelease];
+        __block typeof(taskRef) block_taskRef = taskRef;
         taskRef.completionBlock = ^{
-                completion([taskRef getAllErrors]);
+                completion([block_taskRef getAllErrors]);
         };
     }
     
