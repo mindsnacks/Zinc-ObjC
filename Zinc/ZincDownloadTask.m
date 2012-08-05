@@ -11,7 +11,6 @@
 #import "ZincHTTPRequestOperation.h"
 #import "ZincEvent.h"
 #import "ZincHTTPURLConnectionOperation.h"
-#import "ZincHTTPStreamOperation.h"
 #import "ZincTaskActions.h"
 
 @interface ZincDownloadTask()
