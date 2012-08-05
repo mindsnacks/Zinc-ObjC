@@ -36,6 +36,8 @@
 
 #pragma mark Bundles
 
+- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId;
+
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 
