@@ -71,6 +71,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
+@property (nonatomic, retain) NSMutableDictionary* prioritiesByBundleId;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -120,6 +121,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @synthesize loadedBundles = _loadedBundles;
 @synthesize myTasks = _myTasks;
 @synthesize queueGroup = _queueGroup;
+@synthesize prioritiesByBundleId = _prioritiesByBundleId;
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
@@ -199,6 +201,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
+        self.prioritiesByBundleId = [[[NSMutableDictionary alloc] init] autorelease];
     }
     return self;
 }
@@ -299,6 +302,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
+    [_prioritiesByBundleId release];
     [super dealloc];
 }
 
@@ -714,6 +718,39 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId
+{
+    @synchronized(self.prioritiesByBundleId)
+    {
+        [self.prioritiesByBundleId setObject:[NSNumber numberWithInteger:priority] forKey:bundleId];
+        NSArray* tasks = [self tasksForBundleId:bundleId];
+        for (ZincTask* task in tasks) {
+            [task setQueuePriority:priority];
+        }
+    }
+}
+
+- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId
+{
+    @synchronized(self.prioritiesByBundleId)
+    {
+        NSNumber* prio = [self.prioritiesByBundleId objectForKey:bundleId];
+        if (prio != nil) {
+            return [prio integerValue];
+        } else {
+            return NSOperationQueuePriorityNormal;
+        }
+    }
+}
+
+- (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
+{
+    if ([task.resource isZincBundleResource]) {
+        return [self priorityForBundleWithId:[task.resource zincBundleId]];
+    }
+    return NSOperationQueuePriorityNormal;
+}
+
 - (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
 {
     NSParameterAssert(bundleId);
@@ -1090,10 +1127,27 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
+- (NSArray*) tasksForBundleId:(NSString*)bundleId
+{
+    @synchronized(self.myTasks)
+    {
+        NSMutableArray* tasks = [NSMutableArray array];
+        for (ZincTask* task in self.myTasks) {
+            if ([task.resource isZincBundleResource]) {
+                if ([[task.resource zincBundleId] isEqualToString:bundleId]) {
+                    [tasks addObject:task];
+                }
+            }
+        }
+        return tasks;
+    }
+}
 
 - (void) queueTask:(ZincTask*)task
 {
     @synchronized(self.myTasks) {
+        task.queuePriority = [self initialPriorityForTask:task];
+                
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
         [task addObserver:self forKeyPath:@"progress" options:NSKeyValueObservingOptionNew context:&kvo_taskProgress];
