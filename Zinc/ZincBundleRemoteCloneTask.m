@@ -127,7 +127,7 @@
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
-            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:nil];
+            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
             
             [archiveOp waitUntilFinished];
             if (!archiveOp.finishedSuccessfully) {

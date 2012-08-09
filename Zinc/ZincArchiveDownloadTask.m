@@ -37,6 +37,8 @@
 
 - (void) main
 {
+    NSString* flavor = self.input;
+    
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
 
@@ -62,7 +64,7 @@
     
     for (NSURL* source in sources) {
         
-        NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version];
+        NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
         ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream context:self.bundleId];
         [downloadOp waitUntilFinished];

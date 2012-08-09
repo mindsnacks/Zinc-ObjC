@@ -98,8 +98,8 @@
 		B396E3091590F56F00584F83 /* ZincBundleBootstrapTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B396E3071590F56F00584F83 /* ZincBundleBootstrapTask.m */; };
 		B396E30C1590FB8D00584F83 /* ZincBundleCloneTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B396E30A1590FB8C00584F83 /* ZincBundleCloneTask.h */; };
 		B396E30D1590FB8D00584F83 /* ZincBundleCloneTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B396E30B1590FB8D00584F83 /* ZincBundleCloneTask.m */; };
-		B3A1387315C310DD0095DEB0 /* ZincTrackingRef.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A1387115C310DD0095DEB0 /* ZincTrackingRef.h */; };
-		B3A1387415C310DD0095DEB0 /* ZincTrackingRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A1387215C310DD0095DEB0 /* ZincTrackingRef.m */; };
+		B3A1387315C310DD0095DEB0 /* ZincTrackingInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A1387115C310DD0095DEB0 /* ZincTrackingInfo.h */; };
+		B3A1387415C310DD0095DEB0 /* ZincTrackingInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B3A1387215C310DD0095DEB0 /* ZincTrackingInfo.m */; };
 		B3AD8B7214FD7CBD00B5F9ED /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3AD8B7514FD7E7800B5F9ED /* ZincNetworkOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3AD8B7314FD7E7800B5F9ED /* ZincNetworkOperation.h */; };
 		B3AD8B7614FD7E7800B5F9ED /* ZincNetworkOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AD8B7414FD7E7800B5F9ED /* ZincNetworkOperation.m */; };
@@ -113,7 +113,7 @@
 		B3BE1CDC14D79F0900C61515 /* ZincDownloadTask+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */; };
 		B3BFF9E015C62363005A879E /* ZincTaskRef.h in Headers */ = {isa = PBXBuildFile; fileRef = B3BFF9DE15C62363005A879E /* ZincTaskRef.h */; };
 		B3BFF9E115C62363005A879E /* ZincTaskRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BFF9DF15C62363005A879E /* ZincTaskRef.m */; };
-		B3C8514B15C316D6001D9275 /* ZincTrackingRefTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C8514A15C316D6001D9275 /* ZincTrackingRefTest.m */; };
+		B3C8514B15C316D6001D9275 /* ZincTrackingInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C8514A15C316D6001D9275 /* ZincTrackingInfoTest.m */; };
 		B3CEEC0214BE0F270023DF5B /* ZincBundleDeleteTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B3CEEC0014BE0F270023DF5B /* ZincBundleDeleteTask.h */; };
 		B3CEEC0314BE0F270023DF5B /* ZincBundleDeleteTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CEEC0114BE0F270023DF5B /* ZincBundleDeleteTask.m */; };
 		B3D2CA1814C5FC1A00717B2E /* ZincManifestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D2CA1714C5FC1A00717B2E /* ZincManifestTests.m */; };
@@ -268,8 +268,8 @@
 		B396E30A1590FB8C00584F83 /* ZincBundleCloneTask.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleCloneTask.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B396E30B1590FB8D00584F83 /* ZincBundleCloneTask.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleCloneTask.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B396E30E1590FBE800584F83 /* ZincBundleCloneTask+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincBundleCloneTask+Private.h"; sourceTree = "<group>"; };
-		B3A1387115C310DD0095DEB0 /* ZincTrackingRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTrackingRef.h; sourceTree = "<group>"; };
-		B3A1387215C310DD0095DEB0 /* ZincTrackingRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTrackingRef.m; sourceTree = "<group>"; };
+		B3A1387115C310DD0095DEB0 /* ZincTrackingInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTrackingInfo.h; sourceTree = "<group>"; };
+		B3A1387215C310DD0095DEB0 /* ZincTrackingInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTrackingInfo.m; sourceTree = "<group>"; };
 		B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B3AD8B7314FD7E7800B5F9ED /* ZincNetworkOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = ZincNetworkOperation.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B3AD8B7414FD7E7800B5F9ED /* ZincNetworkOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = ZincNetworkOperation.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
@@ -282,8 +282,8 @@
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
 		B3BFF9DE15C62363005A879E /* ZincTaskRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskRef.h; sourceTree = "<group>"; };
 		B3BFF9DF15C62363005A879E /* ZincTaskRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskRef.m; sourceTree = "<group>"; };
-		B3C8514915C316D6001D9275 /* ZincTrackingRefTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTrackingRefTest.h; sourceTree = "<group>"; };
-		B3C8514A15C316D6001D9275 /* ZincTrackingRefTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTrackingRefTest.m; sourceTree = "<group>"; };
+		B3C8514915C316D6001D9275 /* ZincTrackingInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTrackingInfoTest.h; sourceTree = "<group>"; };
+		B3C8514A15C316D6001D9275 /* ZincTrackingInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTrackingInfoTest.m; sourceTree = "<group>"; };
 		B3CEEC0014BE0F270023DF5B /* ZincBundleDeleteTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleDeleteTask.h; sourceTree = "<group>"; };
 		B3CEEC0114BE0F270023DF5B /* ZincBundleDeleteTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleDeleteTask.m; sourceTree = "<group>"; };
 		B3D2CA1614C5FC1A00717B2E /* ZincManifestTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifestTests.h; sourceTree = "<group>"; };
@@ -444,8 +444,8 @@
 				B3215E3A14BFC6DA00FC7FA7 /* ZincResourceTests.m */,
 				B3E46B9C14C4C00400030349 /* ZincRepoIndexTests.h */,
 				B3E46B9D14C4C00400030349 /* ZincRepoIndexTests.m */,
-				B3C8514915C316D6001D9275 /* ZincTrackingRefTest.h */,
-				B3C8514A15C316D6001D9275 /* ZincTrackingRefTest.m */,
+				B3C8514915C316D6001D9275 /* ZincTrackingInfoTest.h */,
+				B3C8514A15C316D6001D9275 /* ZincTrackingInfoTest.m */,
 				B3E46AB414C0DEDA00030349 /* UIImageZincTests.h */,
 				B3E46AB514C0DEDA00030349 /* UIImageZincTests.m */,
 				B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */,
@@ -626,6 +626,7 @@
 				B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */,
 				B340F993148D543B00206F86 /* ZincBundle.h */,
 				B327067F14B77FAB004E3244 /* ZincEvent.h */,
+				B3A1387115C310DD0095DEB0 /* ZincTrackingInfo.h */,
 				B38A06F114C0DADC00AEC367 /* UIImage+Zinc.h */,
 			);
 			name = "Public Headers";
@@ -692,8 +693,8 @@
 				B3215E2514BE600E00FC7FA7 /* ZincResource.m */,
 				B3549DED148DB80900DD63D1 /* ZincManifest.h */,
 				B3549DEE148DB80900DD63D1 /* ZincManifest.m */,
-				B3A1387115C310DD0095DEB0 /* ZincTrackingRef.h */,
-				B3A1387215C310DD0095DEB0 /* ZincTrackingRef.m */,
+				B3A1387215C310DD0095DEB0 /* ZincTrackingInfo.m */,
+				B31E269115D472F600B913D9 /* ZincBundleTrackingRequest.m */,
 				B3E46B5114C3DDB900030349 /* Tasks */,
 			);
 			name = Main;
@@ -761,7 +762,7 @@
 				B396E3081590F56F00584F83 /* ZincBundleBootstrapTask.h in Headers */,
 				B396E30C1590FB8D00584F83 /* ZincBundleCloneTask.h in Headers */,
 				B3F14A5D15BB840900F7E22E /* ZincTaskActions.h in Headers */,
-				B3A1387315C310DD0095DEB0 /* ZincTrackingRef.h in Headers */,
+				B3A1387315C310DD0095DEB0 /* ZincTrackingInfo.h in Headers */,
 				B347EBE015C3593500FA0649 /* ZincOperation.h in Headers */,
 				B3BFF9E015C62363005A879E /* ZincTaskRef.h in Headers */,
 				B317E4F115C9F8AF00DE9D73 /* ZincJSONSerialization.h in Headers */,
@@ -968,7 +969,7 @@
 				B396E3091590F56F00584F83 /* ZincBundleBootstrapTask.m in Sources */,
 				B396E30D1590FB8D00584F83 /* ZincBundleCloneTask.m in Sources */,
 				B3F14A5E15BB840900F7E22E /* ZincTaskActions.m in Sources */,
-				B3A1387415C310DD0095DEB0 /* ZincTrackingRef.m in Sources */,
+				B3A1387415C310DD0095DEB0 /* ZincTrackingInfo.m in Sources */,
 				B347EBE115C3593500FA0649 /* ZincOperation.m in Sources */,
 				B3BFF9E115C62363005A879E /* ZincTaskRef.m in Sources */,
 				B317E4F215C9F8AF00DE9D73 /* ZincJSONSerialization.m in Sources */,
@@ -987,7 +988,7 @@
 				B3E46AB614C0DEDA00030349 /* UIImageZincTests.m in Sources */,
 				B3E46BA014C4C01800030349 /* ZincRepoIndexTests.m in Sources */,
 				B3D2CA1814C5FC1A00717B2E /* ZincManifestTests.m in Sources */,
-				B3C8514B15C316D6001D9275 /* ZincTrackingRefTest.m in Sources */,
+				B3C8514B15C316D6001D9275 /* ZincTrackingInfoTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

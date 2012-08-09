@@ -11,45 +11,45 @@
 #define kCodingKey_UpdateAutomatically @"auto_update"
 #define kCodingKey_Flavor @"flavor"
 
-#import "ZincTrackingRef.h"
+#import "ZincTrackingInfo.h"
 
-@implementation ZincTrackingRef
+@implementation ZincTrackingInfo
 
 @synthesize distribution = _distribution;
 @synthesize version = _version;
 @synthesize updateAutomatically = _updateAutomatically;
 @synthesize flavor = _flavor;
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                              updateAutomatically:(BOOL)updateAutomatically
 {
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = distribution;
-    ref.version = ZincVersionInvalid;
-    ref.updateAutomatically = updateAutomatically;
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = distribution;
+    info.version = ZincVersionInvalid;
+    info.updateAutomatically = updateAutomatically;
+    return info;
 }
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                                          version:(ZincVersion)version
 {
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = distribution;
-    ref.version = version;
-    ref.updateAutomatically = NO;
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = distribution;
+    info.version = version;
+    info.updateAutomatically = NO;
+    return info;
 }
 
-+ (ZincTrackingRef*) trackingRefFromDictionary:(NSDictionary*)dict
++ (ZincTrackingInfo*) trackingInfoFromDictionary:(NSDictionary*)dict
 {
     if (dict == nil) return nil;
     
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = [dict objectForKey:kCodingKey_Distribution];
-    ref.version = [[dict objectForKey:kCodingKey_Version] integerValue];
-    ref.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
-    ref.flavor = [dict objectForKey:kCodingKey_Flavor];
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = [dict objectForKey:kCodingKey_Distribution];
+    info.version = [[dict objectForKey:kCodingKey_Version] integerValue];
+    info.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
+    info.flavor = [dict objectForKey:kCodingKey_Flavor];
+    return info;
 }
 
 - (id)init
@@ -88,7 +88,7 @@
     
     if ([object class] != [self class]) return NO;
     
-    ZincTrackingRef* other = (ZincTrackingRef*)object;
+    ZincTrackingInfo* other = (ZincTrackingInfo*)object;
     
     BOOL bothDistributionsAreNil = !(self.distribution==nil) && (other.distribution==nil);
     if (!bothDistributionsAreNil && [self.distribution isEqual:other.distribution]) {

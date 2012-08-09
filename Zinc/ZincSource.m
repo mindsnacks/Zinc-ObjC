@@ -92,9 +92,14 @@
     return [self getRequestForURL:fileURL];
 }
 
-- (NSURL*) urlForArchivedBundleName:(NSString*)name version:(NSInteger)version
+- (NSURL*) urlForArchivedBundleName:(NSString*)name version:(NSInteger)version flavor:(NSString*)flavor
 {
-    NSString* filename = [NSString stringWithFormat:@"%@-%d.tar", name, version];
+    NSString* filename = nil;
+    if( flavor == nil) {
+        filename = [NSString stringWithFormat:@"%@-%d.tar", name, version];
+    } else {
+        filename = [NSString stringWithFormat:@"%@-%d~%@.tar", name, version, flavor];
+    }
     NSString* relativePath = [@"archives" stringByAppendingPathComponent:filename];
     
     return [[NSURL URLWithString:relativePath relativeToURL:self] absoluteURL];
@@ -102,9 +107,16 @@
 
 - (NSURLRequest*) urlRequestForArchivedBundleName:(NSString*)name version:(NSInteger)version
 {
-    NSURL* archiveURL = [self urlForArchivedBundleName:name version:version];
+    NSURL* archiveURL = [self urlForArchivedBundleName:name version:version flavor:nil];
     return [self getRequestForURL:archiveURL];
 }
+
+- (NSURLRequest*) urlRequestForArchivedBundleName:(NSString*)name version:(NSInteger)version flavor:(NSString*)flavor
+{
+    NSURL* archiveURL = [self urlForArchivedBundleName:name version:version flavor:flavor];
+    return [self getRequestForURL:archiveURL];
+}
+
 
 
 @end

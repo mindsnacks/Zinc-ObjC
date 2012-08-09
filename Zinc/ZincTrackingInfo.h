@@ -10,23 +10,23 @@
 
 #import "ZincGlobals.h"
 
-@interface ZincTrackingRef : NSObject
+@interface ZincTrackingInfo : NSObject
 
 @property (nonatomic, copy) NSString* distribution;
 @property (nonatomic, assign) ZincVersion version;
 @property (nonatomic, assign) BOOL updateAutomatically;
 @property (nonatomic, copy) NSString* flavor;
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
-                             updateAutomatically:(BOOL)updateAutomatically;
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
+                               updateAutomatically:(BOOL)updateAutomatically;
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
-                                         version:(ZincVersion)version;
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
+                                           version:(ZincVersion)version;
 
 
 #pragma mark Coding
 
-+ (ZincTrackingRef*) trackingRefFromDictionary:(NSDictionary*)dict;
++ (ZincTrackingInfo*) trackingInfoFromDictionary:(NSDictionary*)dict;
 - (NSDictionary*) dictionaryRepresentation;
 
 @end
