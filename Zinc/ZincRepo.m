@@ -751,7 +751,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return NSOperationQueuePriorityNormal;
 }
 
-- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(dir);
@@ -768,10 +768,16 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         return;
     }
     
-    [self bootstrapBundleWithId:bundleId potentialManifestPath:potentialManifestPath completionBlock:completion];
+    [self bootstrapBundleWithId:bundleId flavor:(NSString*)flavor potentialManifestPath:potentialManifestPath completionBlock:completion];
 }
 
-- (void) bootstrapBundleWithId:(NSString*)bundleId potentialManifestPath:(NSString*)manifestPath completionBlock:(ZincCompletionBlock)completion
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
+{
+    [self bootstrapBundleWithId:bundleId flavor:nil fromDir:dir completionBlock:completion];
+}
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor potentialManifestPath:(NSString*)manifestPath completionBlock:(ZincCompletionBlock)completion
 {
     NSParameterAssert(bundleId);
     NSParameterAssert(manifestPath);
@@ -786,10 +792,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         return;
     }
     
-    [self bootstrapBundleWithId:bundleId manifest:localManifest manifestPath:manifestPath completionBlock:completion];
+    [self bootstrapBundleWithId:bundleId flavor:flavor manifest:localManifest manifestPath:manifestPath completionBlock:completion];
 }
 
-- (void) bootstrapBundleWithId:(NSString*)bundleId manifest:(ZincManifest*)localManifest manifestPath:(NSString*)manifesPath completionBlock:(ZincCompletionBlock)completion
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor manifest:(ZincManifest*)localManifest manifestPath:(NSString*)manifesPath completionBlock:(ZincCompletionBlock)completion
 {
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
@@ -810,9 +816,21 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             if (trackingRef == nil) {
                 trackingRef = [ZincTrackingRef trackingRefWithDistribution:ZincDistributionLocal
                                                                    version:localManifest.version];
+//                trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
+//                trackingRef.version = localManifest.version;
+                // !!!: note to self, not sure if local distro is necessary, maybe remove?
                 [self.index setTrackingRef:trackingRef forBundleId:bundleId];
+                trackingRef.flavor = flavor;
             }
             
+            if ((flavor != nil || trackingRef.flavor != nil)
+                && ![trackingRef.flavor isEqualToString:flavor]) {
+                @throw [NSException
+                        exceptionWithName:NSInternalInconsistencyException
+                        reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
+                        userInfo:nil];
+            }
+
             NSURL* localBundleRes = [localManifest bundleResource];
             [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
             ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
@@ -848,17 +866,27 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
 {
     NSString* catalogId = ZincCatalogIdFromBundleId(bundleId);
     NSAssert(catalogId, @"does not appear to be a valid bundle id");
-
+    
     [self.indexProxy withTarget:^{
         ZincTrackingRef* trackingRef = [self.index trackingRefForBundleId:bundleId];
         if (trackingRef == nil) {
             trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
+            trackingRef.flavor = flavor;
         }
         trackingRef.distribution = distro;
+
+        if ((flavor != nil || trackingRef.flavor != nil)
+            && ![trackingRef.flavor isEqualToString:flavor]) {
+            @throw [NSException
+                    exceptionWithName:NSInternalInconsistencyException
+                    reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
+                    userInfo:nil];
+        }
+        
         trackingRef.updateAutomatically = autoUpdate;
         if (autoUpdate) {
             trackingRef.version = [self catalogVersionForBundleId:bundleId distribution:distro];
@@ -868,6 +896,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         
         [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
     }];
+}
+
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+{
+    [self beginTrackingBundleWithId:bundleId distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
 }
 
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;

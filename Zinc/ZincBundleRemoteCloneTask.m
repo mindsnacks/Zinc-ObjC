@@ -95,7 +95,9 @@
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
     
-    NSArray* allFiles = [manifest allFiles];
+    NSString* flavor = [self getTrackedFlavor];
+    
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
     NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
     
     for (NSString* path in allFiles) {

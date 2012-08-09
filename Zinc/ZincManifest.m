@@ -21,6 +21,7 @@
 @synthesize catalogId = _catalogId;
 @synthesize version = _version;
 @synthesize files = _files;
+@synthesize flavors = _flavors;
 
 - (id) initWithDictionary:(NSDictionary*)dict;
 {
@@ -29,7 +30,8 @@
         self.bundleName = [dict objectForKey:@"bundle"];
         self.catalogId = [dict objectForKey:@"catalog"];
         self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [[[dict objectForKey:@"files"] mutableCopy] autorelease];
+        self.files = [dict objectForKey:@"files"];
+        self.flavors = [dict objectForKey:@"flavors"];
     }
     return self;
 }
@@ -63,6 +65,7 @@
     [_catalogId release];
     [_bundleName release];
     [_files release];
+    [_flavors release];
     [super dealloc];
 }
 
@@ -105,10 +108,36 @@
              objectForKey:@"size"] unsignedIntegerValue];
 }
 
+- (NSArray*) flavorsForFile:(NSString*)path
+{
+    NSDictionary* fileDict = [self.files objectForKey:path];
+    return [fileDict objectForKey:@"flavors"];
+}
+
 - (NSArray*) allFiles
 {
     return [self.files allKeys];
 }
+
+- (NSArray*) filesForFlavor:(NSString*)flavor
+{
+    if (flavor == nil) {
+        return [self allFiles];
+    }
+    
+    return [[self allFiles] filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:
+             ^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                 
+                 NSArray* flavorsForFile = [self flavorsForFile:evaluatedObject];
+                 if ([flavorsForFile count] == 0) {
+                     return YES;
+                 } else {
+                     return [flavorsForFile containsObject:flavor];
+                 }
+             }]];
+}
+
 
 - (NSArray*) allSHAs
 {

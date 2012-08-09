@@ -9,6 +9,7 @@
 #define kCodingKey_Distribution @"distribution"
 #define kCodingKey_Version @"version"
 #define kCodingKey_UpdateAutomatically @"auto_update"
+#define kCodingKey_Flavor @"flavor"
 
 #import "ZincTrackingRef.h"
 
@@ -17,6 +18,7 @@
 @synthesize distribution = _distribution;
 @synthesize version = _version;
 @synthesize updateAutomatically = _updateAutomatically;
+@synthesize flavor = _flavor;
 
 + (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
                              updateAutomatically:(BOOL)updateAutomatically
@@ -46,6 +48,7 @@
     ref.distribution = [dict objectForKey:kCodingKey_Distribution];
     ref.version = [[dict objectForKey:kCodingKey_Version] integerValue];
     ref.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
+    ref.flavor = [dict objectForKey:kCodingKey_Flavor];
     return ref;
 }
 
@@ -63,15 +66,19 @@
 - (void)dealloc
 {
     [_distribution release];
+    [_flavor release];
     [super dealloc];
 }
 
 - (NSDictionary*) dictionaryRepresentation
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:3];
-    [dict setObject:self.distribution forKey:kCodingKey_Distribution];
+    if (self.distribution != nil)
+        [dict setObject:self.distribution forKey:kCodingKey_Distribution];
     [dict setObject:[NSNumber numberWithInteger:self.version] forKey:kCodingKey_Version];
     [dict setObject:[NSNumber numberWithBool:self.updateAutomatically] forKey:kCodingKey_UpdateAutomatically];
+    if (self.flavor != nil)
+        [dict setObject:self.flavor forKey:kCodingKey_Flavor];
     return dict;
 }
 
@@ -92,6 +99,11 @@
     }
     if (self.updateAutomatically != other.updateAutomatically) {
         return NO;
+    }
+    if (self.flavor != nil || other.flavor != nil) {
+        if (![self.flavor isEqual:other.flavor]) {
+            return NO;
+        }
     }
     
     return YES;

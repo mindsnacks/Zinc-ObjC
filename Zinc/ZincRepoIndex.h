@@ -24,6 +24,7 @@
 - (void) removeTrackedBundleId:(NSString*)bundleId;
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId;
 - (ZincTrackingRef*) trackingRefForBundleId:(NSString*)bundleId;
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;

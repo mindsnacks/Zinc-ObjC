@@ -98,8 +98,8 @@
     repo.delegate = eventSink;
     
     [repo beginTrackingBundleWithId:bundleId
-                       distribution:@"master" 
-               automaticallyBootstrapFromPath:[NSBundle bundleForClass:[self class]]];
+                       distribution:@"master"
+                automaticallyUpdate:NO];
     
     [repo resumeAllTasks];
 
@@ -148,7 +148,7 @@
     
     NSString* manifestPath = [repo pathForManifestWithBundleId:oldManifest.bundleName version:oldManifest.version];
     
-    NSString* oldManifestJSON = [oldManifest jsonRepresentation:&error];
+    NSData* oldManifestJSON = [oldManifest jsonRepresentation:&error];
     if (oldManifestJSON == nil) {
         STFail(@"error: @%", error);
     }
@@ -157,17 +157,17 @@
     [repo registerBundle:[NSURL zincResourceForBundleWithId:bundleId version:0] status:ZincBundleStateAvailable];
     
     [repo beginTrackingBundleWithId:bundleId
-                       distribution:@"master" 
-               automaticallyBootstrapFromPath:[NSBundle bundleForClass:[self class]]];
+                       distribution:@"master"
+                automaticallyUpdate:NO];
     
     [repo resumeAllTasks];
     
     TEST_WAIT_UNTIL_TRUE([eventSink didReceiveEventOfType:ZincEventTypeBundleCloneComplete]);
     
-    NSString* newManifestJSON = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
+    NSData* newManifestJSON = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:&error];
     STAssertNotNil(newManifestJSON, @"error: %@");
     
-    STAssertFalse([oldManifestJSON isEqualToString:newManifestJSON], @"manifests should not be equal");
+    STAssertFalse([oldManifestJSON isEqualToData:newManifestJSON], @"manifests should not be equal");
 }
 
 - (void)tearDown

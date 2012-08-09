@@ -68,8 +68,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 #pragma mark Bundles
 
 - (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
 
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 

@@ -23,8 +23,8 @@
 {
     return ZincTaskActionUpdate;
 }
-- (void)dealloc
 
+- (void)dealloc
 {
     [_fileManager release];
     [super dealloc];
@@ -38,6 +38,11 @@
 - (ZincVersion) version
 {
     return [self.resource zincBundleVersion];
+}
+
+- (NSString*) getTrackedFlavor
+{
+    return [self.repo.index trackedFlavorForBundleId:self.bundleId];
 }
 
 - (void) setUp
@@ -57,8 +62,10 @@
 {
     NSError* error = nil;
     
+    NSString* flavor = [self getTrackedFlavor];
+    
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
-    NSArray* allFiles = [manifest allFiles];
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
     
     // Build a list of all dirs needed for the bundle
     NSMutableSet* allDirs = [NSMutableSet setWithCapacity:[allFiles count]];

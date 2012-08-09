@@ -155,6 +155,16 @@
     return distro;
 }
 
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId
+{
+    NSString* flavor = nil;
+    @synchronized(self.myBundles) {
+        ZincTrackingRef* trackingRef = [self trackingRefForBundleId:bundleId];
+        flavor = trackingRef.flavor;
+    }
+    return flavor;
+}
+
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource
 {
     @synchronized(self.myBundles) {

@@ -191,4 +191,139 @@
     STAssertTrue(size == 123, @"size is wrong");
 }
 
+- (void) testReadGlobalFlavors
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\", \
+        \"flavors\": [\"small\", \"large\"] \
+    }";
+    
+    NSError* error = nil;
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+    
+    NSArray* expectedFlavors = [NSArray arrayWithObjects:@"small", @"large", nil];
+    STAssertEqualObjects(manifest.flavors, expectedFlavors, @"fail");
+}
+
+- (void) testReadFileFlavors
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"flavors\": [\"small\"], \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\", \
+        \"flavors\": [\"small\", \"large\"] \
+    }";
+    
+    NSError* error = nil;
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+
+    NSArray* expectedFlavors = [NSArray arrayWithObjects:@"small",  nil];
+    STAssertEqualObjects([manifest flavorsForFile:@"meep.jpg"], expectedFlavors, @"fail");
+}
+
+- (void) testFilesForFlavor
+{
+    NSString* jsonString = 
+    @"{ \
+        \"files\": { \
+            \"meep.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f888\", \
+                \"flavors\": [\"small\"], \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            }, \
+            \"meep2.jpg\": { \
+                \"sha\": \"e9185889564c9af0968ee60a7d7771dcfc19f889\", \
+                \"flavors\": [], \
+                \"formats\": { \
+                    \"raw\": { \
+                        \"size\": 3578 \
+                    }, \
+                    \"gz\": { \
+                        \"size\": 123 \
+                    } \
+                } \
+            } \
+        }, \
+        \"version\": 1, \
+        \"bundle\": \"Test\", \
+        \"flavors\": [\"small\", \"large\"] \
+    }";
+    
+    NSError* error = nil;
+    NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (dict == nil) {
+        STFail(@"%@", error);
+    }
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
+    if (manifest == nil) {
+        STFail(@"manifest didn't load");
+    }
+    
+    NSArray* smallFiles = [manifest filesForFlavor:@"small"];
+    STAssertTrue([smallFiles count]==2, @"2 small file");
+    
+    NSArray* largeFiles = [manifest filesForFlavor:@"large"];
+    STAssertTrue([largeFiles count]==1, @"1 large files");
+    
+    NSArray* allFiles = [manifest filesForFlavor:nil];
+    STAssertTrue([allFiles count]==2, @"2 files");
+
+}
+
 @end
