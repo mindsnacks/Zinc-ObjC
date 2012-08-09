@@ -37,6 +37,7 @@
 #import "ZincErrors.h"
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
+#import "ZincBundleTrackingRequest.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -751,6 +752,13 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return NSOperationQueuePriorityNormal;
 }
 
+- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
+{
+    NSParameterAssert(req);
+    NSParameterAssert(dir);
+    [self bootstrapBundleWithId:req.bundleID flavor:req.flavor fromDir:dir completionBlock:completion];
+}
+
 - (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
 {
     NSParameterAssert(bundleId);
@@ -866,6 +874,19 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
+- (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
+{
+    NSParameterAssert(req);
+    [self beginTrackingBundleWithId:req.bundleID distribution:req.distribution flavor:req.flavor automaticallyUpdate:req.updateAutomatically];
+}
+
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+{
+    NSParameterAssert(bundleId);
+    NSParameterAssert(distro);
+    [self beginTrackingBundleWithId:bundleId distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
+}
+
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
 {
     NSString* catalogId = ZincCatalogIdFromBundleId(bundleId);
@@ -896,11 +917,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         
         [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
     }];
-}
-
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
-{
-    [self beginTrackingBundleWithId:bundleId distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
 }
 
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
