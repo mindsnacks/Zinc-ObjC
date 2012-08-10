@@ -36,6 +36,10 @@
 /* all errors that occurred including errors from subtasks */
 - (NSArray*) getAllErrors;
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+- (void)setShouldExecuteAsBackgroundTask;
+#endif
+
 @end
 
 

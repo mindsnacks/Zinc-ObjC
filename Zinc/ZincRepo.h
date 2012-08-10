@@ -58,6 +58,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
+@property (nonatomic, assign) BOOL shouldExecuteTasksInBackground;
 
 #pragma mark Sources
 

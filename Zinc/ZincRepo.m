@@ -123,6 +123,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @synthesize myTasks = _myTasks;
 @synthesize queueGroup = _queueGroup;
 @synthesize prioritiesByBundleId = _prioritiesByBundleId;
+@synthesize shouldExecuteTasksInBackground = _shouldExecuteTasksInBackground;
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
@@ -1196,6 +1197,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 {
     @synchronized(self.myTasks) {
         task.queuePriority = [self initialPriorityForTask:task];
+        
+        if (self.shouldExecuteTasksInBackground) {
+            [task setShouldExecuteAsBackgroundTask];
+        }
                 
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];

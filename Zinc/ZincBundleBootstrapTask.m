@@ -93,8 +93,10 @@
         
         ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:archivePath] autorelease];
         [self addOperation:extractOp];
-        [extractOp waitUntilFinished];
         
+        [extractOp waitUntilFinished];
+        if (self.isCancelled) return;
+
         if (extractOp.error != nil) {
             [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
             return;

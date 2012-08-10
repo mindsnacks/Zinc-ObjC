@@ -53,7 +53,10 @@
     ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
     [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
     [self addOperation:requestOp];
+    
     [requestOp waitUntilFinished];
+    if (self.isCancelled) return;
+    
     if (![requestOp hasAcceptableStatusCode]) {
         [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
         return;
@@ -84,7 +87,9 @@
     ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
     
     ZincTask* catalogTask = [self queueSubtaskForDescriptor:taskDesc input:catalog];
+    
     [catalogTask waitUntilFinished];
+    if (self.isCancelled) return;
     
     if (!catalogTask.finishedSuccessfully) {
         return;
