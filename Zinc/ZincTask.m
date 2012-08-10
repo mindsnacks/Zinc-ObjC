@@ -12,11 +12,19 @@
 #import "ZincTaskDescriptor.h"
 #import "ZincEvent.h"
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
+typedef UIBackgroundTaskIdentifier ZincBackgroundTaskIdentifier;
+#else
+typedef id ZincBackgroundTaskIdentifier;
+#endif
+
 @interface ZincTask ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
 @property (nonatomic, retain, readwrite) NSURL* resource;
 @property (nonatomic, retain, readwrite) id input;
 @property (nonatomic, retain) NSMutableArray* myEvents;
+@property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
 
 static const NSString* kvo_CurrentProgress = @"kvo_CurrentProgress";
@@ -31,6 +39,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 @synthesize myEvents = _myEvents;
 @synthesize title = _title;
 @synthesize finishedSuccessfully = _finishedSuccessfully;
+@synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -63,6 +72,13 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 - (void)dealloc 
 {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+    if (_backgroundTaskIdentifier) {
+        [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
+        _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+    }
+#endif
+    
     [_myEvents release];
     [_resource release];
     [_input release];
@@ -165,6 +181,22 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     }
     return allErrors;
 }
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+- (void)setShouldExecuteAsBackgroundTask
+{
+    if (!self.backgroundTaskIdentifier) {
+        UIApplication *application = [UIApplication sharedApplication];
+        self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+            
+            [self cancel];
+            
+            [application endBackgroundTask:self.backgroundTaskIdentifier];
+            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+        }];
+    }
+}
+#endif
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {

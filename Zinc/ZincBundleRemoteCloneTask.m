@@ -81,7 +81,10 @@
     }
     
     if (manifestDownloadTask != nil) {
+        
         [manifestDownloadTask waitUntilFinished];
+        if (self.isCancelled) return NO;
+
         if (!manifestDownloadTask.finishedSuccessfully) {
             // ???: add an event?
             return NO;
@@ -130,6 +133,8 @@
             ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
             
             [archiveOp waitUntilFinished];
+            if (self.isCancelled) return NO;
+
             if (!archiveOp.finishedSuccessfully) {
                 return NO;
             }
@@ -154,7 +159,10 @@
             BOOL allSuccessful = YES;
             
             for (ZincTask* op in fileOps) {
+                
                 [op waitUntilFinished];
+                if (self.isCancelled) return NO;
+                
                 if (!op.finishedSuccessfully) {
                     allSuccessful = NO;
                 }
