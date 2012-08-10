@@ -128,13 +128,8 @@
     return [[self allFiles] filteredArrayUsingPredicate:
             [NSPredicate predicateWithBlock:
              ^BOOL(id evaluatedObject, NSDictionary *bindings) {
-                 
                  NSArray* flavorsForFile = [self flavorsForFile:evaluatedObject];
-                 if ([flavorsForFile count] == 0) {
-                     return YES;
-                 } else {
-                     return [flavorsForFile containsObject:flavor];
-                 }
+                 return [flavorsForFile containsObject:flavor];
              }]];
 }
 
