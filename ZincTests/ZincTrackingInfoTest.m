@@ -6,29 +6,29 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTrackingRefTest.h"
-#import "ZincTrackingRef.h"
+#import "ZincTrackingInfoTest.h"
+#import "ZincTrackingInfo.h"
 
-@implementation ZincTrackingRefTest
+@implementation ZincTrackingInfoTest
 
-- (void) _testDictionaryRoundtrip:(ZincTrackingRef*)trackingRef
+- (void) _testDictionaryRoundtrip:(ZincTrackingInfo*)trackingRef
 {
     NSDictionary* dict = [trackingRef dictionaryRepresentation];
-    ZincTrackingRef* ref2 = [ZincTrackingRef trackingRefFromDictionary:dict];
+    ZincTrackingInfo* ref2 = [ZincTrackingInfo trackingInfoFromDictionary:dict];
     STAssertEqualObjects(trackingRef, ref2, @"objects should be equal");
 }
 
 - (void) testBasicEquality
 {
-    ZincTrackingRef* r1 = [[[ZincTrackingRef alloc] init] autorelease];
-    ZincTrackingRef* r2 = [[[ZincTrackingRef alloc] init] autorelease];
+    ZincTrackingInfo* r1 = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* r2 = [[[ZincTrackingInfo alloc] init] autorelease];
     
     STAssertEqualObjects(r1, r2, @"empty objects should be equal");
 }
 
 - (void) testReturnsNilDict
 {
-    ZincTrackingRef* r1 = [ZincTrackingRef trackingRefFromDictionary:nil];
+    ZincTrackingInfo* r1 = [ZincTrackingInfo trackingInfoFromDictionary:nil];
     STAssertNil(r1, @"should be nil");
 }
 

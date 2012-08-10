@@ -52,8 +52,10 @@
 {
     NSError* error = nil;
     
+    NSString* flavor = [self getTrackedFlavor];
+    
     // make sha-based links in the repo to files inside the main bundle
-    NSArray* allFiles = [manifest allFiles];    
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
     for (NSString* file in allFiles) {
         NSString* sha = [manifest shaForFile:file];
         NSString* srcPath = [fileRootPath stringByAppendingPathComponent:file];

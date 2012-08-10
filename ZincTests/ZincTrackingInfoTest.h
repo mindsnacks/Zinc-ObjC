@@ -8,6 +8,6 @@
 
 #import <SenTestingKit/SenTestingKit.h>
 
-@interface ZincTrackingRefTest : SenTestCase
+@interface ZincTrackingInfoTest : SenTestCase
 
 @end

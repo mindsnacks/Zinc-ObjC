@@ -29,7 +29,8 @@
 - (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha extension:(NSString*)extension;
 - (NSURLRequest*) urlRequestForFileWithSHA:(NSString*)sha;
 
-- (NSURL*) urlForArchivedBundleName:(NSString*)name version:(NSInteger)version;
+- (NSURL*) urlForArchivedBundleName:(NSString*)name version:(NSInteger)version flavor:(NSString*)flavor;
 - (NSURLRequest*) urlRequestForArchivedBundleName:(NSString*)name version:(NSInteger)version;
+- (NSURLRequest*) urlRequestForArchivedBundleName:(NSString*)name version:(NSInteger)version flavor:(NSString*)flavor;
 
 @end

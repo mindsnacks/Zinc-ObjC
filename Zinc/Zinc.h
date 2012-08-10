@@ -14,6 +14,8 @@
 #import "ZincRepo.h"
 #import "ZincBundle.h"
 #import "ZincEvent.h"
+#import "ZincBundleTrackingRequest.h"
+#import "ZincUtils.h"
 #import "UIImage+Zinc.h"
 
 #endif

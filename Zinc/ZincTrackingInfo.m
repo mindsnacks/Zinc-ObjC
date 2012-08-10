@@ -9,44 +9,47 @@
 #define kCodingKey_Distribution @"distribution"
 #define kCodingKey_Version @"version"
 #define kCodingKey_UpdateAutomatically @"auto_update"
+#define kCodingKey_Flavor @"flavor"
 
-#import "ZincTrackingRef.h"
+#import "ZincTrackingInfo.h"
 
-@implementation ZincTrackingRef
+@implementation ZincTrackingInfo
 
 @synthesize distribution = _distribution;
 @synthesize version = _version;
 @synthesize updateAutomatically = _updateAutomatically;
+@synthesize flavor = _flavor;
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                              updateAutomatically:(BOOL)updateAutomatically
 {
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = distribution;
-    ref.version = ZincVersionInvalid;
-    ref.updateAutomatically = updateAutomatically;
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = distribution;
+    info.version = ZincVersionInvalid;
+    info.updateAutomatically = updateAutomatically;
+    return info;
 }
 
-+ (ZincTrackingRef*) trackingRefWithDistribution:(NSString*)distribution
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                                          version:(ZincVersion)version
 {
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = distribution;
-    ref.version = version;
-    ref.updateAutomatically = NO;
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = distribution;
+    info.version = version;
+    info.updateAutomatically = NO;
+    return info;
 }
 
-+ (ZincTrackingRef*) trackingRefFromDictionary:(NSDictionary*)dict
++ (ZincTrackingInfo*) trackingInfoFromDictionary:(NSDictionary*)dict
 {
     if (dict == nil) return nil;
     
-    ZincTrackingRef* ref = [[[ZincTrackingRef alloc] init] autorelease];
-    ref.distribution = [dict objectForKey:kCodingKey_Distribution];
-    ref.version = [[dict objectForKey:kCodingKey_Version] integerValue];
-    ref.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
-    return ref;
+    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    info.distribution = [dict objectForKey:kCodingKey_Distribution];
+    info.version = [[dict objectForKey:kCodingKey_Version] integerValue];
+    info.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
+    info.flavor = [dict objectForKey:kCodingKey_Flavor];
+    return info;
 }
 
 - (id)init
@@ -63,15 +66,19 @@
 - (void)dealloc
 {
     [_distribution release];
+    [_flavor release];
     [super dealloc];
 }
 
 - (NSDictionary*) dictionaryRepresentation
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:3];
-    [dict setObject:self.distribution forKey:kCodingKey_Distribution];
+    if (self.distribution != nil)
+        [dict setObject:self.distribution forKey:kCodingKey_Distribution];
     [dict setObject:[NSNumber numberWithInteger:self.version] forKey:kCodingKey_Version];
     [dict setObject:[NSNumber numberWithBool:self.updateAutomatically] forKey:kCodingKey_UpdateAutomatically];
+    if (self.flavor != nil)
+        [dict setObject:self.flavor forKey:kCodingKey_Flavor];
     return dict;
 }
 
@@ -81,7 +88,7 @@
     
     if ([object class] != [self class]) return NO;
     
-    ZincTrackingRef* other = (ZincTrackingRef*)object;
+    ZincTrackingInfo* other = (ZincTrackingInfo*)object;
     
     BOOL bothDistributionsAreNil = !(self.distribution==nil) && (other.distribution==nil);
     if (!bothDistributionsAreNil && [self.distribution isEqual:other.distribution]) {
@@ -92,6 +99,11 @@
     }
     if (self.updateAutomatically != other.updateAutomatically) {
         return NO;
+    }
+    if (self.flavor != nil || other.flavor != nil) {
+        if (![self.flavor isEqual:other.flavor]) {
+            return NO;
+        }
     }
     
     return YES;

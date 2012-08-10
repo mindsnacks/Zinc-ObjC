@@ -10,7 +10,7 @@
 #import "ZincGlobals.h"
 #import "ZincRepo.h"
 
-@class ZincTrackingRef;
+@class ZincTrackingInfo;
 
 @interface ZincRepoIndex : NSObject
 
@@ -20,11 +20,12 @@
 - (void) removeSourceURL:(NSURL*)url;
 - (NSSet*) sourceURLs;
 
-- (void) setTrackingRef:(ZincTrackingRef*)ref forBundleId:(NSString*)bundleId;
+- (void) setTrackingInfo:(ZincTrackingInfo*)ref forBundleId:(NSString*)bundleId;
 - (void) removeTrackedBundleId:(NSString*)bundleId;
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
-- (ZincTrackingRef*) trackingRefForBundleId:(NSString*)bundleId;
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId;
+- (ZincTrackingInfo*) trackingInfoForBundleId:(NSString*)bundleId;
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
