@@ -19,6 +19,7 @@
 @property (nonatomic, retain) NSString* bundleName;
 @property (nonatomic, retain) NSString* catalogId;
 @property (nonatomic, assign) ZincVersion version;
+@property (nonatomic, retain) NSArray* flavors;
 
 @property (nonatomic, readonly) NSString* bundleId;
 
@@ -27,8 +28,10 @@
 - (NSString*) bestFormatForFile:(NSString*)path withPreferredFormats:(NSArray*)formats;
 - (NSString*) bestFormatForFile:(NSString*)path;
 - (NSUInteger) sizeForFile:(NSString*)path format:(NSString*)format;
+- (NSArray*) flavorsForFile:(NSString*)path;
 
 - (NSArray*) allFiles;
+- (NSArray*) filesForFlavor:(NSString*)flavor;
 - (NSArray*) allSHAs;
 - (NSUInteger) fileCount;
 

@@ -9,7 +9,7 @@
 #import "ZincRepoIndexTests.h"
 #import "ZincRepoIndex.h"
 #import "ZincResource.h"
-#import "ZincTrackingRef.h"
+#import "ZincTrackingInfo.h"
 
 @implementation ZincRepoIndexTests
 
@@ -45,8 +45,8 @@
 - (void) testAddTrackedBundle
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincTrackingRef* ref = [ZincTrackingRef trackingRefWithDistribution:@"prod" updateAutomatically:YES];
-    [i1 setTrackingRef:ref forBundleId:@"com.foo.bundle"];
+    ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod" updateAutomatically:YES];
+    [i1 setTrackingInfo:ref forBundleId:@"com.foo.bundle"];
     STAssertTrue([[i1 trackedDistributionForBundleId:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
     
     [self _testDictionaryRoundtrip:i1];
@@ -119,7 +119,7 @@
 - (void) testReturnsNilTrackingRefIfBundleIsNotTracked
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincTrackingRef* ref = [i1 trackingRefForBundleId:@"foo.bundle"];
+    ZincTrackingInfo* ref = [i1 trackingInfoForBundleId:@"foo.bundle"];
     STAssertNil(ref, @"tracking ref should be nil");
     
 }

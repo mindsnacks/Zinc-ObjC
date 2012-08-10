@@ -11,7 +11,7 @@
 #import "ZincResource.h"
 #import "ZincDeepCopying.h"
 #import "ZincErrors.h"
-#import "ZincTrackingRef.h"
+#import "ZincTrackingInfo.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
@@ -93,12 +93,12 @@
     return bundleInfo;
 }
 
-- (void) setTrackingRef:(ZincTrackingRef*)trackingRef forBundleId:(NSString*)bundleId
+- (void) setTrackingInfo:(ZincTrackingInfo*)trackingInfo forBundleId:(NSString*)bundleId
 {
     @synchronized(self.myBundles) {
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
-        NSDictionary* trackingRefDict = [trackingRef dictionaryRepresentation];
-        [bundleInfo setObject:trackingRefDict forKey:@"tracking"];
+        NSDictionary* trackingInfoDict = [trackingInfo dictionaryRepresentation];
+        [bundleInfo setObject:trackingInfoDict forKey:@"tracking"];
     }    
 }
 
@@ -117,8 +117,8 @@
         set = [NSMutableSet setWithCapacity:[self.myBundles count]];
         NSArray* allBundleIds = [self.myBundles allKeys];
         for (NSString* bundleId in allBundleIds) {
-            ZincTrackingRef* ref = [self trackingRefForBundleId:bundleId];
-            if (ref != nil) {
+            ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+            if (trackingInfo != nil) {
                 [set addObject:bundleId];
             }
         }
@@ -126,33 +126,43 @@
     return set;
 }
 
-- (ZincTrackingRef*) trackingRefForBundleId:(NSString*)bundleId
+- (ZincTrackingInfo*) trackingInfoForBundleId:(NSString*)bundleId
 {
-    ZincTrackingRef* trackingRef = nil;
+    ZincTrackingInfo* trackingInfo = nil;
     @synchronized(self.myBundles) {
-        id trackingRefObj = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
-        if ([trackingRefObj isKindOfClass:[NSString class]]) {
-            // !!!: temporary kludge to read old style tracking refs
-            trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
-            trackingRef.version = ZincVersionInvalid;
-            trackingRef.distribution = trackingRefObj;
-            trackingRef.updateAutomatically = YES; // all old tracking refs updated automatically
-        } else if ([trackingRefObj isKindOfClass:[NSDictionary class]]) {
-            NSDictionary* trackingRefDict = (NSDictionary*)trackingRefObj;
-            trackingRef = [ZincTrackingRef trackingRefFromDictionary:trackingRefDict];
+        id trackingInfoObj = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        if ([trackingInfoObj isKindOfClass:[NSString class]]) {
+            // !!!: temporary kludge to read old style tracking infos
+            trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
+            trackingInfo.version = ZincVersionInvalid;
+            trackingInfo.distribution = trackingInfoObj;
+            trackingInfo.updateAutomatically = YES; // all old tracking infos updated automatically
+        } else if ([trackingInfoObj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* trackingInfoDict = (NSDictionary*)trackingInfoObj;
+            trackingInfo = [ZincTrackingInfo trackingInfoFromDictionary:trackingInfoDict];
         }
     }
-    return trackingRef;
+    return trackingInfo;
 }
 
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId
 {
     NSString* distro = nil;
     @synchronized(self.myBundles) {
-        ZincTrackingRef* trackingRef = [self trackingRefForBundleId:bundleId];
-        distro = trackingRef.distribution;
+        ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+        distro = trackingInfo.distribution;
     }
     return distro;
+}
+
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId
+{
+    NSString* flavor = nil;
+    @synchronized(self.myBundles) {
+        ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+        flavor = trackingInfo.flavor;
+    }
+    return flavor;
 }
 
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource
