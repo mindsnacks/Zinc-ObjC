@@ -123,7 +123,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @synthesize myTasks = _myTasks;
 @synthesize queueGroup = _queueGroup;
 @synthesize prioritiesByBundleId = _prioritiesByBundleId;
-@synthesize shouldExecuteTasksInBackground = _shouldExecuteTasksInBackground;
+@synthesize executeTasksInBackgroundEnabled = _shouldExecuteTasksInBackground;
+@synthesize automaticBundleUpdatesEnabled = _automaticUpdatesEnabled;
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
@@ -204,6 +205,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
         self.prioritiesByBundleId = [[[NSMutableDictionary alloc] init] autorelease];
+        self.automaticBundleUpdatesEnabled = YES;
+        self.executeTasksInBackgroundEnabled = YES;
     }
     return self;
 }
@@ -280,7 +283,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     ZINC_DEBUG_LOG(@"<fire>");
     
     [blockself refreshSourcesWithCompletion:^{
-        
+
+        if (!self.automaticBundleUpdatesEnabled) return;
+
         [blockself resumeBundleActions];
         
         [blockself refreshBundlesWithCompletion:^{
@@ -448,6 +453,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 {
     [self.index addSourceURL:source];
     [self queueIndexSave];
+    
+    ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
+    [self queueTaskForDescriptor:taskDesc];
 }
 
 - (void) removeSourceURL:(NSURL*)source
@@ -1198,7 +1206,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     @synchronized(self.myTasks) {
         task.queuePriority = [self initialPriorityForTask:task];
         
-        if (self.shouldExecuteTasksInBackground) {
+        if (self.executeTasksInBackgroundEnabled) {
             [task setShouldExecuteAsBackgroundTask];
         }
                 

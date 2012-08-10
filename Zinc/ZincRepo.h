@@ -58,7 +58,16 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
-@property (nonatomic, assign) BOOL shouldExecuteTasksInBackground;
+
+/**
+ @discussion default is YES
+ */
+@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+
+/**
+ @discussion Setting to NO disables all automatic updates. Default is YES.
+ */
+@property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
 
 #pragma mark Sources
 
