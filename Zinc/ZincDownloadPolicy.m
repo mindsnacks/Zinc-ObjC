@@ -30,17 +30,42 @@
     [super dealloc];
 }
 
+- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId
+{
+    @synchronized(self.prioritiesByBundleId)
+    {
+        NSNumber* prio = [self.prioritiesByBundleId objectForKey:bundleId];
+        if (prio != nil) {
+            return [prio integerValue];
+        } else {
+            return NSOperationQueuePriorityNormal;
+        }
+    }
+}
+
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
+
+
 - (ZincConnectionType)requiredConnectionTypeForBundlePriority:(NSOperationQueuePriority)priority
 {
-    return [[self.requiredConnectionTypeByPriority objectForKey:
-             [NSNumber numberWithInteger:priority]]
-            integerValue];
+    @synchronized(self.requiredConnectionTypeByPriority) {
+        
+        NSNumber *specificRequiredConnectionType = [self.requiredConnectionTypeByPriority objectForKey:
+                                                    [NSNumber numberWithInteger:priority]];
+        if (specificRequiredConnectionType != nil) {
+            return [specificRequiredConnectionType integerValue];
+        }
+        
+        return self.defaultRequiredConnectionType;
+    }
 }
 
 - (void)setRequiredConnectionType:(ZincConnectionType)connectionType forBundlePriority:(NSOperationQueuePriority)priority
 {
-    [self.requiredConnectionTypeByPriority setObject:[NSNumber numberWithInteger:connectionType]
-                                              forKey:[NSNumber numberWithInteger:priority]];
+    @synchronized(self.requiredConnectionTypeByPriority) {
+        [self.requiredConnectionTypeByPriority setObject:[NSNumber numberWithInteger:connectionType]
+                                                  forKey:[NSNumber numberWithInteger:priority]];
+    }
 }
 
 @end

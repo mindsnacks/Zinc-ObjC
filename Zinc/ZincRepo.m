@@ -169,7 +169,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     
     [repo queueGarbageCollectTask];
     
-    [Reachability reachabilityForInternetConnection];
+    repo.reachability = [Reachability reachabilityForInternetConnection];
     
     return repo;
 }

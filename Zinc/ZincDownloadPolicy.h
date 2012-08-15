@@ -23,7 +23,14 @@ typedef NSInteger ZincConnectionType;
  */
 - (id) init;
 
-@property (nonatomic, assign) ZincConnectionType* defaultRequiredConnectionType;
+#pragma mark Priorities by Bundle
+
+- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId;
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
+
+#pragma mark Connectivity Rules
+
+@property (nonatomic, assign) ZincConnectionType defaultRequiredConnectionType;
 
 - (ZincConnectionType)requiredConnectionTypeForBundlePriority:(NSOperationQueuePriority)priority;
 - (void)setRequiredConnectionType:(ZincConnectionType)connectionType forBundlePriority:(NSOperationQueuePriority)priority;

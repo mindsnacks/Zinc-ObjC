@@ -43,6 +43,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincBundle;
 @class ZincEvent;
 @class ZincBundleTrackingRequest;
+@class Reachability;
 
 @interface ZincRepo : NSObject
 
@@ -57,6 +58,9 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 
+/**
+ @discussion Interval at which catalogs are updated and automatic clone tasks started.
+ */
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
 
 /**
@@ -68,6 +72,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
  @discussion Setting to NO disables all automatic updates. Default is YES.
  */
 @property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
+
+/**
+ */
+@property (nonatomic, retain) Reachability* reachability;
 
 #pragma mark Sources
 
