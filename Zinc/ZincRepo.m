@@ -38,6 +38,7 @@
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
 #import "ZincBundleTrackingRequest.h"
+#import "Reachability.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -167,6 +168,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     [repo.queueGroup setSuspended:YES];
     
     [repo queueGarbageCollectTask];
+    
+    [Reachability reachabilityForInternetConnection];
     
     return repo;
 }
