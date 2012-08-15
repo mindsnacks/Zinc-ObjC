@@ -901,8 +901,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         }
         trackingInfo.distribution = distro;
 
-        if ((flavor != nil || trackingInfo.flavor != nil)
-            && ![trackingInfo.flavor isEqualToString:flavor]) {
+        if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
             @throw [NSException
                     exceptionWithName:NSInternalInconsistencyException
                     reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
