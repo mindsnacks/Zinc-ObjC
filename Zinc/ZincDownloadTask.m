@@ -39,7 +39,7 @@
     
     __block typeof(self) blockself = self;
     
-    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.5f;
+    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
     [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {

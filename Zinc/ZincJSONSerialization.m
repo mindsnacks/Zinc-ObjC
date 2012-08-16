@@ -10,12 +10,12 @@
 
 @implementation ZincJSONSerialization
 
-+ (id)JSONObjectWithData:(NSData *)data options:(NSJSONReadingOptions)opt error:(NSError **)error
++ (id)JSONObjectWithData:(NSData *)data options:(ZincJSONReadingOptions)opt error:(NSError **)error
 {
     return [NSJSONSerialization JSONObjectWithData:data options:opt error:error];
 }
 
-+ (NSData *)dataWithJSONObject:(id)obj options:(NSJSONWritingOptions)opt error:(NSError **)error
++ (NSData *)dataWithJSONObject:(id)obj options:(ZincJSONReadingOptions)opt error:(NSError **)error
 {
     return [NSJSONSerialization dataWithJSONObject:obj options:opt error:error];
 }
