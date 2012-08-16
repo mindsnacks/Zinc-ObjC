@@ -106,6 +106,15 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return [[self class] taskDescriptorForResource:self.resource];    
 }
 
+- (void) setQueuePriority:(NSOperationQueuePriority)p
+{
+    [super setQueuePriority:p];
+    
+    for (ZincTask* subtask in self.subtasks) {
+        [subtask setQueuePriority:p];
+    }
+}
+
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
 {
     return [self queueSubtaskForDescriptor:taskDescriptor input:nil];
@@ -130,6 +139,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
         
         if (self.isCancelled) return;
         
+        operation.queuePriority = self.queuePriority;
         [self addDependency:operation];
         [self.repo addOperation:operation];
     }

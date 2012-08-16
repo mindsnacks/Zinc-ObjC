@@ -14,6 +14,7 @@
 #import "ZincEvent.h"
 #import "ZincUtils.h"
 #import "UIImage+Zinc.h"
+#import "Zinc.h"
 
 @interface AppDelegate()
 @property (strong, nonatomic) BundleListViewController *viewController;
@@ -88,6 +89,8 @@
     
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
+    
+    [repo.downloadPolicy setDefaultRequiredConnectionType:ZincConnectionTypeWiFiOnly];
     
     [repo resumeAllTasks];
     

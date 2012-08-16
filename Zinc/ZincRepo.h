@@ -43,6 +43,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincBundle;
 @class ZincEvent;
 @class ZincBundleTrackingRequest;
+@class ZincDownloadPolicy;
 
 @interface ZincRepo : NSObject
 
@@ -57,8 +58,25 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 
+/**
+ @discussion Interval at which catalogs are updated and automatic clone tasks started.
+ */
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
-@property (nonatomic, assign) BOOL shouldExecuteTasksInBackground;
+
+/**
+ @discussion default is YES
+ */
+@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+
+/**
+ @discussion Setting to NO disables all automatic updates. Default is YES.
+ */
+// TODO: this probably should be wrapped in the ZincDownloadPolicy
+@property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
+
+/**
+ */
+@property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
 
 #pragma mark Sources
 
@@ -77,6 +95,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
+/**
+ @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
+ of connectivity.
+ */
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
@@ -88,8 +110,6 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
-
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
 
 // NOTE: this may be removed soon
 - (void) waitForAllBootstrapTasks;
