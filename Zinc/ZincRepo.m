@@ -1011,7 +1011,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             [taskRef addDependency:task];
         }
 
-        [self addOperation:taskRef];
+        if (taskRef != nil) [self addOperation:taskRef];
         [self queueIndexSave];
     }];
 }
