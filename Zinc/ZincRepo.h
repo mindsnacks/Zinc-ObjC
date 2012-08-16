@@ -111,8 +111,6 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-//- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
-
 // NOTE: this may be removed soon
 - (void) waitForAllBootstrapTasks;
 
