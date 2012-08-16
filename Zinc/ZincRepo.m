@@ -38,8 +38,8 @@
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
 #import "ZincBundleTrackingRequest.h"
-#import "ZincReachability.h"
 #import "ZincDownloadPolicy.h"
+#import "ZincKSReachability.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -75,7 +75,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
-@property (nonatomic, retain) ZincReachability* reachability;
+@property (nonatomic, retain) ZincKSReachability* reachability;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -141,7 +141,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
     }
     
-    ZincReachability* reachability = [ZincReachability reachabilityForLocalWiFi];
+    ZincKSReachability* reachability = [ZincKSReachability reachabilityToLocalNetwork];
     
     ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability] autorelease];
     if (![repo createDirectoriesIfNeeded:outError]) {
@@ -185,7 +185,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 }
 
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(ZincReachability*)reachability
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(ZincKSReachability*)reachability
 {
     self = [super init];
     if (self) {
@@ -268,27 +268,23 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
-- (void) setReachability:(ZincReachability*)reachability
+- (void) setReachability:(ZincKSReachability*)reachability
 {
     if (_reachability == reachability) return;
     
     if (_reachability != nil) {
-        [_reachability stopNotifier];
-        [[NSNotificationCenter defaultCenter] removeObserver:self name:ZincReachabilityChangedNotification object:_reachability];
+        _reachability.onReachabilityChanged = nil;
     }
     
     [_reachability release];
     _reachability = [reachability retain];
     
     if (_reachability != nil) {
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:ZincReachabilityChangedNotification object:_reachability];
-        [_reachability startNotifier];
+        
+        _reachability.onReachabilityChanged = ^(ZincKSReachability *reachability) {
+            [self refreshBundlesWithCompletion:nil];
+        };
     }
-}
-
-- (void) reachabilityChanged:(NSNotification*)note
-{
-    [self refreshBundlesWithCompletion:nil];
 }
 
 - (ZincSerialQueueProxy*) indexProxy
@@ -1043,7 +1039,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 {
     ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
 
-    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && ![self.reachability isReachableViaWiFi]) {
+    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
         return NO;
     }
     return YES;
