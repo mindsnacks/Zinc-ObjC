@@ -14,6 +14,9 @@ enum {
 };
 typedef NSInteger ZincConnectionType;
 
+extern NSString* const ZincDownloadPolicyPriorityChangeNotification;
+extern NSString* const ZincDownloadPolicyPriorityChangeBundleIDKey;
+extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 @interface ZincDownloadPolicy : NSObject
 
@@ -23,16 +26,20 @@ typedef NSInteger ZincConnectionType;
  */
 - (id) init;
 
-#pragma mark Priorities by Bundle
+#pragma mark Bundle Prioritization
 
 - (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId;
+
 - (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
 
 #pragma mark Connectivity Rules
 
 @property (nonatomic, assign) ZincConnectionType defaultRequiredConnectionType;
 
-- (ZincConnectionType)requiredConnectionTypeForBundlePriority:(NSOperationQueuePriority)priority;
-- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forBundlePriority:(NSOperationQueuePriority)priority;
+- (ZincConnectionType)requiredConnectionTypeForPriority:(NSOperationQueuePriority)priority;
+
+- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPriority:(NSOperationQueuePriority)priority;
+
+- (void)removeConnectionTypeRequirementForPriority:(NSOperationQueuePriority)priority;
 
 @end

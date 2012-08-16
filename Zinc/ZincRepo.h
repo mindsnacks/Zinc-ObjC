@@ -43,7 +43,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincBundle;
 @class ZincEvent;
 @class ZincBundleTrackingRequest;
-@class Reachability;
+@class ZincDownloadPolicy;
 
 @interface ZincRepo : NSObject
 
@@ -75,7 +75,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 /**
  */
-@property (nonatomic, retain) Reachability* reachability;
+@property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
 
 #pragma mark Sources
 
@@ -106,7 +106,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
+//- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
 
 // NOTE: this may be removed soon
 - (void) waitForAllBootstrapTasks;

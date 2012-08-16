@@ -38,7 +38,8 @@
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
 #import "ZincBundleTrackingRequest.h"
-#import "Reachability.h"
+#import "ZincReachability.h"
+#import "ZincDownloadPolicy.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -73,7 +74,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
-@property (nonatomic, retain) NSMutableDictionary* prioritiesByBundleId;
+@property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
+@property (nonatomic, retain) ZincReachability* reachability;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -123,7 +125,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 @synthesize loadedBundles = _loadedBundles;
 @synthesize myTasks = _myTasks;
 @synthesize queueGroup = _queueGroup;
-@synthesize prioritiesByBundleId = _prioritiesByBundleId;
 @synthesize executeTasksInBackgroundEnabled = _shouldExecuteTasksInBackground;
 @synthesize automaticBundleUpdatesEnabled = _automaticUpdatesEnabled;
 
@@ -140,7 +141,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
     }
     
-    ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue] autorelease];
+    ZincReachability* reachability = [ZincReachability reachabilityForLocalWiFi];
+    
+    ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability] autorelease];
     if (![repo createDirectoriesIfNeeded:outError]) {
         return nil;
     }
@@ -169,8 +172,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     
     [repo queueGarbageCollectTask];
     
-    repo.reachability = [Reachability reachabilityForInternetConnection];
-    
     return repo;
 }
 
@@ -184,7 +185,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 }
 
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(ZincReachability*)reachability
 {
     self = [super init];
     if (self) {
@@ -207,9 +208,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
-        self.prioritiesByBundleId = [[[NSMutableDictionary alloc] init] autorelease];
         self.automaticBundleUpdatesEnabled = YES;
         self.executeTasksInBackgroundEnabled = YES;
+        self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
+        self.reachability = reachability;
     }
     return self;
 }
@@ -230,6 +232,63 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 {
     _refreshInterval = refreshInterval;
     [self startRefreshTimer];
+}
+
+- (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
+{
+    if (_downloadPolicy == downloadPolicy) return;
+    
+    if (_downloadPolicy != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:ZincDownloadPolicyPriorityChangeNotification
+                                                      object:_downloadPolicy];
+    }
+    
+    [_downloadPolicy release];
+    _downloadPolicy = [downloadPolicy retain];
+    
+    if (_downloadPolicy != nil) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(downloadPolicyPriorityChangeNotification:)
+                                                     name:ZincDownloadPolicyPriorityChangeNotification
+                                                   object:_downloadPolicy];
+    }
+}
+
+- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
+{
+    NSString* bundleID = [[note userInfo] objectForKey:ZincDownloadPolicyPriorityChangeBundleIDKey];
+    NSOperationQueuePriority priority = [[[note userInfo] objectForKey:ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
+    
+    @synchronized(self.myTasks) {
+        NSArray* tasks = [self tasksForBundleId:bundleID];
+        for (ZincTask* task in tasks) {
+            [task setQueuePriority:priority];
+        }
+    }
+}
+
+- (void) setReachability:(ZincReachability *)reachability
+{
+    if (_reachability == reachability) return;
+    
+    if (_reachability != nil) {
+        [_reachability stopNotifier];
+        [[NSNotificationCenter defaultCenter] removeObserver:self name:ZincReachabilityChangedNotification object:_reachability];
+    }
+    
+    [_reachability release];
+    _reachability = [reachability retain];
+    
+    if (_reachability != nil) {
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reachabilityChanged:) name:ZincReachabilityChangedNotification object:_reachability];
+        [_reachability startNotifier];
+    }
+}
+
+- (void) reachabilityChanged:(NSNotification*)note
+{
+    
 }
 
 - (ZincSerialQueueProxy*) indexProxy
@@ -303,6 +362,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void)dealloc
 {
+    // set to nil to unsubscribe from notitifcations
+    self.reachability = nil;
+    self.downloadPolicy = nil;
+    
     [_url release];
     [_index release];
     // TODO: stop operations?
@@ -312,7 +375,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
-    [_prioritiesByBundleId release];
     [super dealloc];
 }
 
@@ -731,35 +793,10 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     return [self hasManifestForBundleIdentifier:bundleId version:version];
 }
 
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId
-{
-    @synchronized(self.prioritiesByBundleId)
-    {
-        [self.prioritiesByBundleId setObject:[NSNumber numberWithInteger:priority] forKey:bundleId];
-        NSArray* tasks = [self tasksForBundleId:bundleId];
-        for (ZincTask* task in tasks) {
-            [task setQueuePriority:priority];
-        }
-    }
-}
-
-- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId
-{
-    @synchronized(self.prioritiesByBundleId)
-    {
-        NSNumber* prio = [self.prioritiesByBundleId objectForKey:bundleId];
-        if (prio != nil) {
-            return [prio integerValue];
-        } else {
-            return NSOperationQueuePriorityNormal;
-        }
-    }
-}
-
 - (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
 {
     if ([task.resource isZincBundleResource]) {
-        return [self priorityForBundleWithId:[task.resource zincBundleId]];
+        return [self.downloadPolicy priorityForBundleWithId:[task.resource zincBundleId]];
     }
     return NSOperationQueuePriorityNormal;
 }
