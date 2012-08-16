@@ -71,6 +71,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 /**
  @discussion Setting to NO disables all automatic updates. Default is YES.
  */
+// TODO: this probably should be wrapped in the ZincDownloadPolicy
 @property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
 
 /**
