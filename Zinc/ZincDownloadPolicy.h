@@ -8,11 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-enum {
+typedef enum {
     ZincConnectionTypeAny,
     ZincConnectionTypeWiFiOnly,
-};
-typedef NSInteger ZincConnectionType;
+} ZincConnectionType;
 
 extern NSString* const ZincDownloadPolicyPriorityChangeNotification;
 extern NSString* const ZincDownloadPolicyPriorityChangeBundleIDKey;
