@@ -280,9 +280,9 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     _reachability = [reachability retain];
     
     if (_reachability != nil) {
-        
+        __block typeof(self) blockself = self;
         _reachability.onReachabilityChanged = ^(ZincKSReachability *reachability) {
-            [self refreshBundlesWithCompletion:nil];
+            [blockself refreshBundlesWithCompletion:nil];
         };
     }
 }
@@ -342,7 +342,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     
     [blockself refreshSourcesWithCompletion:^{
 
-        if (!self.automaticBundleUpdatesEnabled) return;
+        if (!blockself.automaticBundleUpdatesEnabled) return;
 
         [blockself resumeBundleActions];
         
