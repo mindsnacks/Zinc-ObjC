@@ -268,7 +268,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }
 }
 
-- (void) setReachability:(ZincReachability *)reachability
+- (void) setReachability:(ZincReachability*)reachability
 {
     if (_reachability == reachability) return;
     
@@ -288,7 +288,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 - (void) reachabilityChanged:(NSNotification*)note
 {
-    
+    [self refreshBundlesWithCompletion:nil];
 }
 
 - (ZincSerialQueueProxy*) indexProxy
@@ -796,7 +796,7 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 - (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
 {
     if ([task.resource isZincBundleResource]) {
-        return [self.downloadPolicy priorityForBundleWithId:[task.resource zincBundleId]];
+        return [self.downloadPolicy priorityForBundleWithID:[task.resource zincBundleId]];
     }
     return NSOperationQueuePriorityNormal;
 }
@@ -1040,6 +1040,16 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
     }];
 }
 
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
+{
+    ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
+
+    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && ![self.reachability isReachableViaWiFi]) {
+        return NO;
+    }
+    return YES;
+}
+
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
     NSOperation* parentOp = nil;
@@ -1071,7 +1081,11 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             
             if (targetVersion == ZincVersionInvalid) {
                 continue;
-            };
+            }
+            
+            if (![self doesPolicyAllowDownloadForBundleID:bundleId]) {
+                continue;
+            }
             
             NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:targetVersion];
             ZincBundleState state = [self.index stateForBundle:bundleRes];

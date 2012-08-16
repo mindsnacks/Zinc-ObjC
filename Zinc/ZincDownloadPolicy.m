@@ -38,7 +38,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     [super dealloc];
 }
 
-- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId
+- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleId
 {
     @synchronized(self.prioritiesByBundleId)
     {
@@ -94,6 +94,15 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 {
     @synchronized(self.requiredConnectionTypeByPriority) {
         [self.requiredConnectionTypeByPriority removeObjectForKey:[NSNumber numberWithInteger:priority]];
+    }
+}
+
+- (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID
+{
+    @synchronized(self)
+    {
+        NSOperationQueuePriority priority = [self priorityForBundleWithID:bundleID];
+        return [self requiredConnectionTypeForPriority:priority];
     }
 }
 

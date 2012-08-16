@@ -94,6 +94,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
+/**
+ @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
+ of connectivity.
+ */
 - (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;

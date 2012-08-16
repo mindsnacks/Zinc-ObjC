@@ -28,7 +28,7 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 #pragma mark Bundle Prioritization
 
-- (NSOperationQueuePriority) priorityForBundleWithId:(NSString*)bundleId;
+- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleId;
 
 - (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
 
@@ -41,5 +41,9 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 - (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPriority:(NSOperationQueuePriority)priority;
 
 - (void)removeConnectionTypeRequirementForPriority:(NSOperationQueuePriority)priority;
+
+#pragma mark Convenience
+
+- (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID;
 
 @end
