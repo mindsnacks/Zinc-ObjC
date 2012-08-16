@@ -15,6 +15,6 @@ typedef NSUInteger ZincJSONWritingOptions;
 
 + (id)JSONObjectWithData:(NSData *)data options:(ZincJSONReadingOptions)opt error:(NSError **)error;
 
-+ (NSData *)dataWithJSONObject:(id)obj options:(ZincJSONWritingOptions)opt error:(NSError **)error;
++ (NSData *)dataWithJSONObject:(id)obj options:(ZincJSONReadingOptions)opt error:(NSError **)error;
 
 @end
