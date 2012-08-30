@@ -13,6 +13,8 @@
 #import "ZincManifest.h"
 #import "ZincResource.h"
 #import "ZincTaskActions.h"
+#import "NSError+Zinc.h"
+#import "NSFileManager+Zinc.h"
 
 @implementation ZincBundleDeleteTask
 
@@ -110,24 +112,30 @@
     
 #endif
     
-    // remove the bundle dir    
-    if (![fm removeItemAtPath:bundlePath error:&error]) {
+    // remove the bundle dir
+    if (![fm zinc_removeItemAtPath:bundlePath error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     } else {
         [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:self]];
     }
     
+    NSString* flavor = [self.repo.index trackedFlavorForBundleId:self.bundleId];
+    NSArray* pathsForFlavor = [manifest filesForFlavor:flavor];
+    
     // scan for sha-based objects to remove
-    NSArray* allSHAs = [manifest allSHAs];
-    for (NSString* sha in allSHAs) {
+
+    for (NSString* path in pathsForFlavor) {
         
+        NSString* sha = [manifest shaForFile:path];
         NSString* shaPath = [self.repo pathForFileWithSHA:sha];
 
         // see notes below
         NSDictionary* attr = [fm attributesOfItemAtPath:shaPath error:&error];
         if (attr == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            if (![error zinc_isFileNotFoundError]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            }
             continue;
         }
         
@@ -136,8 +144,12 @@
         
         NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
         NSString* type = [attr objectForKey:NSFileType];
-        if (![type isEqualToString:NSFileTypeSymbolicLink] && [linkCount integerValue] == 1) {
-            if (![fm removeItemAtPath:shaPath error:&error]) {
+        
+        BOOL shouldDeleteFile = ![type isEqualToString:NSFileTypeSymbolicLink]
+                                    && [linkCount integerValue] == 1;
+        
+        if (shouldDeleteFile) {
+            if (![fm zinc_removeItemAtPath:shaPath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
             } else {

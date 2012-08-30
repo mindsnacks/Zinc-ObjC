@@ -40,6 +40,7 @@
 #import "ZincBundleTrackingRequest.h"
 #import "ZincDownloadPolicy.h"
 #import "ZincKSReachability.h"
+#import "NSError+Zinc.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -649,10 +650,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
 - (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
 {
     NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
-    if ([self.fileManager fileExistsAtPath:manifestPath]) {
-        if (![self.fileManager removeItemAtPath:manifestPath error:outError]) {
-            return NO;
-        }
+    if (![self.fileManager zinc_removeItemAtPath:manifestPath error:outError]) {
+        return NO;
     }
     [self.cache removeObjectForKey:[self cacheKeyManifestWithBundleId:bundleId version:version]];
     return YES;

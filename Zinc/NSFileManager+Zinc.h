@@ -22,4 +22,6 @@
 
 - (BOOL) zinc_gzipInflate:(NSString*)sourcePath destination:(NSString*)destPath  error:(NSError**)outError;
 
+- (BOOL) zinc_removeItemAtPath:(NSString*)path error:(NSError**)outError;
+
 @end
