@@ -9,6 +9,7 @@
 
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
+#import "NSError+Zinc.h"
 
 @implementation NSFileManager (Zinc)
 
@@ -68,6 +69,18 @@
         return NO;
     }
 
+    return YES;
+}
+
+- (BOOL) zinc_removeItemAtPath:(NSString*)path error:(NSError**)outError
+{
+    NSError* error = nil;
+    if (![self removeItemAtPath:path error:&error]) {
+        if (![error zinc_isFileNotFoundError]) {
+            if (outError != NULL) *outError = error;
+            return NO;
+        }
+    }
     return YES;
 }
 
