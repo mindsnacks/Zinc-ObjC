@@ -940,18 +940,20 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
         ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleId];
         if (trackingInfo == nil) {
             trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
-            trackingInfo.flavor = flavor;
         }
-        trackingInfo.distribution = distro;
 
         if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
             @throw [NSException
                     exceptionWithName:NSInternalInconsistencyException
                     reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
                     userInfo:nil];
+        } else {
+            trackingInfo.flavor = flavor;
         }
-        
+
+        trackingInfo.distribution = distro;
         trackingInfo.updateAutomatically = autoUpdate;
+        
         if (autoUpdate) {
             trackingInfo.version = [self catalogVersionForBundleId:bundleId distribution:distro];
         }
