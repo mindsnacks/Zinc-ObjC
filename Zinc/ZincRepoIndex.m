@@ -7,10 +7,11 @@
 //
 
 #import "ZincRepoIndex.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 #import "ZincDeepCopying.h"
 #import "ZincErrors.h"
+#import "ZincTrackingInfo.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
@@ -92,12 +93,13 @@
     return bundleInfo;
 }
 
-- (void) addTrackedBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (void) setTrackingInfo:(ZincTrackingInfo*)trackingInfo forBundleId:(NSString*)bundleId
 {
     @synchronized(self.myBundles) {
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
-        [bundleInfo setObject:distro forKey:@"tracking"];
-    }
+        NSDictionary* trackingInfoDict = [trackingInfo dictionaryRepresentation];
+        [bundleInfo setObject:trackingInfoDict forKey:@"tracking"];
+    }    
 }
 
 - (void) removeTrackedBundleId:(NSString*)bundleId
@@ -115,8 +117,8 @@
         set = [NSMutableSet setWithCapacity:[self.myBundles count]];
         NSArray* allBundleIds = [self.myBundles allKeys];
         for (NSString* bundleId in allBundleIds) {
-            NSString* distro = [self trackedDistributionForBundleId:bundleId];
-            if (distro != nil) {
+            ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+            if (trackingInfo != nil) {
                 [set addObject:bundleId];
             }
         }
@@ -124,13 +126,43 @@
     return set;
 }
 
+- (ZincTrackingInfo*) trackingInfoForBundleId:(NSString*)bundleId
+{
+    ZincTrackingInfo* trackingInfo = nil;
+    @synchronized(self.myBundles) {
+        id trackingInfoObj = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        if ([trackingInfoObj isKindOfClass:[NSString class]]) {
+            // !!!: temporary kludge to read old style tracking infos
+            trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
+            trackingInfo.version = ZincVersionInvalid;
+            trackingInfo.distribution = trackingInfoObj;
+            trackingInfo.updateAutomatically = YES; // all old tracking infos updated automatically
+        } else if ([trackingInfoObj isKindOfClass:[NSDictionary class]]) {
+            NSDictionary* trackingInfoDict = (NSDictionary*)trackingInfoObj;
+            trackingInfo = [ZincTrackingInfo trackingInfoFromDictionary:trackingInfoDict];
+        }
+    }
+    return trackingInfo;
+}
+
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId
 {
     NSString* distro = nil;
     @synchronized(self.myBundles) {
-        distro = [[self.myBundles objectForKey:bundleId] objectForKey:@"tracking"];
+        ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+        distro = trackingInfo.distribution;
     }
     return distro;
+}
+
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId
+{
+    NSString* flavor = nil;
+    @synchronized(self.myBundles) {
+        ZincTrackingInfo* trackingInfo = [self trackingInfoForBundleId:bundleId];
+        flavor = trackingInfo.flavor;
+    }
+    return flavor;
 }
 
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource
@@ -275,9 +307,9 @@
     return dict;
 }
 
-- (NSString*) jsonRepresentation:(NSError**)outError
+- (NSData*) jsonRepresentation:(NSError**)outError
 {
-    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 

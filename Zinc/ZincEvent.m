@@ -9,18 +9,17 @@
 #import "ZincEvent.h"
 #import "ZincEvent+Private.h"
 
+NSString *const kZincEventAttributesSourceKey = @"source";
 NSString *const kZincEventAttributesURLKey = @"url";
 NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
-NSString *const kZincEventAttributesProgressKey = @"progress";
 NSString *const kZincEventAttributesContextKey = @"context";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
 NSString *const kZincEventDeleteNotification = @"ZincEventDeleteNotification";
 NSString *const kZincEventDownloadBeginNotification = @"ZincEventDownloadBeginNotification";
-NSString *const kZincEventDownloadProgressNotification = @"ZincEvenDownloadProgressNotification";
 NSString *const kZincEventDownloadCompleteNotification = @"ZincEventDownloadCompleteNotification";
 NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneBeginNotification";
 NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
@@ -29,11 +28,8 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 NSString *const kZincEventGarbageCollectionBeginNotification = @"ZincEventGarbageCollectionBeginNotification";
 NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGarbageCollectionCompleteNotification";
 
-NSString *const kZincEventNotificationSourceKey = @"source";
-
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
-@property (nonatomic, retain, readwrite) id source;
 @property (nonatomic, retain, readwrite) NSDate* timestamp;
 @property (nonatomic, retain, readwrite) NSDictionary* attributes;
 @end
@@ -41,7 +37,6 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 @implementation ZincEvent
 
 @synthesize type = _type;
-@synthesize source = _source;
 @synthesize timestamp = _timestamp;
 @synthesize attributes = _attributes;
 
@@ -50,9 +45,14 @@ NSString *const kZincEventNotificationSourceKey = @"source";
     self = [super init];
     if (self) {
         self.type = type;
-        self.source = source;
         self.timestamp = [NSDate date];
-        self.attributes = attributes;
+        if (source != nil) {
+            NSMutableDictionary *mutableAttributes = [[attributes mutableCopy] autorelease];;
+            [mutableAttributes setObject:[source description] forKey:kZincEventAttributesSourceKey];
+            self.attributes = mutableAttributes;
+        } else {
+            self.attributes = attributes;
+        }
     }
     return self;
 }
@@ -64,7 +64,6 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 
 - (void)dealloc
 {
-    [_source release];
     [_timestamp release];
     [_attributes release];
     [super dealloc];
@@ -202,45 +201,6 @@ NSString *const kZincEventNotificationSourceKey = @"source";
                           
 @end
 
-@implementation ZincDownloadProgressEvent
-
-+ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context
-{
-    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, kZincEventAttributesURLKey,
-                          [NSNumber numberWithFloat:progress], kZincEventAttributesProgressKey,
-                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
-    
-    return [[[self alloc] initWithType:ZincEventTypeDownloadProgress source:nil attributes:attr] autorelease];
-}
-
-+ (NSString*) name
-{
-    return @"DOWNLOAD-PROGRESSS";
-}
-
-+ (NSString *)notificationName
-{
-    return kZincEventDownloadProgressNotification;
-}
-
-- (NSURL*) url
-{
-    return [self.attributes objectForKey:kZincEventAttributesURLKey];
-}
-
-- (float)progress
-{
-    return [[self.attributes objectForKey:kZincEventAttributesProgressKey] floatValue];
-}
-
-- (id)context
-{
-    return [self.attributes objectForKey:kZincEventAttributesContextKey];
-}
-
-@end
-
 @implementation ZincDownloadCompleteEvent
 
 + (id) downloadCompleteEventForURL:(NSURL*)url
@@ -271,17 +231,18 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 
 @implementation ZincBundleCloneBeginEvent
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          bundleResource, kZincEventAttributesBundleResourceKey, nil];
+                          bundleResource, kZincEventAttributesBundleResourceKey,
+                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:source attributes:attr] autorelease];
 }
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context
 {
-    return [self bundleCloneBeginEventForBundleResource:bundleResource source:nil];
+    return [self bundleCloneBeginEventForBundleResource:bundleResource source:nil context:context];
 }
 
 + (NSString*) name
@@ -297,6 +258,11 @@ NSString *const kZincEventNotificationSourceKey = @"source";
 - (NSURL*) bundleResource
 {
     return [self.attributes objectForKey:kZincEventAttributesBundleResourceKey];
+}
+
+- (id)context
+{
+    return [self.attributes objectForKey:kZincEventAttributesContextKey];
 }
 
 @end

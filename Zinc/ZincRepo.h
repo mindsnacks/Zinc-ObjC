@@ -42,6 +42,8 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
+@class ZincBundleTrackingRequest;
+@class ZincDownloadPolicy;
 
 @interface ZincRepo : NSObject
 
@@ -56,7 +58,25 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 
+/**
+ @discussion Interval at which catalogs are updated and automatic clone tasks started.
+ */
 @property (nonatomic, assign) NSTimeInterval refreshInterval;
+
+/**
+ @discussion default is YES
+ */
+@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+
+/**
+ @discussion Setting to NO disables all automatic updates. Default is YES.
+ */
+// TODO: this probably should be wrapped in the ZincDownloadPolicy
+@property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
+
+/**
+ */
+@property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
 
 #pragma mark Sources
 
@@ -67,12 +87,21 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 #pragma mark Bundles
 
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro;
-- (void) stopTrackingBundleWithId:(NSString*)bundleId;
+- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
 
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir error:(NSError**)outError;
-- (BOOL) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir waitUntilDone:(BOOL)wait error:(NSError**)outError;
-- (void) waitForAllBootstrapTasks;
+- (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
+- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
+
+/**
+ @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
+ of connectivity.
+ */
+- (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+
+- (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
 - (NSSet*) trackedBundleIds;
 
@@ -82,6 +111,9 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
+// NOTE: this may be removed soon
+- (void) waitForAllBootstrapTasks;
+
 #pragma mark Tasks
 
 @property (readonly) NSArray* tasks;
@@ -89,6 +121,10 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 - (void) suspendAllTasks;
 - (void) resumeAllTasks;
 - (BOOL) isSuspended;
+
+#pragma mark Utility
+
++ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
        
 @end
 

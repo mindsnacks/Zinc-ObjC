@@ -23,8 +23,8 @@
 {
     return ZincTaskActionUpdate;
 }
-- (void)dealloc
 
+- (void)dealloc
 {
     [_fileManager release];
     [super dealloc];
@@ -40,10 +40,15 @@
     return [self.resource zincBundleVersion];
 }
 
+- (NSString*) getTrackedFlavor
+{
+    return [self.repo.index trackedFlavorForBundleId:self.bundleId];
+}
+
 - (void) setUp
 {
     self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self]];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self context:self.bundleId]];
 }
 
 - (void) complete
@@ -57,32 +62,49 @@
 {
     NSError* error = nil;
     
-    NSArray* allFiles = [manifest allFiles];
+    NSString* flavor = [self getTrackedFlavor];
+    
     NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
+    
+    // Build a list of all dirs needed for the bundle
+    NSMutableSet* allDirs = [NSMutableSet setWithCapacity:[allFiles count]];
     for (NSString* file in allFiles) {
-        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-        NSString* fileDir = [filePath stringByDeletingLastPathComponent];
-        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fileDir error:&error]) {
+        NSString* dir = [file stringByDeletingLastPathComponent];
+        [allDirs addObject:dir];
+    }
+    
+    // Create all dirs
+    for (NSString* relativeDir in allDirs) {
+        NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
+        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             return NO;
         }
-        
+    }
+    
+    // Link files
+    for (NSString* file in allFiles) {
+        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
         NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-        BOOL createLink = NO;
-        if ([self.fileManager fileExistsAtPath:filePath]) {
-            NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:NULL];
-            if (![dst isEqualToString:shaPath]) {
-                if (![self.fileManager removeItemAtPath:filePath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                    return NO;
-                }
-                createLink = YES;
-            }
-        } else {
-            createLink = YES;
+        
+        NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
+        if (shaPathDest == nil) {
+            // if it's nil, it's not a symbolic link. use the original file.
+            shaPathDest = shaPath;
         }
         
+        NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
+        BOOL dstDoesNotExist = (dst == nil);
+        BOOL dstNotEqualToShaPath = ![dst isEqualToString:shaPathDest];
+        BOOL createLink = dstDoesNotExist || dstNotEqualToShaPath;
+        
         if (createLink) {
+            // remove regardless and ignore errors. there are too many cases to
+            // handle cleanly, with non-existant files, symlinks, etc. if something
+            // fails it will be caught in the linkItemAtPath call below.
+            [self.fileManager removeItemAtPath:filePath error:NULL];
+
             if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 return NO;

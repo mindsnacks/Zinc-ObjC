@@ -39,10 +39,6 @@
                                                      name:ZincRepoBundleWillDeleteNotification
                                                    object:_repo];
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(bundleDownloadProgressNotification:)
-                                                     name:kZincEventDownloadProgressNotification
-                                                   object:_repo];
-        [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(bundleCloneCompleteNotification:)
                                                      name:kZincEventBundleCloneCompleteNotification
                                                    object:_repo];
@@ -153,9 +149,9 @@
 
 - (void) debugAction:(id)sender
 {
-    [self.repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/demo1/"]];
-
-//    [self.repo stopTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites"];
+    [self.repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
+        NSLog(@"updated! errors: %@", errors);
+    }];
 }
 
 #pragma mark - Notifications
@@ -167,18 +163,6 @@
         [self.bundleIds addObject:bundleId];
         [self.tableView reloadData];
     }
-}
-
-- (void)bundleDownloadProgressNotification:(NSNotification *)note
-{
-    float progress = [[note.userInfo valueForKey:kZincEventAttributesProgressKey] floatValue];
-    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
-    
-    [self.bundleProgress setValue:[NSNumber numberWithFloat:progress] forKey:bundleId];
-    
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
-                                                                                       inSection:0]]
-                          withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)bundleCloneCompleteNotification:(NSNotification *)note

@@ -23,6 +23,7 @@
 
 @interface ZincBundleRemoteCloneTask ()
 @property (assign) NSInteger totalBytesToDownload;
+@property (assign) NSInteger lastProgressValue;
 @end
 
 @implementation ZincBundleRemoteCloneTask
@@ -44,6 +45,30 @@
     return (double)self.httpOverheadConstant * connectionCount + totalSize;
 }
 
+- (BOOL) isProgressCalculated
+{
+    return self.totalBytesToDownload > 0;
+}
+
+- (NSInteger) currentProgressValue
+{
+    if (![self isProgressCalculated]) return 0;
+    
+    NSInteger curVal = [super currentProgressValue];
+    if (curVal < self.lastProgressValue) {
+        curVal = self.lastProgressValue;
+    } else if (curVal > [self maxProgressValue]) {
+        curVal = [self maxProgressValue];
+    }
+    self.lastProgressValue = curVal;
+    return curVal;
+}
+
+- (NSInteger) maxProgressValue
+{
+    return self.totalBytesToDownload;
+}
+
 - (BOOL) prepareManifest
 {
     ZincTask* manifestDownloadTask = nil;
@@ -56,7 +81,10 @@
     }
     
     if (manifestDownloadTask != nil) {
+        
         [manifestDownloadTask waitUntilFinished];
+        if (self.isCancelled) return NO;
+
         if (!manifestDownloadTask.finishedSuccessfully) {
             // ???: add an event?
             return NO;
@@ -70,7 +98,9 @@
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
     
-    NSArray* allFiles = [manifest allFiles];
+    NSString* flavor = [self getTrackedFlavor];
+    
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
     NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
     
     for (NSString* path in allFiles) {
@@ -100,9 +130,11 @@
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
-            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:nil];
+            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
             
             [archiveOp waitUntilFinished];
+            if (self.isCancelled) return NO;
+
             if (!archiveOp.finishedSuccessfully) {
                 return NO;
             }
@@ -127,7 +159,10 @@
             BOOL allSuccessful = YES;
             
             for (ZincTask* op in fileOps) {
+                
                 [op waitUntilFinished];
+                if (self.isCancelled) return NO;
+                
                 if (!op.finishedSuccessfully) {
                     allSuccessful = NO;
                 }

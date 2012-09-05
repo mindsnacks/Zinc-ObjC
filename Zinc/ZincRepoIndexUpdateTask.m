@@ -40,14 +40,13 @@
 {
     NSError* error = nil;
     
-    NSString* json = [self.repo.index jsonRepresentation:&error];
-    if (json == nil) {
+    NSData* jsonData = [self.repo.index jsonRepresentation:&error];
+    if (jsonData == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }
     
-    NSData* data = [json dataUsingEncoding:NSUTF8StringEncoding];
-    if (![data zinc_writeToFile:[[self.repo indexURL] path] atomically:YES createDirectories:NO skipBackup:YES error:&error]) {
+    if (![jsonData zinc_writeToFile:[[self.repo indexURL] path] atomically:YES createDirectories:NO skipBackup:YES error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
         return;
     }

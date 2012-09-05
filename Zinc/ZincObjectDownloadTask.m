@@ -95,7 +95,9 @@
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
         ZincHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream context:nil];
+        
         [downloadOp waitUntilFinished];
+        if (self.isCancelled) return;
         
         if (!downloadOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
@@ -140,7 +142,7 @@
                 continue;
             }
             
-            ZincAddSkipBackupAttributeToFile([NSURL fileURLWithPath:targetPath]);
+            ZincAddSkipBackupAttributeToFileWithPath(targetPath);
             self.finishedSuccessfully = YES;
         }
         

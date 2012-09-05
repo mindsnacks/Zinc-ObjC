@@ -8,7 +8,7 @@
 
 
 #import "ZincManifest.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 
 @interface ZincManifest ()
@@ -21,6 +21,7 @@
 @synthesize catalogId = _catalogId;
 @synthesize version = _version;
 @synthesize files = _files;
+@synthesize flavors = _flavors;
 
 - (id) initWithDictionary:(NSDictionary*)dict;
 {
@@ -29,7 +30,8 @@
         self.bundleName = [dict objectForKey:@"bundle"];
         self.catalogId = [dict objectForKey:@"catalog"];
         self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [[[dict objectForKey:@"files"] mutableCopy] autorelease];
+        self.files = [dict objectForKey:@"files"];
+        self.flavors = [dict objectForKey:@"flavors"];
     }
     return self;
 }
@@ -45,12 +47,15 @@
 
 + (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError
 {
-    NSString* jsonString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:path options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
     
-    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
+    if (manifestDict == nil) {
+        return nil;
+    }
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
     return manifest;
 }
@@ -60,6 +65,7 @@
     [_catalogId release];
     [_bundleName release];
     [_files release];
+    [_flavors release];
     [super dealloc];
 }
 
@@ -102,10 +108,31 @@
              objectForKey:@"size"] unsignedIntegerValue];
 }
 
+- (NSArray*) flavorsForFile:(NSString*)path
+{
+    NSDictionary* fileDict = [self.files objectForKey:path];
+    return [fileDict objectForKey:@"flavors"];
+}
+
 - (NSArray*) allFiles
 {
     return [self.files allKeys];
 }
+
+- (NSArray*) filesForFlavor:(NSString*)flavor
+{
+    if (flavor == nil) {
+        return [self allFiles];
+    }
+    
+    return [[self allFiles] filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:
+             ^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                 NSArray* flavorsForFile = [self flavorsForFile:evaluatedObject];
+                 return [flavorsForFile containsObject:flavor];
+             }]];
+}
+
 
 - (NSArray*) allSHAs
 {
@@ -133,9 +160,9 @@
 }
 
 // TODO: refactor
-- (NSString*) jsonRepresentation:(NSError**)outError
+- (NSData*) jsonRepresentation:(NSError**)outError
 {
-    return [ZincKSJSON serializeObject:[self dictionaryRepresentation] error:outError];
+    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 

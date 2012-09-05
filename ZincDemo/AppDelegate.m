@@ -8,13 +8,13 @@
 
 #import "AppDelegate.h"
 
-//#import "ViewController.h"
 #import "BundleListViewController.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincUtils.h"
 #import "UIImage+Zinc.h"
+#import "Zinc.h"
 
 @interface AppDelegate()
 @property (strong, nonatomic) BundleListViewController *viewController;
@@ -57,11 +57,11 @@
     }
          
     NSBundle* bundle = [NSBundle bundleWithPath:dstDir];
-    UIImage* image1 = [UIImage imageNamed:@"sphalerite.jpg" inBundle:bundle];
+    UIImage* image1 = [UIImage zinc_imageNamed:@"sphalerite.jpg" inBundle:bundle];
     NSAssert(image1, @"image1 is nil");
     NSLog(@"image1: %@", NSStringFromCGSize(image1.size));
     
-    UIImage* image2 = [UIImage imageNamed:@"sphalerite@2x.jpg" inBundle:bundle];
+    UIImage* image2 = [UIImage zinc_imageNamed:@"sphalerite@2x.jpg" inBundle:bundle];
     NSAssert(image2, @"image1 is nil");
     NSLog(@"image2: %@", NSStringFromCGSize(image2.size));
 
@@ -90,19 +90,34 @@
     ZincRepo* repo = [[ZincRepo repoWithURL:repoURL error:&error] retain];
     repo.delegate = self;
     
-    [repo resumeAllTasks];
-
-    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.cats" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES error:NULL]) {
-        abort();
-    }
+    [repo.downloadPolicy setDefaultRequiredConnectionType:ZincConnectionTypeWiFiOnly];
     
-    if (![repo bootstrapBundleWithId:@"com.mindsnacks.demo1.sphalerites" fromDir:[[NSBundle mainBundle] resourcePath] waitUntilDone:YES error:NULL]) {
-        abort();
+    [repo resumeAllTasks];
+    
+
+    NSArray* bundleIdsToBootstrap = [NSArray arrayWithObjects:
+                                     @"com.mindsnacks.demo1.cats",
+                                     @"com.mindsnacks.demo1.sphalerites", nil];
+    
+    for (NSString* bundleId in bundleIdsToBootstrap) {
+        
+        [repo bootstrapBundleWithId:bundleId fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
+            if ([errors count] > 0) {
+                NSLog(@"%@", errors);
+                abort();
+            }
+            NSLog(@"bootstrapped %@", bundleId);
+        }];
     }
 
     [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.cats" distribution:@"master"];
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+    
+    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" automaticallyUpdate:NO];
+
+    [repo updateBundleWithId:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
+    }];
+    
+//    [repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
 
     BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
     

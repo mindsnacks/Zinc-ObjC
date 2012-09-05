@@ -30,7 +30,7 @@
 
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     NSDirectoryEnumerator* dirEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                              includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, nil]
+                              includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, NSURLIsSymbolicLinkKey, nil]
                                                  options:0 
                                             errorHandler:^(NSURL* url, NSError* error){
                                                 

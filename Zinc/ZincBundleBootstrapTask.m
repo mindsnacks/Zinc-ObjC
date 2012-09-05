@@ -9,7 +9,7 @@
 #import "ZincBundleBootstrapTask.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "ZincManifest.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
@@ -20,13 +20,17 @@
 
 - (ZincManifest*) importManifestWithPath:(NSString*)manifestPath error:(NSError**)outError
 {
-    NSString* jsonString = [NSString stringWithContentsOfFile:manifestPath encoding:NSUTF8StringEncoding error:outError];
-    if (jsonString == nil) {
+    NSData* jsonData = [NSData dataWithContentsOfFile:manifestPath options:0 error:outError];
+    if (jsonData == nil) {
         return nil;
     }
-    
+
     // copy manifest to repo
-    NSDictionary* manifestDict = [ZincKSJSON deserializeString:jsonString error:outError];
+    NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
+    if (manifestDict == nil) {
+        return nil;
+    }
+
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
     NSString* manifestRepoPath = [self.repo pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
 
@@ -48,8 +52,10 @@
 {
     NSError* error = nil;
     
+    NSString* flavor = [self getTrackedFlavor];
+    
     // make sha-based links in the repo to files inside the main bundle
-    NSArray* allFiles = [manifest allFiles];    
+    NSArray* allFiles = [manifest filesForFlavor:flavor];
     for (NSString* file in allFiles) {
         NSString* sha = [manifest shaForFile:file];
         NSString* srcPath = [fileRootPath stringByAppendingPathComponent:file];
@@ -87,8 +93,10 @@
         
         ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:archivePath] autorelease];
         [self addOperation:extractOp];
-        [extractOp waitUntilFinished];
         
+        [extractOp waitUntilFinished];
+        if (self.isCancelled) return;
+
         if (extractOp.error != nil) {
             [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
             return;

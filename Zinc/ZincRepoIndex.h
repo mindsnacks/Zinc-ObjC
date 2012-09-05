@@ -10,6 +10,8 @@
 #import "ZincGlobals.h"
 #import "ZincRepo.h"
 
+@class ZincTrackingInfo;
+
 @interface ZincRepoIndex : NSObject
 
 - (id) init;
@@ -18,11 +20,12 @@
 - (void) removeSourceURL:(NSURL*)url;
 - (NSSet*) sourceURLs;
 
-- (void) addTrackedBundleId:(NSString*)bundleId distribution:(NSString*)distro;
+- (void) setTrackingInfo:(ZincTrackingInfo*)ref forBundleId:(NSString*)bundleId;
 - (void) removeTrackedBundleId:(NSString*)bundleId;
 - (NSSet*) trackedBundleIds;
 - (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
-
+- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId;
+- (ZincTrackingInfo*) trackingInfoForBundleId:(NSString*)bundleId;
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
@@ -41,6 +44,6 @@
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;
 - (NSDictionary*) dictionaryRepresentation;
-- (NSString*) jsonRepresentation:(NSError**)outError;
+- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end

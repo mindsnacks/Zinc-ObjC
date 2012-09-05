@@ -14,10 +14,11 @@
 @class ZincTask;
 @class ZincTaskDescriptor;
 @class ZincManifest;
+@class ZincKSReachability;
 
 @interface ZincRepo ()
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(ZincKSReachability*)reachability;
 @property (nonatomic, retain) ZincRepoIndex* index;
 
 - (NSURL*) indexURL;

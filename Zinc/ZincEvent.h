@@ -14,7 +14,6 @@ typedef enum {
     ZincEventTypeCatalogUpdate,
     ZincEventTypeDelete,
     ZincEventTypeDownloadBegin,
-    ZincEventTypeDownloadProgress,
     ZincEventTypeDownloadComplete,
     ZincEventTypeBundleCloneBegin,
     ZincEventTypeBundleCloneComplete,
@@ -24,11 +23,11 @@ typedef enum {
     ZincEventTypeGarbageCollectComplete,
 } ZincEventType;
 
+extern NSString *const kZincEventAttributesSourceKey;
 extern NSString *const kZincEventAttributesURLKey;
 extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
-extern NSString *const kZincEventAttributesProgressKey;
 extern NSString *const kZincEventAttributesContextKey;
 
 #pragma mark Notifications
@@ -37,7 +36,6 @@ extern NSString *const kZincEventErrorNotification;
 extern NSString *const kZincEventBundleUpdateNotification;
 extern NSString *const kZincEventDeleteNotification;
 extern NSString *const kZincEventDownloadBeginNotification;
-extern NSString *const kZincEventDownloadProgressNotification;
 extern NSString *const kZincEventDownloadCompleteNotification;
 extern NSString *const kZincEventBundleCloneBeginNotification;
 extern NSString *const kZincEventBundleCloneCompleteNotification;
@@ -46,8 +44,6 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 extern NSString *const kZincEventGarbageCollectionBeginNotification;
 extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
-extern NSString *const kZincEventNotificationSourceKey;
-
 @interface ZincEvent : NSObject
 
 - (id) initWithType:(ZincEventType)type source:(id)source;
@@ -55,9 +51,7 @@ extern NSString *const kZincEventNotificationSourceKey;
 
 + (NSString*) name;
 
-//+ (id) eventWithType:(ZincEventType)type source:(id)source
 @property (nonatomic, assign, readonly) ZincEventType type;
-@property (nonatomic, retain, readonly) id source;
 @property (nonatomic, retain, readonly) NSDate* timestamp;
 @property (nonatomic, retain, readonly) NSDictionary* attributes;
 
@@ -90,14 +84,6 @@ extern NSString *const kZincEventNotificationSourceKey;
 
 @end
 
-@interface ZincDownloadProgressEvent : ZincEvent 
-
-+ (id)downloadProgressEventForURL:(NSURL *)url withProgress:(float)progress context:(id)context;
-@property (readonly) NSURL* url;
-@property (readonly) float progress;
-@property (readonly) id context;
-@end
-
 
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
@@ -109,9 +95,10 @@ extern NSString *const kZincEventNotificationSourceKey;
 
 @interface ZincBundleCloneBeginEvent : ZincEvent 
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource;
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source;
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context;
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
 @property (readonly) NSURL* bundleResource;
+@property (readonly) id context;
 
 @end
 

@@ -91,8 +91,10 @@
 
 -(BOOL)createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
 {
-    [self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil]; //Create path on filesystem
-    
+    if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:error]) {
+        return NO;
+    }
+        
     long location = 0; // Position in the file
     while (location<size) {       
         long blockCount = 1; // 1 block for the header
@@ -112,7 +114,9 @@
 #ifdef TAR_VERBOSE_LOG_MODE
                     NSLog(@"UNTAR - empty_file - %@", filePath);
 #endif
-                    [@"" writeToFile:filePath atomically:YES encoding:NSUTF8StringEncoding error:error];
+                    if (![@"" writeToFile:filePath atomically:NO encoding:NSUTF8StringEncoding error:error]) {
+                        return NO;
+                    }
                     break;
                 }
 
@@ -128,7 +132,9 @@
                 NSLog(@"UNTAR - directory - %@",name); 
 #endif
                 NSString *directoryPath = [path stringByAppendingPathComponent:name]; // Create a full path from the name
-                [self createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:nil]; //Write the directory on filesystem
+                if (![self createDirectoryAtPath:directoryPath withIntermediateDirectories:YES attributes:nil error:error]) {
+                    return NO;
+                }
                 break;
             }
             case '\0': // It's a nul block

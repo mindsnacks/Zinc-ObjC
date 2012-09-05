@@ -18,7 +18,7 @@
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
-#import "ZincKSJSON.h"
+#import "ZincJSONSerialization.h"
 #import "ZincTaskActions.h"
 
 @implementation ZincManifestDownloadTask
@@ -68,7 +68,10 @@
         NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
         ZincHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil context:nil];
+        
         [requestOp waitUntilFinished];
+        if (self.isCancelled) return;
+
         if (!requestOp.hasAcceptableStatusCode) {
             [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
             continue;
@@ -83,15 +86,14 @@
             continue;
         }
         
-        NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
-        id json = [ZincKSJSON deserializeString:jsonString error:&error];
+        id json = [ZincJSONSerialization JSONObjectWithData:uncompressed options:0 error:&error];
         if (json == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;
         }
         
         ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
-        NSData* data = [[manifest jsonRepresentation:&error] dataUsingEncoding:NSUTF8StringEncoding];
+        NSData* data = [manifest jsonRepresentation:&error];
         if (data == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;

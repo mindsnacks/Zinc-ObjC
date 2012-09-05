@@ -46,10 +46,14 @@
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+
+    NSString* untarDir = [ZincGetUniqueTemporaryDirectory() stringByAppendingPathComponent:
+                          [[self.archivePath lastPathComponent] stringByDeletingPathExtension]];
     
-    NSString* untarDir = [self.archivePath stringByDeletingPathExtension];
     dispatch_block_t cleanup = ^{
-        [fm removeItemAtPath:untarDir error:NULL];
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_LOW, 0), ^{
+            [fm removeItemAtPath:untarDir error:NULL];
+        });
     };
 
     if (![fm zinc_createFilesAndDirectoriesAtPath:untarDir withTarPath:self.archivePath error:&error]) {
@@ -93,7 +97,7 @@
             return;
         }
         
-        ZincAddSkipBackupAttributeToFile([NSURL fileURLWithPath:targetPath]);
+        ZincAddSkipBackupAttributeToFileWithPath(targetPath);
     }
     
     cleanup();

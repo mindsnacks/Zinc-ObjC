@@ -9,10 +9,16 @@
 #import "ZincUtils.h"
 #import <sys/xattr.h> // for AddSkipBackupAttributeToFile
 
-void ZincAddSkipBackupAttributeToFile(NSURL * url)
+int ZincAddSkipBackupAttributeToFileWithPath(NSString * path)
 {
     u_int8_t b = 1;
-    setxattr([[url path] fileSystemRepresentation], "com.apple.MobileBackup", &b, 1, 0, 0);
+    int result = setxattr([path fileSystemRepresentation], "com.apple.MobileBackup", &b, 1, 0, 0);
+    return result;
+}
+
+int ZincAddSkipBackupAttributeToFileWithURL(NSURL * url)
+{
+    return ZincAddSkipBackupAttributeToFileWithPath([url path]);
 }
 
 NSString* ZincGetApplicationDocumentsDirectory(void)
@@ -46,6 +52,14 @@ NSString* ZincCatalogIdFromBundleId(NSString* bundleId)
     NSArray* comps = [bundleId componentsSeparatedByString:@"."];
     NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
     return sourceId;
+}
+
+NSString* ZincGetUniqueTemporaryDirectory(void)
+{
+    NSString* tmpFormat = [NSTemporaryDirectory() stringByAppendingPathComponent:@"zinc.XXXXXXXX"];
+    char* tmpDirCstring = mkdtemp((char*)[tmpFormat cStringUsingEncoding:NSUTF8StringEncoding]);
+    NSString* tmpDir = [NSString stringWithCString:tmpDirCstring encoding:NSUTF8StringEncoding];
+    return tmpDir;
 }
 
 NSString* ZincBundleNameFromBundleId(NSString* bundleId)
