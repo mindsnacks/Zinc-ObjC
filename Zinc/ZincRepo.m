@@ -868,10 +868,6 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
             if (trackingInfo == nil) {
                 trackingInfo = [ZincTrackingInfo trackingInfoWithDistribution:ZincDistributionLocal
                                                                    version:localManifest.version];
-//                trackingRef = [[[ZincTrackingRef alloc] init] autorelease];
-//                trackingRef.version = localManifest.version;
-                // !!!: note to self, not sure if local distro is necessary, maybe remove?
-                trackingInfo.flavor = flavor;
                 [self.index setTrackingInfo:trackingInfo forBundleId:bundleId];
             }
             
@@ -880,6 +876,8 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                         exceptionWithName:NSInternalInconsistencyException
                         reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
                         userInfo:nil];
+            } else {
+                trackingInfo.flavor = flavor;
             }
             
             NSURL* localBundleRes = [localManifest bundleResource];
