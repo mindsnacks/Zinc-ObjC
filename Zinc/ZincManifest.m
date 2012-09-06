@@ -121,7 +121,7 @@
 
 - (NSArray*) filesForFlavor:(NSString*)flavor
 {
-    if (flavor == nil) {
+    if (flavor == nil || ![self.flavors containsObject:flavor]) {
         return [self allFiles];
     }
     
