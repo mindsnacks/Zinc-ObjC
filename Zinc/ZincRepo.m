@@ -875,14 +875,13 @@ static NSString* kvo_taskProgress = @"kvo_taskProgress";
                 [self.index setTrackingInfo:trackingInfo forBundleId:bundleId];
             }
             
-            if ((flavor != nil || trackingInfo.flavor != nil)
-                && ![trackingInfo.flavor isEqualToString:flavor]) {
+            if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
                 @throw [NSException
                         exceptionWithName:NSInternalInconsistencyException
                         reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
                         userInfo:nil];
             }
-
+            
             NSURL* localBundleRes = [localManifest bundleResource];
             [self.index setState:ZincBundleStateCloning forBundle:localBundleRes];
             ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
