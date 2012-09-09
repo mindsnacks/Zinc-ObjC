@@ -17,6 +17,7 @@
 #import "ZincEvent.h"
 #import "ZincEvent+Private.h"
 #import "ZincResource.h"
+#import "ZincTask+Private.h"
 #import "ZincTaskDescriptor.h"
 #import "ZincBundleRemoteCloneTask.h"
 #import "ZincBundleBootstrapTask.h"

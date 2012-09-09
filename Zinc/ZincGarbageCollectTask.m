@@ -7,6 +7,7 @@
 //
 
 #import "ZincGarbageCollectTask.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincResource.h"

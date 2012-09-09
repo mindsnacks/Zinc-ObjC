@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleRemoteCloneTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincBundle.h"

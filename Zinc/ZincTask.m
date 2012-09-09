@@ -7,6 +7,7 @@
 //
 
 #import "ZincTask.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskDescriptor.h"
@@ -160,7 +161,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return [NSArray arrayWithArray:self.myEvents];
 }
 
-- (NSArray*) getAllEvents
+- (NSArray*) allEvents
 {
     NSMutableArray* allEvents = [NSMutableArray array];
     for (ZincTask* task in self.subtasks) {
@@ -172,9 +173,9 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
 }
 
-- (NSArray*) getAllErrors
+- (NSArray*) allErrors
 {
-    NSArray* allEvents = [self getAllEvents];
+    NSArray* allEvents = [self allEvents];
     NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
     for (ZincEvent* event in allEvents) {
         if([event isKindOfClass:[ZincErrorEvent class]]) {

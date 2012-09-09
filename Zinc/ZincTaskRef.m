@@ -47,7 +47,7 @@
 
 - (NSArray*) allErrors
 {
-    NSArray* taskErrors = [[self getTask] getAllErrors];
+    NSArray* taskErrors = [[self getTask] allErrors];
     if ([taskErrors count] > 0) {
         return [self.errors arrayByAddingObjectsFromArray:taskErrors];
     }
