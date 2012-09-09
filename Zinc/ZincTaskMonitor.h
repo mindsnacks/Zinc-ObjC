@@ -7,32 +7,18 @@
 //
 
 #import "ZincActivityMonitor.h"
+#import "ZincProgress.h"
 
 typedef void (^ZincTaskMonitorProgressBlock)(long long currentProgress, long long totalProgress, float percent);
 
 @class ZincTaskRef;
 
-@interface ZincTaskMonitor : ZincActivityMonitor
+@interface ZincTaskMonitor : ZincActivityMonitor <ZincObservableProgress>
 
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
 @property (nonatomic, copy) ZincTaskMonitorProgressBlock progressBlock;
 @property (nonatomic, copy) ZincCompletionBlock completionBlock;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (nonatomic, readonly) float progress;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (atomic, assign) long long currentProgressValue;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (atomic, assign) long long maxProgressValue;
 
 @end

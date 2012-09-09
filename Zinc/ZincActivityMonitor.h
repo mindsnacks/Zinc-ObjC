@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincProgress.h"
 
 @class ZincTask;
 
@@ -21,26 +22,16 @@ static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 0.5;
 - (void) stopMonitoring;
 @property (nonatomic, readonly, assign) BOOL isMonitoring;
 
+@property (nonatomic, retain, readonly) NSArray* activityItems;
+
 @end
 
 
-@interface ZincActivityItem : NSObject
+
+// TODO: this is similar to ZincTaskRef!
+
+@interface ZincActivityItem : NSObject <ZincObservableProgress>
 
 @property (nonatomic, readonly) ZincTask* task;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (nonatomic, readonly) float progress;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (atomic, assign) long long currentProgressValue;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (atomic, assign) long long maxProgressValue;
 
 @end
