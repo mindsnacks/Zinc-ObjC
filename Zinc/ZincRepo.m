@@ -50,13 +50,19 @@
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
-NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
-NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
-
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
+
+NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
+NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
+
+NSString* const ZincRepoTaskAddedNotification = @"ZincRepoTaskAddedNotification";
+NSString* const ZincRepoTaskFinishedNotification = @"ZincRepoTaskFinishedNotification";
+
+NSString* const ZincRepoTaskNotificationTaskKey = @"task";
+
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
@@ -1306,6 +1312,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
         [self addOperation:task];
+        
+        [self postNotification:ZincRepoTaskAddedNotification
+                      userInfo:@{ ZincRepoTaskNotificationTaskKey : task }];
     }
 }
 
@@ -1411,6 +1420,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (foundTask != nil) {
             [foundTask removeObserver:self forKeyPath:@"isFinished" context:&kvo_taskIsFinished];
             [self.myTasks removeObject:foundTask];
+            
+            [self postNotification:ZincRepoTaskFinishedNotification
+                          userInfo:@{ ZincRepoTaskNotificationTaskKey : foundTask }];
         }
     }
 }

@@ -12,8 +12,6 @@
 
 @interface ZincTaskMonitor ()
 @property (nonatomic, retain, readwrite) ZincTaskRef* taskRef;
-@property (nonatomic, retain) NSTimer* refreshTimer;
-@property (nonatomic, readwrite, assign) BOOL isMonitoring;
 @end
 
 
@@ -21,10 +19,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @implementation ZincTaskMonitor
 
-@synthesize refreshInterval = _refreshInterval;
 @synthesize progressBlock = _progressBlock;
 @synthesize completionBlock = _completionBlock;
-@synthesize refreshTimer = _refreshTimer;
 @synthesize currentProgressValue = _currentProgressValue;
 @synthesize maxProgressValue = _maxProgressValue;
 @dynamic progress;
@@ -34,7 +30,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     self = [super init];
     if (self) {
         _taskRef = [taskRef retain];
-        _refreshInterval = kZincTaskMonitorDefaultRefreshInterval;
     }
     return self;
 }
@@ -54,44 +49,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [super dealloc];
 }
 
-- (void)restartRefreshTimer
-{
-    [self stopRefreshTimer];
-    
-    if (!self.isMonitoring) return;
-    
-    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
-                                                         target:self
-                                                       selector:@selector(updateProgress)
-                                                       userInfo:nil
-                                                        repeats:YES];
-}
-
-- (void)stopRefreshTimer
-{
-    [self.refreshTimer invalidate];
-    self.refreshTimer = nil;
-}
-
-- (void) startMonitoring
-{
-    @synchronized(self) {
-        if (self.isMonitoring) return;
-        self.isMonitoring = YES;
-        [self restartRefreshTimer];
-        [self.taskRef addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
-    }
-}
-
-- (void) stopMonitoring
-{
-    @synchronized(self) {
-        if (!self.isMonitoring) return;
-        self.isMonitoring = NO;
-        [self stopRefreshTimer];
-        [self.taskRef removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_taskIsFinished];
-    }
-}
 
 - (float) progress
 {
@@ -100,6 +57,16 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         return (float)self.currentProgressValue / max;
     }
     return 0.0f;
+}
+
+- (void) monitoringDidStart
+{
+    [self.taskRef addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
+}
+
+- (void) monitoringDidStop
+{
+    [self.taskRef removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_taskIsFinished];
 }
 
 - (void) callProgressBlock
@@ -116,7 +83,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (void) updateProgress
+- (void) update
 {
     [self willChangeValueForKey:NSStringFromSelector(@selector(progress))];
     self.maxProgressValue = [self.taskRef maxProgressValue];
@@ -131,7 +98,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (context == &kvo_taskIsFinished) {
         BOOL finished = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
         if (finished) {
-            [self updateProgress];
+            [self update];
             [self callCompletionBlock];
         }
     } else {

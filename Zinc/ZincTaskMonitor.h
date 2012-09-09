@@ -6,26 +6,19 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincGlobals.h"
-
-static NSTimeInterval const kZincTaskMonitorDefaultRefreshInterval = 0.5;
+#import "ZincActivityMonitor.h"
 
 typedef void (^ZincTaskMonitorProgressBlock)(long long currentProgress, long long totalProgress, float percent);
 
 @class ZincTaskRef;
 
-@interface ZincTaskMonitor : NSObject
+@interface ZincTaskMonitor : ZincActivityMonitor
 
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
-@property (nonatomic, assign) NSTimeInterval refreshInterval;
 @property (nonatomic, copy) ZincTaskMonitorProgressBlock progressBlock;
 @property (nonatomic, copy) ZincCompletionBlock completionBlock;
-
-- (void) startMonitoring;
-- (void) stopMonitoring;
-@property (nonatomic, readonly, assign) BOOL isMonitoring;
 
 /**
  @discussion Is Key-Value Observable

@@ -27,13 +27,22 @@ static NSString* ZincBundleStateName[] = {
     @"Deleting",
 };
 
-extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
-extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
-
+// -- Bundle Notifications
 extern NSString* const ZincRepoBundleStatusChangeNotification;
 extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
 extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
+
+// -- Bundle Notification UserInfo Keys
+extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
+extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
+
+// -- Task Notifications
+extern NSString* const ZincRepoTaskAddedNotification;
+extern NSString* const ZincRepoTaskFinishedNotification;
+
+// -- Task Notification UserInfo Keys
+extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @protocol ZincRepoDelegate;
 @class ZincManifest;
@@ -41,7 +50,6 @@ extern NSString* const ZincRepoBundleWillDeleteNotification;
 @class ZincEvent;
 @class ZincBundleTrackingRequest;
 @class ZincDownloadPolicy;
-@class ZincBundleCloneMonitor;
 @class ZincTaskRef;
 
 @interface ZincRepo : NSObject
