@@ -35,9 +35,6 @@ extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
 extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
-//extern NSString* const ZincRepoBundleCloneProgressNotification;
-//extern NSString* const ZincRepoBundleCloneProgressKey;
-
 @protocol ZincRepoDelegate;
 @class ZincManifest;
 @class ZincBundle;
