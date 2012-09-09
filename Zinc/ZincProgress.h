@@ -11,19 +11,19 @@
 @protocol ZincProgress <NSObject>
 
 /**
- @discussion NOT Key-Value observable
+ @discussion NOT Key-Value Observable
  */
 - (long long) currentProgressValue;
 
 /**
- @discussion NOT Key-Value observable
+ @discussion NOT Key-Value Observable
  */
 - (long long) maxProgressValue;
 
 /**
- @discussion NOT Key-Value observable
+ @discussion NOT Key-Value Observable
  */
-- (double) progress;
+- (float) progress;
 
 @end
 
@@ -34,16 +34,22 @@
 /**
  @discussion Is Key-Value Observable
  */
-@property (nonatomic, readonly) float progress;
+@property (atomic, assign, readonly) float progress;
 
 /**
  @discussion Is Key-Value Observable
  */
-@property (atomic, assign) long long currentProgressValue;
+@property (atomic, assign, readonly) long long currentProgressValue;
 
 /**
  @discussion Is Key-Value Observable
  */
-@property (atomic, assign) long long maxProgressValue;
+@property (atomic, assign, readonly) long long maxProgressValue;
 
 @end
+
+
+/**
+ @discussion Helper function to calculate floating-point progress. Basically just avoids divide by zero.
+ */
+extern float ZincProgressCalculate(id<ZincProgress>);

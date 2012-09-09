@@ -12,6 +12,9 @@
 
 @interface ZincTaskMonitor ()
 @property (nonatomic, retain, readwrite) ZincTaskRef* taskRef;
+@property (atomic, assign, readwrite) long long currentProgressValue;
+@property (atomic, assign, readwrite) long long maxProgressValue;
+@property (atomic, assign, readwrite) float progress;
 @end
 
 
@@ -23,7 +26,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @synthesize completionBlock = _completionBlock;
 @synthesize currentProgressValue = _currentProgressValue;
 @synthesize maxProgressValue = _maxProgressValue;
-@dynamic progress;
+@synthesize progress = _progress;
 
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 {
@@ -47,16 +50,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [_completionBlock release];
     [_taskRef release];
     [super dealloc];
-}
-
-
-- (float) progress
-{
-    NSInteger max = [self maxProgressValue];
-    if (max > 0.0f) {
-        return (float)self.currentProgressValue / max;
-    }
-    return 0.0f;
 }
 
 - (void) monitoringDidStart
@@ -85,10 +78,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) update
 {
-    [self willChangeValueForKey:NSStringFromSelector(@selector(progress))];
     self.maxProgressValue = [self.taskRef maxProgressValue];
     self.currentProgressValue = [self.taskRef isFinished] ? self.maxProgressValue : self.taskRef.currentProgressValue;
-    [self didChangeValueForKey:NSStringFromSelector(@selector(progress))];
+    self.progress = ZincProgressCalculate(self);
     
     [self callProgressBlock];
 }

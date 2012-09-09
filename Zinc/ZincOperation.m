@@ -53,13 +53,9 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] longLongValue];
 }
 
-- (double) progress
+- (float) progress
 {
-    long long max = [self maxProgressValue];
-    if (max > 0) {
-        return (double)[self currentProgressValue] / max;
-    }
-    return 0;
+    return ZincProgressCalculate(self);
 }
 
 - (void) cancel
