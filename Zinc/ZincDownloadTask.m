@@ -62,24 +62,20 @@
     return requestOp;
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
     return self.bytesRead;
 }
 
-- (NSInteger) maxProgressValue
+- (long long) maxProgressValue
 {
     return MAX(self.totalBytesToRead, self.bytesRead);
 }
 
 - (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
 {
-    [self willChangeValueForKey:@"currentProgressValue"];
-    [self willChangeValueForKey:@"maxProgressValue"];
     self.bytesRead = currentBytes;
     self.totalBytesToRead = totalBytes;
-    [self didChangeValueForKey:@"currentProgressValue"];
-    [self didChangeValueForKey:@"maxProgressValue"];
 }
 
 - (void)dealloc

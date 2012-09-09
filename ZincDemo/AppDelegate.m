@@ -101,7 +101,9 @@
     
     for (NSString* bundleId in bundleIdsToBootstrap) {
         
-        [repo bootstrapBundleWithId:bundleId fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
+        ZincBundleTrackingRequest* req = [ZincBundleTrackingRequest bundleTrackingRequestWithBundleID:bundleId];
+        
+        [repo bootstrapBundleWithRequest:req fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
             if ([errors count] > 0) {
                 NSLog(@"%@", errors);
                 abort();
@@ -114,7 +116,7 @@
     
     [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" automaticallyUpdate:NO];
 
-    [repo updateBundleWithId:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
+    [repo updateBundleWithID:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
     }];
     
 //    [repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];

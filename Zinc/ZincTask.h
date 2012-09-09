@@ -54,7 +54,7 @@
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
 - (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
 
-/* Current for network ops ONLY. Consider refactoring to clean up the API */
+/* Currently for network ops ONLY. Consider refactoring to clean up the API */
 - (void) addOperation:(NSOperation*)operation;
 
 //- (void) waitForSuboperations;

@@ -20,6 +20,7 @@ enum  {
 
 enum  {
     ZincVersionInvalid = -1,
+    ZincVersionUnknown = 0,
 };
 
 extern NSString* const ZincFileFormatRaw;

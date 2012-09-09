@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ZincResourceDescriptor;
-
 @interface ZincTaskDescriptor : NSObject <NSCopying>
 
 /* method should always be the classname. Do not override. Did not call it

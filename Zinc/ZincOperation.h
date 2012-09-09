@@ -13,12 +13,22 @@ extern double const kZincOperationInitialDefaultThreadPriority;
 
 @interface ZincOperation : NSOperation
 
-+ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
-+ (double)defaultThreadPriority;
++ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
++ (double) defaultThreadPriority;
 
-- (NSInteger) currentProgressValue;
-- (NSInteger) maxProgressValue;
+/**
+ @discussion NOT Key-Value observable
+ */
+- (long long) currentProgressValue;
 
+/**
+ @discussion NOT Key-Value observable
+ */
+- (long long) maxProgressValue;
+
+/**
+ @discussion NOT Key-Value observable
+ */
 - (double) progress;
 
 @end

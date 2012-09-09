@@ -27,8 +27,6 @@ typedef id ZincBackgroundTaskIdentifier;
 @property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
 
-static const NSString* kvo_CurrentProgress = @"kvo_CurrentProgress";
-static const NSString* kvo_MaxProgress = @"kvo_MaxProgress";
 static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 @implementation ZincTask
@@ -126,9 +124,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     
     ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
     [self addDependency:task];
-    [task addObserver:self forKeyPath:@"currentProgressValue" options:0 context:&kvo_CurrentProgress];
-    [task addObserver:self forKeyPath:@"maxProgressValue" options:0 context:&kvo_MaxProgress];
-    [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_SubtaskIsFinished];
+    [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:0 context:&kvo_SubtaskIsFinished];
 
     return task;
 }
@@ -210,22 +206,8 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == &kvo_CurrentProgress) {
-        [self willChangeValueForKey:@"currentProgressValue"];
-        [self willChangeValueForKey:@"progress"];
-        [self didChangeValueForKey:@"currentProgressValue"];
-        [self didChangeValueForKey:@"progress"];
-        //NSLog(@"progress: %f", self.progress);
-    } else if (context == &kvo_MaxProgress) {
-        [self willChangeValueForKey:@"maxProgressValue"];
-        [self willChangeValueForKey:@"progress"];
-        [self didChangeValueForKey:@"maxProgressValue"];
-        [self didChangeValueForKey:@"progress"];
-        //NSLog(@"progress: %f", self.progress);
-    } else if (context == &kvo_SubtaskIsFinished) {
-        [object removeObserver:self forKeyPath:@"currentProgressValue" context:&kvo_CurrentProgress];
-        [object removeObserver:self forKeyPath:@"maxProgressValue" context:&kvo_MaxProgress];
-        [object removeObserver:self forKeyPath:@"isFinished" context:&kvo_SubtaskIsFinished];
+    if (context == &kvo_SubtaskIsFinished) {
+        [object removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_SubtaskIsFinished];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }

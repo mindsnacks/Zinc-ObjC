@@ -22,14 +22,13 @@
 #import "ZincErrors.h"
 
 @interface ZincBundleRemoteCloneTask ()
-@property (assign) NSInteger totalBytesToDownload;
-@property (assign) NSInteger lastProgressValue;
+@property (assign) long long maxProgressValue;
+@property (assign) long long lastProgressValue;
 @end
 
 @implementation ZincBundleRemoteCloneTask
 
 @synthesize httpOverheadConstant = _httpOverheadConstant;
-@synthesize totalBytesToDownload = _totalBytesToDownload;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -47,10 +46,10 @@
 
 - (BOOL) isProgressCalculated
 {
-    return self.totalBytesToDownload > 0;
+    return self.maxProgressValue > 0;
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
     if (![self isProgressCalculated]) return 0;
     
@@ -62,11 +61,6 @@
     }
     self.lastProgressValue = curVal;
     return curVal;
-}
-
-- (NSInteger) maxProgressValue
-{
-    return self.totalBytesToDownload;
 }
 
 - (BOOL) prepareManifest
@@ -121,7 +115,7 @@
     
     if (missingSize > 0) {
         
-        self.totalBytesToDownload = missingSize;
+        self.maxProgressValue = missingSize;
         
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
