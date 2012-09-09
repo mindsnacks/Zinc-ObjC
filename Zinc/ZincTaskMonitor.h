@@ -9,7 +9,6 @@
 #import "ZincActivityMonitor.h"
 #import "ZincProgress.h"
 
-typedef void (^ZincTaskMonitorProgressBlock)(long long currentProgress, long long totalProgress, float percent);
 
 @class ZincTaskRef;
 
@@ -18,7 +17,7 @@ typedef void (^ZincTaskMonitorProgressBlock)(long long currentProgress, long lon
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
-@property (nonatomic, copy) ZincTaskMonitorProgressBlock progressBlock;
+@property (nonatomic, copy) ZincProgressBlock progressBlock;
 @property (nonatomic, copy) ZincCompletionBlock completionBlock;
 
 @end
