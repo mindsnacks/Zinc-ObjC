@@ -42,7 +42,6 @@
 #import "ZincKSReachability.h"
 #import "NSError+Zinc.h"
 #import "ZincTaskActions.h"
-#import "ZincBundleCloneMonitor.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -53,16 +52,13 @@
 
 NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
 NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
-//NSString* const ZincRepoBundleCloneProgressKey = @"progress";
 
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
-//NSString* const ZincRepoBundleCloneProgressNotification = @"ZincRepoBundleCloneProgressNotification";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
-//static NSString* kvo_taskProgress = @"kvo_taskProgress";
 
 @interface ZincRepo ()
 
@@ -388,15 +384,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                                                           userInfo:userInfo];
     }];
 }
-
-//- (void) postProgressNotificationForBundleId:(NSString*)bundleId progress:(float)progress
-//{
-//    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-//                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
-//                              [NSNumber numberWithFloat:progress], ZincRepoBundleCloneProgressKey,
-//                              nil];
-//    [self postNotification:ZincRepoBundleCloneProgressNotification userInfo:userInfo];
-//}
 
 - (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId state:(ZincBundleState)state
 {
@@ -960,59 +947,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }];
 }
 
-// this branch
-//- (ZincTaskRef*) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
-//{
-//    __block ZincTaskRef* taskRef = nil;
-//    if (completion != nil) {
-//        __block typeof(taskRef) block_taskRef = taskRef;
-//        taskRef.completionBlock = ^{
-//                completion([block_taskRef getAllErrors]);
-//        };
-//    }
-//    
-////    __block typeof(self) blockSelf = self;
-//    [self.indexProxy withTarget:^{
-//        
-//        ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleId];
-//        if (trackingInfo == nil) {
-//            if (completion != nil) {
-//                completion([NSArray arrayWithObject:ZincError(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE)]);
-//            }
-//            return;
-//        }
-//        
-//#warning this sucks if the catalog hasn't been loaded yet
-//        ZincVersion version = [self catalogVersionForBundleId:bundleId distribution:trackingInfo.distribution];
-//        if (version == ZincVersionInvalid) {
-//            if (completion != nil) {
-//                completion([NSArray arrayWithObject:ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS)]);
-//            }
-//            return;
-//        }
-//        
-//        trackingInfo.version = version;
-//        [self.index setTrackingInfo:trackingInfo forBundleId:bundleId];
-//        
-////        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
-////        
-////        ZincBundleState state = [self.index stateForBundle:bundleRes];
-////        if (state != ZincBundleStateAvailable) {
-////            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-////            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-////            ZincTask* task = [self queueTaskForDescriptor:taskDesc];
-////            taskRef = [[[ZincTaskRef2 alloc] initWithTask:task] autorelease];
-////        }
-//        
-//        
-//        taskRef = [self queueUpdateForBundleWithId:bundleId version:version];
-//        
-//        [self queueIndexSave];
-//    }];
-//    
-//    return taskRef;
-//}
-
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID
 {
     ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
@@ -1070,29 +1004,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self queueIndexSave];
     }];
 }
-
-//- (ZincTaskRef*) queueUpdateForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
-//{
-//    NSParameterAssert(bundleId);
-//    NSAssert(version != ZincVersionInvalid, @"must be valid version");
-//    
-//    __block ZincTaskRef* taskRef = nil;
-//    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
-//    
-//    [self.indexProxy withTarget:^{
-//        
-//        ZincBundleState state = [self.index stateForBundle:bundleRes];
-//        if (state != ZincBundleStateAvailable) {
-//            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-//            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-//            ZincTask* task = [self queueTaskForDescriptor:taskDesc];
-//            taskRef = [[[ZincTaskRef alloc] init] autorelease];
-//            [taskRef addDependency:task];
-//        }
-//    }];
-//    
-//    return taskRef;
-//}
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
 {
@@ -1226,18 +1137,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
     [self queueTaskForDescriptor:taskDesc];
 }
-
-//- (ZincTaskRef2*) taskRefForBundleUpdate:(NSString*)bundleId
-//{
-//    NSArray* tasks = [self tasksForBundleId:bundleId];
-//    for (ZincTask* task in tasks) {
-//        if ([task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) {
-//            return [[[ZincTaskRef2 alloc] initWithTask:task] autorelease];
-//        }
-//    }
-//    return nil;
-//}
-
 
 #pragma mark Bundles
 
@@ -1406,7 +1305,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
-//        [task addObserver:self forKeyPath:@"progress" options:NSKeyValueObservingOptionNew context:&kvo_taskProgress];
         [self addOperation:task];
     }
 }
@@ -1511,7 +1409,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.myTasks) {
         ZincTask* foundTask = [self taskForDescriptor:[task taskDescriptor]];
         if (foundTask != nil) {
-//            [foundTask removeObserver:self forKeyPath:@"progress" context:&kvo_taskProgress];
             [foundTask removeObserver:self forKeyPath:@"isFinished" context:&kvo_taskIsFinished];
             [self.myTasks removeObject:foundTask];
         }
@@ -1545,13 +1442,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         if (task.isFinished) {
             [self removeTask:task];
         }
-//    } else if (context == &kvo_taskProgress) {
-//
-//        ZincTask* task = (ZincTask*)object;
-//        NSString* bundleId = [task.resource zincBundleId];
-//        float progress = [[change objectForKey:NSKeyValueChangeNewKey] floatValue];
-//        [self postProgressNotificationForBundleId:bundleId progress:progress];
-        
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }
