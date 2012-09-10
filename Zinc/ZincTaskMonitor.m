@@ -12,9 +12,9 @@
 
 @interface ZincTaskMonitor ()
 @property (nonatomic, retain, readwrite) ZincTaskRef* taskRef;
-@property (atomic, assign, readwrite) long long currentProgressValue;
-@property (atomic, assign, readwrite) long long maxProgressValue;
-@property (atomic, assign, readwrite) float progress;
+@property (nonatomic, assign, readwrite) long long currentProgressValue;
+@property (nonatomic, assign, readwrite) long long maxProgressValue;
+@property (nonatomic, assign, readwrite) float progress;
 @end
 
 
@@ -22,7 +22,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @implementation ZincTaskMonitor
 
-@synthesize progressBlock = _progressBlock;
 @synthesize completionBlock = _completionBlock;
 @synthesize currentProgressValue = _currentProgressValue;
 @synthesize maxProgressValue = _maxProgressValue;
@@ -46,7 +45,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     [self stopMonitoring];
     
-    [_progressBlock release];
     [_completionBlock release];
     [_taskRef release];
     [super dealloc];

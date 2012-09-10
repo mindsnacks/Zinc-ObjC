@@ -38,17 +38,17 @@ typedef void (^ZincProgressBlock)(id context, long long currentProgress, long lo
 /**
  @discussion Is Key-Value Observable
  */
-@property (atomic, assign, readonly) float progress;
+@property (nonatomic, assign, readonly) float progress;
 
 /**
  @discussion Is Key-Value Observable
  */
-@property (atomic, assign, readonly) long long currentProgressValue;
+@property (nonatomic, assign, readonly) long long currentProgressValue;
 
 /**
  @discussion Is Key-Value Observable
  */
-@property (atomic, assign, readonly) long long maxProgressValue;
+@property (nonatomic, assign, readonly) long long maxProgressValue;
 
 @end
 

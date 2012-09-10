@@ -26,7 +26,6 @@
 
 #pragma mark -
 
-- (NSArray*) items;
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
 
 /**
@@ -34,13 +33,14 @@
  */
 @property (nonatomic, readonly, assign) float totalProgress;
 
+- (BOOL) isFinished;
+
 @end
 
 
 
-@interface ZincBundleAvailabilityMonitorItem : NSObject <ZincObservableProgress>
+@interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
 
-@property (nonatomic, readonly, assign) ZincBundleAvailabilityMonitor* monitor;
-@property (nonatomic, readonly, assign) NSString* bundleID;
+@property (nonatomic, readonly, retain) NSString* bundleID;
 
 @end

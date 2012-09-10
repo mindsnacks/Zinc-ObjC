@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleAvailabilityMonitor.h"
+#import "ZincActivityMonitor+Private.h"
 #import "ZincRepo.h"
 #import "ZincTask.h"
 #import "ZincTaskDescriptor.h"
@@ -21,11 +22,6 @@
 
 @interface ZincBundleAvailabilityMonitorItem ()
 - (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID;
-@property (atomic, assign, readwrite) long long currentProgressValue;
-@property (atomic, assign, readwrite) long long maxProgressValue;
-@property (atomic, assign, readwrite) float progress;
-@property (nonatomic, retain) ZincTask* task;
-- (void) update;
 @end
 
 @implementation ZincBundleAvailabilityMonitor
@@ -64,22 +60,20 @@
 
 - (void) update
 {
-    if (self.totalProgress == 1.0f) return;
+    if ([self isFinished]) return;
     
-    __block NSUInteger finishedCount = 0;
+    [super update];
     
-    [self.myItems enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        ZincBundleAvailabilityMonitorItem* item = obj;
-        [item update];
-        if (item.progress == 1.0f) {
-            finishedCount++;
-        }
-    }];
-    
-    if (finishedCount == [self.myItems count]) {
+    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
+                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject isFinished];
+    }]];
+       
+    if ([finishedItems count] == [self.myItems count]) {
         [self finish];
     } else {
-        self.totalProgress = (float)finishedCount / [self.myItems count];
+        self.totalProgress = (float)[finishedItems count] / [self.myItems count];
+        //NSLog(@"total %f", self.totalProgress);
     }
 }
 
@@ -90,6 +84,11 @@
         self.completionBlock(nil); // TODO: add errors?
     }
     [self stopMonitoring];
+}
+
+- (BOOL) isFinished
+{
+    return self.totalProgress == 1.0f;
 }
 
 - (void) monitoringDidStart
@@ -109,7 +108,7 @@
 
     NSArray* existingTasks = [self.repo tasks];
     for (ZincTask* task in existingTasks) {
-        [self associateTask:task];
+        [self associateTaskWithActivityItem:task];
     }
     
     [self update];
@@ -120,7 +119,7 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (void) associateTask:(ZincTask*)task
+- (void) associateTaskWithActivityItem:(ZincTask*)task
 {
     if (![task.taskDescriptor.resource isZincBundleResource]) return;
     if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) return;
@@ -137,8 +136,7 @@
 - (void) taskAdded:(NSNotification*)note
 {
     ZincTask* task = [[note userInfo] objectForKey:ZincRepoTaskNotificationTaskKey];
-
-    [self associateTask:task];
+    [self associateTaskWithActivityItem:task];
 }
 
 @end
@@ -147,61 +145,30 @@
 @implementation ZincBundleAvailabilityMonitorItem
 
 @synthesize bundleID = _bundleID;
-@synthesize task = _task;
 
 - (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID
 {
-    self = [super init];
+    self = [super initWithActivityMonitor:monitor];
     if (self) {
-        _monitor = monitor;
         _bundleID = [bundleID retain];
     }
     return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
     [_bundleID release];
-    [_task release];
     [super dealloc];
 }
 
-- (void)update
+- (void) update
 {
-    if (self.progress == 1.0f) return;
+    if ([self isFinished]) return;
+
+    ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
     
-    BOOL progressValuesChanged = NO;
-    
-    if ([self.monitor.repo stateForBundleWithId:self.bundleID] == ZincBundleStateAvailable
-        || [self.task isFinished]) {
-        
-        progressValuesChanged = YES;
-        self.currentProgressValue = self.maxProgressValue;
-        self.progress = 1.0f;
-        
-    } else if (self.task != nil) {
-        
-        long long taskCurrentProgressValue = [self.task currentProgressValue];
-        long long taskMaxProgressValue = [self.task maxProgressValue];
-        
-        if (self.currentProgressValue != taskCurrentProgressValue) {
-            self.currentProgressValue = taskCurrentProgressValue;
-            progressValuesChanged = YES;
-        }
-        
-        if (self.maxProgressValue != taskMaxProgressValue) {
-            self.maxProgressValue = taskMaxProgressValue;
-            progressValuesChanged = YES;
-        }
-        
-        if (progressValuesChanged) {
-            self.progress = ZincProgressCalculate(self);
-        }
-    }
-    
-    if (progressValuesChanged && self.monitor.progressBlock != nil) {
-        //NSLog(@"%lld %lld %f", self.currentProgressValue, self.maxProgressValue, self.progress);
-        self.monitor.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progress);
+    if ([bundleMon.repo stateForBundleWithId:self.bundleID] == ZincBundleStateAvailable) {
+        [self finish];
     }
 }
 

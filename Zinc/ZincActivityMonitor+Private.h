@@ -9,11 +9,28 @@
 
 #import "ZincActivityMonitor.h"
 
-@interface ZincActivityMonitor ()
+@class ZincTask;
 
-- (void) update;
+@interface ZincActivityMonitor ()
 
 - (void) monitoringDidStart;
 - (void) monitoringDidStop;
+
+- (void) update;
+
+@end
+
+
+@interface ZincActivityItem ()
+
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor;
+
+@property (nonatomic, readwrite, retain) ZincTask* task;
+@property (nonatomic, assign, readwrite) long long currentProgressValue;
+@property (nonatomic, assign, readwrite) long long maxProgressValue;
+@property (nonatomic, assign, readwrite) float progress;
+
+- (void) update;
+- (void) finish;
 
 @end

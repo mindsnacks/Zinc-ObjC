@@ -7,25 +7,27 @@
 //
 
 #import "ZincRepoMonitor.h"
+#import "ZincActivityMonitor+Private.h"
 #import "ZincRepo.h"
 #import "ZincTask.h"
 #import "ZincResource.h"
 
+// For Convenience Constructors
+#import "ZincTaskDescriptor.h"
+#import "ZincTaskActions.h"
+
 @interface ZincRepoMonitor ()
 @property (nonatomic, readwrite, retain) ZincRepo* repo;
 @property (nonatomic, readwrite, retain) NSPredicate* taskPredicate;
-@property (nonatomic, retain) NSMutableArray* tasks;
-@property (nonatomic, assign) BOOL watchForNewTasks;
+@property (nonatomic, retain) NSMutableArray* myItems;
 @end
 
-static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @implementation ZincRepoMonitor
 
 @synthesize repo = _repo;
 @synthesize taskPredicate = _taskPredicate;
-@synthesize tasks = _tasks;
-@synthesize watchForNewTasks = _watchForNewTasks;
+@synthesize myItems = _myItems;
 
 - (id)initWithRepo:(ZincRepo*)repo taskPredicate:(NSPredicate*)taskPredicate
 {
@@ -33,63 +35,91 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (self) {
         _repo = [repo retain];
         _taskPredicate = [taskPredicate retain];
-        _tasks = [[NSMutableArray alloc] initWithCapacity:20];
-        
-        
-//        [[NSNotificationCenter defaultCenter] addObserver:self
-//                                                 selector:@selector(taskFinished:)
-//                                                     name:ZincRepoTaskFinishedNotification
-//                                                   object:_repo];
+        _myItems = [[NSMutableArray alloc] initWithCapacity:20];
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    
-    [_tasks release];
+    [_myItems release];
     [_repo release];
     [_taskPredicate release];
     [super dealloc];
 }
 
-- (void) startMonitoring
++ (ZincRepoMonitor*) repoMonitorForBundleCloneTasksInRepo:(ZincRepo*)repo
 {
-    [self startMonitoringAndWatchForNewTasks:NO];
+    NSPredicate* pred = [NSPredicate predicateWithBlock:
+                         ^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                             
+                             ZincTask* task = (ZincTask*)evaluatedObject;
+                             
+                             if (![task.taskDescriptor.resource isZincBundleResource])
+                                 return NO;
+                             
+                             if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate])
+                                 return NO;
+                             
+                             return YES;
+                         }];
+    
+    return [[[self alloc] initWithRepo:repo taskPredicate:pred] autorelease];
 }
 
-- (void) startMonitoringAndWatchForNewTasks:(BOOL)watchForNewTasks
+- (NSArray*) items
 {
-    self.watchForNewTasks = watchForNewTasks;
-    [super startMonitoring];
+    return [NSArray arrayWithArray:self.myItems];
 }
 
 - (void) monitoringDidStart
 {
-    if (self.watchForNewTasks) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(taskAdded:)
-                                                     name:ZincRepoTaskAddedNotification
-                                                   object:_repo];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(taskAdded:)
+                                                 name:ZincRepoTaskAddedNotification
+                                               object:_repo];
+        
+    @synchronized(self.myItems) {
+
+        NSArray* tasks = self.repo.tasks;
+        for (ZincTask* task in tasks) {
+            if ([self.taskPredicate evaluateWithObject:task]) {
+                ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
+                item.task = task;
+                [self.myItems addObject:item];
+            }
+        }
     }
+}
+
+- (void) monitoringDidStop
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void) update
+{
+    [super update];
     
-    // TODO: add all existing tasks
+    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
+                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject isFinished];
+    }]];
+    
+    @synchronized(self.myItems) {
+
+        for (ZincActivityItem* item in finishedItems) {
+            [self.myItems removeObject:item];
+        }
+    }
 }
 
 - (void) addTask:(ZincTask*)task
 {
-    @synchronized(self.tasks) {
-        [self.tasks addObject:task];
-        [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
-    }
-}
-
-- (void) removeTask:(ZincTask*)task
-{
-    @synchronized(self.tasks) {
-        [task removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_taskIsFinished];
-        [self.tasks removeObject:task];
+    @synchronized(self.myItems) {
+        ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
+        [self.myItems addObject:item];
+        //        [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
     }
 }
 
@@ -98,24 +128,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincTask* task = [[note userInfo] objectForKey:ZincRepoTaskNotificationTaskKey];
     
     if ([self.taskPredicate evaluateWithObject:task]) {
-        @synchronized(self.tasks) {
-            [self.tasks addObject:task];
-        }
+        [self addTask:task];
     }
 }
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
-{
-    if (context == &kvo_taskIsFinished) {
-        BOOL finished = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
-        if (finished) {
-            [self removeTask:object];
-        }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
-
 
 @end
 

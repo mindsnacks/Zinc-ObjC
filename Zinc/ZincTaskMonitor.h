@@ -17,7 +17,6 @@
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
-@property (nonatomic, copy) ZincProgressBlock progressBlock;
 @property (nonatomic, copy) ZincCompletionBlock completionBlock;
 
 @end

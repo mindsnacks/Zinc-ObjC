@@ -17,23 +17,10 @@
 @property (nonatomic, readonly, retain) ZincRepo* repo;
 @property (nonatomic, readonly, retain) NSPredicate* taskPredicate;
 
-- (void) startMonitoring;
-//- (void) startMonitoringAndWatchForNewTasks:(BOOL)watchForNewTasks;
+#pragma mark Convenience Constructors
 
-@property (nonatomic, readonly, retain) NSArray* items;
-
-@end
-
-
-@protocol ZincRepoMonitorDelegate <NSObject>
++ (ZincRepoMonitor*) repoMonitorForBundleCloneTasksInRepo:(ZincRepo*)repo;
 
 @end
 
 
-// TODO: this is similar to ZincTaskRef!
-
-@interface ZincRepoMonitorItem : NSObject <ZincObservableProgress>
-
-@property (nonatomic, readonly) ZincTask* task;
-
-@end
