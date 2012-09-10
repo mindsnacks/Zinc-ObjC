@@ -616,7 +616,6 @@
 		B3CAB5F515FC3644008502AC /* Activity */ = {
 			isa = PBXGroup;
 			children = (
-				B3CAB5FF15FC6D0B008502AC /* ZincBundleAvailabilityMonitor.h */,
 				B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */,
 				B3CAB5F115FC228F008502AC /* ZincTaskMonitor.m */,
 				B3CAB5F715FC3673008502AC /* ZincRepoMonitor.m */,
@@ -680,11 +679,12 @@
 				B340F993148D543B00206F86 /* ZincBundle.h */,
 				B31E269015D472F600B913D9 /* ZincBundleTrackingRequest.h */,
 				B327067F14B77FAB004E3244 /* ZincEvent.h */,
-				B3A1387115C310DD0095DEB0 /* ZincTrackingInfo.h */,
 				B3BFF9DE15C62363005A879E /* ZincTaskRef.h */,
+				B3CC221C15DB7D6E00B2D3DB /* ZincDownloadPolicy.h */,
+				B3CAB60415FD2452008502AC /* ZincProgress.h */,
 				B3CAB5F015FC228F008502AC /* ZincTaskMonitor.h */,
 				B3CAB5F615FC3673008502AC /* ZincRepoMonitor.h */,
-				B3CC221C15DB7D6E00B2D3DB /* ZincDownloadPolicy.h */,
+				B3CAB5FF15FC6D0B008502AC /* ZincBundleAvailabilityMonitor.h */,
 				B38A06F114C0DADC00AEC367 /* UIImage+Zinc.h */,
 			);
 			name = "Public Headers";
@@ -755,11 +755,11 @@
 				B3215E2514BE600E00FC7FA7 /* ZincResource.m */,
 				B3549DED148DB80900DD63D1 /* ZincManifest.h */,
 				B3549DEE148DB80900DD63D1 /* ZincManifest.m */,
+				B3A1387115C310DD0095DEB0 /* ZincTrackingInfo.h */,
 				B3A1387215C310DD0095DEB0 /* ZincTrackingInfo.m */,
 				B31E269115D472F600B913D9 /* ZincBundleTrackingRequest.m */,
 				B3CC221D15DB7D6E00B2D3DB /* ZincDownloadPolicy.m */,
 				B3A1387215C310DD0095DEB0 /* ZincTrackingInfo.m */,
-				B3CAB60415FD2452008502AC /* ZincProgress.h */,
 				B3CAB60515FD2613008502AC /* ZincProgress.m */,
 				B3E46B5114C3DDB900030349 /* Tasks */,
 				B3CAB5F515FC3644008502AC /* Activity */,
