@@ -1214,23 +1214,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return nil;
 }
 
-/*
-- (NSArray*) tasksForResource:(NSURL*)resource action:(NSString*)action
-{
-    @synchronized(self.myTasks) {
-        NSMutableArray* tasks = [NSMutableArray array];
-        for (ZincTask* task in self.myTasks) {
-            BOOL matchesResource = [task.resource isEqual:resource];
-            BOOL matchesAction = (action != nil) ? [action isEqualToString:task.taskDescriptor.action] : YES;
-            if (matchesResource && matchesAction) {
-                [tasks addObject:task];
-            }
-        }
-        return tasks;
-    }
-}
-*/
-
 - (NSArray*) tasksForResource:(NSURL*)resource
 {
     @synchronized(self.myTasks) {
