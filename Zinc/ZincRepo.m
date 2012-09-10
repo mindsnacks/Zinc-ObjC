@@ -1046,39 +1046,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return YES;
 }
 
-- (ZincVersion) versionToCloneForBundleId:(NSString*)bundleId trackingRef:(ZincTrackingInfo*)trackingInfo
-{
-    /*
-     - if auto updates are enabled, we always want to look in the catalog
-     - if not, BUT the version is invalid, it means that we weren't able to clone any version yet
-     */
-    // TODO: this really needs to be testable
-    
-    __block ZincVersion versionToClone = ZincVersionInvalid;
-
-    [self.indexProxy withTarget:^{
-        
-        ZincVersion potentialVersionToClone;
-        
-        if (trackingInfo.updateAutomatically || trackingInfo.version == ZincVersionInvalid) {
-            potentialVersionToClone = [self catalogVersionForBundleId:bundleId distribution:trackingInfo.distribution];
-        } else {
-            potentialVersionToClone = trackingInfo.version;
-        }
-        
-        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:potentialVersionToClone];
-        ZincBundleState state = [self.index stateForBundle:bundleRes];
-        
-        if (state == ZincBundleStateCloning || state == ZincBundleStateAvailable) {
-            // already downloading/downloaded
-        } else {
-            versionToClone = potentialVersionToClone;
-        }
-    }];
-    
-    return versionToClone;
-}
-
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
     NSOperation* parentOp = nil;
