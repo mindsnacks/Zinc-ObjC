@@ -62,7 +62,7 @@
 {
     if ([self isFinished]) return;
     
-    [super update];
+    [[self items] makeObjectsPerformSelector:@selector(update)];
     
     NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
                               [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
@@ -75,6 +75,8 @@
         self.totalProgress = (float)[finishedItems count] / [self.myItems count];
         //NSLog(@"total %f", self.totalProgress);
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
 }
 
 - (void) finish

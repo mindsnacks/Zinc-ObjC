@@ -99,8 +99,8 @@
 
 - (void) update
 {
-    [super update];
-    
+    [[self items] makeObjectsPerformSelector:@selector(update)];
+   
     NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
                               [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return [evaluatedObject isFinished];
@@ -112,12 +112,15 @@
             [self.myItems removeObject:item];
         }
     }
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
 }
 
 - (void) addTask:(ZincTask*)task
 {
     @synchronized(self.myItems) {
         ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
+        item.task = task;
         [self.myItems addObject:item];
         //        [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
     }

@@ -10,6 +10,9 @@
 #import "ZincActivityMonitor+Private.h"
 #import "ZincTask.h"
 
+NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitorRefreshedNotification";
+
+
 @interface ZincActivityMonitor ()
 @property (nonatomic, retain) NSTimer* refreshTimer;
 @property (nonatomic, readwrite, assign) BOOL isMonitoring;
@@ -92,7 +95,10 @@
 
 - (void) update
 {
-    [[self items] makeObjectsPerformSelector:@selector(update)];
+    @throw [NSException
+            exceptionWithName:NSGenericException
+            reason:[NSString stringWithFormat:@"method not implemented"]
+            userInfo:nil];
 }
 
 - (void) monitoringDidStart

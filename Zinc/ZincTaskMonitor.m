@@ -81,6 +81,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     self.progress = ZincProgressCalculate(self);
     
     [self callProgressBlock];
+    
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context

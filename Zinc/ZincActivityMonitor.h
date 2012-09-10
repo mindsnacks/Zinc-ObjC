@@ -10,9 +10,14 @@
 #import "ZincGlobals.h"
 #import "ZincProgress.h"
 
+
 @class ZincTask;
+@class ZincActivityMonitor;
+
 
 static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 0.5;
+extern NSString* const ZincActivityMonitorRefreshedNotification;
+
 
 @interface ZincActivityMonitor : NSObject
 
