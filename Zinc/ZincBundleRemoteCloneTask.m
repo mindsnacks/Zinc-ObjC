@@ -54,7 +54,7 @@
 {
     if (![self isProgressCalculated]) return 0;
     
-    NSInteger curVal = [super currentProgressValue];
+    long long curVal = [super currentProgressValue];
     if (curVal < self.lastProgressValue) {
         curVal = self.lastProgressValue;
     } else if (curVal > [self maxProgressValue]) {

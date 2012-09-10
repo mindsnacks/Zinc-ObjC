@@ -8,9 +8,7 @@
 
 #import "ZincActivityMonitor.h"
 
-
 @class ZincRepo;
-
 
 @interface ZincRepoMonitor : ZincActivityMonitor
 
@@ -22,5 +20,20 @@
 - (void) startMonitoring;
 //- (void) startMonitoringAndWatchForNewTasks:(BOOL)watchForNewTasks;
 
+@property (nonatomic, readonly, retain) NSArray* items;
+
+@end
+
+
+@protocol ZincRepoMonitorDelegate <NSObject>
+
+@end
+
+
+// TODO: this is similar to ZincTaskRef!
+
+@interface ZincRepoMonitorItem : NSObject <ZincObservableProgress>
+
+@property (nonatomic, readonly) ZincTask* task;
 
 @end

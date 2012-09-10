@@ -9,11 +9,12 @@
 #import "ZincProgress.h"
 
 
-extern float ZincProgressCalculate(id<ZincProgress> progress)
+float ZincProgressCalculate(id<ZincProgress> progress)
 {
     long long max = [progress maxProgressValue];
     if (max > 0) {
-        return (float)[progress currentProgressValue] / max;
+        long long cur = [progress currentProgressValue];
+        return (float)cur / max;
     }
     return 0.0f;
 }

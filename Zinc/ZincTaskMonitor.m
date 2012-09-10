@@ -65,7 +65,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) callProgressBlock
 {
     if (self.progressBlock != nil) {
-        self.progressBlock(self.currentProgressValue, self.maxProgressValue, self.progress);
+        self.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progress);
     }
 }
 

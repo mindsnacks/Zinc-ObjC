@@ -18,9 +18,12 @@
 #import "ZincBundleTrackingRequest.h"
 #import "ZincDownloadPolicy.h"
 #import "ZincTaskRef.h"
-#import "ZincTaskMonitor.h"
-#import "ZincRepoMonitor.h"
 #import "ZincUtils.h"
 #import "UIImage+Zinc.h"
+
+#import "ZincTaskMonitor.h"
+#import "ZincRepoMonitor.h"
+#import "ZincBundleAvailabilityMonitor.h"
+
 
 #endif

@@ -22,16 +22,7 @@ static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 0.5;
 - (void) stopMonitoring;
 @property (nonatomic, readonly, assign) BOOL isMonitoring;
 
-@property (nonatomic, retain, readonly) NSArray* activityItems;
-
 @end
 
 
 
-// TODO: this is similar to ZincTaskRef!
-
-@interface ZincActivityItem : NSObject <ZincObservableProgress>
-
-@property (nonatomic, readonly) ZincTask* task;
-
-@end
