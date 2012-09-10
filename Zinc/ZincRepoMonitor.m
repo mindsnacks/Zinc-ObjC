@@ -122,7 +122,6 @@
         ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
         item.task = task;
         [self.myItems addObject:item];
-        //        [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
     }
 }
 
