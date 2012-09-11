@@ -147,7 +147,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
     _progress = progress;
     
     if (self.monitor.progressBlock != nil) {
-        //NSLog(@"%lld %lld %f", self.currentProgressValue, self.maxProgressValue, self.progress);
+        ZINC_DEBUG_LOG(@"%lld %lld %f", self.currentProgressValue, self.maxProgressValue, self.progress);
         self.monitor.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progress);
     }
 }

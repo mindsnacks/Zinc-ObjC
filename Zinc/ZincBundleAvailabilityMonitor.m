@@ -73,7 +73,7 @@
         [self finish];
     } else {
         self.totalProgress = (float)[finishedItems count] / [self.myItems count];
-        //NSLog(@"total %f", self.totalProgress);
+        ZINC_DEBUG_LOG(@"total %f", self.totalProgress);
     }
     
     [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
