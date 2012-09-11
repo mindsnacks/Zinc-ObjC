@@ -7,18 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZincProgress.h"
 
 // 0.5 - the same as NSOperation default
 extern double const kZincOperationInitialDefaultThreadPriority;
 
-@interface ZincOperation : NSOperation
+@interface ZincOperation : NSOperation <ZincProgress>
 
-+ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
-+ (double)defaultThreadPriority;
-
-- (NSInteger) currentProgressValue;
-- (NSInteger) maxProgressValue;
-
-- (double) progress;
++ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
++ (double) defaultThreadPriority;
 
 @end

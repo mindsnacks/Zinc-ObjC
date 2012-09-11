@@ -7,6 +7,7 @@
 //
 
 #import "ZincRepoIndexUpdateTask.h"
+#import "ZincTask+Private.h"
 #import "ZincResource.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"

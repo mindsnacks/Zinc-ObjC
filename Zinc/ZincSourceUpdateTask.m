@@ -7,6 +7,7 @@
 //
 
 #import "ZincSourceUpdateTask.h"
+#import "ZincTask+Private.h"
 #import "ZincHTTPURLConnectionOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincCatalog.h"

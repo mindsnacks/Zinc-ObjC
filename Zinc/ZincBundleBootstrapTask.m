@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleBootstrapTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "ZincManifest.h"
 #import "ZincJSONSerialization.h"
