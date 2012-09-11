@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleCloneTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincResource.h"

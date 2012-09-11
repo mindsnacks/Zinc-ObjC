@@ -149,7 +149,7 @@
 
 - (void) debugAction:(id)sender
 {
-    [self.repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
+    [self.repo updateBundleWithID:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
         NSLog(@"updated! errors: %@", errors);
     }];
 }
