@@ -495,7 +495,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) addOperation:(NSOperation*)operation
 {
-    if ([operation isKindOfClass:[ZincNetworkOperation class]]) {
+    if ([operation isKindOfClass:[ZincURLConnectionOperation class]]) {
         [self.networkQueue addOperation:operation];
     } else {
         [self.queueGroup addOperation:operation];
