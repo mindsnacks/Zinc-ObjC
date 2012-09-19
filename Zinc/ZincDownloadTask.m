@@ -11,7 +11,7 @@
 #import "ZincDownloadTask+Private.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincEvent.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
 
 @interface ZincDownloadTask()
@@ -32,9 +32,12 @@
 
 - (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
-    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
+    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     
-    requestOp.outputStream = outputStream;
+    
+    if (outputStream != nil) {
+        requestOp.outputStream = outputStream;
+    }
     
     self.context = context;
     
@@ -43,7 +46,7 @@
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
-    [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
+    [requestOp setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;

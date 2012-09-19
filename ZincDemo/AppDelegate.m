@@ -119,7 +119,7 @@
     [repo updateBundleWithID:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
     }];
     
-//    [repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+    [repo updateBundleWithID:@"com.mindsnacks.demo1.sphalerites"];
 
     BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
     
