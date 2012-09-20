@@ -24,7 +24,9 @@
 // THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#import "NSFileManager+Tar.h"
+#import "NSFileManager+ZincTar.h"
+#import "ZincGlobals.h"
+#import "ZincErrors.h"
 
 #pragma mark - Definitions
 
@@ -43,23 +45,25 @@
 #define TAR_MAX_BLOCK_LOAD_IN_MEMORY 100
 
 // Error const
-#define TAR_ERROR_DOMAIN @"com.lightuntar"
+#define TAR_ERROR_DOMAIN [kZincPackageName stringByAppendingString:@".lightuntar"]
 #define TAR_ERROR_CODE_BAD_BLOCK 1
 #define TAR_ERROR_CODE_SOURCE_NOT_FOUND 2
 
 #pragma mark - Private Methods
-@interface NSFileManager(Tar_Private)
--(BOOL)createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error;
+@interface NSFileManager (ZincTar_Private)
+-(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error;
+- (BOOL)zinc_writeFileDataForObject:(id)object inRange:(NSRange)range atPath:(NSString*)path error:(NSError**)outError;
+@end
 
+@interface ZincNSFileManagerTarHelper : NSObject
 + (char)typeForObject:(id)object atOffset:(int)offset;
 + (NSString*)nameForObject:(id)object atOffset:(int)offset;
 + (int)sizeForObject:(id)object atOffset:(int)offset;
-- (void)writeFileDataForObject:(id)object inRange:(NSRange)range atPath:(NSString*)path;
 + (NSData*)dataForObject:(id)object inRange:(NSRange)range;
 @end
 
 #pragma mark - Implementation
-@implementation NSFileManager (Tar)
+@implementation NSFileManager (ZincTar)
 
 - (BOOL)zinc_createFilesAndDirectoriesAtURL:(NSURL*)url withTarData:(NSData*)tarData error:(NSError**)error
 {
@@ -68,7 +72,7 @@
 
 - (BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString*)path withTarData:(NSData*)tarData error:(NSError**)error
 {
-    return [self createFilesAndDirectoriesAtPath:path withTarObject:tarData size:[tarData length] error:error];
+    return [self zinc_createFilesAndDirectoriesAtPath:path withTarObject:tarData size:[tarData length] error:error];
 }
 
 -(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarPath:(NSString *)tarPath error:(NSError **)error
@@ -79,7 +83,7 @@
         int size = [[attributes objectForKey:NSFileSize] intValue];
         
         NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:tarPath];
-        BOOL result = [self createFilesAndDirectoriesAtPath:path withTarObject:fileHandle size:size error:error];
+        BOOL result = [self zinc_createFilesAndDirectoriesAtPath:path withTarObject:fileHandle size:size error:error];
         [fileHandle closeFile];
         return result;
     }
@@ -89,7 +93,7 @@
     return NO;
 }
 
--(BOOL)createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
+-(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
 {
     if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:error]) {
         return NO;
@@ -99,16 +103,16 @@
     while (location<size) {       
         long blockCount = 1; // 1 block for the header
         
-        switch ([NSFileManager typeForObject:object atOffset:location]) {
+        switch ([ZincNSFileManagerTarHelper typeForObject:object atOffset:location]) {
             case '0': // It's a File
             {                
-                NSString* name = [NSFileManager nameForObject:object atOffset:location];
+                NSString* name = [ZincNSFileManagerTarHelper nameForObject:object atOffset:location];
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - file - %@",name);  
 #endif
                 NSString *filePath = [path stringByAppendingPathComponent:name]; // Create a full path from the name
                 
-                long size = [NSFileManager sizeForObject:object atOffset:location];
+                long size = [ZincNSFileManagerTarHelper sizeForObject:object atOffset:location];
                 
                 if (size == 0){
 #ifdef TAR_VERBOSE_LOG_MODE
@@ -122,12 +126,14 @@
 
                 blockCount += (size-1)/TAR_BLOCK_SIZE+1; // size/TAR_BLOCK_SIZE rounded up
                 
-                [self writeFileDataForObject:object inRange:NSMakeRange(location+TAR_BLOCK_SIZE, size) atPath:filePath];                
+                if (![self zinc_writeFileDataForObject:object inRange:NSMakeRange(location+TAR_BLOCK_SIZE, size) atPath:filePath error:error]) {
+                    return NO;
+                }
                 break;
             }
             case '5': // It's a directory
             {
-                NSString* name = [NSFileManager nameForObject:object atOffset:location];
+                NSString* name = [ZincNSFileManagerTarHelper nameForObject:object atOffset:location];
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - directory - %@",name); 
 #endif
@@ -156,7 +162,7 @@
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - unsupported block"); 
 #endif
-                long size = [NSFileManager sizeForObject:object atOffset:location];
+                long size = [ZincNSFileManagerTarHelper sizeForObject:object atOffset:location];
                 blockCount += (size-1)/TAR_BLOCK_SIZE+1; // size/TAR_BLOCK_SIZE rounded up
                 break;
             }          
@@ -174,7 +180,44 @@
     return YES;
 }
 
-#pragma mark Private methods implementation
+- (BOOL)zinc_writeFileDataForObject:(id)object inRange:(NSRange)range atPath:(NSString*)path error:(NSError **)outError
+{
+    if([object isKindOfClass:[NSData class]]) {
+        NSData *data = (NSData *)object;
+        NSData *rangedData = [data subdataWithRange:range];
+        return [rangedData writeToFile:path options:0 error:outError];
+    }
+    else if([object isKindOfClass:[NSFileHandle class]]) {
+        
+        int fd = open([path fileSystemRepresentation], O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+        if (fd > 0) {
+            NSFileHandle *destinationFile = [[[NSFileHandle alloc] initWithFileDescriptor:fd] autorelease];
+            [object seekToFileOffset:range.location];
+            
+            int maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
+            while(range.length > maxSize) {
+                [destinationFile writeData:[object readDataOfLength:maxSize]];
+                range = NSMakeRange(range.location+maxSize,range.length-maxSize);
+            }
+            [destinationFile writeData:[object readDataOfLength:range.length]];
+            [destinationFile closeFile];
+            
+        } else {
+            if (outError != NULL) {
+                *outError = ZincErrorWithInfo(
+                                              ZINC_ERR_COULD_NOT_OPEN_FILE, @{@"path" : path});
+            }
+            
+            return NO;
+        }
+    }
+    return YES;
+}
+
+@end
+
+
+@implementation ZincNSFileManagerTarHelper
 
 + (char)typeForObject:(id)object atOffset:(int)offset
 {
@@ -197,28 +240,6 @@
     memset(&sizeBytes, '\0', TAR_SIZE_SIZE+1); // Fill byte array with nul char
     memcpy(&sizeBytes,[self dataForObject:object inRange:NSMakeRange(offset+TAR_SIZE_POSITION, TAR_SIZE_SIZE)].bytes, TAR_SIZE_SIZE);
     return strtol(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal
-}
-
-- (void)writeFileDataForObject:(id)object inRange:(NSRange)range atPath:(NSString*)path
-{
-    if([object isKindOfClass:[NSData class]]) {
-        [self createFileAtPath:path contents:[object subdataWithRange:range] attributes:nil]; //Write the file on filesystem
-    }
-    else if([object isKindOfClass:[NSFileHandle class]]) {
-        if([[NSData data] writeToFile:path atomically:NO]) {
-            
-            NSFileHandle *destinationFile = [NSFileHandle fileHandleForWritingAtPath:path];
-            [object seekToFileOffset:range.location];
-            
-            int maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
-            while(range.length > maxSize) {
-                [destinationFile writeData:[object readDataOfLength:maxSize]];
-                range = NSMakeRange(range.location+maxSize,range.length-maxSize);
-            }
-            [destinationFile writeData:[object readDataOfLength:range.length]];
-            [destinationFile closeFile];
-        }
-    }
 }
 
 + (NSData*)dataForObject:(id)object inRange:(NSRange)range
