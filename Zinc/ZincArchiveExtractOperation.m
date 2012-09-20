@@ -8,7 +8,7 @@
 
 #import "ZincArchiveExtractOperation.h"
 #import "ZincRepo+Private.h"
-#import "NSFileManager+Tar.h"
+#import "NSFileManager+ZincTar.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincUtils.h"
 

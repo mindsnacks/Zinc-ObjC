@@ -14,6 +14,7 @@
 enum 
 {
     ZINC_ERR_INVALID_DIRECTORY                    = 1001,
+    ZINC_ERR_COULD_NOT_OPEN_FILE                  = 1002,
     ZINC_ERR_DECOMPRESS_FAILED                    = 1101,
     ZINC_ERR_SHA_MISMATCH                         = 1102,
     
