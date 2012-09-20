@@ -13,7 +13,6 @@
 #import "ZincEvent.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
-#import <libkern/OSAtomic.h>
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
