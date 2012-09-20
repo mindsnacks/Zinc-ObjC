@@ -10,7 +10,7 @@
 #import "ZincGlobals.h"
 
 #define kZincRepoDefaultNetworkOperationCount (5)
-#define kZincRepoDefaultAutoRefreshInterval (10)
+#define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
 
 typedef enum {
