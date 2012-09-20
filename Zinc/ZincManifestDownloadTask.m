@@ -68,19 +68,19 @@
         
         NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
-        ZincHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil context:nil];
+        [self queueOperationForRequest:request outputStream:nil context:nil];
         
-        [requestOp waitUntilFinished];
+        [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
 
-        if (!requestOp.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
+        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         }
         
         [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL]]];
         
-        NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
+        NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
             error = ZincError(ZINC_ERR_DECOMPRESS_FAILED);
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];

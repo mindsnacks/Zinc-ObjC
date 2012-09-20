@@ -95,13 +95,13 @@
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincHTTPRequestOperation* downloadOp  = [self queuedOperationForRequest:request outputStream:outStream context:nil];
+        [self queueOperationForRequest:request outputStream:outStream context:nil];
         
-        [downloadOp waitUntilFinished];
+        [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
         
-        if (!downloadOp.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
+        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
