@@ -44,8 +44,6 @@
     
     self.context = context;
     
-
-    
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
     
     [self addOperation:requestOp];

@@ -9,9 +9,6 @@
 #import "ZincTask.h"
 
 @interface ZincDownloadTask : ZincTask
-{
-    uint32_t _isTrackingProgress;
-}
 
 @property (readonly) NSInteger bytesRead;
 @property (readonly) NSInteger totalBytesToRead;
