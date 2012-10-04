@@ -288,6 +288,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (_reachability != nil) {
         __block typeof(self) blockself = self;
         _reachability.onReachabilityChanged = ^(ZincKSReachability *reachability) {
+            @synchronized(self.myTasks) {
+                NSArray* remoteBundleUpdateTasks = [self.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
+                }]];
+                
+                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
+            }
             [blockself refreshBundlesWithCompletion:nil];
         };
     }
@@ -1080,7 +1087,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             if (targetVersion == ZincVersionInvalid) {
                 continue;
             }
-            
+
+            /*
+             small optimization to prevent tasks tasks aren't allowed by policy to be enqueued
+             task will still respect isReady as well
+             */
             if (![blockself doesPolicyAllowDownloadForBundleID:bundleId]) {
                 continue;
             }

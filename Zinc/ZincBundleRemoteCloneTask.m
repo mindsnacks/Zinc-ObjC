@@ -169,6 +169,11 @@
     return YES;
 }
 
+- (BOOL) isReady
+{
+    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
+}
+
 - (void) main
 {
     [self setUp];
