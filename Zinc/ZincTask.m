@@ -189,6 +189,12 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return allErrors;
 }
 
+- (void) updateReadiness
+{
+    [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+    [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+}
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTask
 {
