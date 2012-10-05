@@ -27,6 +27,7 @@
 #import "NSFileManager+ZincTar.h"
 #import "ZincGlobals.h"
 #import "ZincErrors.h"
+#include <fcntl.h>
 
 #pragma mark - Definitions
 
