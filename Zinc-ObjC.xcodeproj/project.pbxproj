@@ -56,6 +56,7 @@
 		B3316A2B14C648F000AEAD6C /* ZincArchiveDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3316A2914C648F000AEAD6C /* ZincArchiveDownloadTask.m */; };
 		B3316A2E14C6754400AEAD6C /* ZincArchiveExtractOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B3316A2C14C6754200AEAD6C /* ZincArchiveExtractOperation.h */; };
 		B3316A2F14C6754400AEAD6C /* ZincArchiveExtractOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B3316A2D14C6754300AEAD6C /* ZincArchiveExtractOperation.m */; };
+		B336A5F9162790FC0042157C /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3ACA22B15DCC94C000C842D /* SystemConfiguration.framework */; };
 		B338E4E014CCC33200BC0915 /* ZincDeepCopying.h in Headers */ = {isa = PBXBuildFile; fileRef = B338E4DE14CCC33200BC0915 /* ZincDeepCopying.h */; };
 		B338E4E114CCC33200BC0915 /* ZincDeepCopying.m in Sources */ = {isa = PBXBuildFile; fileRef = B338E4DF14CCC33200BC0915 /* ZincDeepCopying.m */; };
 		B338E50614CDEDBE00BC0915 /* ZincSerialQueueProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = B338E50414CDEDBE00BC0915 /* ZincSerialQueueProxy.h */; };
@@ -364,6 +365,7 @@
 				B340F980148D52D800206F86 /* Foundation.framework in Frameworks */,
 				B340F983148D52D800206F86 /* libZinc.a in Frameworks */,
 				B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */,
+				B336A5F9162790FC0042157C /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

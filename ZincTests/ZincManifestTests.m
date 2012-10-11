@@ -316,10 +316,10 @@
     }
     
     NSArray* smallFiles = [manifest filesForFlavor:@"small"];
-    STAssertTrue([smallFiles count]==2, @"2 small file");
+    STAssertTrue([smallFiles count]==1, @"2 small files");
     
     NSArray* largeFiles = [manifest filesForFlavor:@"large"];
-    STAssertTrue([largeFiles count]==1, @"1 large files");
+    STAssertTrue([largeFiles count]==0, @"0 large files");
     
     NSArray* allFiles = [manifest filesForFlavor:nil];
     STAssertTrue([allFiles count]==2, @"2 files");
