@@ -49,6 +49,7 @@
 #define TAR_ERROR_DOMAIN [kZincPackageName stringByAppendingString:@".lightuntar"]
 #define TAR_ERROR_CODE_BAD_BLOCK 1
 #define TAR_ERROR_CODE_SOURCE_NOT_FOUND 2
+#define TAR_ERROR_CODE_BAD_FILE 3
 
 #pragma mark - Private Methods
 @interface NSFileManager (ZincTar_Private)
@@ -96,6 +97,13 @@
 
 -(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
 {
+    if (size % TAR_BLOCK_SIZE != 0) {
+        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid tar file"
+                                                             forKey:NSLocalizedDescriptionKey];
+        if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_BAD_FILE userInfo:userInfo];
+        return NO;
+    }
+    
     if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:error]) {
         return NO;
     }
