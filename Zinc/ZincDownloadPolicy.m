@@ -12,6 +12,7 @@ NSString* const ZincDownloadPolicyPriorityChangeNotification = @"ZincDownloadPol
 NSString* const ZincDownloadPolicyPriorityChangeBundleIDKey = @"bundleID";
 NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 
+#define kInitialDefaultConnectionType ZincConnectionTypeAny
 
 @interface ZincDownloadPolicy ()
 @property (nonatomic, retain) NSMutableDictionary* requiredConnectionTypeByPriority;
@@ -26,7 +27,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     if (self) {
         _requiredConnectionTypeByPriority = [[NSMutableDictionary alloc] init];
         _prioritiesByBundleId = [[NSMutableDictionary alloc] init];
-        _defaultRequiredConnectionType = ZincConnectionTypeAny;
+        _defaultRequiredConnectionType = kInitialDefaultConnectionType;
     }
     return self;
 }
@@ -95,6 +96,19 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     @synchronized(self.requiredConnectionTypeByPriority) {
         [self.requiredConnectionTypeByPriority removeObjectForKey:[NSNumber numberWithInteger:priority]];
     }
+}
+
+- (void) reset
+{
+    @synchronized(self.requiredConnectionTypeByPriority) {
+        [self.requiredConnectionTypeByPriority removeAllObjects];
+    }
+    
+    @synchronized(self.prioritiesByBundleId) {
+        [self.prioritiesByBundleId removeAllObjects];
+    }
+    
+    self.defaultRequiredConnectionType = kInitialDefaultConnectionType;
 }
 
 - (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID
