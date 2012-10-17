@@ -48,6 +48,8 @@
 - (void) registerExternalBundle:(NSURL*)bundleRes rootPath:(NSString*)rootPath;
 - (NSString*) externalPathForBundle:(NSURL*)bundleRes;
 
+- (NSArray*) registeredExternalBundles;
+
 #pragma mark Encoding
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;

@@ -223,6 +223,13 @@
     }
 }
 
+- (NSArray*) registeredExternalBundles
+{
+    @synchronized(self.myExternalBundleRefs) {
+        return [self.myExternalBundleRefs allKeys];
+    }
+}
+
 - (NSSet*) bundlesWithState:(ZincBundleState)targetState
 {
     NSMutableSet* set = nil;

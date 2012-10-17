@@ -737,6 +737,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             ZincVersion version = [blockself versionForBundleId:bundleId distribution:dist];
             [activeBundles addObject:[NSURL zincResourceForBundleWithId:bundleId version:version]];
         }
+        
+        [activeBundles addObjectsFromArray:[blockself.index registeredExternalBundles]];
     }];
     
     @synchronized(self.loadedBundles) {
@@ -812,14 +814,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError
 {
-    ZincManifest* manifest = [self importManifestWithPath:manifestPath error:outError];
-    if (manifest == nil) {
+    ZincManifest* manifest = [ZincManifest manifestWithPath:manifestPath error:outError];
+    if (manifestPath == nil) {
         return NO;
     }
     
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
-    if ([self.index stateForBundle:bundleRes] == ZincBundleStateAvailable) {
-        return YES;
+    if (![self importManifestWithPath:manifestPath error:outError]) {
+        return NO;
     }
     
     BOOL isDir;
@@ -829,12 +830,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         }
         return NO;
     }
-    
+
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
     [self.index registerExternalBundle:bundleRes rootPath:rootPath];
 
     ZincTaskDescriptor* taskDesc = [ZincImportExternalBundleTask taskDescriptorForResource:bundleRes];
     [self queueTaskForDescriptor:taskDesc];
-    
 
     return YES;
 }
