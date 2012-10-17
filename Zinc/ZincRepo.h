@@ -94,8 +94,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 #pragma mark Bundles
 
-- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
-- (ZincTaskRef*) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir;
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
@@ -118,8 +117,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-// NOTE: this may be removed soon
-- (void) waitForAllBootstrapTasks;
 
 #pragma mark Tasks
 

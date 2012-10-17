@@ -80,6 +80,8 @@
 		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
 		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
 		B340FA0F148D7DC100206F86 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; };
+		B34199F0162F6F0300B9287C /* ZincImportExternalBundleTask.h in Headers */ = {isa = PBXBuildFile; fileRef = B34199EE162F6F0300B9287C /* ZincImportExternalBundleTask.h */; };
+		B34199F1162F6F0300B9287C /* ZincImportExternalBundleTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B34199EF162F6F0300B9287C /* ZincImportExternalBundleTask.m */; };
 		B347EBE015C3593500FA0649 /* ZincOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B347EBDE15C3593500FA0649 /* ZincOperation.h */; };
 		B347EBE115C3593500FA0649 /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B347EBDF15C3593500FA0649 /* ZincOperation.m */; };
 		B3549DEF148DB80900DD63D1 /* ZincManifest.h in Headers */ = {isa = PBXBuildFile; fileRef = B3549DED148DB80900DD63D1 /* ZincManifest.h */; };
@@ -261,6 +263,8 @@
 		B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "SenTestCase+MethodSwizzling.m"; sourceTree = "<group>"; };
 		B340FA0D148D6F0F00206F86 /* TestUtility-Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TestUtility-Zinc.h"; sourceTree = "<group>"; };
 		B340FA0E148D7DC100206F86 /* ZincErrors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincErrors.h; sourceTree = "<group>"; };
+		B34199EE162F6F0300B9287C /* ZincImportExternalBundleTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincImportExternalBundleTask.h; sourceTree = "<group>"; };
+		B34199EF162F6F0300B9287C /* ZincImportExternalBundleTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincImportExternalBundleTask.m; sourceTree = "<group>"; };
 		B347EBDE15C3593500FA0649 /* ZincOperation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincOperation.h; sourceTree = "<group>"; };
 		B347EBDF15C3593500FA0649 /* ZincOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincOperation.m; sourceTree = "<group>"; };
 		B3549DED148DB80900DD63D1 /* ZincManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifest.h; sourceTree = "<group>"; };
@@ -648,6 +652,8 @@
 				B327070814BC20F7004E3244 /* ZincBundleRemoteCloneTask.h */,
 				B327070914BC20F8004E3244 /* ZincBundleRemoteCloneTask.m */,
 				B396E3061590F56F00584F83 /* ZincBundleBootstrapTask.h */,
+				B34199EE162F6F0300B9287C /* ZincImportExternalBundleTask.h */,
+				B34199EF162F6F0300B9287C /* ZincImportExternalBundleTask.m */,
 				B396E3071590F56F00584F83 /* ZincBundleBootstrapTask.m */,
 				B3CEEC0014BE0F270023DF5B /* ZincBundleDeleteTask.h */,
 				B3CEEC0114BE0F270023DF5B /* ZincBundleDeleteTask.m */,
@@ -829,6 +835,7 @@
 				B3CAB60115FC6D0C008502AC /* ZincBundleAvailabilityMonitor.h in Headers */,
 				B3CF24F5160A6D260009E569 /* ZincHTTPRequestOperation.h in Headers */,
 				B3CF24F7160A6D260009E569 /* ZincURLConnectionOperation.h in Headers */,
+				B34199F0162F6F0300B9287C /* ZincImportExternalBundleTask.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1044,6 +1051,7 @@
 				B3CAB60615FD2617008502AC /* ZincProgress.m in Sources */,
 				B3CF24F6160A6D260009E569 /* ZincHTTPRequestOperation.m in Sources */,
 				B3CF24F8160A6D260009E569 /* ZincURLConnectionOperation.m in Sources */,
+				B34199F1162F6F0300B9287C /* ZincImportExternalBundleTask.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

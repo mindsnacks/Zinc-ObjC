@@ -21,6 +21,7 @@
 #import "ZincTaskDescriptor.h"
 #import "ZincBundleRemoteCloneTask.h"
 #import "ZincBundleBootstrapTask.h"
+#import "ZincImportExternalBundleTask.h"
 #import "ZincBundleDeleteTask.h"
 #import "ZincSourceUpdateTask.h"
 #import "ZincCatalogUpdateTask.h"
@@ -82,6 +83,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) ZincKSReachability* reachability;
+//@property (nonatomic, retain) NSMutableDictionary* externalBundleRefsByBundleId;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -116,6 +118,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
 
 @end
+
 
 @implementation ZincRepo
 
@@ -201,6 +204,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincBundleBootstrapTask class]];
+        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincImportExternalBundleTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincObjectDownloadTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
@@ -674,8 +678,17 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     // copy manifest to repo
     NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
-    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleName version:manifest.version];
-    if (![self.fileManager fileExistsAtPath:manifestRepoPath]) {
+    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
+    
+    BOOL shouldCopy = NO;
+    if (manifest.version == 0) {  // version 0 always needs to be re-written
+        [self.fileManager removeItemAtPath:manifestRepoPath error:NULL];
+        shouldCopy = YES;
+    } else if (![self.fileManager fileExistsAtPath:manifestRepoPath]) {
+        shouldCopy = YES;
+    }
+    
+     if (shouldCopy) {
         if (![self.fileManager copyItemAtPath:manifestPath toPath:manifestRepoPath error:outError]) {
             return nil;
         }
@@ -797,121 +810,33 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return NSOperationQueuePriorityNormal;
 }
 
-- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError
 {
-    NSParameterAssert(req);
-    NSParameterAssert(dir);
-    
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
-    __block typeof(taskRef) block_taskRef = taskRef;
-    taskRef.completionBlock = ^{
-        completion([block_taskRef allErrors]);
-    };
-    
-    [self bootstrapBundleWithId:req.bundleID flavor:req.flavor fromDir:dir taskRef:taskRef];
-}
-
-- (ZincTaskRef*) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir
-{
-    NSParameterAssert(req);
-    NSParameterAssert(dir);
-
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
-    [self bootstrapBundleWithId:req.bundleID flavor:req.flavor fromDir:dir taskRef:taskRef];
-    return taskRef;
-}
-
-- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir taskRef:(ZincTaskRef*)taskRef
-{
-    NSParameterAssert(bundleId);
-    NSParameterAssert(dir);
-    
-    NSString* potentialManifestPath = [dir stringByAppendingPathComponent:
-                                       [bundleId stringByAppendingPathExtension:@"json"]];
-    if (![self.fileManager fileExistsAtPath:potentialManifestPath]) {
-        
-        NSError* error =  ZincError(ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND);
-        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-        [taskRef addError:error];
-        return;
+    ZincManifest* manifest = [self importManifestWithPath:manifestPath error:outError];
+    if (manifest == nil) {
+        return NO;
     }
     
-    [self bootstrapBundleWithId:bundleId flavor:(NSString*)flavor potentialManifestPath:potentialManifestPath taskRef:taskRef];
-}
-
-- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor potentialManifestPath:(NSString*)manifestPath taskRef:(ZincTaskRef*)taskRef
-{
-    NSParameterAssert(bundleId);
-    NSParameterAssert(manifestPath);
- 
-    NSError* error = nil;
-    ZincManifest* localManifest = [ZincManifest manifestWithPath:manifestPath error:&error];
-    if (localManifest == nil) {
-        [taskRef addError:error];
-        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
-        return;
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
+    if ([self.index stateForBundle:bundleRes] == ZincBundleStateAvailable) {
+        return YES;
     }
     
-    [self bootstrapBundleWithId:bundleId flavor:flavor manifest:localManifest manifestPath:manifestPath taskRef:taskRef];
-}
-
-- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor manifest:(ZincManifest*)localManifest manifestPath:(NSString*)manifesPath taskRef:(ZincTaskRef*)taskRef
-{
-    __block typeof(self) blockself = self;
-    [self.indexProxy withTarget:^{
-        
-        NSInteger newestVersion = [blockself.index newestAvailableVersionForBundleId:bundleId];
-        if (newestVersion <= 0 || localManifest.version > newestVersion) {
-            // must always bootstrap v0
-            
-            ZincTrackingInfo* trackingInfo = [blockself.index trackingInfoForBundleId:bundleId];
-            if (trackingInfo == nil) {
-                trackingInfo = [ZincTrackingInfo trackingInfoWithDistribution:ZincDistributionLocal
-                                                                   version:localManifest.version];
-                [blockself.index setTrackingInfo:trackingInfo forBundleId:bundleId];
-            }
-            
-            if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
-                @throw [NSException
-                        exceptionWithName:NSInternalInconsistencyException
-                        reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
-                        userInfo:nil];
-            } else {
-                trackingInfo.flavor = flavor;
-            }
-            
-            NSURL* localBundleRes = [localManifest bundleResource];
-            [blockself.index setState:ZincBundleStateCloning forBundle:localBundleRes];
-            ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
-            
-            NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
-                                       manifesPath, @"manifestPath", nil];
-            ZincTask* task = [blockself queueTaskForDescriptor:taskDesc input:inputDict];
-            [taskRef addDependency:task];
+    BOOL isDir;
+    if (![self.fileManager fileExistsAtPath:rootPath isDirectory:&isDir] || !isDir) {
+        if (outError != nil) {
+            *outError = ZincError(ZINC_ERR_INVALID_DIRECTORY);
         }
-
-        [blockself addOperation:taskRef];
-        [blockself queueIndexSave];
-    }];
-}
-
-- (void) waitForAllBootstrapTasks
-{
-    if (self.isSuspended) {
-        NSLog(@"WARNING: repo is suspended. This will likely wait forever.");
+        return NO;
     }
     
-    __block NSArray* bootstrapTasks = nil;
-    @synchronized(self.myTasks) {
-        bootstrapTasks = [self.myTasks filteredArrayUsingPredicate:
-                          [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-            return [evaluatedObject isKindOfClass:[ZincBundleBootstrapTask class]];
-        }]];
-    }
+    [self.index registerExternalBundle:bundleRes rootPath:rootPath];
+
+    ZincTaskDescriptor* taskDesc = [ZincImportExternalBundleTask taskDescriptorForResource:bundleRes];
+    [self queueTaskForDescriptor:taskDesc];
     
-    for (NSOperation* task in bootstrapTasks) {
-        [task waitUntilFinished];
-    }
+
+    return YES;
 }
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
@@ -1143,6 +1068,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
 {
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    NSString* externalPath = [self.index externalPathForBundle:bundleRes];
+    if (externalPath != nil) {
+        return externalPath;
+    }
+    
     NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleId, version];
     NSString* bundlePath = [[self bundlesPath] stringByAppendingPathComponent:bundleDirName];
     return bundlePath;
@@ -1407,6 +1338,107 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
+}
+
+
+#pragma mark Old-Style Bootstrapping
+
+- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion
+{
+    NSParameterAssert(req);
+    NSParameterAssert(dir);
+    
+    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    __block typeof(taskRef) block_taskRef = taskRef;
+    taskRef.completionBlock = ^{
+        completion([block_taskRef allErrors]);
+    };
+    
+    [self bootstrapBundleWithId:req.bundleID flavor:req.flavor fromDir:dir taskRef:taskRef];
+}
+
+- (ZincTaskRef*) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir
+{
+    NSParameterAssert(req);
+    NSParameterAssert(dir);
+    
+    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    [self bootstrapBundleWithId:req.bundleID flavor:req.flavor fromDir:dir taskRef:taskRef];
+    return taskRef;
+}
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir taskRef:(ZincTaskRef*)taskRef
+{
+    NSParameterAssert(bundleId);
+    NSParameterAssert(dir);
+    
+    NSString* potentialManifestPath = [dir stringByAppendingPathComponent:
+                                       [bundleId stringByAppendingPathExtension:@"json"]];
+    if (![self.fileManager fileExistsAtPath:potentialManifestPath]) {
+        
+        NSError* error =  ZincError(ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND);
+        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [taskRef addError:error];
+        return;
+    }
+    
+    [self bootstrapBundleWithId:bundleId flavor:(NSString*)flavor potentialManifestPath:potentialManifestPath taskRef:taskRef];
+}
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor potentialManifestPath:(NSString*)manifestPath taskRef:(ZincTaskRef*)taskRef
+{
+    NSParameterAssert(bundleId);
+    NSParameterAssert(manifestPath);
+    
+    NSError* error = nil;
+    ZincManifest* localManifest = [ZincManifest manifestWithPath:manifestPath error:&error];
+    if (localManifest == nil) {
+        [taskRef addError:error];
+        [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+        return;
+    }
+    
+    [self bootstrapBundleWithId:bundleId flavor:flavor manifest:localManifest manifestPath:manifestPath taskRef:taskRef];
+}
+
+- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor manifest:(ZincManifest*)localManifest manifestPath:(NSString*)manifesPath taskRef:(ZincTaskRef*)taskRef
+{
+    __block typeof(self) blockself = self;
+    [self.indexProxy withTarget:^{
+        
+        NSInteger newestVersion = [blockself.index newestAvailableVersionForBundleId:bundleId];
+        if (newestVersion <= 0 || localManifest.version > newestVersion) {
+            // must always bootstrap v0
+            
+            ZincTrackingInfo* trackingInfo = [blockself.index trackingInfoForBundleId:bundleId];
+            if (trackingInfo == nil) {
+                trackingInfo = [ZincTrackingInfo trackingInfoWithDistribution:ZincDistributionLocal
+                                                                      version:localManifest.version];
+                [blockself.index setTrackingInfo:trackingInfo forBundleId:bundleId];
+            }
+            
+            if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
+                @throw [NSException
+                        exceptionWithName:NSInternalInconsistencyException
+                        reason:[NSString stringWithFormat:@"currently cannot re-track a different flavor"]
+                        userInfo:nil];
+            } else {
+                trackingInfo.flavor = flavor;
+            }
+            
+            NSURL* localBundleRes = [localManifest bundleResource];
+            [blockself.index setState:ZincBundleStateCloning forBundle:localBundleRes];
+            ZincTaskDescriptor* taskDesc = [ZincBundleBootstrapTask taskDescriptorForResource:localBundleRes];
+            
+            NSDictionary* inputDict = [NSDictionary dictionaryWithObjectsAndKeys:
+                                       manifesPath, @"manifestPath", nil];
+            ZincTask* task = [blockself queueTaskForDescriptor:taskDesc input:inputDict];
+            [taskRef addDependency:task];
+        }
+        
+        [blockself addOperation:taskRef];
+        [blockself queueIndexSave];
+    }];
 }
 
 
