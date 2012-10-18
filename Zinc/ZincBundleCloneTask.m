@@ -56,12 +56,11 @@
 {
     if (success) {
         [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
-        [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     } else {
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
-        [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     }
-    
+
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     self.finishedSuccessfully = success;
 }
 
