@@ -92,7 +92,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
-#pragma External Bundles
+#pragma mark External Bundles
 
 - (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
 
