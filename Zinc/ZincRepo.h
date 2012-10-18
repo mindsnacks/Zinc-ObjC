@@ -34,7 +34,7 @@ extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 // -- Bundle Notification UserInfo Keys
-extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
+extern NSString* const ZincRepoBundleChangeNotificationBundleIdKey;
 extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
 
 // -- Task Notifications

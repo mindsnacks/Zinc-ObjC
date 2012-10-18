@@ -57,7 +57,7 @@ NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDelet
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
 
-NSString* const ZincRepoBundleChangeNotifiationBundleIdKey = @"bundleId";
+NSString* const ZincRepoBundleChangeNotificationBundleIdKey = @"bundleId";
 NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
 
 NSString* const ZincRepoTaskAddedNotification = @"ZincRepoTaskAddedNotification";
@@ -403,7 +403,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId state:(ZincBundleState)state
 {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
+                              bundleId, ZincRepoBundleChangeNotificationBundleIdKey,
                               [NSNumber numberWithInteger:state], ZincRepoBundleChangeNotifiationStatusKey,
                               nil];
     [self postNotification:notificationName userInfo:userInfo];
@@ -412,7 +412,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId
 {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleId, ZincRepoBundleChangeNotifiationBundleIdKey,
+                              bundleId, ZincRepoBundleChangeNotificationBundleIdKey,
                               nil];
     [self postNotification:notificationName userInfo:userInfo];
 }
