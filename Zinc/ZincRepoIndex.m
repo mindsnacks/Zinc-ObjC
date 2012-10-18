@@ -16,6 +16,7 @@
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
 @property (nonatomic, retain) NSMutableDictionary* myBundles;
+@property (nonatomic, retain) NSMutableDictionary* myExternalBundleRefs;
 @end
 
 
@@ -30,6 +31,7 @@
     if (self) {
         self.mySourceURLs = [NSMutableSet set];
         self.myBundles = [NSMutableDictionary dictionary];
+        self.myExternalBundleRefs = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -38,6 +40,7 @@
 {
     [_mySourceURLs release];
     [_myBundles release];
+    [_myExternalBundleRefs release];
     [super dealloc];
 }
 
@@ -179,15 +182,20 @@
 
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource
 {
-    ZincBundleState state = ZincBundleStateNone;
+    @synchronized(self.myExternalBundleRefs) {
+        NSString* rootPath = self.myExternalBundleRefs[bundleResource];
+        if (rootPath != nil) {
+            return ZincBundleStateAvailable;
+        }
+    }
     @synchronized(self.myBundles) {
         NSString* bundleId = [bundleResource zincBundleId];
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:NO];
         NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
-        state = [[versionInfo objectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]] integerValue];
+        ZincBundleState state = [[versionInfo objectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]] integerValue];
+        return state;
     }
-    return state;
 }
 
 - (void) removeBundle:(NSURL*)bundleResource
@@ -198,6 +206,27 @@
         NSDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:NO];
         NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
         [versionInfo removeObjectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]];
+    }
+}
+
+- (void) registerExternalBundle:(NSURL*)bundleRes rootPath:(NSString*)rootPath
+{
+    @synchronized(self.myExternalBundleRefs) {
+        self.myExternalBundleRefs[bundleRes] = rootPath;
+    }
+}
+
+- (NSString*) externalPathForBundle:(NSURL*)bundleRes
+{
+    @synchronized(self.myExternalBundleRefs) {
+        return self.myExternalBundleRefs[bundleRes];
+    }
+}
+
+- (NSArray*) registeredExternalBundles
+{
+    @synchronized(self.myExternalBundleRefs) {
+        return [self.myExternalBundleRefs allKeys];
     }
 }
 
@@ -217,6 +246,11 @@
                     [set addObject:[NSURL zincResourceForBundleWithId:bundleId version:[version integerValue]]];
                 }
             }
+        }
+    }
+    if (targetState == ZincBundleStateAvailable) {
+        @synchronized(self.myExternalBundleRefs) {
+            [set addObjectsFromArray:[self.myExternalBundleRefs allKeys]];
         }
     }
     return set;
@@ -244,6 +278,15 @@
             [versions addObject:[NSNumber numberWithInteger:version]];
         }
     }];
+    
+    @synchronized(self.myExternalBundleRefs) {
+        [self.myExternalBundleRefs enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+            NSURL* bundleRes = key;
+            if ([[bundleRes zincBundleId] isEqualToString:bundleId]) {
+                [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];
+            }
+        }];
+    }
     
     return [versions sortedArrayUsingSelector:@selector(compare:)];
 }

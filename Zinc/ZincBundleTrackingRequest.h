@@ -45,21 +45,4 @@
                                                     distribution:(NSString*)distribution
                                              automaticallyUpdate:(BOOL)automaticallyUpdate;
 
-/**
- * @discussion Convenience constructor for bootstrap operations with flavor.
- * Distribution and automatic updates are ignored for bootstrap operations, so
- * they are omitted.
- */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                          flavor:(NSString*)flavor;
-
-/**
- * @discussion Convenience constructor for bootstrap operation.
- * Distribution and automatic updates are ignored for bootstrap operations, so
- * they are omitted.
- */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID;
-
-
-
 @end

@@ -101,7 +101,8 @@
     
     for (NSString* bundleId in bundleIdsToBootstrap) {
         
-        ZincBundleTrackingRequest* req = [ZincBundleTrackingRequest bundleTrackingRequestWithBundleID:bundleId];
+        ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
+        req.bundleID = bundleId;
         
         [repo bootstrapBundleWithRequest:req fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
             if ([errors count] > 0) {

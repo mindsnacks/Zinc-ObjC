@@ -40,6 +40,16 @@
 
 - (ZincVersion) newestAvailableVersionForBundleId:(NSString*)bundleId;
 
+#pragma mark External Bundles
+/* 
+ !!!: External bundles are not persisted by design, they should be re-registered each launch.
+ */
+
+- (void) registerExternalBundle:(NSURL*)bundleRes rootPath:(NSString*)rootPath;
+- (NSString*) externalPathForBundle:(NSURL*)bundleRes;
+
+- (NSArray*) registeredExternalBundles;
+
 #pragma mark Encoding
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;

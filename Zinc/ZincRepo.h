@@ -92,14 +92,19 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
-#pragma mark Bundles
+#pragma External Bundles
 
-- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
-- (ZincTaskRef*) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir;
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
+
+#pragma mark Tracking Remote Bundles
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
+
+#pragma mark Old-Style Bootstrapping (Deprecated)
+
+- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
 
 /**
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
@@ -118,8 +123,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-// NOTE: this may be removed soon
-- (void) waitForAllBootstrapTasks;
 
 #pragma mark Tasks
 
