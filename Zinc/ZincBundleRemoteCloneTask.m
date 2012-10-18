@@ -181,24 +181,28 @@
     NSError* error = nil;
     
     if (![self prepareManifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self prepareObjectFilesUsingRemoteCatalogForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self createBundleLinksForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
-    [self complete];
+    [self completeWithSuccess:YES];
 }
 
 @end
