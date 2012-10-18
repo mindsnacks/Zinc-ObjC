@@ -52,11 +52,16 @@
     [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self context:self.bundleId]];
 }
 
-- (void) complete
+- (void) completeWithSuccess:(BOOL)success
 {
-    [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
+    if (success) {
+        [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
+    } else {
+        [self.repo registerBundle:self.resource status:ZincBundleStateNone];
+    }
+
     [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
-    self.finishedSuccessfully = YES;
+    self.finishedSuccessfully = success;
 }
 
 - (BOOL) createBundleLinksForManifest:(ZincManifest*)manifest
