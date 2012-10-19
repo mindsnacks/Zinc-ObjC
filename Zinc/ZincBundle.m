@@ -35,7 +35,12 @@
     self.version = version;
     self.url = bundleURL;
     self.bundle = [NSBundle bundleWithURL:bundleURL];
-    NSAssert(self.bundle, @"bundle could not be found");
+    
+    if (self.bundle == nil) {
+        [NSException raise:NSInternalInconsistencyException
+                    format:@"bundle could not be found"];
+    }
+
     return self;
 }
 

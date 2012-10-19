@@ -856,7 +856,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
 {
     NSString* catalogId = ZincCatalogIdFromBundleId(bundleId);
-    NSAssert(catalogId, @"does not appear to be a valid bundle id");
+    if (catalogId == nil) {
+        [NSException raise:NSInvalidArgumentException
+                    format:@"does not appear to be a valid bundle id"];
+    }
     
     __block typeof(self) blockself = self;
     [self.indexProxy withTarget:^{
