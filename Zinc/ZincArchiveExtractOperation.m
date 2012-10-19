@@ -91,13 +91,29 @@
         
         NSString* fullPath = [untarDir stringByAppendingPathComponent:filename];
         
-        if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
-            self.error = error;
+        NSString* expectedSHA = filename;
+        NSString* actualSHA = [fm zinc_sha1ForPath:fullPath];
+        if (![actualSHA isEqualToString:expectedSHA]) {
+            
+            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  expectedSHA, @"expectedSHA",
+                                  actualSHA, @"actualSHA",
+                                  self.archivePath, @"archivePath",
+                                  nil];
+            error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
             cleanup();
             return;
-        }
+
+        } else {
         
-        ZincAddSkipBackupAttributeToFileWithPath(targetPath);
+            if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
+                self.error = error;
+                cleanup();
+                return;
+            }
+            
+            ZincAddSkipBackupAttributeToFileWithPath(targetPath);
+        }
     }
     
     cleanup();
