@@ -10,6 +10,7 @@
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "NSError+Zinc.h"
+#import "ZincSHA.h"
 
 @implementation NSFileManager (Zinc)
 
@@ -45,18 +46,10 @@
     return [self zinc_createDirectoryIfNeededAtPath:[url path] error:outError];
 }
 
-#define SHA_READ_BUFFER_SIZE (4096)
-
 - (NSString*) zinc_sha1ForPath:(NSString*)path
 {
-    if (![self fileExistsAtPath:path]) {
-        return nil;
-    }
- 
-    NSData* data = [[NSData alloc] initWithContentsOfFile:path];
-    NSString* sha = [data zinc_sha1];
-    [data release];
-    return sha;
+    NSString* sha = (NSString*)ZincSHA1HashCreateWithPath((CFStringRef)path, 0);
+    return [sha autorelease];
 }
 
 - (BOOL) zinc_gzipInflate:(NSString*)sourcePath destination:(NSString*)destPath  error:(NSError**)outError
