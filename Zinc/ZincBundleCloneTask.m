@@ -1,6 +1,6 @@
 //
 //  ZincBundleCloneTask.m
-//  
+//
 //
 //  Created by Andy Mroczkowski on 6/19/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
@@ -59,7 +59,7 @@
     } else {
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
     }
-
+    
     [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     self.finishedSuccessfully = success;
 }
@@ -89,42 +89,59 @@
         }
     }
     
+    NSString* zincRepoPath = [[self.repo url] path];
+    
     // Link files
     for (NSString* file in allFiles) {
-        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-        NSString* filePathDest = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
-        BOOL filePathDestDoesNotExist = (filePathDest == nil);
         
-        NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-        NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
-        
-        // if it's nil, it's not a symbolic link. use the original file.
-        
-        // if it is a symbolic link, which means it's linked to inside the app bundle
-        // use a new symlink from the bundles dir to sha-based object
-        // otherwise, hard link directly to the sha-object
-        BOOL useSymbolicLink = shaPathDest != nil;
-        
-        BOOL filePathDestCorrect = [filePathDest isEqualToString:shaPath];
-        BOOL createLink = filePathDestDoesNotExist || !filePathDestCorrect;
-        
-        if (createLink) {
-            // remove regardless and ignore errors. there are too many cases to
-            // handle cleanly, with non-existant files, symlinks, etc. if something
-            // fails it will be caught in the linkItemAtPath call below.
-            [self.fileManager removeItemAtPath:filePath error:NULL];
+        @autoreleasepool {
             
-            NSLog(@"LINKING: %@ -> %@", filePath, shaPath);
+            NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
+            NSString* filePathDest = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
+            BOOL filePathDestDoesNotExist = (filePathDest == nil);
             
-            if (useSymbolicLink) {
-                if (![self.fileManager createSymbolicLinkAtPath:filePath withDestinationPath:shaPath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                    return NO;
-                }
-            } else {
-                if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                    return NO;
+            NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
+            NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
+            
+            // if it's nil, it's not a symbolic link. use the original file.
+            
+            // if it is a symbolic link, which means it's linked to inside the app bundle
+            // use a new symlink from the bundles dir to sha-based object - RELATIVE
+            // otherwise, hard link directly to the sha-object
+            BOOL useSymbolicLink = shaPathDest != nil;
+            
+            BOOL filePathDestCorrect = [filePathDest isEqualToString:shaPath];
+            BOOL createLink = filePathDestDoesNotExist || !filePathDestCorrect;
+            
+            if (createLink) {
+                // remove regardless and ignore errors. there are too many cases to
+                // handle cleanly, with non-existant files, symlinks, etc. if something
+                // fails it will be caught in the linkItemAtPath call below.
+                [self.fileManager removeItemAtPath:filePath error:NULL];
+                
+                if (useSymbolicLink) {
+                    
+                    NSString* filePathRelativeToRepo = [filePath substringFromIndex:[zincRepoPath length]+1]; // +1 to remove '/'
+                    NSString* shaPathRelativeToRepo = [shaPath substringFromIndex:[zincRepoPath length]+1];  // +1 to remove '/'
+                    
+                    NSArray* comps = [filePathRelativeToRepo pathComponents];
+                    NSString* shaPathRelativeToFile = shaPathRelativeToRepo;
+                    
+                    for (NSUInteger i=0; i<[comps count]-1; i++) {
+                        shaPathRelativeToFile = [@"../" stringByAppendingString:shaPathRelativeToFile];
+                    }
+                    
+                    if (![self.fileManager createSymbolicLinkAtPath:filePath withDestinationPath:shaPathRelativeToFile error:&error]) {
+                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                        return NO;
+                    }
+                    
+                } else {
+                    
+                    if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
+                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                        return NO;
+                    }
                 }
             }
         }
