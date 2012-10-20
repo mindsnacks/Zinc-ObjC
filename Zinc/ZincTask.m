@@ -109,6 +109,9 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 {
     [super setQueuePriority:p];
     
+    // !!!: Since isReady may be related to queue priority make sure to update it
+    [self updateReadiness];
+    
     for (ZincTask* subtask in self.subtasks) {
         [subtask setQueuePriority:p];
     }
