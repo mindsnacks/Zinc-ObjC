@@ -19,6 +19,7 @@
 #import "ZincErrors.h"
 #import "ZincUtils.h"
 #import "ZincHTTPRequestOperation.h"
+#import "ZincSHA.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;
@@ -118,12 +119,17 @@
             }
         } 
         
-        NSString* actualSha = [fm zinc_sha1ForPath:uncompressedPath];
-        if (![actualSha isEqualToString:self.sha]) {
+        NSString* actualSHA = ZincSHA1HashFromPath(uncompressedPath, 0, &error);
+        if (actualSHA == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        if (![actualSHA isEqualToString:self.sha]) {
             
             NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                     self.sha, @"expectedSHA",
-                    actualSha, @"actualSHA",
+                    actualSHA, @"actualSHA",
                     source, @"source",
                     nil];
             error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);

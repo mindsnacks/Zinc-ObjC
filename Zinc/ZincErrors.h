@@ -18,6 +18,14 @@ enum
     ZINC_ERR_DECOMPRESS_FAILED                    = 1101,
     ZINC_ERR_SHA_MISMATCH                         = 1102,
     
+    ZINC_ERR_READ_STREAM_CREATE                   = 1201,
+    ZINC_ERR_READ_STREAM_OPEN                     = 1202,
+    ZINC_ERR_READ_STREAM_FAIL                     = 1203,
+    
+    ZINC_ERR_WRITE_STREAM_CREATE                  = 1301,
+    ZINC_ERR_WRITE_STREAM_OPEN                    = 1302,
+    ZINC_ERR_WRITE_STREAM_FAIL                    = 1303,
+    
     ZINC_ERR_MISSING_INDEX_FILE                   = 2001,
     ZINC_ERR_INVALID_FORMAT                       = 2002,
     ZINC_ERR_INVALID_REPO_FORMAT                  = 2101,
@@ -29,6 +37,10 @@ enum
     
     ZINC_ERR_BOOTSTRAP_FAILED                     = 5101,
     ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND         = 5102,
+    
+    ZINC_ERR_GZIP_INFLATE_INIT_FAIL               = 6001,
+    ZINC_ERR_GZIP_INFLATE_FAIL                    = 6002,
+    ZINC_ERR_GZIP_INFLATE_END_FAIL                = 6003,
 
     ZINC_ERR_UNKNOWN                              = 99999,
 };

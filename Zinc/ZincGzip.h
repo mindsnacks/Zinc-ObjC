@@ -1,5 +1,5 @@
 //
-//  ZincSHA.h
+//  ZincGzip.h
 //  Zinc-ObjC
 //
 //  Created by Andy Mroczkowski on 10/19/12.
@@ -8,6 +8,4 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString* ZincSHA1HashFromPath(NSString* filePath, size_t chunkSize, NSError** outError);
-
-
+extern BOOL ZincGzipInflate(NSString* sourcePath, NSString* destPath, size_t chunkSize, NSError** outError);
