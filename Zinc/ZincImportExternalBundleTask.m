@@ -53,13 +53,15 @@
     NSArray* allFiles = [manifest filesForFlavor:flavor];
     for (NSString* file in allFiles) {
         NSString* sha = [manifest shaForFile:file];
-        NSString* srcPath = [fileRootPath stringByAppendingPathComponent:file];
-        NSString* dstPath = [self.repo pathForFileWithSHA:sha];
-        if (![self.fileManager fileExistsAtPath:dstPath]) {
-            if (![self.fileManager createSymbolicLinkAtPath:dstPath withDestinationPath:srcPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                return NO;
-            }
+        NSString* filePath = [fileRootPath stringByAppendingPathComponent:file];
+        NSString* shaPath = [self.repo pathForFileWithSHA:sha];
+        
+        // always remove and re-link
+        [self.fileManager removeItemAtPath:shaPath error:NULL];
+        
+        if (![self.fileManager createSymbolicLinkAtPath:shaPath withDestinationPath:filePath error:&error]) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            return NO;
         }
     }
     return YES;

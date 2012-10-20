@@ -92,28 +92,40 @@
     // Link files
     for (NSString* file in allFiles) {
         NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
+        NSString* filePathDest = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
+        BOOL filePathDestDoesNotExist = (filePathDest == nil);
+        
         NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-        
         NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
-        if (shaPathDest == nil) {
-            // if it's nil, it's not a symbolic link. use the original file.
-            shaPathDest = shaPath;
-        }
         
-        NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
-        BOOL dstDoesNotExist = (dst == nil);
-        BOOL dstNotEqualToShaPath = ![dst isEqualToString:shaPathDest];
-        BOOL createLink = dstDoesNotExist || dstNotEqualToShaPath;
+        // if it's nil, it's not a symbolic link. use the original file.
+        
+        // if it is a symbolic link, which means it's linked to inside the app bundle
+        // use a new symlink from the bundles dir to sha-based object
+        // otherwise, hard link directly to the sha-object
+        BOOL useSymbolicLink = shaPathDest != nil;
+        
+        BOOL filePathDestCorrect = [filePathDest isEqualToString:shaPath];
+        BOOL createLink = filePathDestDoesNotExist || !filePathDestCorrect;
         
         if (createLink) {
             // remove regardless and ignore errors. there are too many cases to
             // handle cleanly, with non-existant files, symlinks, etc. if something
             // fails it will be caught in the linkItemAtPath call below.
             [self.fileManager removeItemAtPath:filePath error:NULL];
-
-            if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                return NO;
+            
+            NSLog(@"LINKING: %@ -> %@", filePath, shaPath);
+            
+            if (useSymbolicLink) {
+                if (![self.fileManager createSymbolicLinkAtPath:filePath withDestinationPath:shaPath error:&error]) {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                    return NO;
+                }
+            } else {
+                if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                    return NO;
+                }
             }
         }
     }
