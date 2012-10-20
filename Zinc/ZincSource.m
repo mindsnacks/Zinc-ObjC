@@ -20,6 +20,7 @@
 {
     NSMutableURLRequest* req = [[[NSMutableURLRequest alloc] initWithURL:url] autorelease];
     [req setHTTPMethod:@"GET"];
+    [req setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
     return req;
 }
 
@@ -27,7 +28,6 @@
 {
     NSURL* indexURL = [self urlForCatalogIndex];
     NSMutableURLRequest* request = [self getRequestForURL:indexURL];
-    [request setCachePolicy:NSURLRequestReloadIgnoringCacheData];
     return request;
 }
 
