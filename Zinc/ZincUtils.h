@@ -18,4 +18,4 @@ extern NSString* ZincGetUniqueTemporaryDirectory(void);
 
 extern NSString* ZincCatalogIdFromBundleId(NSString* bundleId);
 extern NSString* ZincBundleNameFromBundleId(NSString* bundleId);
-
+extern NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName);
