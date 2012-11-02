@@ -770,6 +770,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (catalog != nil) {
         NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
         ZincVersion catalogVersion = [catalog versionForBundleId:bundleName distribution:distro];
+        
+        if (catalogVersion == ZincVersionInvalid) {
+            NSDictionary* info = @{@"bundleID" : bundleId, @"distro": distro};
+            NSError* error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
+            [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+        }
+        
         return catalogVersion;
     }
 
