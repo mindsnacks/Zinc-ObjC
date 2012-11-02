@@ -861,6 +861,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                     format:@"does not appear to be a valid bundle id"];
     }
     
+    if (distro == nil) {
+        [NSException raise:NSInvalidArgumentException
+                    format:@"distro must not be nil"];
+    }
+    
     __block typeof(self) blockself = self;
     [self.indexProxy withTarget:^{
         ZincTrackingInfo* trackingInfo = [blockself.index trackingInfoForBundleId:bundleId];
