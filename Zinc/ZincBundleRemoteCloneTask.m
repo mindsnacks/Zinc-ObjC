@@ -90,6 +90,8 @@
 
 - (BOOL) prepareObjectFilesUsingRemoteCatalogForManifest:(ZincManifest*)manifest
 {
+    if (self.isCancelled) return NO;
+    
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
     
@@ -147,12 +149,17 @@
                 
                 NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
                 ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
+                
                 ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
-                [fileOps addObject:fileOp];
+                if (fileOp != nil) {
+                    // can be nil if cancelled
+                    [fileOps addObject:fileOp];
+                }
             }
             
-            BOOL allSuccessful = YES;
+            if (self.isCancelled) return NO;
             
+            BOOL allSuccessful = YES;
             for (ZincTask* op in fileOps) {
                 
                 [op waitUntilFinished];
