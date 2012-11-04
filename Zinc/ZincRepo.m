@@ -1099,13 +1099,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     ZincBundle* bundle = nil;
     NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    NSString* path = [self pathForBundleWithId:bundleId version:version];
     
     @synchronized(self.loadedBundles) {
         bundle = [[self.loadedBundles objectForKey:res] pointerValue];
         
         if (bundle == nil) {
-            
-            NSString* path = [self pathForBundleWithId:bundleId version:version];
             bundle = [[[ZincBundle alloc] initWithRepo:self bundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
             
