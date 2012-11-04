@@ -1213,20 +1213,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) queueTask:(ZincTask*)task
 {
+    task.queuePriority = [self initialPriorityForTask:task];
+    if (self.executeTasksInBackgroundEnabled) {
+        [task setShouldExecuteAsBackgroundTask];
+    }
+
     @synchronized(self.myTasks) {
-        task.queuePriority = [self initialPriorityForTask:task];
-        
-        if (self.executeTasksInBackgroundEnabled) {
-            [task setShouldExecuteAsBackgroundTask];
-        }
-                
         [self.myTasks addObject:task];
         [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_taskIsFinished];
         [self addOperation:task];
-        
-        [self postNotification:ZincRepoTaskAddedNotification
-                      userInfo:@{ ZincRepoTaskNotificationTaskKey : task }];
     }
+    
+    [self postNotification:ZincRepoTaskAddedNotification
+                  userInfo:@{ ZincRepoTaskNotificationTaskKey : task }];
+
 }
 
 - (ZincTask*) queueGarbageCollectTask
