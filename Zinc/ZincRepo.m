@@ -1110,8 +1110,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
             [self.loadedBundles setObject:[NSValue valueWithPointer:bundle] forKey:res];
         }
+        [[bundle retain] autorelease];
     }
-    return [[bundle retain] autorelease];
+    return bundle;
 }
 
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId 
