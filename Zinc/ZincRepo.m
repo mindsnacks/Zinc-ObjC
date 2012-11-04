@@ -1326,15 +1326,18 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 -  (void) removeTask:(ZincTask*)task
 {
+    ZincTask* foundTask = nil;
     @synchronized(self.myTasks) {
         ZincTask* foundTask = [self taskForDescriptor:[task taskDescriptor]];
         if (foundTask != nil) {
             [foundTask removeObserver:self forKeyPath:@"isFinished" context:&kvo_taskIsFinished];
             [self.myTasks removeObject:foundTask];
-            
-            [self postNotification:ZincRepoTaskFinishedNotification
-                          userInfo:@{ ZincRepoTaskNotificationTaskKey : foundTask }];
         }
+    }
+    
+    if (foundTask != nil) {
+        [self postNotification:ZincRepoTaskFinishedNotification
+                      userInfo:@{ ZincRepoTaskNotificationTaskKey : foundTask }];
     }
 }
 
