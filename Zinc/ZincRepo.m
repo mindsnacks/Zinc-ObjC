@@ -1251,9 +1251,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
 {
-    ZincTask* task = nil;
+    __block ZincTask* task = nil;
     
-    @synchronized(self) { // unfortunate that this whole method is wrapped in an synchrize, try to improve
+    [self.indexProxy withTarget:^{ // use indexProxy for synchronization
         
         if ([taskDescriptor.method isEqualToString:NSStringFromClass([ZincGarbageCollectTask class])]) {
             
@@ -1309,8 +1309,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 [task addDependency:dep];
             }
         }
-    }
-    
+    }];
+
     return task;
 }
 
