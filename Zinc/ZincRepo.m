@@ -932,7 +932,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         
         ZincTrackingInfo* trackingInfo = [blockself.index trackingInfoForBundleId:bundleID];
         if (trackingInfo == nil) {
-            [taskRef addError:ZincError(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE)];
+            NSDictionary* info = @{@"bundleID" : bundleID};
+            [taskRef addError:ZincErrorWithInfo(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE, info)];
             return;
         }
         
