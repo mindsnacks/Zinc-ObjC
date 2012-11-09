@@ -954,10 +954,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             ZincTask* task = [blockself queueTaskForDescriptor:taskDesc];
             [taskRef addDependency:task];
         }
-        
-        if (taskRef != nil) [blockself addOperation:taskRef];
-        [blockself queueIndexSave];
     }];
+    
+    if (taskRef != nil) [blockself addOperation:taskRef];
+    [blockself queueIndexSave];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
