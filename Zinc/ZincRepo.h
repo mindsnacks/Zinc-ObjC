@@ -106,6 +106,8 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
 
+#pragma mark -
+
 /**
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
  of connectivity.
