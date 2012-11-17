@@ -84,7 +84,7 @@
     for (NSString* relativeDir in allDirs) {
         NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
         if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
             return NO;
         }
     }
@@ -132,14 +132,14 @@
                     }
                     
                     if (![self.fileManager createSymbolicLinkAtPath:filePath withDestinationPath:shaPathRelativeToFile error:&error]) {
-                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
                         return NO;
                     }
                     
                 } else {
                     
                     if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
                         return NO;
                     }
                 }
