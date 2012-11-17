@@ -156,6 +156,7 @@
     [d setObject:self.catalogId forKey:@"catalog"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
+    if (self.flavors != nil) [d setObject:self.flavors forKey:@"flavors"];
     return d;
 }
 

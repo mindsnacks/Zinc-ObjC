@@ -323,7 +323,61 @@
     
     NSArray* allFiles = [manifest filesForFlavor:nil];
     STAssertTrue([allFiles count]==2, @"2 files");
+}
 
+- (ZincManifest*) _manifestForDictionaryRepresentationTest
+{
+    ZincManifest* manifest = [[[ZincManifest alloc] init] autorelease];
+    manifest.catalogId = @"com.mindsnacks.food";
+    manifest.bundleName = @"pork";
+    manifest.version = 5;
+    return manifest;
+}
+
+- (void) testDictionaryRepresentation_bundleName
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+
+    STAssertEqualObjects([dict objectForKey:@"bundle"], manifest.bundleName, @"bundle name doesn't match");
+}
+
+- (void) testDictionaryRepresentation_catalogID
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogId, @"catalog id doesn't match");
+}
+
+- (void) testDictionaryRepresentation_version
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((ZincVersion)[[dict objectForKey:@"version"] integerValue], manifest.version, @"version doesn't match");
+}
+
+- (void) testDictionaryRepresentation_flavors_nil
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
+}
+
+- (void) testDictionaryRepresentation_flavors_notNil
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    manifest.flavors = @[@"chop", @"bacon"];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
 }
 
 @end
