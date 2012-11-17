@@ -883,7 +883,6 @@
 				B340F978148D52D800206F86 /* Sources */,
 				B340F979148D52D800206F86 /* Frameworks */,
 				B340F97A148D52D800206F86 /* Resources */,
-				B3E6EED21590192D00628816 /* ShellScript */,
 				B340F97B148D52D800206F86 /* ShellScript */,
 			);
 			buildRules = (
@@ -985,20 +984,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Run the unit tests in this test bundle.\n\"${SYSTEM_DEVELOPER_DIR}/Tools/RunUnitTests\"\n";
-		};
-		B3E6EED21590192D00628816 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/ZincDemo/Resources/com.mindsnacks.demo1.sphalerites",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "./Zinc/Scripts/generate_manifest_from_local_files.py -x";
 		};
 		B3F761001582807C00B2C194 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
