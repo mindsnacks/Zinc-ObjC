@@ -380,4 +380,22 @@
     STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
 }
 
+- (void) testRebuildFlavorsFromFiles
+{
+    NSDictionary* manifestDict = @{
+        @"catalog": @"com.mindsnacks.food",
+        @"bundle" : @"pork",
+        @"version": @5,
+        @"files":
+            @{ @"1.png":
+                @{ @"flavors": @[@"pork"]
+            }
+        }
+    };
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    
+    STAssertEqualObjects(manifest.flavors, @[@"pork"], @"should have built flavors from files");
+}
+
 @end
