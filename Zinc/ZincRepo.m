@@ -537,6 +537,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [self queueIndexSave];
 }
 
+- (NSSet*) sourceURLs
+{
+    return [self.index sourceURLs];
+}
+
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog
 {
     @synchronized(self.sourcesByCatalog) {
