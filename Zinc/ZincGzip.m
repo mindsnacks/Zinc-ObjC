@@ -1,4 +1,4 @@
-//
+	//
 //  ZincGzip.m
 //  Zinc-ObjC
 //
@@ -81,9 +81,21 @@ BOOL ZincGzipInflate(NSString* sourcePath, NSString* destPath, size_t bufferSize
             
             inflate_status = inflate(&strm, Z_SYNC_FLUSH);
             if (inflate_status < 0) {
-                error = ZincErrorWithInfo(ZINC_ERR_GZIP_INFLATE_FAIL,
-                                                                    @{@"status": [NSNumber numberWithInt:inflate_status]});
-                goto done;
+                
+                // see: http://www.zlib.net/zlib_how.html
+                
+                assert(inflate_status != Z_STREAM_ERROR);  // This can only occur if the stream was not set up properly.
+                
+                switch (inflate_status) {
+                    case Z_BUF_ERROR: // This is OK. The buffer will catch up next loop.
+                        continue;
+                        
+                    default:
+                        error = ZincErrorWithInfo(ZINC_ERR_GZIP_INFLATE_FAIL,
+                                                  @{@"status": [NSNumber numberWithInt:inflate_status]});
+                        goto done;
+
+                }
             };
             
             CFIndex bytesToWriteCount = bufferSize - strm.avail_out;
