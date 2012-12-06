@@ -202,13 +202,17 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 - (void)setShouldExecuteAsBackgroundTask
 {
     if (!self.backgroundTaskIdentifier) {
+        
         UIApplication *application = [UIApplication sharedApplication];
+        __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
-            [self cancel];
+            __strong typeof(blockSelf)strongSelf = blockSelf;
             
-            [application endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [strongSelf cancel];
+            
+            [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
+            strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
 }

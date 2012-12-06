@@ -250,17 +250,22 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTaskWithExpirationHandler:(void (^)(void))handler {
     [self.lock lock];
-    if (!self.backgroundTaskIdentifier) {    
+    if (!self.backgroundTaskIdentifier) {
+        
         UIApplication *application = [UIApplication sharedApplication];
+        __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+            
+            __strong typeof(blockSelf)strongSelf = blockSelf;
+        
             if (handler) {
                 handler();
             }
             
-            [self cancel];
+            [strongSelf cancel];
             
-            [application endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
+            strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
     [self.lock unlock];
