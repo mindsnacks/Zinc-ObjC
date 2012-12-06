@@ -207,10 +207,12 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
         __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
+            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;
+            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            
             [blockSelf cancel];
             
-            [application endBackgroundTask:blockSelf.backgroundTaskIdentifier];
-            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }
 }
