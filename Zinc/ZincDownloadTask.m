@@ -21,10 +21,6 @@
 
 @implementation ZincDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-@synthesize context = _context;
 
 + (NSString *)action
 {
@@ -45,8 +41,6 @@
     
     self.context = context;
     
-    __block typeof(self) blockself = self;
-    
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
@@ -59,7 +53,7 @@
         if (enoughTimePassedSinceLastNotification)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
     

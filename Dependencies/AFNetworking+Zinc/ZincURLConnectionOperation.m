@@ -417,6 +417,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 - (void)finish {
+    self.downloadProgress = ^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead){};
     self.state = AFOperationFinishedState;
 }
 
@@ -547,8 +548,10 @@ didReceiveResponse:(NSURLResponse *)response
     }
     
     if (self.downloadProgress) {
+        typeof(self.downloadProgress) downloadProgressBlock = self.downloadProgress;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.downloadProgress([data length], self.totalBytesRead, self.response.expectedContentLength);
+            downloadProgressBlock([data length], self.totalBytesRead, self.response.expectedContentLength);
         });
     }
 }
