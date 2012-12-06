@@ -13,6 +13,7 @@
 #import "ZincEvent.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
+#import "ZincRepo.h"
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
@@ -34,9 +35,12 @@
 {
     ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     
-    
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
+    }
+    
+    if (self.repo.executeTasksInBackgroundEnabled) {
+        [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     }
     
     self.context = context;
