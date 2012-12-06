@@ -256,16 +256,14 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
-            __strong typeof(blockSelf)strongSelf = blockSelf;
-        
             if (handler) {
                 handler();
             }
             
-            [strongSelf cancel];
+            [blockSelf cancel];
             
-            [application endBackgroundTask:strongSelf.backgroundTaskIdentifier];
-            strongSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [application endBackgroundTask:blockSelf.backgroundTaskIdentifier];
+            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
         }];
     }
     [self.lock unlock];
