@@ -72,7 +72,8 @@
     if ([finishedItems count] == [self.myItems count]) {
         [self finish];
     } else {
-        self.totalProgress = (float)[finishedItems count] / [self.myItems count];
+        self.totalProgress = [[[self.myItems allValues]  valueForKeyPath:@"@sum.progress"] floatValue] / [self.myItems count]
+        
         ZINC_DEBUG_LOG(@"total %f", self.totalProgress);
     }
     
