@@ -45,6 +45,12 @@
     return nil;
 }
 
+- (BOOL) isValid
+{
+    return [self getTask] != nil;
+}
+
+
 - (NSArray*) allErrors
 {
     NSArray* taskErrors = [[self getTask] allErrors];
