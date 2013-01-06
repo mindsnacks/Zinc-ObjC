@@ -824,32 +824,38 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return NSOperationQueuePriorityNormal;
 }
 
-- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError
+- (ZincTaskRef*) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath
 {
-    ZincManifest* manifest = [ZincManifest manifestWithPath:manifestPath error:outError];
+    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    NSError* error = nil;
+    
+    ZincManifest* manifest = [ZincManifest manifestWithPath:manifestPath error:&error];
     if (manifestPath == nil) {
-        return NO;
+        [taskRef addError:error];
+        return taskRef;
     }
     
-    if (![self importManifestWithPath:manifestPath error:outError]) {
-        return NO;
+    if (![self importManifestWithPath:manifestPath error:&error]) {
+        [taskRef addError:error];
+        return taskRef;
     }
     
     BOOL isDir;
     if (![self.fileManager fileExistsAtPath:rootPath isDirectory:&isDir] || !isDir) {
-        if (outError != nil) {
-            *outError = ZincError(ZINC_ERR_INVALID_DIRECTORY);
-        }
-        return NO;
+        error = ZincError(ZINC_ERR_INVALID_DIRECTORY);
+        [taskRef addError:error];
+        return taskRef;
     }
 
     NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
     [self.index registerExternalBundle:bundleRes rootPath:rootPath];
 
     ZincTaskDescriptor* taskDesc = [ZincImportExternalBundleTask taskDescriptorForResource:bundleRes];
-    [self queueTaskForDescriptor:taskDesc];
+    ZincTask* task = [self queueTaskForDescriptor:taskDesc];
+    [taskRef addDependency:task];
+    [self addOperation:taskRef];
 
-    return YES;
+    return taskRef;
 }
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req

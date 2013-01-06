@@ -21,7 +21,7 @@
     NSMutableURLRequest* req = [[[NSMutableURLRequest alloc] initWithURL:url] autorelease];
     [req setHTTPMethod:@"GET"];
     
-    [req setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
+//    [req setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
 
     // advises that caching-proxies don't attempt to further compress any data
     // http://stackoverflow.com/questions/10500113/ios-afnetworking-over-3g-is-not-reliable-when-fetching-files-from-rackspace

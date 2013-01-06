@@ -123,7 +123,7 @@
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
         
-        if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
+        if (NO && [missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];

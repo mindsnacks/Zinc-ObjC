@@ -12,6 +12,8 @@
 
 - (BOOL) isValid;
 
+- (BOOL) isSuccessful;
+
 - (NSArray*) allErrors;
 
 #pragma mark Private

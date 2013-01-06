@@ -50,6 +50,10 @@
     return [self getTask] != nil;
 }
 
+- (BOOL) isSuccessful
+{
+    return [self isValid] && [self isFinished] && [[self allErrors] count] == 0;
+}
 
 - (NSArray*) allErrors
 {
