@@ -19,18 +19,6 @@
 
 @implementation BootstrappingTests
 
-- (void)setupZincRepo
-{
-    NSString *repoDir = ZincGetUniqueTemporaryDirectory();
-    
-    NSError *error = nil;
-    self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
-    GHAssertNil(error, @"error: %@", error);
-    
-    self.zincRepo.automaticBundleUpdatesEnabled = NO;
-    [self.zincRepo resumeAllTasks];
-}
-
 - (void)setUp
 {
     [self setupZincRepo];
@@ -38,22 +26,22 @@
 
 - (void)testBasic
 {
-    NSString* bundleId = @"com.mindsnacks.demo1.cats";
+    NSString* bundleID = @"com.mindsnacks.demo1.cats";
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats-1.json"];
+    NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats.json"];
     
     ZincTaskRef* taskRef = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath];
     GHAssertTrue([taskRef isValid], @"taskRefShouldBeValid");
     [taskRef waitUntilFinished];
     GHAssertTrue([taskRef isSuccessful], @"errors: %@", [taskRef allErrors]);
     
-    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleId];
+    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(state, ZincBundleStateAvailable, @"should be available");
     
     // -- verify data
     
-    ZincBundle *catsBundle = [self.zincRepo bundleWithId:bundleId];
+    ZincBundle *catsBundle = [self.zincRepo bundleWithId:bundleID];
     
     UIImage *image1 = [UIImage imageWithContentsOfFile:[catsBundle pathForResource:@"kucing.jpeg"]];
     GHAssertNotNil(image1, @"image should not be nil");
@@ -67,7 +55,7 @@
     NSString* bundleId = @"com.mindsnacks.demo1.cats";
     
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
-    NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats-1.json"];
+    NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats.json"];
     
     NSError *error = nil;
     ZincManifest *manifest = [ZincManifest manifestWithPath:manifestPath error:&error];

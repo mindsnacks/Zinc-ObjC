@@ -768,6 +768,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincVersion) catalogVersionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
 {
+    NSParameterAssert(bundleId);
+    NSParameterAssert(distro);
+    
     NSError* error = nil;
     
     NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
@@ -796,9 +799,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         return ZincVersionInvalid;
     }
     
-    ZincVersion catalogVersion = [self catalogVersionForBundleId:bundleId distribution:distro];
-    if ([availableVersions containsObject:[NSNumber numberWithInteger:catalogVersion]]) {
-        return catalogVersion;
+    if (distro != nil) {
+        ZincVersion catalogVersion = [self catalogVersionForBundleId:bundleId distribution:distro];
+        if ([availableVersions containsObject:[NSNumber numberWithInteger:catalogVersion]]) {
+            return catalogVersion;
+        }
     }
     
     return [[availableVersions lastObject] integerValue];

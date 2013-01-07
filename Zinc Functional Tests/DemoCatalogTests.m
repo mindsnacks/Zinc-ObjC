@@ -21,15 +21,9 @@
 
 - (void)setUp
 {
-    NSString *repoDir = ZincGetUniqueTemporaryDirectory();
+    [self setupZincRepo];
     
-    NSError *error = nil;
-    self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
-    GHAssertNil(error, @"error: %@", error);
-    
-    self.zincRepo.automaticBundleUpdatesEnabled = NO;
     [self.zincRepo addSourceURL:DEMO_CATALOG_URL];
-    [self.zincRepo resumeAllTasks];
 }
 
 - (void)refreshCatalog
@@ -130,6 +124,57 @@
     GHAssertEquals(testState, ZincBundleStateAvailable, @"test should be available");
     
     GHAssertNotEquals(masterBundle.version, testBundle.version, @"bundle versions should not be equal");
+}
+
+- (void)testBootstrapThenDownload
+{
+    [self refreshCatalog];
+    
+    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    
+    // -- Bootstrap
+    
+    NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
+    NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats.json"];
+    
+    ZincTaskRef* taskRef = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath];
+    GHAssertTrue([taskRef isValid], @"taskRefShouldBeValid");
+    [taskRef waitUntilFinished];
+    GHAssertTrue([taskRef isSuccessful], @"errors: %@", [taskRef allErrors]);
+
+    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
+    GHAssertEquals(state, ZincBundleStateAvailable, @"should be available");
+    
+    // -- Clone bundle
+    
+    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    
+    [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
+        
+        if ([errors count] > 0) {
+            GHTestLog(@"%@", errors);
+            [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
+        } else {
+            [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+        }
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    // -- Verify
+    
+    ZincBundleState bundleState = [self.zincRepo stateForBundleWithId:bundleID];
+    GHAssertEquals(bundleState, ZincBundleStateAvailable, @"bundle should be available");
+    
+    ZincBundle *catsBundle = [self.zincRepo bundleWithId:bundleID];
+    GHAssertFalse(catsBundle.version == 0, @"should not be v0");
+    
+    UIImage *image1 = [UIImage imageWithContentsOfFile:[catsBundle pathForResource:@"kucing.jpeg"]];
+    GHAssertNotNil(image1, @"image should not be nil");
+    
+    UIImage *image2 = [UIImage imageWithContentsOfFile:[catsBundle pathForResource:@"lime-cat.jpeg"]];
+    GHAssertNotNil(image2, @"image should not be nil");
 }
 
 @end

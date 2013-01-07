@@ -14,4 +14,6 @@
 
 @property (strong) ZincRepo *zincRepo;
 
+- (void)setupZincRepo;
+
 @end

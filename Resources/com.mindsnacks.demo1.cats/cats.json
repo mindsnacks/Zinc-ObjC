@@ -1,0 +1,23 @@
+{
+	"files": {
+		"kucing.jpeg": {
+			"sha": "7f3bba5c4e766f3a5d813d430859290da95c0c5f",
+			"formats": {
+				"raw": {
+					"size": 295667
+				}
+			}
+		},
+		"lime-cat.jpeg": {
+			"sha": "799442328b773b0f0dec30e36f7599d9a3ddece3",
+			"formats": {
+				"raw": {
+					"size": 43369
+				}
+			}
+		}
+	},
+	"catalog": "com.mindsnacks.demo1",
+	"version": 0,
+	"bundle": "cats"
+}
