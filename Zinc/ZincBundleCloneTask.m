@@ -59,8 +59,9 @@
     } else {
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
     }
+
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId success:success]];
     
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
     self.finishedSuccessfully = success;
 }
 
