@@ -105,7 +105,7 @@
             [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
             continue;
         } else {
-            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
         NSString* targetPath = [self.repo pathForFileWithSHA:self.sha];
