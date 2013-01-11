@@ -15,6 +15,7 @@ NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
 NSString *const kZincEventAttributesContextKey = @"context";
+NSString *const kZincEventAttributesCloneSuccessKey = @"success";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
@@ -269,18 +270,19 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 @implementation ZincBundleCloneCompleteEvent
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context success:(BOOL)success
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           bundleResource, kZincEventAttributesBundleResourceKey,
-                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
+                          context ?: [NSNull null], kZincEventAttributesContextKey,
+                          @(success), kZincEventAttributesCloneSuccessKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:source attributes:attr] autorelease];
 }
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success
 {
-    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:nil context:context];
+    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:nil context:context success:success];
 }
 
 + (NSString*) name

@@ -29,6 +29,7 @@ extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
 extern NSString *const kZincEventAttributesContextKey;
+extern NSString *const kZincEventAttributesCloneSuccessKey;
 
 #pragma mark Notifications
 
@@ -105,8 +106,8 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context success:(BOOL)success;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;
 
