@@ -50,7 +50,8 @@
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
         BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
-        if (enoughTimePassedSinceLastNotification)
+        BOOL downloadCompleted = totalBytesRead == totalBytesExpectedToRead;
+        if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
             [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];

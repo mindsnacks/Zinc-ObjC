@@ -25,6 +25,7 @@ typedef enum {
 
 extern NSString *const kZincEventAttributesSourceKey;
 extern NSString *const kZincEventAttributesURLKey;
+extern NSString *const kZincEventAttributesSizeKey;
 extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
@@ -88,8 +89,9 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url;
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size;
 @property (readonly) NSURL* url;
+@property (readonly) NSInteger size;
 
 @end
 

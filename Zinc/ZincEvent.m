@@ -11,6 +11,7 @@
 
 NSString *const kZincEventAttributesSourceKey = @"source";
 NSString *const kZincEventAttributesURLKey = @"url";
+NSString *const kZincEventAttributesSizeKey = @"size";
 NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
@@ -204,10 +205,11 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 @implementation ZincDownloadCompleteEvent
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, kZincEventAttributesURLKey, nil];
+                          url, kZincEventAttributesURLKey,
+                          @(size), kZincEventAttributesSizeKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:nil attributes:attr] autorelease];
     
@@ -226,6 +228,11 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 - (NSURL*) url
 {
     return [self.attributes objectForKey:kZincEventAttributesURLKey];
+}
+
+- (NSInteger) size
+{
+    return [[self.attributes objectForKey:kZincEventAttributesSizeKey] integerValue];
 }
 
 @end
