@@ -54,7 +54,7 @@
         if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];\
+            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
     
