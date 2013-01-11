@@ -59,7 +59,6 @@
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies;
 - (void) addOperation:(NSOperation*)operation;
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 #pragma mark Paths
 
