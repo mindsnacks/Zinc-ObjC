@@ -126,6 +126,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 #pragma mark Tasks
 
