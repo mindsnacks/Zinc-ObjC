@@ -299,7 +299,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 
                 [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
             }
-            [blockself refreshBundlesWithCompletion:nil];
+            [blockself refreshSourcesWithCompletion:^{
+                [blockself refreshBundlesWithCompletion:nil];
+            }];
         };
     }
 }
