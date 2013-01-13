@@ -14,6 +14,8 @@
 #import "ZincEvent.h"
 #import "ZincRepo+Private.h"
 
+#define COPY_INSTEAD_OF_SYMLINK 1
+
 @interface ZincImportExternalBundleTask ()
 @property (retain) NSFileManager* fileManager;
 @end
@@ -56,6 +58,15 @@
         NSString* filePath = [fileRootPath stringByAppendingPathComponent:file];
         NSString* shaPath = [self.repo pathForFileWithSHA:sha];
         
+#if COPY_INSTEAD_OF_SYMLINK
+        if (![self.fileManager fileExistsAtPath:shaPath]) {
+            
+            if (![self.fileManager copyItemAtPath:filePath toPath:shaPath error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                return NO;
+            }
+        }
+#else
         // always remove and re-link
         [self.fileManager removeItemAtPath:shaPath error:NULL];
         
@@ -63,6 +74,7 @@
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             return NO;
         }
+#endif
     }
     return YES;
 }
