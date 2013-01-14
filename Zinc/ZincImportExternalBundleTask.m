@@ -59,7 +59,16 @@
         NSString* shaPath = [self.repo pathForFileWithSHA:sha];
         
 #if COPY_INSTEAD_OF_SYMLINK
-        if (![self.fileManager fileExistsAtPath:shaPath]) {
+
+        const BOOL fileExists = [self.fileManager fileExistsAtPath:shaPath];
+        
+        const BOOL isSymlink = fileExists && ([self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL] != nil);
+        if (isSymlink) {
+            [self.fileManager removeItemAtPath:shaPath error:NULL];
+        }
+        
+        const BOOL shouldCopy = !fileExists || isSymlink;
+        if (shouldCopy) {
             
             if (![self.fileManager copyItemAtPath:filePath toPath:shaPath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
