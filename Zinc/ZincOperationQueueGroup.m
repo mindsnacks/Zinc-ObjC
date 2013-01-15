@@ -75,6 +75,30 @@
     return self.mySuspended;
 }
 
+- (void) suspendAndWaitForExecutingOperationsToComplete
+{
+    NSMutableSet* waitOps = [NSMutableSet set];
+
+    @synchronized(self) {
+        
+        [self setSuspended:YES];
+        
+        NSArray* allQueues = [self.queuesByClass allValues];
+        for (NSOperationQueue* queue in allQueues) {
+            for (NSOperation* op in queue.operations) {
+                if ([op isExecuting]) {
+                    [waitOps addObject:op];
+                }
+            }
+        }
+    }
+    
+    for (NSOperation* op in waitOps) {
+        //NSLog(@"--> waiting : %@", op);
+        [op waitUntilFinished];
+        //NSLog(@"    done!   : %@", op);
+    }
+}
 
 
 @end

@@ -36,9 +36,6 @@ enum
     ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS         = 3102,
     ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG          = 3103,
     
-    ZINC_ERR_BOOTSTRAP_FAILED                     = 5101,
-    ZINC_ERR_BOOTSTRAP_MANIFEST_NOT_FOUND         = 5102,
-    
     ZINC_ERR_GZIP_INFLATE_INIT_FAIL               = 6001,
     ZINC_ERR_GZIP_INFLATE_FAIL                    = 6002,
     ZINC_ERR_GZIP_INFLATE_END_FAIL                = 6003,

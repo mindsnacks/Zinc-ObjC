@@ -90,59 +90,16 @@
         }
     }
     
-    NSString* zincRepoPath = [[self.repo url] path];
-    
     // Link files
     for (NSString* file in allFiles) {
-        
         @autoreleasepool {
-            
             NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-            NSString* filePathDest = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
-            BOOL filePathDestDoesNotExist = (filePathDest == nil);
-            
-            NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-            NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
-            
-            // if it's nil, it's not a symbolic link. use the original file.
-            
-            // if it is a symbolic link, which means it's linked to inside the app bundle
-            // use a new symlink from the bundles dir to sha-based object - RELATIVE
-            // otherwise, hard link directly to the sha-object
-            BOOL useSymbolicLink = shaPathDest != nil;
-            
-            BOOL filePathDestCorrect = [filePathDest isEqualToString:shaPath];
-            BOOL createLink = filePathDestDoesNotExist || !filePathDestCorrect;
-            
+            const BOOL createLink = ![self.fileManager fileExistsAtPath:filePath];
             if (createLink) {
-                // remove regardless and ignore errors. there are too many cases to
-                // handle cleanly, with non-existant files, symlinks, etc. if something
-                // fails it will be caught in the linkItemAtPath call below.
-                [self.fileManager removeItemAtPath:filePath error:NULL];
-                
-                if (useSymbolicLink) {
-                    
-                    NSString* filePathRelativeToRepo = [filePath substringFromIndex:[zincRepoPath length]+1]; // +1 to remove '/'
-                    NSString* shaPathRelativeToRepo = [shaPath substringFromIndex:[zincRepoPath length]+1];  // +1 to remove '/'
-                    
-                    NSArray* comps = [filePathRelativeToRepo pathComponents];
-                    NSString* shaPathRelativeToFile = shaPathRelativeToRepo;
-                    
-                    for (NSUInteger i=0; i<[comps count]-1; i++) {
-                        shaPathRelativeToFile = [@"../" stringByAppendingString:shaPathRelativeToFile];
-                    }
-                    
-                    if (![self.fileManager createSymbolicLinkAtPath:filePath withDestinationPath:shaPathRelativeToFile error:&error]) {
-                        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
-                        return NO;
-                    }
-                    
-                } else {
-                    
-                    if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
-                        return NO;
-                    }
+                NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
+                if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
+                    [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+                    return NO;
                 }
             }
         }

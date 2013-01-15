@@ -71,3 +71,18 @@ NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* 
 {
     return [NSString stringWithFormat:@"%@.%@", catalogId, bundleName];
 }
+
+NSString* ZincBundleIDFromBundleDescriptor(NSString* bundleDescriptor)
+{
+    NSRange separatorRange = [bundleDescriptor rangeOfString:@"-" options:NSBackwardsSearch];
+    NSString* bundleID = [bundleDescriptor substringToIndex:separatorRange.location];
+    return bundleID;
+}
+
+ZincVersion ZincBundleVersionFromBundleDescriptor(NSString* bundleDescriptor)
+{
+    NSRange separatorRange = [bundleDescriptor rangeOfString:@"-" options:NSBackwardsSearch];
+    ZincVersion version = [[bundleDescriptor substringFromIndex:NSMaxRange(separatorRange)] integerValue];
+    return version;
+
+}

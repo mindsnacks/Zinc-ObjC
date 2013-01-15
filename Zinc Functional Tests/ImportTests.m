@@ -1,5 +1,5 @@
 //
-//  BootstrappingTests.m
+//  ImportTests.m
 //  Zinc-ObjC
 //
 //  Created by Andy Mroczkowski on 1/5/13.
@@ -12,12 +12,12 @@
 #import "ZincUtils.h"
 #import "ZincResource.h"
 
-@interface BootstrappingTests : ZincFunctionalTestCase
+@interface ImportTests : ZincFunctionalTestCase
 
 @end
 
 
-@implementation BootstrappingTests
+@implementation ImportTests
 
 - (void)setUp
 {
@@ -50,7 +50,7 @@
     GHAssertNotNil(image2, @"image should not be nil");
 }
 
-- (void)testDeleteOriginalsAndBootstrapAgain
+- (void)testDeleteOriginalsAndImportAgain
 {
     NSString* bundleId = @"com.mindsnacks.demo1.cats";
     
@@ -101,7 +101,7 @@
     
     // -- re-register the bundle from the files inside the main bundle
     
-    [self setupZincRepo];
+    [self setupZincRepoWithRootDir:[[self.zincRepo url] path]];
     
     ZincTaskRef* taskRef2 = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath
                                                                    bundleRootPath:resourcePath];

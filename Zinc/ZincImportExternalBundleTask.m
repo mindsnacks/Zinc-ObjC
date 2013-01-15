@@ -14,8 +14,6 @@
 #import "ZincEvent.h"
 #import "ZincRepo+Private.h"
 
-#define COPY_INSTEAD_OF_SYMLINK 1
-
 @interface ZincImportExternalBundleTask ()
 @property (retain) NSFileManager* fileManager;
 @end
@@ -58,16 +56,19 @@
         NSString* filePath = [fileRootPath stringByAppendingPathComponent:file];
         NSString* shaPath = [self.repo pathForFileWithSHA:sha];
         
-#if COPY_INSTEAD_OF_SYMLINK
-
         const BOOL fileExists = [self.fileManager fileExistsAtPath:shaPath];
         
-        const BOOL isSymlink = fileExists && ([self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL] != nil);
-        if (isSymlink) {
-            [self.fileManager removeItemAtPath:shaPath error:NULL];
-        }
+        // TODO: I don't think we need this because it's handled in garbage collect
         
-        const BOOL shouldCopy = !fileExists || isSymlink;
+//        // Special case to deal with legacy symlinks
+//        const BOOL isSymlink = fileExists && ([self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL] != nil);
+//        if (isSymlink) {
+//            [self.fileManager removeItemAtPath:shaPath error:NULL];
+//        }
+//        
+//        const BOOL shouldCopy = !fileExists || isSymlink;
+        
+        const BOOL shouldCopy = !fileExists;
         if (shouldCopy) {
             
             if (![self.fileManager copyItemAtPath:filePath toPath:shaPath error:&error]) {
@@ -75,15 +76,6 @@
                 return NO;
             }
         }
-#else
-        // always remove and re-link
-        [self.fileManager removeItemAtPath:shaPath error:NULL];
-        
-        if (![self.fileManager createSymbolicLinkAtPath:shaPath withDestinationPath:filePath error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-            return NO;
-        }
-#endif
     }
     return YES;
 }

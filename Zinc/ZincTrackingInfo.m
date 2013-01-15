@@ -109,4 +109,11 @@
     return YES;
 }
 
+- (NSString*) description
+{
+    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@ updateAutomatically=%d>",
+            [self class], self, self.distribution, self.version, self.flavor, self.updateAutomatically];
+}
+
+
 @end

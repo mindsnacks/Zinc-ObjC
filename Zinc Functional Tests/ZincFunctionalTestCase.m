@@ -10,18 +10,24 @@
 
 @implementation ZincFunctionalTestCase
 
-- (void)setupZincRepo
+- (void)setupZincRepoWithRootDir:(NSString*)repoDir
 {
-    NSString *repoDir = ZincGetUniqueTemporaryDirectory();
-    
     NSError *error = nil;
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
     GHAssertNil(error, @"error: %@", error);
 
-    self.zincRepo.automaticBundleUpdatesEnabled = NO;
+    self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
 
     GHTestLog(@"ZincRepo: %@", [self.zincRepo.url path]);
 }
+
+- (void)setupZincRepo
+{
+    NSString *repoDir = ZincGetUniqueTemporaryDirectory();
+    [self setupZincRepoWithRootDir:repoDir];
+    
+}
+
 
 @end

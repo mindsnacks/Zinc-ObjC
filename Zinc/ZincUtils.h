@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ZincGlobals.h"
+
 #pragma mark Utility Functions
 
 extern int ZincAddSkipBackupAttributeToFileWithPath(NSString * path);
@@ -19,3 +21,10 @@ extern NSString* ZincGetUniqueTemporaryDirectory(void);
 extern NSString* ZincCatalogIdFromBundleId(NSString* bundleId);
 extern NSString* ZincBundleNameFromBundleId(NSString* bundleId);
 extern NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName);
+
+/**
+ * @discussion a bundle descriptor is <bundleid>-<version>, ie, com.mindsnacks.cats-2
+ */
+ 
+extern NSString* ZincBundleIDFromBundleDescriptor(NSString* bundleDescriptor);
+extern ZincVersion ZincBundleVersionFromBundleDescriptor(NSString* bundleDescriptor);

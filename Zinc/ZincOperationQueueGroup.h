@@ -19,4 +19,6 @@
 - (void)setSuspended:(BOOL)b;
 - (BOOL)isSuspended;
 
+- (void)suspendAndWaitForExecutingOperationsToComplete;
+
 @end

@@ -37,6 +37,8 @@
 
 #pragma mark Bundles
 
+- (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro;
+
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 

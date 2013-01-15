@@ -14,6 +14,16 @@
 
 @property (strong) ZincRepo *zincRepo;
 
+
+/**
+ @discussion Sets up a test zinc repo at the specificied location
+ */
+- (void)setupZincRepoWithRootDir:(NSString*)repoDir;
+
+/**
+ @discussion Sets up a test zinc repo in a unique temporary directory
+ */
 - (void)setupZincRepo;
+
 
 @end

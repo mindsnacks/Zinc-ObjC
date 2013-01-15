@@ -22,61 +22,89 @@
     return ZincTaskActionUpdate;
 }
 
-- (void) main
+- (void) cleanObjectsDir
 {
-    //ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- BEGIN");
-    [self addEvent:[ZincGarbageCollectionBeginEvent event]];
-    
     NSError* error = nil;
-
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    NSDirectoryEnumerator* dirEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                              includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, NSURLIsSymbolicLinkKey, nil]
-                                                 options:0 
-                                            errorHandler:^(NSURL* url, NSError* error){
-                                                
-                                                return YES;
-                                            }];
-    for (NSURL *theURL in dirEnum) {
-        
+    NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
+                                includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, NSURLIsSymbolicLinkKey, nil]
+                                                   options:0
+                                              errorHandler:^(NSURL* url, NSError* error){
+                                                  return YES;
+                                              }];
+    for (NSURL *theURL in filesEnum) {
         NSNumber *isRegularFile;
         if (![theURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
             continue;
         }
-        
         if ([isRegularFile boolValue]) {
-            
             NSNumber *linkCount;
             if (![theURL getResourceValue:&linkCount forKey:NSURLLinkCountKey error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
             }
-            
             if ([linkCount integerValue] < 2) {
                 [fm removeItemAtURL:theURL error:NULL];
             }
-            
         } else {
-            
-            NSNumber *isSymlink;
-            if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                continue;
-            }
-            
-            if ([isSymlink boolValue]) {
-                NSURL* resolvedURL = [theURL URLByResolvingSymlinksInPath];
-                if ([resolvedURL isEqual:theURL]) {
-                    // if it's the same, the symlink is invalid
+            if (self.repo.shouldCleanSymlinks) {
+                NSNumber *isSymlink;
+                if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                    continue;
+                }
+                if ([isSymlink boolValue]) {
                     [fm removeItemAtURL:theURL error:NULL];
                 }
             }
         }
     }
+}
+
+- (void) cleanBundlesDir
+{
+    if (!self.repo.shouldCleanSymlinks) return;
     
+    NSError* error = nil;
+    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSString* bundlesPath = [self.repo bundlesPath];
+    NSDirectoryEnumerator* bundlesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:bundlesPath]
+                                  includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, NSURLIsSymbolicLinkKey, nil]
+                                                     options:0
+                                                errorHandler:^(NSURL* url, NSError* error){
+                                                    return YES;
+                                                }];
+    NSMutableSet* bundlesToDelete = [NSMutableSet set];
+    for (NSURL *theURL in bundlesEnum) {
+        NSNumber *isSymlink;
+        if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        if ([isSymlink boolValue]) {
+            
+            NSString* relPath = [[theURL path] substringFromIndex:[bundlesPath length] + 1];
+            NSString* bundleDesc = [[relPath pathComponents] objectAtIndex:0];
+            NSURL* bundleRes = [NSURL zincResourceForBundleDescriptor:bundleDesc];
+            [bundlesToDelete addObject:bundleRes];
+        }
+    }
+    for (NSURL* bundleRes in bundlesToDelete) {
+        NSString* path = [self.repo pathForBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
+        if (![fm removeItemAtPath:path error:&error]) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        }
+        [self.repo deregisterBundle:bundleRes];
+    }
+}
+
+- (void) main
+{
+    [self addEvent:[ZincGarbageCollectionBeginEvent event]];
+    [self cleanObjectsDir];
+    [self cleanBundlesDir];
     [self addEvent:[ZincGarbageCollectionCompleteEvent event]];
-    //ZINC_DEBUG_LOG(@"GARBAGE COLLECT -- END");
 }
 
 @end

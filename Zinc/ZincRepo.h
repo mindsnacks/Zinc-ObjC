@@ -66,20 +66,24 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 /**
+ @discussion Manually trigger refresh of sources and bundles.
+ */
+- (void) refresh;
+
+/**
+ @discussion Manually trigger refresh of sources and bundles, with completion block.
+ */
+- (void) refreshWithCompletion:(dispatch_block_t)completion;
+
+/**
  @discussion Interval at which catalogs are updated and automatic clone tasks started.
  */
-@property (nonatomic, assign) NSTimeInterval refreshInterval;
+@property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
 
 /**
  @discussion default is YES
  */
 @property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
-
-/**
- @discussion Setting to NO disables all automatic updates. Default is YES.
- */
-// TODO: this probably should be wrapped in the ZincDownloadPolicy
-@property (atomic, assign) BOOL automaticBundleUpdatesEnabled;
 
 /**
  */
@@ -102,10 +106,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
-
-#pragma mark Old-Style Bootstrapping (Deprecated)
-
-- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
 
 #pragma mark -
 
@@ -133,12 +133,23 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @property (readonly) NSArray* tasks;
 
 - (void) suspendAllTasks;
+- (void) suspendAllTasksAndWaitExecutingTasksToComplete;
 - (void) resumeAllTasks;
 - (BOOL) isSuspended;
 
 #pragma mark Utility
 
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority;
+
+/**
+ @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
+ */
+- (void)cleanWithCompletion:(dispatch_block_t)completion;
+
+/**
+ @discussion Older versions of Zinc used symlinks for some import tasks. These have been removed in current version. Enable this to clean up symlinked files.
+ */
+@property (assign) BOOL shouldCleanSymlinks;
        
 @end
 
