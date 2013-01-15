@@ -406,5 +406,122 @@
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
 }
 
+- (void)testCleanRemovesObjectWithSymlinksIfFlagIsOn
+{
+    [self refreshCatalog];
+    
+    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    
+    // -- Clone bundle
+    
+    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    
+    [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
+        
+        if ([errors count] > 0) {
+            GHTestLog(@"%@", errors);
+            [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
+        } else {
+            [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+        }
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    // -- Add a dummy symlink to cause the bundle to be cleaned
+    
+    NSString* objectRoot = [self.zincRepo filesPath];
+    NSString* symlinkPath = [objectRoot stringByAppendingPathComponent:@"dummy"];
+    
+    NSError* error = nil;
+    if (![[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath withDestinationPath:@"nowhere" error:&error]) {
+        GHFail(@"failed to create symlink");
+    }
+    
+    // -- Reset the zinc repo
+    
+    [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
+    
+    self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
+    GHAssertNil(error, @"error: %@", error);
+    
+    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.shouldCleanSymlinks = YES;
+    [self.zincRepo resumeAllTasks];
+    
+    // -- Perform manual clean
+    
+    [self.zincRepo cleanWithCompletion:^{
+        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:symlinkPath];
+    GHAssertFalse(fileExists, @"file should not exist");    
+}
+
+- (void)testCleanDoesNotRemoveObjectWithSymlinksIfFlagIsOff
+{
+    [self refreshCatalog];
+    
+    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    
+    // -- Clone bundle
+    
+    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    
+    [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
+        
+        if ([errors count] > 0) {
+            GHTestLog(@"%@", errors);
+            [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
+        } else {
+            [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+        }
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    // -- Add a dummy symlink to cause the bundle to be cleaned
+    
+    NSString* objectRoot = [self.zincRepo filesPath];
+    NSString* symlinkPath = [objectRoot stringByAppendingPathComponent:@"dummy"];
+    
+    NSError* error = nil;
+    if (![[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath withDestinationPath:@"nowhere" error:&error]) {
+        GHFail(@"failed to create symlink");
+    }
+    
+    // -- Reset the zinc repo
+    
+    [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
+    
+    self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
+    GHAssertNil(error, @"error: %@", error);
+    
+    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.shouldCleanSymlinks = NO; // this is the default, but setting it to be clear
+    [self.zincRepo resumeAllTasks];
+    
+    // -- Perform manual clean
+    
+    [self.zincRepo cleanWithCompletion:^{
+        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    NSNumber* isSymlink;
+    if (![[NSURL fileURLWithPath:symlinkPath] getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
+        GHFail(@"%@", error);
+    }
+    
+    GHAssertTrue([isSymlink boolValue], @"should exist");
+}
 
 @end
