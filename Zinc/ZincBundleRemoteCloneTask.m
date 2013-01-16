@@ -92,13 +92,12 @@
 {
     if (self.isCancelled) return NO;
     
+    NSError* error = nil;
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
-    
-    NSString* flavor = [self getTrackedFlavor];
-    
-    NSArray* allFiles = [manifest filesForFlavor:flavor];
-    NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
+    NSString* const flavor = [self getTrackedFlavor];
+    NSArray* const allFiles = [manifest filesForFlavor:flavor];
+    NSMutableArray* const missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
     
     for (NSString* path in allFiles) {
         
@@ -110,7 +109,22 @@
         
         NSUInteger size = [manifest sizeForFile:path format:format];
         totalSize += size;
-        if (![self.repo hasFileWithSHA:[manifest shaForFile:path]]) {
+        
+        NSString* const sha = [manifest shaForFile:path];
+        BOOL const hasFileInRepo = [self.repo hasFileWithSHA:sha];
+        if (!hasFileInRepo) {
+            
+            NSString* localPath = [self.repo externalPathForFileWithSHA:sha];
+            if (localPath != nil) {
+                
+                NSString* repoPath = [self.repo pathForFileWithSHA:sha];
+                if ([self.fileManager copyItemAtPath:localPath toPath:repoPath error:&error]) {
+                    continue;
+                } else {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                }
+            }
+            
             missingSize += size;
             [missingFiles addObject:path];
         }
@@ -123,7 +137,7 @@
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
         
-        if (NO && [missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
+        if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];

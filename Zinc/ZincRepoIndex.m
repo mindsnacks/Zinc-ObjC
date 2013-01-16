@@ -12,11 +12,12 @@
 #import "ZincDeepCopying.h"
 #import "ZincErrors.h"
 #import "ZincTrackingInfo.h"
+#import "ZincExternalBundleInfo.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
 @property (nonatomic, retain) NSMutableDictionary* myBundles;
-@property (nonatomic, retain) NSMutableDictionary* myExternalBundleRefs;
+@property (nonatomic, retain) NSMutableDictionary* myExternalBundlesByResource;
 @end
 
 
@@ -31,7 +32,7 @@
     if (self) {
         self.mySourceURLs = [NSMutableSet set];
         self.myBundles = [NSMutableDictionary dictionary];
-        self.myExternalBundleRefs = [NSMutableDictionary dictionary];
+        self.myExternalBundlesByResource = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -40,7 +41,7 @@
 {
     [_mySourceURLs release];
     [_myBundles release];
-    [_myExternalBundleRefs release];
+    [_myExternalBundlesByResource release];
     [super dealloc];
 }
 
@@ -182,9 +183,9 @@
 
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource
 {
-    @synchronized(self.myExternalBundleRefs) {
-        NSString* rootPath = self.myExternalBundleRefs[bundleResource];
-        if (rootPath != nil) {
+    @synchronized(self.myExternalBundlesByResource) {
+        ZincExternalBundleInfo* info = self.myExternalBundlesByResource[bundleResource];
+        if (info != nil) {
             return ZincBundleStateAvailable;
         }
     }
@@ -209,24 +210,26 @@
     }
 }
 
-- (void) registerExternalBundle:(NSURL*)bundleRes rootPath:(NSString*)rootPath
+- (void) registerExternalBundle:(NSURL*)bundleRes manifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath
 {
-    @synchronized(self.myExternalBundleRefs) {
-        self.myExternalBundleRefs[bundleRes] = rootPath;
+    @synchronized(self.myExternalBundlesByResource) {
+        ZincExternalBundleInfo* info = [ZincExternalBundleInfo infoForBundleResource:bundleRes manifestPath:manifestPath bundleRootPath:rootPath];
+        self.myExternalBundlesByResource[bundleRes] = info;
     }
 }
 
-- (NSString*) externalPathForBundle:(NSURL*)bundleRes
+- (ZincExternalBundleInfo*) infoForExternalBundle:(NSURL*)bundleRes
 {
-    @synchronized(self.myExternalBundleRefs) {
-        return self.myExternalBundleRefs[bundleRes];
+    @synchronized(self.myExternalBundlesByResource) {
+        ZincExternalBundleInfo* info = self.myExternalBundlesByResource[bundleRes];
+        return info;
     }
 }
 
 - (NSArray*) registeredExternalBundles
 {
-    @synchronized(self.myExternalBundleRefs) {
-        return [self.myExternalBundleRefs allKeys];
+    @synchronized(self.myExternalBundlesByResource) {
+        return [self.myExternalBundlesByResource allKeys];
     }
 }
 
@@ -249,8 +252,8 @@
         }
     }
     if (targetState == ZincBundleStateAvailable) {
-        @synchronized(self.myExternalBundleRefs) {
-            [set addObjectsFromArray:[self.myExternalBundleRefs allKeys]];
+        @synchronized(self.myExternalBundlesByResource) {
+            [set addObjectsFromArray:[self.myExternalBundlesByResource allKeys]];
         }
     }
     return set;
@@ -279,8 +282,8 @@
         }
     }];
     
-    @synchronized(self.myExternalBundleRefs) {
-        [self.myExternalBundleRefs enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+    @synchronized(self.myExternalBundlesByResource) {
+        [self.myExternalBundlesByResource enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             NSURL* bundleRes = key;
             if ([[bundleRes zincBundleId] isEqualToString:bundleId]) {
                 [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];

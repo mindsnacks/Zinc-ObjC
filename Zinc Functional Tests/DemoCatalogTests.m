@@ -137,10 +137,9 @@
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *manifestPath = [resourcePath stringByAppendingPathComponent:@"cats.json"];
     
-    ZincTaskRef* taskRef = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath];
-    GHAssertTrue([taskRef isValid], @"taskRefShouldBeValid");
-    [taskRef waitUntilFinished];
-    GHAssertTrue([taskRef isSuccessful], @"errors: %@", [taskRef allErrors]);
+    NSError* error = nil;
+    BOOL registerSuccess = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath error:&error];;
+    GHAssertTrue(registerSuccess, @"error: %@", error);
 
     ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(state, ZincBundleStateAvailable, @"should be available");
