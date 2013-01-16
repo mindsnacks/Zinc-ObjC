@@ -86,6 +86,7 @@
 		B33A363916991121007F0A57 /* lime-cat.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B33A363616991121007F0A57 /* lime-cat.jpeg */; };
 		B33AEF9516A6321C0000B6C5 /* ZincExternalBundleInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B33AEF9316A6321C0000B6C5 /* ZincExternalBundleInfo.h */; };
 		B33AEF9616A6321C0000B6C5 /* ZincExternalBundleInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B33AEF9416A6321C0000B6C5 /* ZincExternalBundleInfo.m */; };
+		B33AF01216A641700000B6C5 /* ZincBundleTrackingRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = B33AF01116A641700000B6C5 /* ZincBundleTrackingRequest.m */; };
 		B340F971148D52D800206F86 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
 		B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F94A148D514600206F86 /* SenTestingKit.framework */; };
 		B340F97F148D52D800206F86 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B38743081489B830004B227B /* UIKit.framework */; };
@@ -283,6 +284,7 @@
 		B33A363616991121007F0A57 /* lime-cat.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "lime-cat.jpeg"; path = "Resources/com.mindsnacks.demo1.cats/lime-cat.jpeg"; sourceTree = SOURCE_ROOT; };
 		B33AEF9316A6321C0000B6C5 /* ZincExternalBundleInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincExternalBundleInfo.h; sourceTree = "<group>"; };
 		B33AEF9416A6321C0000B6C5 /* ZincExternalBundleInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincExternalBundleInfo.m; sourceTree = "<group>"; };
+		B33AF01116A641700000B6C5 /* ZincBundleTrackingRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleTrackingRequest.m; sourceTree = "<group>"; };
 		B340F94A148D514600206F86 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B340F970148D52D800206F86 /* libZinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZinc.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B340F974148D52D800206F86 /* Zinc-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc-Prefix.pch"; sourceTree = "<group>"; };
@@ -874,6 +876,7 @@
 				B32EE27516A4FE64000E772B /* ZincTrackingInfo.m */,
 				B33AEF9316A6321C0000B6C5 /* ZincExternalBundleInfo.h */,
 				B33AEF9416A6321C0000B6C5 /* ZincExternalBundleInfo.m */,
+				B33AF01116A641700000B6C5 /* ZincBundleTrackingRequest.m */,
 				B3E46B5114C3DDB900030349 /* Tasks */,
 				B3CAB5F515FC3644008502AC /* Activity */,
 			);
@@ -1208,6 +1211,7 @@
 				B36CA5C71632142B00843CEC /* ZincGzip.m in Sources */,
 				B32EE27716A4FE64000E772B /* ZincTrackingInfo.m in Sources */,
 				B33AEF9616A6321C0000B6C5 /* ZincExternalBundleInfo.m in Sources */,
+				B33AF01216A641700000B6C5 /* ZincBundleTrackingRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
