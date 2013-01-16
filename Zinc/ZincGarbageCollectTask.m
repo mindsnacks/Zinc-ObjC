@@ -83,8 +83,8 @@
             continue;
         }
         if ([isSymlink boolValue]) {
-            
-            NSString* relPath = [[theURL path] substringFromIndex:[bundlesPath length] + 1];
+            NSUInteger endIndexOfBundleDir = NSMaxRange([[theURL path] rangeOfString:bundlesPath]);
+            NSString* relPath = [[theURL path] substringFromIndex:endIndexOfBundleDir + 1];
             NSString* bundleDesc = [[relPath pathComponents] objectAtIndex:0];
             NSURL* bundleRes = [NSURL zincResourceForBundleDescriptor:bundleDesc];
             [bundlesToDelete addObject:bundleRes];
