@@ -47,7 +47,14 @@
     NSError* error = nil;
     BOOL gz = NO;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    
+
+    // don't need to donwload if the file already exists
+    if ([self.repo hasFileWithSHA:self.sha])
+    {
+        self.finishedSuccessfully = YES;
+        return;
+    }
+
     NSArray* formats = (NSArray*)[self input];
     
     if ([formats containsObject:ZincFileFormatGZ]) {
@@ -143,10 +150,13 @@
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
             }
-            
+
             if (![fm moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                continue;
+                if (error.code != NSFileWriteFileExistsError) // ignore error if file already existed
+                {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                    continue;
+                }
             }
             
             ZincAddSkipBackupAttributeToFileWithPath(targetPath);
