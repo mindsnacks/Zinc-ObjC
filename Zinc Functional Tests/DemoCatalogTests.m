@@ -523,4 +523,50 @@
     GHAssertTrue([isSymlink boolValue], @"should exist");
 }
 
+- (void)testMissingBundleDir
+{
+    [self refreshCatalog];
+    
+    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    
+    // -- Clone bundle
+    
+    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    
+    [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
+        
+        if ([errors count] > 0) {
+            GHTestLog(@"%@", errors);
+            [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
+        } else {
+            [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
+        }
+    }];
+    
+    [self prepare];
+    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+
+    // -- Remove bundle files
+    
+    ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
+    NSString* bundleRoot = [self.zincRepo pathForBundleWithId:bundleID version:version];
+    
+    NSError* deleteError = nil;
+    if (![[NSFileManager defaultManager] removeItemAtPath:bundleRoot error:&deleteError]) {
+        GHFail(@"error: %@", deleteError);
+    }
+    
+    ZincBundle* bundle = [self.zincRepo bundleWithId:bundleID];
+    GHAssertNil(bundle, @"bundle should be nil");
+    
+    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
+    GHAssertEquals(state, ZincBundleStateNone, @"should not be available");
+    
+    
+
+    
+
+
+}
+
 @end
