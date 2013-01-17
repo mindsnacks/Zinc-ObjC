@@ -216,6 +216,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.executeTasksInBackgroundEnabled = YES;
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
+        self.localFilesBySHA = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -846,11 +847,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) registerLocalFilesFromExternalManifest:(ZincManifest*)manifest bundleRootPath:(NSString*)bundleRoot
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        self.localFilesBySHA = [NSMutableDictionary dictionary];
-    });
-    
     @synchronized(self.localFilesBySHA) {
         NSArray* allFiles = [manifest allFiles];
         for (NSString* f in allFiles) {
