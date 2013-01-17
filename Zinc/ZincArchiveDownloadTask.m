@@ -7,6 +7,7 @@
 //
 
 #import "ZincArchiveDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincResource.h"
 #import "ZincBundle.h"
@@ -56,7 +57,6 @@
     
     NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogId];
 
-    
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
@@ -75,7 +75,7 @@
             [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
             continue;
         } else {
-            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
         [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];

@@ -7,11 +7,13 @@
 //
 
 #import "ZincDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincEvent.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
+#import "ZincRepo.h"
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
@@ -19,10 +21,6 @@
 
 @implementation ZincDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-@synthesize context = _context;
 
 + (NSString *)action
 {
@@ -31,27 +29,32 @@
 
 - (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
-    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
+    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     
-    requestOp.outputStream = outputStream;
+    if (outputStream != nil) {
+        requestOp.outputStream = outputStream;
+    }
+    
+    if (self.repo.executeTasksInBackgroundEnabled) {
+        [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    }
     
     self.context = context;
-    
-    __block typeof(self) blockself = self;
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
-    [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
+    [requestOp setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
         BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
-        if (enoughTimePassedSinceLastNotification)
+        BOOL downloadCompleted = totalBytesRead == totalBytesExpectedToRead;
+        if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
     
@@ -62,24 +65,20 @@
     return requestOp;
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
     return self.bytesRead;
 }
 
-- (NSInteger) maxProgressValue
+- (long long) maxProgressValue
 {
     return MAX(self.totalBytesToRead, self.bytesRead);
 }
 
 - (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
 {
-    [self willChangeValueForKey:@"currentProgressValue"];
-    [self willChangeValueForKey:@"maxProgressValue"];
     self.bytesRead = currentBytes;
     self.totalBytesToRead = totalBytes;
-    [self didChangeValueForKey:@"currentProgressValue"];
-    [self didChangeValueForKey:@"maxProgressValue"];
 }
 
 - (void)dealloc

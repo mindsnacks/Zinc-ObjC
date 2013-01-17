@@ -7,6 +7,7 @@
 //
 
 #import "ZincManifestDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincBundle.h"
 #import "ZincSource.h"
@@ -14,7 +15,7 @@
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
@@ -77,7 +78,7 @@
             continue;
         }
         
-        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL]]];
+        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL] size:self.bytesRead]];
         
         NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
         if (uncompressed == nil) {

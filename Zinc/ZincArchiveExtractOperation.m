@@ -7,11 +7,13 @@
 //
 
 #import "ZincArchiveExtractOperation.h"
+#import "ZincErrors.h"
 #import "ZincRepo+Private.h"
-#import "NSFileManager+Tar.h"
+#import "NSFileManager+ZincTar.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincUtils.h"
-
+#import "ZincSHA.h"
+#import "ZincGzip.h"
 
 @interface ZincArchiveExtractOperation ()
 @property (nonatomic, assign, readwrite) ZincRepo* repo;
@@ -82,7 +84,7 @@
             NSString* compressedPath = [untarDir stringByAppendingPathComponent:thePath];
             NSString* uncompressedPath = [compressedPath stringByDeletingPathExtension];
             
-            if (![fm zinc_gzipInflate:compressedPath destination:uncompressedPath error:&error]) {
+            if (!ZincGzipInflate(compressedPath, uncompressedPath, 0, &error)) {
                 self.error = error;
                 cleanup();
                 return;
@@ -91,13 +93,36 @@
         
         NSString* fullPath = [untarDir stringByAppendingPathComponent:filename];
         
-        if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
+        NSString* expectedSHA = filename;
+        
+        NSString* actualSHA = ZincSHA1HashFromPath(fullPath, 0, &error);
+        if (actualSHA == nil) {
             self.error = error;
             cleanup();
             return;
         }
         
-        ZincAddSkipBackupAttributeToFileWithPath(targetPath);
+        if (![actualSHA isEqualToString:expectedSHA]) {
+            
+            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  expectedSHA, @"expectedSHA",
+                                  actualSHA, @"actualSHA",
+                                  self.archivePath, @"archivePath",
+                                  nil];
+            error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
+            cleanup();
+            return;
+
+        } else {
+        
+            if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
+                self.error = error;
+                cleanup();
+                return;
+            }
+            
+            ZincAddSkipBackupAttributeToFileWithPath(targetPath);
+        }
     }
     
     cleanup();

@@ -10,7 +10,7 @@
 #import "ZincGlobals.h"
 
 #define kZincRepoDefaultNetworkOperationCount (5)
-#define kZincRepoDefaultAutoRefreshInterval (10)
+#define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
 
 typedef enum {
@@ -27,16 +27,22 @@ static NSString* ZincBundleStateName[] = {
     @"Deleting",
 };
 
-extern NSString* const ZincRepoBundleChangeNotifiationBundleIdKey;
-extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
-
+// -- Bundle Notifications
 extern NSString* const ZincRepoBundleStatusChangeNotification;
 extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
 extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
-extern NSString* const ZincRepoBundleCloneProgressNotification;
-extern NSString* const ZincRepoBundleCloneProgressKey;
+// -- Bundle Notification UserInfo Keys
+extern NSString* const ZincRepoBundleChangeNotificationBundleIdKey;
+extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
+
+// -- Task Notifications
+extern NSString* const ZincRepoTaskAddedNotification;
+extern NSString* const ZincRepoTaskFinishedNotification;
+
+// -- Task Notification UserInfo Keys
+extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @protocol ZincRepoDelegate;
 @class ZincManifest;
@@ -44,6 +50,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 @class ZincEvent;
 @class ZincBundleTrackingRequest;
 @class ZincDownloadPolicy;
+@class ZincTaskRef;
 
 @interface ZincRepo : NSObject
 
@@ -82,24 +89,32 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 - (void) addSourceURL:(NSURL*)url;
 - (void) removeSourceURL:(NSURL*)url;
+- (NSSet*) sourceURLs;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
-#pragma mark Bundles
+#pragma mark External Bundles
 
-- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
-- (void) bootstrapBundleWithId:(NSString*)bundleId fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
-- (void) bootstrapBundleWithId:(NSString*)bundleId flavor:(NSString*)flavor fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+- (ZincTaskRef*) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath;
+
+#pragma mark Tracking Remote Bundles
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
+#pragma mark Old-Style Bootstrapping (Deprecated)
+
+- (void) bootstrapBundleWithRequest:(ZincBundleTrackingRequest*)req fromDir:(NSString*)dir completionBlock:(ZincCompletionBlock)completion;
+
+#pragma mark -
+
 /**
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
  of connectivity.
  */
-- (void) updateBundleWithId:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+- (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+- (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId;
 
@@ -111,8 +126,7 @@ extern NSString* const ZincRepoBundleCloneProgressKey;
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
-// NOTE: this may be removed soon
-- (void) waitForAllBootstrapTasks;
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 #pragma mark Tasks
 

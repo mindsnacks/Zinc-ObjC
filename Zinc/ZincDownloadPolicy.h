@@ -45,4 +45,9 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 - (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID;
 
+/**
+ @discussion Resets the policy to defaults, and if it was just created using init
+ */
+- (void) reset;
+
 @end

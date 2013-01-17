@@ -316,14 +316,86 @@
     }
     
     NSArray* smallFiles = [manifest filesForFlavor:@"small"];
-    STAssertTrue([smallFiles count]==2, @"2 small file");
+    STAssertTrue([smallFiles count]==1, @"2 small files");
     
     NSArray* largeFiles = [manifest filesForFlavor:@"large"];
-    STAssertTrue([largeFiles count]==1, @"1 large files");
+    STAssertTrue([largeFiles count]==0, @"0 large files");
     
     NSArray* allFiles = [manifest filesForFlavor:nil];
     STAssertTrue([allFiles count]==2, @"2 files");
+}
 
+- (ZincManifest*) _manifestForDictionaryRepresentationTest
+{
+    ZincManifest* manifest = [[[ZincManifest alloc] init] autorelease];
+    manifest.catalogId = @"com.mindsnacks.food";
+    manifest.bundleName = @"pork";
+    manifest.version = 5;
+    return manifest;
+}
+
+- (void) testDictionaryRepresentation_bundleName
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+
+    STAssertEqualObjects([dict objectForKey:@"bundle"], manifest.bundleName, @"bundle name doesn't match");
+}
+
+- (void) testDictionaryRepresentation_catalogID
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogId, @"catalog id doesn't match");
+}
+
+- (void) testDictionaryRepresentation_version
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((ZincVersion)[[dict objectForKey:@"version"] integerValue], manifest.version, @"version doesn't match");
+}
+
+- (void) testDictionaryRepresentation_flavors_nil
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
+}
+
+- (void) testDictionaryRepresentation_flavors_notNil
+{
+    ZincManifest* manifest = [self _manifestForDictionaryRepresentationTest];
+    manifest.flavors = @[@"chop", @"bacon"];
+    
+    NSDictionary* dict = [manifest dictionaryRepresentation];
+    
+    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
+}
+
+- (void) testRebuildFlavorsFromFiles
+{
+    NSDictionary* manifestDict = @{
+        @"catalog": @"com.mindsnacks.food",
+        @"bundle" : @"pork",
+        @"version": @5,
+        @"files":
+            @{ @"1.png":
+                @{ @"flavors": @[@"pork"]
+            }
+        }
+    };
+    
+    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    
+    STAssertEqualObjects(manifest.flavors, @[@"pork"], @"should have built flavors from files");
 }
 
 @end

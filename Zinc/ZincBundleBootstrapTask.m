@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleBootstrapTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "ZincManifest.h"
 #import "ZincJSONSerialization.h"
@@ -81,6 +82,7 @@
     ZincManifest* manifest = [self importManifestWithPath:manifestPath error:&error];
     if (manifest == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self completeWithSuccess:NO];
         return;
     }
     
@@ -95,25 +97,31 @@
         [self addOperation:extractOp];
         
         [extractOp waitUntilFinished];
-        if (self.isCancelled) return;
+        if (self.isCancelled) {
+            [self completeWithSuccess:NO];
+            return;
+        };
 
         if (extractOp.error != nil) {
             [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
+            [self completeWithSuccess:NO];
             return;
         }
         
     } else {
     
         if (![self prepareObjectFileWithManifest:manifest fileRootPath:fileRootPath]) {
+            [self completeWithSuccess:NO];
             return;
         }
     }
     
     if (![self createBundleLinksForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
-    [self complete];
+    [self completeWithSuccess:YES];
 }
 
 @end

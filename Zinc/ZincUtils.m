@@ -66,3 +66,8 @@ NSString* ZincBundleNameFromBundleId(NSString* bundleId)
 {
     return [[bundleId componentsSeparatedByString:@"."] lastObject];
 }
+
+NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName)
+{
+    return [NSString stringWithFormat:@"%@.%@", catalogId, bundleName];
+}

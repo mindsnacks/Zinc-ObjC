@@ -10,6 +10,14 @@
 
 @interface ZincTaskRef : ZincOperation
 
-- (NSArray*) getAllErrors;
+- (BOOL) isValid;
+
+- (BOOL) isSuccessful;
+
+- (NSArray*) allErrors;
+
+#pragma mark Private
+
+- (void) addError:(NSError*)error;
 
 @end

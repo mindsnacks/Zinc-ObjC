@@ -43,23 +43,19 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     }]];
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
-    return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] integerValue];
+    return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] longLongValue] + ([self isFinished] ? 1 : 0);
 }
 
-- (NSInteger) maxProgressValue
+- (long long) maxProgressValue
 {
-    return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] integerValue];
+    return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] longLongValue] + 1;
 }
 
-- (double) progress
+- (float) progress
 {
-    NSInteger max = [self maxProgressValue];
-    if (max > 0) {
-        return (double)self.currentProgressValue / max;
-    }
-    return 0;
+    return ZincProgressCalculate(self);
 }
 
 - (void) cancel

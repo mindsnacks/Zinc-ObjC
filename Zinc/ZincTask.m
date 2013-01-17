@@ -7,6 +7,7 @@
 //
 
 #import "ZincTask.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskDescriptor.h"
@@ -27,8 +28,6 @@ typedef id ZincBackgroundTaskIdentifier;
 @property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
 
-static const NSString* kvo_CurrentProgress = @"kvo_CurrentProgress";
-static const NSString* kvo_MaxProgress = @"kvo_MaxProgress";
 static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 @implementation ZincTask
@@ -110,6 +109,9 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 {
     [super setQueuePriority:p];
     
+    // !!!: Since isReady may be related to queue priority make sure to update it
+    [self updateReadiness];
+    
     for (ZincTask* subtask in self.subtasks) {
         [subtask setQueuePriority:p];
     }
@@ -126,9 +128,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     
     ZincTask* task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
     [self addDependency:task];
-    [task addObserver:self forKeyPath:@"currentProgressValue" options:0 context:&kvo_CurrentProgress];
-    [task addObserver:self forKeyPath:@"maxProgressValue" options:0 context:&kvo_MaxProgress];
-    [task addObserver:self forKeyPath:@"isFinished" options:0 context:&kvo_SubtaskIsFinished];
+    [task addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:0 context:&kvo_SubtaskIsFinished];
 
     return task;
 }
@@ -164,7 +164,7 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return [NSArray arrayWithArray:self.myEvents];
 }
 
-- (NSArray*) getAllEvents
+- (NSArray*) allEvents
 {
     NSMutableArray* allEvents = [NSMutableArray array];
     for (ZincTask* task in self.subtasks) {
@@ -176,9 +176,9 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
 }
 
-- (NSArray*) getAllErrors
+- (NSArray*) allErrors
 {
-    NSArray* allEvents = [self getAllEvents];
+    NSArray* allEvents = [self allEvents];
     NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
     for (ZincEvent* event in allEvents) {
         if([event isKindOfClass:[ZincErrorEvent class]]) {
@@ -192,17 +192,27 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return allErrors;
 }
 
+- (void) updateReadiness
+{
+    [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+    [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+}
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTask
 {
     if (!self.backgroundTaskIdentifier) {
+        
         UIApplication *application = [UIApplication sharedApplication];
+        __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
-            [self cancel];
+            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;
+            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
             
-            [application endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [blockSelf cancel];
+            
+            [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }
 }
@@ -210,22 +220,8 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    if (context == &kvo_CurrentProgress) {
-        [self willChangeValueForKey:@"currentProgressValue"];
-        [self willChangeValueForKey:@"progress"];
-        [self didChangeValueForKey:@"currentProgressValue"];
-        [self didChangeValueForKey:@"progress"];
-        //NSLog(@"progress: %f", self.progress);
-    } else if (context == &kvo_MaxProgress) {
-        [self willChangeValueForKey:@"maxProgressValue"];
-        [self willChangeValueForKey:@"progress"];
-        [self didChangeValueForKey:@"maxProgressValue"];
-        [self didChangeValueForKey:@"progress"];
-        //NSLog(@"progress: %f", self.progress);
-    } else if (context == &kvo_SubtaskIsFinished) {
-        [object removeObserver:self forKeyPath:@"currentProgressValue" context:&kvo_CurrentProgress];
-        [object removeObserver:self forKeyPath:@"maxProgressValue" context:&kvo_MaxProgress];
-        [object removeObserver:self forKeyPath:@"isFinished" context:&kvo_SubtaskIsFinished];
+    if (context == &kvo_SubtaskIsFinished) {
+        [object removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_SubtaskIsFinished];
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
     }

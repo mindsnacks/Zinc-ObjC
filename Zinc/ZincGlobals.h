@@ -9,7 +9,7 @@
 #ifndef _ZINC_GLOBALS_
 #define _ZINC_GLOBALS_
 
-#define kZincPackageName @"com.mindsnacks.zinc"
+extern NSString* const kZincPackageName;
 
 typedef NSInteger ZincFormat;
 typedef NSInteger ZincVersion;
@@ -20,6 +20,7 @@ enum  {
 
 enum  {
     ZincVersionInvalid = -1,
+    ZincVersionUnknown = 0,
 };
 
 extern NSString* const ZincFileFormatRaw;

@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleRemoteCloneTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincBundle.h"
@@ -22,14 +23,13 @@
 #import "ZincErrors.h"
 
 @interface ZincBundleRemoteCloneTask ()
-@property (assign) NSInteger totalBytesToDownload;
-@property (assign) NSInteger lastProgressValue;
+@property (assign) long long maxProgressValue;
+@property (assign) long long lastProgressValue;
 @end
 
 @implementation ZincBundleRemoteCloneTask
 
 @synthesize httpOverheadConstant = _httpOverheadConstant;
-@synthesize totalBytesToDownload = _totalBytesToDownload;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -47,14 +47,14 @@
 
 - (BOOL) isProgressCalculated
 {
-    return self.totalBytesToDownload > 0;
+    return self.maxProgressValue > 0;
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
     if (![self isProgressCalculated]) return 0;
     
-    NSInteger curVal = [super currentProgressValue];
+    long long curVal = [super currentProgressValue];
     if (curVal < self.lastProgressValue) {
         curVal = self.lastProgressValue;
     } else if (curVal > [self maxProgressValue]) {
@@ -62,11 +62,6 @@
     }
     self.lastProgressValue = curVal;
     return curVal;
-}
-
-- (NSInteger) maxProgressValue
-{
-    return self.totalBytesToDownload;
 }
 
 - (BOOL) prepareManifest
@@ -95,6 +90,8 @@
 
 - (BOOL) prepareObjectFilesUsingRemoteCatalogForManifest:(ZincManifest*)manifest
 {
+    if (self.isCancelled) return NO;
+    
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
     
@@ -121,12 +118,12 @@
     
     if (missingSize > 0) {
         
-        self.totalBytesToDownload = missingSize;
+        self.maxProgressValue = missingSize;
         
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
         
-        if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
+        if (NO && [missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
@@ -152,12 +149,17 @@
                 
                 NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
                 ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
+                
                 ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
-                [fileOps addObject:fileOp];
+                if (fileOp != nil) {
+                    // can be nil if cancelled
+                    [fileOps addObject:fileOp];
+                }
             }
             
-            BOOL allSuccessful = YES;
+            if (self.isCancelled) return NO;
             
+            BOOL allSuccessful = YES;
             for (ZincTask* op in fileOps) {
                 
                 [op waitUntilFinished];
@@ -174,6 +176,11 @@
     return YES;
 }
 
+- (BOOL) isReady
+{
+    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
+}
+
 - (void) main
 {
     [self setUp];
@@ -181,24 +188,28 @@
     NSError* error = nil;
     
     if (![self prepareManifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self prepareObjectFilesUsingRemoteCatalogForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self createBundleLinksForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
-    [self complete];
+    [self completeWithSuccess:YES];
 }
 
 @end

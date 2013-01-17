@@ -26,7 +26,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface NSFileManager (Tar)
+@interface NSFileManager (ZincTar)
 
 - (BOOL)zinc_createFilesAndDirectoriesAtURL:(NSURL*)url withTarData:(NSData*)tarData error:(NSError**)error;
 - (BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString*)path withTarData:(NSData*)tarData error:(NSError**)error;

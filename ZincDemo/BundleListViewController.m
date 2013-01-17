@@ -149,7 +149,7 @@
 
 - (void) debugAction:(id)sender
 {
-    [self.repo updateBundleWithId:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
+    [self.repo updateBundleWithID:@"com.mindsnacks.demo1.sphalerites" completionBlock:^(NSArray *errors) {
         NSLog(@"updated! errors: %@", errors);
     }];
 }
@@ -158,7 +158,7 @@
 
 - (void) bundleWillBeginTrackingNotification:(NSNotification *)note
 {
-    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
+    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIdKey];
     if (![self.bundleIds containsObject:bundleId]) {
         [self.bundleIds addObject:bundleId];
         [self.tableView reloadData];
@@ -176,7 +176,7 @@
 
 - (void) bundleWillDeleteNotification:(NSNotification *)note
 {
-    //    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotifiationBundleIdKey];
+    //    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIdKey];
     //[self.bundleIds removeObject:bundleId];
 }
 
