@@ -20,7 +20,6 @@
 #import "ZincTask+Private.h"
 #import "ZincTaskDescriptor.h"
 #import "ZincBundleRemoteCloneTask.h"
-#import "ZincImportExternalBundleTask.h"
 #import "ZincBundleDeleteTask.h"
 #import "ZincSourceUpdateTask.h"
 #import "ZincCatalogUpdateTask.h"
@@ -43,6 +42,7 @@
 #import "ZincKSReachability.h"
 #import "NSError+Zinc.h"
 #import "ZincTaskActions.h"
+#import "ZincExternalBundleInfo.h"
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -82,7 +82,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) ZincKSReachability* reachability;
-//@property (nonatomic, retain) NSMutableDictionary* externalBundleRefsByBundleId;
+@property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -96,7 +96,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSString*) bundlesPath;
 - (NSString*) downloadsPath;
 
-- (void) queueIndexSave;
+- (ZincTask*) queueIndexSaveTask;
 - (ZincTask*) queueGarbageCollectTask;
 - (void) resumeBundleActions;
 
@@ -200,7 +200,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.networkQueue = networkQueue;
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincImportExternalBundleTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincObjectDownloadTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
@@ -217,6 +216,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.executeTasksInBackgroundEnabled = YES;
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
+        self.localFilesBySHA = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -488,6 +488,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version
 {
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:identifier version:version];
+    ZincExternalBundleInfo* extInfo = [self.index infoForExternalBundle:bundleRes];
+    if (extInfo != nil) {
+        return extInfo.manifestPath;
+    }
+    
     NSString* manifestFilename = [NSString stringWithFormat:@"%@-%d.json", identifier, version];
     NSString* manifestPath = [[self manifestsPath] stringByAppendingPathComponent:manifestFilename];
     return manifestPath;
@@ -503,6 +509,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self.fileManager fileExistsAtPath:[self pathForFileWithSHA:sha]];
 }
 
+- (NSString*) externalPathForFileWithSHA:(NSString*)sha
+{
+    NSString* path = nil;
+    @synchronized(self.localFilesBySHA) {
+        path = self.localFilesBySHA[sha];
+    }
+    return path;
+}
 
 #pragma mark Internal Operations
 
@@ -520,7 +534,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) addSourceURL:(NSURL*)source
 {
     [self.index addSourceURL:source];
-    [self queueIndexSave];
+    [self queueIndexSaveTask];
     
     ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
     [self queueTaskForDescriptor:taskDesc];
@@ -536,7 +550,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     [self.index removeSourceURL:source];
-    [self queueIndexSave];
+    [self queueIndexSaveTask];
 }
 
 - (NSSet*) sourceURLs
@@ -608,10 +622,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 #pragma mark Repo Index
 
-- (void) queueIndexSave
+- (ZincTask*) queueIndexSaveTask
 {
     ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self indexURL]];
-    [self queueTaskForDescriptor:taskDesc];
+    return [self queueTaskForDescriptor:taskDesc];
 }
 
 #pragma mark Catalogs
@@ -831,38 +845,36 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return NSOperationQueuePriorityNormal;
 }
 
-- (ZincTaskRef*) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath
+- (void) registerLocalFilesFromExternalManifest:(ZincManifest*)manifest bundleRootPath:(NSString*)bundleRoot
 {
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
-    NSError* error = nil;
-    
-    ZincManifest* manifest = [ZincManifest manifestWithPath:manifestPath error:&error];
-    if (manifestPath == nil) {
-        [taskRef addError:error];
-        return taskRef;
+    @synchronized(self.localFilesBySHA) {
+        NSArray* allFiles = [manifest allFiles];
+        for (NSString* f in allFiles) {
+            NSString* sha = [manifest shaForFile:f];
+            self.localFilesBySHA[sha] = [bundleRoot stringByAppendingPathComponent:f];
+        }
     }
-    
-    if (![self importManifestWithPath:manifestPath error:&error]) {
-        [taskRef addError:error];
-        return taskRef;
+}
+
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError
+{
+    ZincManifest* manifest = [ZincManifest manifestWithPath:manifestPath error:outError];
+    if (manifestPath == nil) {
+        return NO;
     }
     
     BOOL isDir;
     if (![self.fileManager fileExistsAtPath:rootPath isDirectory:&isDir] || !isDir) {
-        error = ZincError(ZINC_ERR_INVALID_DIRECTORY);
-        [taskRef addError:error];
-        return taskRef;
+        if (outError != NULL) *outError = ZincError(ZINC_ERR_INVALID_DIRECTORY);
+        return NO;
     }
 
     NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
-    [self.index registerExternalBundle:bundleRes rootPath:rootPath];
+    [self.index registerExternalBundle:bundleRes manifestPath:manifestPath bundleRootPath:rootPath];
+    
+    [self registerLocalFilesFromExternalManifest:manifest bundleRootPath:rootPath];
 
-    ZincTaskDescriptor* taskDesc = [ZincImportExternalBundleTask taskDescriptorForResource:bundleRes];
-    ZincTask* task = [self queueTaskForDescriptor:taskDesc];
-    [taskRef addDependency:task];
-    [self addOperation:taskRef];
-
-    return taskRef;
+    return YES;
 }
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
@@ -914,7 +926,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             trackingInfo.version = [blockself catalogVersionForBundleId:bundleId distribution:distro];
         }
         [blockself.index setTrackingInfo:trackingInfo forBundleId:bundleId];
-        [blockself queueIndexSave];
+        [blockself queueIndexSaveTask];
         
         [blockself postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
     }];
@@ -976,7 +988,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }];
     
     if (taskRef != nil) [blockself addOperation:taskRef];
-    [blockself queueIndexSave];
+    [blockself queueIndexSaveTask];
 }
 
 - (void) stopTrackingBundleWithId:(NSString*)bundleId
@@ -984,7 +996,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [self postNotification:ZincRepoBundleWillStopTrackingNotification bundleId:bundleId];
     
     [self.index removeTrackedBundleId:bundleId];
-    [self queueIndexSave];  
+    [self queueIndexSaveTask];  
 }
 
 - (NSSet*) trackedBundleIds
@@ -1065,7 +1077,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             }
 
             [blockself.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            [blockself queueIndexSave];
+            [blockself queueIndexSaveTask];
             
             ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
             ZincTask* bundleTask = [blockself queueTaskForDescriptor:taskDesc];
@@ -1091,22 +1103,33 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     [self.index setState:status forBundle:bundleResource];
     [self postNotification:ZincRepoBundleStatusChangeNotification bundleId:[bundleResource zincBundleId] state:status];
-    [self queueIndexSave];
+    [self queueIndexSaveTask];
+}
+
+- (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion
+{
+    [self postNotification:ZincRepoBundleWillDeleteNotification bundleId:[bundleResource zincBundleId]];
+    [self.index removeBundle:bundleResource];
+    ZincTask* saveTask = [self queueIndexSaveTask];
+    if (completion != nil) {
+        ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+        [taskRef addDependency:saveTask];
+        taskRef.completionBlock = completion;
+        [self addOperation:taskRef];
+    }
 }
 
 - (void) deregisterBundle:(NSURL*)bundleResource
 {
-    [self postNotification:ZincRepoBundleWillDeleteNotification bundleId:[bundleResource zincBundleId]];
-    [self.index removeBundle:bundleResource];
-    [self queueIndexSave];
+    [self deregisterBundle:bundleResource completion:nil];
 }
 
 - (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
 {
     NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
-    NSString* externalPath = [self.index externalPathForBundle:bundleRes];
-    if (externalPath != nil) {
-        return externalPath;
+    ZincExternalBundleInfo* extInfo = [self.index infoForExternalBundle:bundleRes];
+    if (extInfo != nil) {
+        return extInfo.bundleRootPath;
     }
     
     NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleId, version];
@@ -1119,6 +1142,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincBundle* bundle = nil;
     NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
     NSString* path = [self pathForBundleWithId:bundleId version:version];
+    
+    // Special case to handle a missing bundle dir
+    if (![self.fileManager fileExistsAtPath:path]) {
+        
+        dispatch_group_t group = dispatch_group_create();
+        dispatch_group_enter(group);
+        [self deregisterBundle:res completion:^{
+            dispatch_group_leave(group);
+        }];
+        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
+        dispatch_release(group);
+        
+        return nil;
+    }
     
     @synchronized(self.loadedBundles) {
         bundle = [[self.loadedBundles objectForKey:res] pointerValue];
