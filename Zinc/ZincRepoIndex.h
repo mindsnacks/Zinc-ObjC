@@ -11,6 +11,7 @@
 #import "ZincRepo.h"
 
 @class ZincTrackingInfo;
+@class ZincExternalBundleInfo;
 
 @interface ZincRepoIndex : NSObject
 
@@ -45,8 +46,9 @@
  !!!: External bundles are not persisted by design, they should be re-registered each launch.
  */
 
-- (void) registerExternalBundle:(NSURL*)bundleRes rootPath:(NSString*)rootPath;
-- (NSString*) externalPathForBundle:(NSURL*)bundleRes;
+- (void) registerExternalBundle:(NSURL*)bundleRes manifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath;
+
+- (ZincExternalBundleInfo*) infoForExternalBundle:(NSURL*)bundleRes;
 
 - (NSArray*) registeredExternalBundles;
 
