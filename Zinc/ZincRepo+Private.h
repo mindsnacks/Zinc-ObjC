@@ -55,6 +55,10 @@
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
 - (BOOL) hasFileWithSHA:(NSString*)sha;
 
+// external files are registered via registerExternalBundleWithManifestPath:bundleRootPath:error:
+// clone tasks can copy the file from a local path instead of downloading from the catalog
+- (NSString*) externalPathForFileWithSHA:(NSString*)sha;
+
 #pragma mark Tasks
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;

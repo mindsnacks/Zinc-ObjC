@@ -99,7 +99,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 #pragma mark External Bundles
 
-- (ZincTaskRef*) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath;
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
 
 #pragma mark Tracking Remote Bundles
 
