@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
-#define kZincRepoDefaultNetworkOperationCount (5)
+#define kZincRepoDefaultObjectDownloadCount (5)
+#define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
 #define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
 
@@ -26,6 +27,8 @@ static NSString* ZincBundleStateName[] = {
     @"Available",
     @"Deleting",
 };
+
+extern ZincBundleState ZincBundleStateFromName(NSString* name);
 
 // -- Bundle Notifications
 extern NSString* const ZincRepoBundleStatusChangeNotification;
@@ -145,11 +148,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
  */
 - (void)cleanWithCompletion:(dispatch_block_t)completion;
-
-/**
- @discussion Older versions of Zinc used symlinks for some import tasks. These have been removed in current version. Enable this to clean up symlinked files.
- */
-@property (assign) BOOL shouldCleanSymlinks;
        
 @end
 

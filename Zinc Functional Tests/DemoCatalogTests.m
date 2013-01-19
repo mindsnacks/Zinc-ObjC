@@ -8,6 +8,7 @@
 
 #import "ZincFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
+#import "ZincJSONSerialization.h"
 
 #define DEMO_CATALOG_URL [NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]
 #define DEMO_CATALOG_ID @"com.mindsnacks.demo1"
@@ -224,15 +225,17 @@
     // -- Verify Not Available
     
     ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
-    GHAssertEquals(bundleState2, ZincBundleStateNone, @"bundle should not be available");
+    GHAssertNotEquals(bundleState2, ZincBundleStateAvailable, @"bundle should not be available");
     
     BOOL rootExists2 = [[NSFileManager defaultManager] fileExistsAtPath:bundleRoot];
     GHAssertFalse(rootExists2, @"bundle should have been deleted");
 }
 
-- (void)testCleanRemovesBundleWithSymlinksIfFlagIsOn
+- (void)testCleanRemovesBundleWithSymlinksIfVersion1
 {
     [self refreshCatalog];
+    
+    NSError* error = nil;
     
     NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
     
@@ -263,7 +266,6 @@
     
     NSString* symlinkPath = [bundleRoot stringByAppendingPathComponent:@"dummy"];
     
-    NSError* error = nil;
     if (![[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath withDestinationPath:@"nowhere" error:&error]) {
         GHFail(@"failed to create symlink");
     }
@@ -271,12 +273,40 @@
     // -- Reset the zinc repo
     
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
+
     
+    NSString* indexPath = [[self.zincRepo.url path] stringByAppendingPathComponent:@"repo.json"];
+    
+    NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:&error];
+    if (jsonData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (jsonDict == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    if (index == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    index.format = 1;
+    
+    NSData* indexData = [index jsonRepresentation:&error];
+    if (indexData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    if (![indexData writeToFile:indexPath atomically:YES]) {
+        GHFail(@"failed to write");
+    }
+        
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
-    self.zincRepo.shouldCleanSymlinks = YES;
     [self.zincRepo resumeAllTasks];
     
     // -- Perform manual clean
@@ -292,7 +322,7 @@
     GHAssertEquals(bundleState2, ZincBundleStateNone, @"bundle should not be available");
 }
 
-- (void)testCleanDoesNotRemoveBundleWithSymlinksIfFlagIsOff
+- (void)testCleanDoesNotRemoveBundleWithSymlinksIfVersionIs2
 {
     [self refreshCatalog];
     
@@ -336,9 +366,8 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
-    self.zincRepo.shouldCleanSymlinks = NO; // this is the default, but just to be clear
     [self.zincRepo resumeAllTasks];
     
     // -- Perform manual clean
@@ -354,9 +383,11 @@
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
 }
 
-- (void)testCleanDoesNotRemoveBundleWithoutSymlinksIfFlagIsOn
+- (void)testCleanDoesNotRemoveBundleWithoutSymlinksIfVersionIs1
 {
     [self refreshCatalog];
+    
+    NSError* error = nil;
     
     NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
     
@@ -383,13 +414,40 @@
     // -- Reset the zinc repo
     
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
+    
+    
+    NSString* indexPath = [[self.zincRepo.url path] stringByAppendingPathComponent:@"repo.json"];
+    
+    NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:&error];
+    if (jsonData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (jsonDict == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    if (index == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    index.format = 1;
+    
+    NSData* indexData = [index jsonRepresentation:&error];
+    if (indexData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    if (![indexData writeToFile:indexPath atomically:YES]) {
+        GHFail(@"failed to write");
+    }
 
-    NSError* error = nil;
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
-    self.zincRepo.shouldCleanSymlinks = YES;
     [self.zincRepo resumeAllTasks];
     
     // -- Perform manual clean
@@ -405,8 +463,12 @@
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
 }
 
-- (void)testCleanRemovesObjectWithSymlinksIfFlagIsOn
+- (void)testCleanRemovesObjectWithSymlinksIfFlagIfVersionIs1
 {
+//    GHFail(@"this test is broken");
+    
+    NSError* error = nil;
+    
     [self refreshCatalog];
     
     NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
@@ -433,7 +495,6 @@
     NSString* objectRoot = [self.zincRepo filesPath];
     NSString* symlinkPath = [objectRoot stringByAppendingPathComponent:@"dummy"];
     
-    NSError* error = nil;
     if (![[NSFileManager defaultManager] createSymbolicLinkAtPath:symlinkPath withDestinationPath:@"nowhere" error:&error]) {
         GHFail(@"failed to create symlink");
     }
@@ -442,11 +503,39 @@
     
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
     
+    
+    NSString* indexPath = [[self.zincRepo.url path] stringByAppendingPathComponent:@"repo.json"];
+    
+    NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:&error];
+    if (jsonData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
+    if (jsonDict == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    if (index == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    index.format = 1;
+    
+    NSData* indexData = [index jsonRepresentation:&error];
+    if (indexData == nil) {
+        GHFail(@"error: %@", error);
+    }
+    
+    if (![indexData writeToFile:indexPath atomically:YES]) {
+        GHFail(@"failed to write");
+    }
+    
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
-    self.zincRepo.shouldCleanSymlinks = YES;
     [self.zincRepo resumeAllTasks];
     
     // -- Perform manual clean
@@ -462,7 +551,7 @@
     GHAssertFalse(fileExists, @"file should not exist");    
 }
 
-- (void)testCleanDoesNotRemoveObjectWithSymlinksIfFlagIsOff
+- (void)testCleanDoesNotRemoveObjectWithSymlinksIfVersionIs2
 {
     [self refreshCatalog];
     
@@ -501,9 +590,8 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
-    self.zincRepo.shouldCleanSymlinks = NO; // this is the default, but setting it to be clear
     [self.zincRepo resumeAllTasks];
     
     // -- Perform manual clean

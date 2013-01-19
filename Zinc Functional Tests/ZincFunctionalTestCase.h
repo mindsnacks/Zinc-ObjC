@@ -10,7 +10,7 @@
 
 #import "Zinc.h"
 
-@interface ZincFunctionalTestCase : GHAsyncTestCase
+@interface ZincFunctionalTestCase : GHAsyncTestCase <ZincRepoDelegate>
 
 @property (strong) ZincRepo *zincRepo;
 
