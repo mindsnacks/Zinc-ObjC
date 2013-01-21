@@ -69,7 +69,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 /**
- @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed. Tasks will not run until 'resumeAllTasks' is ran initially
+ @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed.
  */
 @property (nonatomic, assign, readonly) BOOL isInitialized;
 
@@ -117,7 +117,11 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
-#pragma mark -
+- (void) stopTrackingBundleWithId:(NSString*)bundleId;
+
+- (NSSet*) trackedBundleIds;
+
+#pragma mark mark Updating Bundles
 
 /**
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
@@ -126,17 +130,22 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
-- (void) stopTrackingBundleWithId:(NSString*)bundleId;
-
-- (NSSet*) trackedBundleIds;
-
+/**
+ @discussion Update all bundles
+ */
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
+
+#pragma mark -
+
+/**
+ @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
+ */
+- (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
-- (ZincBundle*) bundleWithId:(NSString*)bundleId;
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 #pragma mark Tasks
 

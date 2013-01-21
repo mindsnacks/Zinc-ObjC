@@ -101,7 +101,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) ZincKSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
-@property (nonatomic, retain) NSMutableArray* initializationTasks;
+@property (nonatomic, retain) NSOperationQueue* initializationQueue;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
@@ -240,7 +240,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
-        self.initializationTasks = [NSMutableArray arrayWithCapacity:2];
+        self.initializationQueue = [[[NSOperationQueue alloc] init] autorelease];
+        [self.initializationQueue setMaxConcurrentOperationCount:1];
     }
     return self;
 }
@@ -249,15 +250,12 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 {
     // Check for v1 -> v2 migration
     if (self.index.format == 1) {
-        ZincTask* cleanSymlinkTask = [self queueCleanSymlinksTask];
-        ZincTaskRef* cleanSymlinkTaskRef = [ZincTaskRef taskRefForTask:cleanSymlinkTask];
-        cleanSymlinkTask.completionBlock = ^{
+        ZincCleanLegacySymlinksTask* cleanSymlinksTask = [[[ZincCleanLegacySymlinksTask alloc] initWithRepo:self resourceDescriptor:[self url]] autorelease];
+        cleanSymlinksTask.completionBlock = ^{
             self.index.format = 2;
             [self queueIndexSaveTask];
         };
-        
-        [self.initializationTasks addObject:cleanSymlinkTask];
-        [self addOperation:cleanSymlinkTaskRef];
+        [self.initializationQueue addOperation:cleanSymlinksTask];
     }
     
     // Queue a task ref that depends on all initialization tasks
@@ -265,17 +263,15 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     taskRef.completionBlock = ^{
         self.isInitialized = YES;
     };
-    for (NSOperation* op in self.initializationTasks) {
+    for (NSOperation* op in self.initializationQueue.operations) {
         [taskRef addDependency:op];
     }
-    [self addOperation:taskRef];
+    [self.initializationQueue addOperation:taskRef];
 }
 
 - (void) waitForInitializationWithCompletion:(dispatch_block_t)completion
 {
-    for (NSOperation* op in self.initializationTasks) {
-        [op waitUntilFinished];
-    }
+    [self.initializationQueue waitUntilAllOperationsAreFinished];
     
     if (completion != nil) {
         completion();
@@ -448,7 +444,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
-    [_initializationTasks release];
+    [_initializationQueue release];
     [super dealloc];
 }
 
