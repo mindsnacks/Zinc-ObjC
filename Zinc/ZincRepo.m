@@ -196,7 +196,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     
     [repo.queueGroup setSuspended:YES];
     
-    [repo queueInitializationTasks];
+    if (![repo queueInitializationTasks]) {
+        repo.isInitialized = YES;
+    }
 
     [repo queueGarbageCollectTask];
 
@@ -246,8 +248,13 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return self;
 }
 
-- (void) queueInitializationTasks
+/**
+ @discussion Returns YES if initialization tasks are queued, NO otherwise
+ */
+- (BOOL) queueInitializationTasks
 {
+    NSMutableArray* initOps = [NSMutableArray arrayWithCapacity:1];
+    
     // Check for v1 -> v2 migration
     if (self.index.format == 1) {
         ZincCleanLegacySymlinksTask* cleanSymlinksTask = [[[ZincCleanLegacySymlinksTask alloc] initWithRepo:self resourceDescriptor:[self url]] autorelease];
@@ -255,21 +262,43 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             self.index.format = 2;
             [self queueIndexSaveTask];
         };
+        [initOps addObject:cleanSymlinksTask];
         [self.initializationQueue addOperation:cleanSymlinksTask];
     }
     
-    // Queue a task ref that depends on all initialization tasks
-    NSOperation* initDoneOp = [[[NSOperation alloc] init] autorelease];
-    initDoneOp.completionBlock = ^{
-        self.isInitialized = YES;
-    };
-    [self.initializationQueue addOperation:initDoneOp];
+    if ([initOps count] > 0) {
+        
+        // Queue an operation that depends on all initialization tasks
+        ZincOperation* initDoneOp = [NSBlockOperation blockOperationWithBlock:^{
+            <#code#>
+        }
+        initDoneOp.completionBlock = ^{
+            self.isInitialized = YES;
+        };
+
+        // Dependencies are important because even though queue is serial, dependencies will give us progress
+        for (NSOperation* initOp in initOps) {
+            [initDoneOp addDependency:initOp];
+        }
+        
+        [self.initializationQueue addOperation:initDoneOp];
+        
+        return YES;
+    }
+    
+    return NO;
 }
 
 - (void) waitForInitialization
 {
     [self.initializationQueue waitUntilAllOperationsAreFinished];
 }
+
+- (ZincTaskRef*) taskRefForInitializationTasks
+{
+    return nil;
+}
+
 
 - (void) setIsInitialized:(BOOL)isInitialized
 {
