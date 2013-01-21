@@ -10,12 +10,18 @@
 
 @implementation ZincFunctionalTestCase
 
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
+{
+    NSLog(@"%@", event);
+}
+
 - (void)setupZincRepoWithRootDir:(NSString*)repoDir
 {
     NSError *error = nil;
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
     GHAssertNil(error, @"error: %@", error);
 
+    self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
 

@@ -9,7 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
-#define kZincRepoDefaultNetworkOperationCount (5)
+#define kZincRepoDefaultObjectDownloadCount (5)
+#define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
 #define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
 
@@ -26,6 +27,8 @@ static NSString* ZincBundleStateName[] = {
     @"Available",
     @"Deleting",
 };
+
+extern ZincBundleState ZincBundleStateFromName(NSString* name);
 
 // -- Bundle Notifications
 extern NSString* const ZincRepoBundleStatusChangeNotification;
@@ -64,6 +67,13 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
+
+/**
+ @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed.
+ */
+@property (nonatomic, assign, readonly) BOOL isInitialized;
+
+- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion;
 
 /**
  @discussion Manually trigger refresh of sources and bundles.
@@ -107,7 +117,11 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
 - (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
-#pragma mark -
+- (void) stopTrackingBundleWithId:(NSString*)bundleId;
+
+- (NSSet*) trackedBundleIds;
+
+#pragma mark mark Updating Bundles
 
 /**
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
@@ -116,17 +130,22 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
-- (void) stopTrackingBundleWithId:(NSString*)bundleId;
-
-- (NSSet*) trackedBundleIds;
-
+/**
+ @discussion Update all bundles
+ */
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
+
+#pragma mark -
+
+/**
+ @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
+ */
+- (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
-- (ZincBundle*) bundleWithId:(NSString*)bundleId;
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 #pragma mark Tasks
 
@@ -145,11 +164,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
  */
 - (void)cleanWithCompletion:(dispatch_block_t)completion;
-
-/**
- @discussion Older versions of Zinc used symlinks for some import tasks. These have been removed in current version. Enable this to clean up symlinked files.
- */
-@property (assign) BOOL shouldCleanSymlinks;
        
 @end
 
