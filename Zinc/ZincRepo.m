@@ -25,6 +25,7 @@
 #import "ZincCatalogUpdateTask.h"
 #import "ZincObjectDownloadTask.h"
 #import "ZincGarbageCollectTask.h"
+#import "ZincCleanLegacySymlinksTask.h"
 #import "ZincRepoIndexUpdateTask.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincOperationQueueGroup.h"
@@ -67,6 +68,23 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
+ZincBundleState ZincBundleStateFromName(NSString* name)
+{
+    if ([name isEqualToString:ZincBundleStateName[ZincBundleStateNone]]) {
+        return ZincBundleStateNone;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateAvailable]]) {
+        return ZincBundleStateAvailable;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateCloning]]) {
+        return ZincBundleStateCloning;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateDeleting]]) {
+        return ZincBundleStateDeleting;
+    }
+    
+    NSCAssert(NO, @"unknown bundle state name: %@", name);
+    return -1;
+}
+
+
 @interface ZincRepo ()
 
 @property (nonatomic, retain) NSURL* url;
@@ -83,6 +101,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) ZincKSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
+@property (nonatomic, retain) NSOperationQueue* initializationQueue;
+@property (nonatomic, assign, readwrite) BOOL isInitialized;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -176,6 +196,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     [repo.queueGroup setSuspended:YES];
     
+    [repo queueInitializationTasks];
+
     [repo queueGarbageCollectTask];
 
     return repo;
@@ -199,13 +221,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.index = [[[ZincRepoIndex alloc] init] autorelease];
         self.networkQueue = networkQueue;
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
+        [self.queueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
+        [self.queueGroup setIsBarrierOperationForClass:[ZincCleanLegacySymlinksTask class]];
+        [self.queueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincObjectDownloadTask class]];
+        [self.queueGroup setMaxConcurrentOperationCount:kZincRepoDefaultObjectDownloadCount forClass:[ZincObjectDownloadTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincBundleDeleteTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincGarbageCollectTask class]];
         self.fileManager = [[[NSFileManager alloc] init] autorelease];
         self.cache = [[[NSCache alloc] init] autorelease];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
@@ -217,8 +240,51 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
+        self.initializationQueue = [[[NSOperationQueue alloc] init] autorelease];
+        [self.initializationQueue setMaxConcurrentOperationCount:1];
     }
     return self;
+}
+
+- (void) queueInitializationTasks
+{
+    // Check for v1 -> v2 migration
+    if (self.index.format == 1) {
+        ZincCleanLegacySymlinksTask* cleanSymlinksTask = [[[ZincCleanLegacySymlinksTask alloc] initWithRepo:self resourceDescriptor:[self url]] autorelease];
+        cleanSymlinksTask.completionBlock = ^{
+            self.index.format = 2;
+            [self queueIndexSaveTask];
+        };
+        [self.initializationQueue addOperation:cleanSymlinksTask];
+    }
+    
+    // Queue a task ref that depends on all initialization tasks
+    NSOperation* initDoneOp = [[[NSOperation alloc] init] autorelease];
+    initDoneOp.completionBlock = ^{
+        self.isInitialized = YES;
+    };
+    [self.initializationQueue addOperation:initDoneOp];
+}
+
+- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion
+{
+    [self.initializationQueue waitUntilAllOperationsAreFinished];
+    
+    if (completion != nil) {
+        completion();
+    }
+}
+
+- (void) setIsInitialized:(BOOL)isInitialized
+{
+    if (isInitialized) {
+        // no longer need to hold onto the initialization queue
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.initializationQueue = nil;
+        });
+    }
+    
+    _isInitialized = isInitialized;
 }
 
 - (void) setIndex:(ZincRepoIndex *)index
@@ -387,6 +453,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
+    [_initializationQueue release];
     [super dealloc];
 }
 
@@ -1186,6 +1253,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId
 {
+    if (!self.isInitialized) {
+        @throw [NSException
+                exceptionWithName:NSInternalInconsistencyException
+                reason:[NSString stringWithFormat:@"repo not initialized"]
+                userInfo:nil];
+    }
+
     NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     if (version == ZincVersionInvalid) {
@@ -1303,19 +1377,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincTask*) queueGarbageCollectTask
 {
-    ZincTask* task = nil;
-    NSOperationQueue* garbageCollectQueue = [self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]];
-    const BOOL hasExistingGarbageCollectTasks = [[garbageCollectQueue operations] count] > 0;
-    if (!hasExistingGarbageCollectTasks) {
-        task = [[[ZincGarbageCollectTask alloc] initWithRepo:self resourceDescriptor:self.url] autorelease];
-        for (NSOperation* existingTask in self.myTasks) {
-            [task addDependency:existingTask];
-        }
-        [self queueTask:task];
-    } else {
-        task = [[garbageCollectQueue operations] lastObject];
-    }
-    return task;
+    ZincTaskDescriptor* taskDesc = [ZincGarbageCollectTask taskDescriptorForResource:self.url];
+    return [self queueTaskForDescriptor:taskDesc];
+}
+
+- (ZincTask*) queueCleanSymlinksTask
+{
+    ZincTaskDescriptor* taskDesc = [ZincCleanLegacySymlinksTask taskDescriptorForResource:self.url];
+    return [self queueTaskForDescriptor:taskDesc];
 }
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
@@ -1323,17 +1392,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     __block ZincTask* task = nil;
     
     [self.indexProxy withTarget:^{ // use indexProxy for synchronization
-        
-        if ([taskDescriptor.method isEqualToString:NSStringFromClass([ZincGarbageCollectTask class])]) {
-            
-            task = [self queueGarbageCollectTask];
-            
-        } else {
-            
-            NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
-            
+
+        NSArray* tasksMatchingResource = [self tasksForResource:taskDescriptor.resource];
+
+        // Check for exact match
+        ZincTask* existingTask = [self taskForDescriptor:taskDescriptor];
+        if (existingTask == nil) {
             // look for task that also matches the action
-            ZincTask* existingTask = nil;
             for (ZincTask* potentialMatchingTask in tasksMatchingResource) {
                 if ([[potentialMatchingTask taskDescriptor].action isEqual:taskDescriptor.action]) {
                     existingTask = potentialMatchingTask;
@@ -1342,44 +1407,32 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             
             // if no exact match found, add task and depends for all other resource-matching
             if (existingTask == nil) {
-                
                 task = [ZincTask taskWithDescriptor:taskDescriptor repo:self input:input];
-                
                 for (ZincTask* resourceTask in tasksMatchingResource) {
                     if (resourceTask != task) {
                         [task addDependency:resourceTask];
                     }
                 }
-                
-                // !!!: special case for bundle clone tasks
-                if ([task isKindOfClass:[ZincBundleCloneTask class]]) {
-                    NSArray* deleteOps = [[self.queueGroup getQueueForClass:[ZincBundleDeleteTask class]] operations];
-                    for (NSOperation* deleteOp in deleteOps) {
-                        [task addDependency:deleteOp];
-                    }
-                }
-                
-                // !!!: special case for garbage collect tasks
-                NSArray* garbageCollectOps = [[self.queueGroup getQueueForClass:[ZincGarbageCollectTask class]] operations];
-                for (NSOperation* garbageCollectOp in garbageCollectOps) {
-                    [task addDependency:garbageCollectOp];
-                }
-                
-                [self queueTask:task];
-                
-            } else {
-                
-                //ZINC_DEBUG_LOG(@"[Zincself.repo 0x%x] Task already exists! %@", (int)self, taskDescriptor);
-                task = existingTask;
-            }
-            
-            // add all explicit dependencies
-            for (NSOperation* dep in dependencies) {
-                [task addDependency:dep];
             }
         }
+        
+        if (existingTask != nil) {
+            task = existingTask;
+        }
+        
+        NSAssert(task, @"task is nil");
+        
+        // add all explicit deps
+        for (NSOperation* dep in dependencies) {
+            [task addDependency:dep];
+        }
+        
+        // finally queue task if it was not pre-existing
+        if (existingTask == nil) {
+            [self queueTask:task];
+        }
     }];
-
+    
     return task;
 }
 

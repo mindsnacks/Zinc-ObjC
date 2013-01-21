@@ -121,7 +121,44 @@
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     ZincTrackingInfo* ref = [i1 trackingInfoForBundleId:@"foo.bundle"];
     STAssertNil(ref, @"tracking ref should be nil");
+}
+
+- (void) testValidFormat
+{
+    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
+    STAssertNoThrow(i1.format = 1, @"should not throw");
+    STAssertEquals(i1.format, 1, @"should be 1");
+}
+
+- (void) testInvalidFormat
+{
+    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
+    STAssertThrows(i1.format = 0, @"should throw");
+}
+
+- (void) testDictionaryFormat1
+{
     
+}
+
+- (void) testDictionaryFormat2
+{
+    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] initWithFormat:2] autorelease];
+    NSString* bundleID = @"com.foo.pants";
+    ZincVersion version = 5;
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleID version:version];
+    [i1 setState:ZincBundleStateAvailable forBundle:bundleRes];
+    
+    NSDictionary* d = [i1 dictionaryRepresentation];
+    NSDictionary* d_versions = d[@"bundles"][bundleID][@"versions"];
+    
+    id versionVal = d_versions[[[NSNumber numberWithInteger:version] stringValue]];
+    
+    STAssertEqualObjects(versionVal, ZincBundleStateName[ZincBundleStateAvailable], @"should be equal");
+    
+    
+    NSLog(@"d");
+
 }
 
 @end

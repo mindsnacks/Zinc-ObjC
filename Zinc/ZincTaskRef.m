@@ -26,6 +26,13 @@
     return self;
 }
 
++ (ZincTaskRef*) taskRefForTask:(ZincTask*)task
+{
+    ZincTaskRef* ref = [[[ZincTaskRef alloc] init] autorelease];
+    [ref addDependency:task];
+    return ref;
+}
+
 - (void)dealloc
 {
     [_errors release];

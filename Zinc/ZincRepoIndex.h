@@ -10,12 +10,21 @@
 #import "ZincGlobals.h"
 #import "ZincRepo.h"
 
+#define kZincRepoIndexCurrentFormat (2)
+
 @class ZincTrackingInfo;
 @class ZincExternalBundleInfo;
 
 @interface ZincRepoIndex : NSObject
 
+/**
+ @discussion Inits with current format kZincRepoIndexCurrentFormat
+ */
 - (id) init;
+- (id) initWithFormat:(NSInteger)format;
+
+@property (nonatomic, assign) NSInteger format;
++ (NSSet*) validFormats;
 
 - (void) addSourceURL:(NSURL*)url;
 - (void) removeSourceURL:(NSURL*)url;
