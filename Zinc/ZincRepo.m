@@ -80,7 +80,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         return ZincBundleStateDeleting;
     }
     
-    assert(NO);
+    NSCAssert(NO, @"unknown bundle state name: %@", name);
     return -1;
 }
 
