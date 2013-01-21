@@ -1244,6 +1244,13 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (ZincBundle*) bundleWithId:(NSString*)bundleId
 {
+    if (!self.isInitialized) {
+        @throw [NSException
+                exceptionWithName:NSInternalInconsistencyException
+                reason:[NSString stringWithFormat:@"repo not initialized"]
+                userInfo:nil];
+    }
+
     NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
     ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
     if (version == ZincVersionInvalid) {
