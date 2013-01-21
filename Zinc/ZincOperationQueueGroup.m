@@ -9,9 +9,9 @@
 #import "ZincOperationQueueGroup.h"
 
 @interface ZincOperationQueueGroup ()
-@property (nonatomic, retain) NSMutableDictionary* infoByClassName;
+@property (atomic, retain) NSMutableDictionary* infoByClassName;
 @property (atomic) BOOL mySuspended;
-@property (nonatomic, retain) NSOperationQueue* defaultQueue;
+@property (atomic, retain) NSOperationQueue* defaultQueue;
 @end
 
 @interface ZincOperationQueueGroupInfo : NSObject
