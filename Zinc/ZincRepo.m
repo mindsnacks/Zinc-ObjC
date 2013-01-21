@@ -275,6 +275,18 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
+- (void) setIsInitialized:(BOOL)isInitialized
+{
+    if (isInitialized) {
+        // no longer need to hold onto the initialization queue
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.initializationQueue = nil;
+        });
+    }
+    
+    _isInitialized = isInitialized;
+}
+
 - (void) setIndex:(ZincRepoIndex *)index
 {
     [_index autorelease];
