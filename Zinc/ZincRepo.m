@@ -218,7 +218,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     self = [super init];
     if (self) {
         self.url = fileURL;
-        self.index = [[[ZincRepoIndex alloc] initWithFormat:2] autorelease];
+        self.index = [[[ZincRepoIndex alloc] init] autorelease];
         self.networkQueue = networkQueue;
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
