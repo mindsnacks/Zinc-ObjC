@@ -101,6 +101,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) ZincKSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
+@property (nonatomic, retain) NSMutableArray* initializationTasks;
+@property (nonatomic, assign, readwrite) BOOL isInitialized;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
 
@@ -194,16 +196,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     
     [repo.queueGroup setSuspended:YES];
     
-    if (repo.index.format == 1) {
-        ZincTask* cleanSymlinkTask = [repo queueCleanSymlinksTask];
-        ZincTaskRef* cleanSymlinkTaskRef = [ZincTaskRef taskRefForTask:cleanSymlinkTask];
-        cleanSymlinkTask.completionBlock = ^{
-            repo.index.format = 2;
-            [repo queueIndexSaveTask];
-        };
-        [repo addOperation:cleanSymlinkTaskRef];
-    }
-    
+    [repo queueInitializationTasks];
+
     [repo queueGarbageCollectTask];
 
     return repo;
@@ -246,8 +240,46 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
+        self.initializationTasks = [NSMutableArray arrayWithCapacity:2];
     }
     return self;
+}
+
+- (void) queueInitializationTasks
+{
+    // Check for v1 -> v2 migration
+    if (self.index.format == 1) {
+        ZincTask* cleanSymlinkTask = [self queueCleanSymlinksTask];
+        ZincTaskRef* cleanSymlinkTaskRef = [ZincTaskRef taskRefForTask:cleanSymlinkTask];
+        cleanSymlinkTask.completionBlock = ^{
+            self.index.format = 2;
+            [self queueIndexSaveTask];
+        };
+        
+        [self.initializationTasks addObject:cleanSymlinkTask];
+        [self addOperation:cleanSymlinkTaskRef];
+    }
+    
+    // Queue a task ref that depends on all initialization tasks
+    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    taskRef.completionBlock = ^{
+        self.isInitialized = YES;
+    };
+    for (NSOperation* op in self.initializationTasks) {
+        [taskRef addDependency:op];
+    }
+    [self addOperation:taskRef];
+}
+
+- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion
+{
+    for (NSOperation* op in self.initializationTasks) {
+        [op waitUntilFinished];
+    }
+    
+    if (completion != nil) {
+        completion();
+    }
 }
 
 - (void) setIndex:(ZincRepoIndex *)index
@@ -416,6 +448,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
+    [_initializationTasks release];
     [super dealloc];
 }
 

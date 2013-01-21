@@ -69,6 +69,13 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @property (nonatomic, retain, readonly) NSURL* url;
 
 /**
+ @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed. Tasks will not run until 'resumeAllTasks' is ran initially
+ */
+@property (nonatomic, assign, readonly) BOOL isInitialized;
+
+- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion;
+
+/**
  @discussion Manually trigger refresh of sources and bundles.
  */
 - (void) refresh;
