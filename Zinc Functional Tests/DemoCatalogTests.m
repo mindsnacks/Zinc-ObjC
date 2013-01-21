@@ -465,8 +465,6 @@
 
 - (void)testCleanRemovesObjectWithSymlinksIfFlagIfVersionIs1
 {
-//    GHFail(@"this test is broken");
-    
     NSError* error = nil;
     
     [self refreshCatalog];
@@ -649,12 +647,6 @@
     
     ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(state, ZincBundleStateNone, @"should not be available");
-    
-    
-
-    
-
-
 }
 
 @end
