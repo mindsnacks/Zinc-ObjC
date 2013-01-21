@@ -266,13 +266,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [self.initializationQueue addOperation:initDoneOp];
 }
 
-- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion
+- (void) waitForInitialization
 {
     [self.initializationQueue waitUntilAllOperationsAreFinished];
-    
-    if (completion != nil) {
-        completion();
-    }
 }
 
 - (void) setIsInitialized:(BOOL)isInitialized

@@ -53,7 +53,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -63,8 +64,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     // -- Verify
@@ -83,8 +82,10 @@
     NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"dogs");
     
     // -- Update bundle @ master
-    
+
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         if ([errors count] > 0) {
             GHTestLog(@"%@", errors);
@@ -93,7 +94,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     ZincBundle *masterBundle = [self.zincRepo bundleWithId:bundleID];
@@ -102,6 +102,8 @@
     // -- Update bundle @ test
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"test" automaticallyUpdate:NO];
+    
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         if ([errors count] > 0) {
             GHTestLog(@"%@", errors);
@@ -110,7 +112,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     ZincBundle *testBundle = [self.zincRepo bundleWithId:bundleID];
@@ -148,7 +149,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -158,8 +160,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     // -- Verify
@@ -187,8 +187,8 @@
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
     
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
-        
         if ([errors count] > 0) {
             GHTestLog(@"%@", errors);
             [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
@@ -196,8 +196,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     // -- Verify Available
@@ -214,13 +212,15 @@
     // -- Stop tracking
     
     [self.zincRepo stopTrackingBundleWithId:bundleID];
-    
+
+    [self prepare];
     [self.zincRepo refreshWithCompletion:^{
         [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    
+    // -- Wait for the bundle delete task to run
+    [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
 
     // -- Verify Not Available
     
@@ -243,6 +243,7 @@
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
     
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -252,13 +253,13 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(bundleState1, ZincBundleStateAvailable, @"bundle should be available");
-    
+
+    [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
+
     // -- Add a dummy symlink to cause the bundle to be cleaned
     
     ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
@@ -271,9 +272,6 @@
     }
     
     // -- Reset the zinc repo
-    
-    [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
-
     
     NSString* indexPath = [[self.zincRepo.url path] stringByAppendingPathComponent:@"repo.json"];
     
@@ -309,15 +307,10 @@
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
-    // -- Perform manual clean
+    // -- Wait for initialization
     
-    [self.zincRepo cleanWithCompletion:^{
-        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
-    }];
+    [self.zincRepo waitForInitialization];
     
-    [self prepare];
-    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
-
     ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateNone, @"bundle should not be available");
 }
@@ -332,8 +325,8 @@
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
     
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
-        
         if ([errors count] > 0) {
             GHTestLog(@"%@", errors);
             [self notify:kGHUnitWaitStatusFailure forSelector:_cmd];
@@ -341,8 +334,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
@@ -370,14 +361,9 @@
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
-    // -- Perform manual clean
-    
-    [self.zincRepo cleanWithCompletion:^{
-        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
-    }];
-    
-    [self prepare];
-    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    // -- Wait for initialization
+
+    [self.zincRepo waitForInitialization];
 
     ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
@@ -394,7 +380,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -404,8 +391,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
@@ -450,14 +435,9 @@
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
-    // -- Perform manual clean
-    
-    [self.zincRepo cleanWithCompletion:^{
-        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
-    }];
-    
-    [self prepare];
-    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    // -- Wait for initialization
+
+    [self.zincRepo waitForInitialization];
     
     ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
@@ -474,7 +454,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -484,8 +465,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     // -- Add a dummy symlink to cause the bundle to be cleaned
@@ -536,14 +515,9 @@
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
-    // -- Perform manual clean
-    
-    [self.zincRepo cleanWithCompletion:^{
-        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
-    }];
-    
-    [self prepare];
-    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+    // -- Wait for initialization
+
+    [self.zincRepo waitForInitialization];
     
     BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:symlinkPath];
     GHAssertFalse(fileExists, @"file should not exist");    
@@ -558,7 +532,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -568,8 +543,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
     // -- Add a dummy symlink to cause the bundle to be cleaned
@@ -591,15 +564,10 @@
     self.zincRepo.delegate = self;
     self.zincRepo.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
-    
-    // -- Perform manual clean
-    
-    [self.zincRepo cleanWithCompletion:^{
-        [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
-    }];
-    
-    [self prepare];
-    [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
+
+    // -- Wait for initialization
+
+    [self.zincRepo waitForInitialization];
     
     NSNumber* isSymlink;
     if (![[NSURL fileURLWithPath:symlinkPath] getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
@@ -618,7 +586,8 @@
     // -- Clone bundle
     
     [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
-    
+
+    [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
         
         if ([errors count] > 0) {
@@ -628,8 +597,6 @@
             [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
         }
     }];
-    
-    [self prepare];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     // -- Remove bundle files

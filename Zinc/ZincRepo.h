@@ -73,7 +73,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  */
 @property (nonatomic, assign, readonly) BOOL isInitialized;
 
-- (void) waitForInitializationWithCompletion:(dispatch_block_t)completion;
+- (void) waitForInitialization;
 
 /**
  @discussion Manually trigger refresh of sources and bundles.
