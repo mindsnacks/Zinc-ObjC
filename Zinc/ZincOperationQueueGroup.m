@@ -205,7 +205,9 @@
     NSMutableArray* ops = [NSMutableArray array];
     NSArray* allInfos = [self.infoByClassName allValues];
     for (ZincOperationQueueGroupInfo* info in allInfos) {
-        [ops addObjectsFromArray:info.queue.operations];
+        if (info.queue != nil) {
+            [ops addObjectsFromArray:info.queue.operations];
+        }
     }
     return ops;
 }
@@ -217,7 +219,9 @@
         return ((ZincOperationQueueGroupInfo*)evaluatedObject).isBarrier;
     }]];
     for (ZincOperationQueueGroupInfo* info in barrierInfos) {
-        [ops addObjectsFromArray:info.queue.operations];
+        if (info.queue != nil) {
+            [ops addObjectsFromArray:info.queue.operations];
+        }
     }
     return ops;
 }
