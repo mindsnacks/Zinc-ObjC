@@ -37,9 +37,9 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 - (ZincConnectionType)requiredConnectionTypeForPriority:(NSOperationQueuePriority)priority;
 
-- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPriority:(NSOperationQueuePriority)priority;
+- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPrioritiesGreaterThanOrEqualToPriority:(NSOperationQueuePriority)priority;
 
-- (void)removeConnectionTypeRequirementForPriority:(NSOperationQueuePriority)priority;
+- (void)removePriorityForConnectionType:(ZincConnectionType)connectionType;
 
 #pragma mark Convenience
 
