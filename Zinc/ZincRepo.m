@@ -259,14 +259,11 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
     
     // Queue a task ref that depends on all initialization tasks
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
-    taskRef.completionBlock = ^{
+    NSOperation* initDoneOp = [[[NSOperation alloc] init] autorelease];
+    initDoneOp.completionBlock = ^{
         self.isInitialized = YES;
     };
-    for (NSOperation* op in self.initializationQueue.operations) {
-        [taskRef addDependency:op];
-    }
-    [self.initializationQueue addOperation:taskRef];
+    [self.initializationQueue addOperation:initDoneOp];
 }
 
 - (void) waitForInitializationWithCompletion:(dispatch_block_t)completion
