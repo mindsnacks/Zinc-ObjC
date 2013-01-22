@@ -71,6 +71,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     if (self.completionBlock != nil) {
         self.completionBlock([self.taskRef allErrors]);
+        self.completionBlock = nil;
     }
 }
 
