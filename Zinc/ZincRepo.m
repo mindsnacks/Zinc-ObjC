@@ -26,6 +26,7 @@
 #import "ZincObjectDownloadTask.h"
 #import "ZincGarbageCollectTask.h"
 #import "ZincCleanLegacySymlinksTask.h"
+#import "ZincCompleteInitializationTask.h"
 #import "ZincRepoIndexUpdateTask.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincOperationQueueGroup.h"
@@ -102,6 +103,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 @property (nonatomic, retain) ZincKSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
 @property (nonatomic, retain) NSOperationQueue* initializationQueue;
+@property (nonatomic, retain) ZincCompleteInitializationTask* completeInitializationTask;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 
 @property (nonatomic, readonly) ZincSerialQueueProxy* indexProxy;
@@ -224,7 +226,6 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         self.networkQueue = networkQueue;
         self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
         [self.queueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
-        [self.queueGroup setIsBarrierOperationForClass:[ZincCleanLegacySymlinksTask class]];
         [self.queueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
         [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
@@ -253,6 +254,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
  */
 - (BOOL) queueInitializationTasks
 {
+    NSAssert(!self.isInitialized, @"should not already be initialized");
+    
     NSMutableArray* initOps = [NSMutableArray arrayWithCapacity:1];
     
     // Check for v1 -> v2 migration
@@ -263,53 +266,55 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             [self queueIndexSaveTask];
         };
         [initOps addObject:cleanSymlinksTask];
-        [self.initializationQueue addOperation:cleanSymlinksTask];
+        [self addOperation:cleanSymlinksTask];
     }
     
     if ([initOps count] > 0) {
+        self.completeInitializationTask = [[[ZincCompleteInitializationTask alloc] initWithRepo:self resourceDescriptor:self.url] autorelease];
         
-        // Queue an operation that depends on all initialization tasks
-        ZincOperation* initDoneOp = [NSBlockOperation blockOperationWithBlock:^{
-            <#code#>
-        }
-        initDoneOp.completionBlock = ^{
-            self.isInitialized = YES;
-        };
-
-        // Dependencies are important because even though queue is serial, dependencies will give us progress
         for (NSOperation* initOp in initOps) {
-            [initDoneOp addDependency:initOp];
+            [self.completeInitializationTask addDependency:initOp];
         }
-        
-        [self.initializationQueue addOperation:initDoneOp];
-        
-        return YES;
+        [self addOperation:self.completeInitializationTask];
     }
     
-    return NO;
+    return self.completeInitializationTask != nil;
+}
+
+- (ZincTaskRef*) taskRefForInitialization
+{
+    @synchronized(self) {
+        if (self.isInitialized || self.completeInitializationTask == nil) return nil;
+        ZincTaskRef* taskRef = [ZincTaskRef taskRefForTask:self.completeInitializationTask];
+        [self.initializationQueue addOperation:taskRef];
+        return taskRef;
+    }
 }
 
 - (void) waitForInitialization
 {
-    [self.initializationQueue waitUntilAllOperationsAreFinished];
+    [[self taskRefForInitialization] waitUntilFinished];
 }
-
-- (ZincTaskRef*) taskRefForInitializationTasks
-{
-    return nil;
-}
-
 
 - (void) setIsInitialized:(BOOL)isInitialized
 {
-    if (isInitialized) {
-        // no longer need to hold onto the initialization queue
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.initializationQueue = nil;
-        });
+    @synchronized(self) {
+        if (isInitialized) {
+            // no longer need to hold onto the initialization queue or task
+            __block typeof(self) blockself = self;
+            dispatch_async(dispatch_get_main_queue(), ^{
+                blockself.initializationQueue = nil;
+                blockself.completeInitializationTask = nil;
+            });
+        }
+        
+        _isInitialized = isInitialized;
     }
-    
-    _isInitialized = isInitialized;
+}
+
+- (void) completeInitialization
+{
+    self.isInitialized = YES;
 }
 
 - (void) setIndex:(ZincRepoIndex *)index
@@ -479,6 +484,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [_loadedBundles release];
     [_myTasks release];
     [_initializationQueue release];
+    [_completeInitializationTask release];
     [super dealloc];
 }
 
@@ -616,6 +622,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 {
     if ([operation isKindOfClass:[ZincURLConnectionOperation class]]) {
         [self.networkQueue addOperation:operation];
+    } else if ([operation isKindOfClass:[ZincInitializationTask class]]) {
+        [self.initializationQueue addOperation:operation];
     } else {
         [self.queueGroup addOperation:operation];
     }

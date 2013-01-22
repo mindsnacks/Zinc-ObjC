@@ -75,7 +75,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (void) waitForInitialization;
 
-- (ZincTaskRef*) taskRefForInitializationTasks;
+- (ZincTaskRef*) taskRefForInitialization;
 
 /**
  @discussion Manually trigger refresh of sources and bundles.

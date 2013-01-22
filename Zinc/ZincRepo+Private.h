@@ -23,6 +23,8 @@
 
 - (NSURL*) indexURL;
 
+- (void) completeInitialization;
+
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
 - (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
 
