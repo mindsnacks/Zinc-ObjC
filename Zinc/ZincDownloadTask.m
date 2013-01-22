@@ -17,6 +17,7 @@
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
+@property (atomic, readwrite) BOOL trackingProgress;
 @end
 
 @implementation ZincDownloadTask
@@ -27,8 +28,10 @@
     return ZincTaskActionUpdate;
 }
 
-- (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
+- (void) queueOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
+    NSAssert(self.httpRequestOperation == nil, @"operation already enqueued");
+    
     ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     
     if (outputStream != nil) {
@@ -41,10 +44,26 @@
     
     self.context = context;
     
+    [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
+    
+    [self addOperation:requestOp];
+    
+    self.httpRequestOperation = requestOp;
+}
+
+- (void)addProgressTrackingIfNeeded
+{
+    @synchronized(self) {
+        if (self.trackingProgress) return;
+        self.trackingProgress = YES;
+    }
+    
+    __block typeof(self) blockself = self;
+    
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
-    [requestOp setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
+    [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
@@ -57,21 +76,17 @@
             [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
-    
-    [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
-    
-    [self addOperation:requestOp];
-    
-    return requestOp;
 }
 
 - (long long) currentProgressValue
 {
+    [self addProgressTrackingIfNeeded];
     return self.bytesRead;
 }
 
 - (long long) maxProgressValue
 {
+    [self addProgressTrackingIfNeeded];
     return MAX(self.totalBytesToRead, self.bytesRead);
 }
 
