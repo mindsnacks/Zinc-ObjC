@@ -21,7 +21,7 @@
     return @"GarbageCollect";
 }
 
-- (void) cleanObjectsDir
+- (void) doMaintenance
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
@@ -48,11 +48,6 @@
             }
         }
     }
-}
-
-- (void) doMaintenance
-{
-    [self cleanObjectsDir];
 }
 
 @end
