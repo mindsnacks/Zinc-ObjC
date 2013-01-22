@@ -42,21 +42,4 @@
     return req;
 }
 
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                          flavor:(NSString*)flavor
-{
-    ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
-    req.bundleID = bundleID;
-    req.flavor = flavor;
-    return req;
-}
-
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-{
-    ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
-    req.bundleID = bundleID;
-    return req;
-}
-
-
 @end

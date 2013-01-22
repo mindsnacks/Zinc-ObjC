@@ -23,6 +23,8 @@
 
 - (NSURL*) indexURL;
 
+- (void) completeInitialization;
+
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
 - (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
 
@@ -36,6 +38,8 @@
 - (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
 
 #pragma mark Bundles
+
+- (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource;
@@ -52,6 +56,10 @@
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
 - (BOOL) hasFileWithSHA:(NSString*)sha;
+
+// external files are registered via registerExternalBundleWithManifestPath:bundleRootPath:error:
+// clone tasks can copy the file from a local path instead of downloading from the catalog
+- (NSString*) externalPathForFileWithSHA:(NSString*)sha;
 
 #pragma mark Tasks
 

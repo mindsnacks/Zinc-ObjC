@@ -38,4 +38,10 @@
 - (void)setShouldExecuteAsBackgroundTask;
 #endif
 
+
+/**
+ * @discussion Called to update isReady periodically. Default implementation just fires willChange/didChange on isReady key to force isReady to be called again. Subclasses may override.
+ */
+- (void) updateReadiness;
+
 @end

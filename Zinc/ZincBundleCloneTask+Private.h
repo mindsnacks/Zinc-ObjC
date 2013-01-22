@@ -15,7 +15,7 @@
 @property (retain) NSFileManager* fileManager;
 
 - (void) setUp;
-- (void) complete;
+- (void) completeWithSuccess:(BOOL)success;
 
 - (NSString*) getTrackedFlavor;
 

@@ -26,6 +26,13 @@
     return self;
 }
 
++ (ZincTaskRef*) taskRefForTask:(ZincTask*)task
+{
+    ZincTaskRef* ref = [[[ZincTaskRef alloc] init] autorelease];
+    [ref addDependency:task];
+    return ref;
+}
+
 - (void)dealloc
 {
     [_errors release];
@@ -43,6 +50,16 @@
         return [self.dependencies objectAtIndex:0];
     }
     return nil;
+}
+
+- (BOOL) isValid
+{
+    return [self getTask] != nil;
+}
+
+- (BOOL) isSuccessful
+{
+    return [self isValid] && [self isFinished] && [[self allErrors] count] == 0;
 }
 
 - (NSArray*) allErrors

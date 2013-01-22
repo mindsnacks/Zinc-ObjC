@@ -90,13 +90,14 @@
 
 - (BOOL) prepareObjectFilesUsingRemoteCatalogForManifest:(ZincManifest*)manifest
 {
+    if (self.isCancelled) return NO;
+    
+    NSError* error = nil;
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
-    
-    NSString* flavor = [self getTrackedFlavor];
-    
-    NSArray* allFiles = [manifest filesForFlavor:flavor];
-    NSMutableArray* missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
+    NSString* const flavor = [self getTrackedFlavor];
+    NSArray* const allFiles = [manifest filesForFlavor:flavor];
+    NSMutableArray* const missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
     
     for (NSString* path in allFiles) {
         
@@ -108,7 +109,22 @@
         
         NSUInteger size = [manifest sizeForFile:path format:format];
         totalSize += size;
-        if (![self.repo hasFileWithSHA:[manifest shaForFile:path]]) {
+        
+        NSString* const sha = [manifest shaForFile:path];
+        BOOL const hasFileInRepo = [self.repo hasFileWithSHA:sha];
+        if (!hasFileInRepo) {
+            
+            NSString* localPath = [self.repo externalPathForFileWithSHA:sha];
+            if (localPath != nil) {
+                
+                NSString* repoPath = [self.repo pathForFileWithSHA:sha];
+                if ([self.fileManager copyItemAtPath:localPath toPath:repoPath error:&error]) {
+                    continue;
+                } else {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                }
+            }
+            
             missingSize += size;
             [missingFiles addObject:path];
         }
@@ -147,12 +163,17 @@
                 
                 NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
                 ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
+                
                 ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
-                [fileOps addObject:fileOp];
+                if (fileOp != nil) {
+                    // can be nil if cancelled
+                    [fileOps addObject:fileOp];
+                }
             }
             
-            BOOL allSuccessful = YES;
+            if (self.isCancelled) return NO;
             
+            BOOL allSuccessful = YES;
             for (ZincTask* op in fileOps) {
                 
                 [op waitUntilFinished];
@@ -169,6 +190,11 @@
     return YES;
 }
 
+- (BOOL) isReady
+{
+    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
+}
+
 - (void) main
 {
     [self setUp];
@@ -176,24 +202,28 @@
     NSError* error = nil;
     
     if (![self prepareManifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self prepareObjectFilesUsingRemoteCatalogForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
     if (![self createBundleLinksForManifest:manifest]) {
+        [self completeWithSuccess:NO];
         return;
     }
     
-    [self complete];
+    [self completeWithSuccess:YES];
 }
 
 @end

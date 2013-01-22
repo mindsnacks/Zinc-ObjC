@@ -57,7 +57,6 @@
     
     NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogId];
 
-    
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
@@ -76,7 +75,7 @@
             [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         } else {
-            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
         [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];

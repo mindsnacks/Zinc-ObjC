@@ -11,12 +11,13 @@
 @interface ZincOperationQueueGroup : NSObject
 
 - (void) setMaxConcurrentOperationCount:(NSInteger)cnt forClass:(Class)theClass;
+- (void) setIsBarrierOperationForClass:(Class)theClass;
 
 - (void) addOperation:(NSOperation*)operation;
 
-- (NSOperationQueue*) getQueueForClass:(Class)theClass;
-
 - (void)setSuspended:(BOOL)b;
 - (BOOL)isSuspended;
+
+- (void)suspendAndWaitForExecutingOperationsToComplete;
 
 @end

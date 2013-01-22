@@ -19,16 +19,19 @@ typedef enum {
     ZincEventTypeBundleCloneComplete,
     ZincEventTypeArchiveExtractBegin,
     ZincEventTypeArchiveExtractComplete,
-    ZincEventTypeGarbageCollectBegin,
-    ZincEventTypeGarbageCollectComplete,
+    ZincEventTypeMaintenanceBegin,
+    ZincEventTypeMaintenanceComplete,
 } ZincEventType;
 
 extern NSString *const kZincEventAttributesSourceKey;
 extern NSString *const kZincEventAttributesURLKey;
+extern NSString *const kZincEventAttributesSizeKey;
 extern NSString *const kZincEventAttributesPathKey;
 extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
 extern NSString *const kZincEventAttributesContextKey;
+extern NSString *const kZincEventAttributesCloneSuccessKey;
+extern NSString *const kZincEventAttributesActionKey;
 
 #pragma mark Notifications
 
@@ -41,8 +44,8 @@ extern NSString *const kZincEventBundleCloneBeginNotification;
 extern NSString *const kZincEventBundleCloneCompleteNotification;
 extern NSString *const kZincEventArchiveExtractBeginNotification;
 extern NSString *const kZincEventArchiveExtractCompleteNotification;
-extern NSString *const kZincEventGarbageCollectionBeginNotification;
-extern NSString *const kZincEventGarbageCollectionCompleteNotification;
+extern NSString *const kZincEventMaintenanceBeginNotification;
+extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
 @interface ZincEvent : NSObject
 
@@ -87,8 +90,9 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url;
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size;
 @property (readonly) NSURL* url;
+@property (readonly) NSInteger size;
 
 @end
 
@@ -105,8 +109,8 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context success:(BOOL)success;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;
 
@@ -130,15 +134,17 @@ extern NSString *const kZincEventGarbageCollectionCompleteNotification;
 @end
 
 
-@interface ZincGarbageCollectionBeginEvent : ZincEvent
+@interface ZincMaintenanceBeginEvent : ZincEvent
 
-+ (id) event;
++ (id) maintenanceEventWithAction:(NSString*)category;
+@property (readonly) NSString* action;
 
 @end
 
 
-@interface ZincGarbageCollectionCompleteEvent : ZincEvent
+@interface ZincMaintenanceCompleteEvent : ZincEvent
 
-+ (id) event;
++ (id) maintenanceEventWithAction:(NSString*)action;
+@property (readonly) NSString* action;
 
 @end

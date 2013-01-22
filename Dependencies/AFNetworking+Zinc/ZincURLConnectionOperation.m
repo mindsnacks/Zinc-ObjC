@@ -250,17 +250,22 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTaskWithExpirationHandler:(void (^)(void))handler {
     [self.lock lock];
-    if (!self.backgroundTaskIdentifier) {    
+    if (!self.backgroundTaskIdentifier) {
+        
         UIApplication *application = [UIApplication sharedApplication];
+        __weak typeof(self)weakSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+            
             if (handler) {
                 handler();
             }
             
-            [self cancel];
+            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  weakSelf.backgroundTaskIdentifier;
+            weakSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+
+            [weakSelf cancel];
             
-            [application endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }
     [self.lock unlock];
@@ -412,6 +417,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 - (void)finish {
+    self.downloadProgress = ^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead){};
     self.state = AFOperationFinishedState;
 }
 
@@ -542,8 +548,10 @@ didReceiveResponse:(NSURLResponse *)response
     }
     
     if (self.downloadProgress) {
+        typeof(self.downloadProgress) downloadProgressBlock = self.downloadProgress;
+        
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.downloadProgress([data length], self.totalBytesRead, self.response.expectedContentLength);
+            downloadProgressBlock([data length], self.totalBytesRead, self.response.expectedContentLength);
         });
     }
 }

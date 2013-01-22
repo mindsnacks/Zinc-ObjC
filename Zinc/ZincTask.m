@@ -109,6 +109,9 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
 {
     [super setQueuePriority:p];
     
+    // !!!: Since isReady may be related to queue priority make sure to update it
+    [self updateReadiness];
+    
     for (ZincTask* subtask in self.subtasks) {
         [subtask setQueuePriority:p];
     }
@@ -189,17 +192,27 @@ static const NSString* kvo_SubtaskIsFinished = @"kvo_SubtaskIsFinished";
     return allErrors;
 }
 
+- (void) updateReadiness
+{
+    [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+    [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+}
+
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTask
 {
     if (!self.backgroundTaskIdentifier) {
+        
         UIApplication *application = [UIApplication sharedApplication];
+        __block typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
-            [self cancel];
+            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;
+            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
             
-            [application endBackgroundTask:self.backgroundTaskIdentifier];
-            self.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
+            [blockSelf cancel];
+            
+            [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }
 }

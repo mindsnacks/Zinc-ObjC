@@ -19,6 +19,7 @@
 #import "ZincErrors.h"
 #import "ZincUtils.h"
 #import "ZincHTTPRequestOperation.h"
+#import "ZincSHA.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;
@@ -46,7 +47,14 @@
     NSError* error = nil;
     BOOL gz = NO;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
-    
+
+    // don't need to donwload if the file already exists
+    if ([self.repo hasFileWithSHA:self.sha])
+    {
+        self.finishedSuccessfully = YES;
+        return;
+    }
+
     NSArray* formats = (NSArray*)[self input];
     
     if ([formats containsObject:ZincFileFormatGZ]) {
@@ -104,7 +112,7 @@
             [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         } else {
-            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
         NSString* targetPath = [self.repo pathForFileWithSHA:self.sha];
@@ -118,12 +126,17 @@
             }
         } 
         
-        NSString* actualSha = [fm zinc_sha1ForPath:uncompressedPath];
-        if (![actualSha isEqualToString:self.sha]) {
+        NSString* actualSHA = ZincSHA1HashFromPath(uncompressedPath, 0, &error);
+        if (actualSHA == nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            continue;
+        }
+        
+        if (![actualSHA isEqualToString:self.sha]) {
             
             NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                     self.sha, @"expectedSHA",
-                    actualSha, @"actualSHA",
+                    actualSHA, @"actualSHA",
                     source, @"source",
                     nil];
             error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
@@ -137,10 +150,13 @@
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
                 continue;
             }
-            
+
             if (![fm moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                continue;
+                if (error.code != NSFileWriteFileExistsError) // ignore error if file already existed
+                {
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                    continue;
+                }
             }
             
             ZincAddSkipBackupAttributeToFileWithPath(targetPath);

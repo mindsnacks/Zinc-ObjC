@@ -16,7 +16,7 @@
 @property (nonatomic, copy) NSString* bundleID;
 
 /**
- * @discussion Distribution name to track. Ignored for bootstrapping.
+ * @discussion Distribution name to track.
  */
 @property (nonatomic, copy) NSString* distribution;
 
@@ -26,7 +26,7 @@
 @property (nonatomic, copy) NSString* flavor;
 
 /**
- * @discussion Enable or disable automatic updates. Ignored for bootstrapping.
+ * @discussion Enable or disable automatic updates.
  */
 @property (nonatomic, assign) BOOL updateAutomatically;
 
@@ -44,22 +44,5 @@
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
                                              automaticallyUpdate:(BOOL)automaticallyUpdate;
-
-/**
- * @discussion Convenience constructor for bootstrap operations with flavor.
- * Distribution and automatic updates are ignored for bootstrap operations, so
- * they are omitted.
- */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                          flavor:(NSString*)flavor;
-
-/**
- * @discussion Convenience constructor for bootstrap operation.
- * Distribution and automatic updates are ignored for bootstrap operations, so
- * they are omitted.
- */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID;
-
-
 
 @end

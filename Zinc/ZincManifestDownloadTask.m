@@ -78,7 +78,7 @@
             continue;
         }
         
-        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL]]];
+        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL] size:self.bytesRead]];
         
         NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
         if (uncompressed == nil) {

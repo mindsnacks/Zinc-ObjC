@@ -9,7 +9,7 @@
 #ifndef _ZINC_GLOBALS_
 #define _ZINC_GLOBALS_
 
-#define kZincPackageName @"com.mindsnacks.zinc"
+extern NSString* const kZincPackageName;
 
 typedef NSInteger ZincFormat;
 typedef NSInteger ZincVersion;

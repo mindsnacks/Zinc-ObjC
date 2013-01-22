@@ -13,6 +13,7 @@
 #import "ZincEvent.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
+#import "ZincRepo.h"
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
@@ -21,10 +22,6 @@
 
 @implementation ZincDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-@synthesize context = _context;
 
 + (NSString *)action
 {
@@ -39,6 +36,10 @@
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
+    }
+    
+    if (self.repo.executeTasksInBackgroundEnabled) {
+        [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     }
     
     self.context = context;
@@ -68,10 +69,11 @@
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
         BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
-        if (enoughTimePassedSinceLastNotification)
+        BOOL downloadCompleted = totalBytesRead == totalBytesExpectedToRead;
+        if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
 }

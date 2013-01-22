@@ -72,7 +72,8 @@
     if ([finishedItems count] == [self.myItems count]) {
         [self finish];
     } else {
-        self.totalProgress = (float)[finishedItems count] / [self.myItems count];
+        self.totalProgress = [[[self.myItems allValues]  valueForKeyPath:@"@avg.progress"] floatValue];
+        
         ZINC_DEBUG_LOG(@"total %f", self.totalProgress);
     }
     
@@ -168,8 +169,9 @@
     if ([self isFinished]) return;
 
     ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
-    
-    if ([bundleMon.repo stateForBundleWithId:self.bundleID] == ZincBundleStateAvailable) {
+    ZincBundleState state = [bundleMon.repo stateForBundleWithId:self.bundleID];
+
+    if (state == ZincBundleStateAvailable) {
         [self finish];
     }
 }

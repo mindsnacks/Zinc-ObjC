@@ -19,6 +19,7 @@
 - (BOOL) isZincManifestResource;
 
 + (NSURL*) zincResourceForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
++ (NSURL*) zincResourceForBundleDescriptor:(NSString*)bundleDescriptor;
 - (BOOL) isZincBundleResource;
 
 + (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version;
