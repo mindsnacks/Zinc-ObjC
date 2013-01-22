@@ -73,8 +73,14 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  */
 @property (nonatomic, assign, readonly) BOOL isInitialized;
 
+/**
+ @discussion Block until initialization is complete.
+ */
 - (void) waitForInitialization;
 
+/**
+ @discussion Returns an task reference for any initialization tasks that need to be done. Returns nil if no initialization is required.
+ */
 - (ZincTaskRef*) taskRefForInitialization;
 
 /**
