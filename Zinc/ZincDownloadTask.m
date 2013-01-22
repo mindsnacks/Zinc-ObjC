@@ -58,8 +58,6 @@
         self.trackingProgress = YES;
     }
     
-    __block typeof(self) blockself = self;
-    
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
