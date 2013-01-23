@@ -30,7 +30,7 @@
 
 - (void) queueOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
-    NSAssert(self.httpRequestOperation == nil, @"operation already enqueued");
+    NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
     ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
     
@@ -46,9 +46,9 @@
     
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
     
-    [self addOperation:requestOp];
-    
     self.httpRequestOperation = requestOp;
+    
+    [self addOperation:requestOp];
 }
 
 - (void)addProgressTrackingIfNeeded
