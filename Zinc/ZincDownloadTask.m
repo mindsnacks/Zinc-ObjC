@@ -48,7 +48,7 @@
     
     self.httpRequestOperation = requestOp;
     
-    [self addOperation:requestOp];
+    [self queueChildOperation:requestOp];
 }
 
 - (void)addProgressTrackingIfNeeded

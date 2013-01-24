@@ -81,7 +81,7 @@
         [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
         ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath] autorelease];
-        [self addOperation:extractOp];
+        [self queueChildOperation:extractOp];
         
         [extractOp waitUntilFinished];
         if (self.isCancelled) return;
