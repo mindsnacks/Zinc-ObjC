@@ -48,7 +48,7 @@
     
     self.httpRequestOperation = requestOp;
     
-    [self addOperation:requestOp];
+    [self queueChildOperation:requestOp];
 }
 
 - (void)addProgressTrackingIfNeeded
@@ -92,6 +92,12 @@
 {
     self.bytesRead = currentBytes;
     self.totalBytesToRead = totalBytes;
+}
+
+- (void) setQueuePriority:(NSOperationQueuePriority)p
+{
+    [super setQueuePriority:p];
+    [self.httpRequestOperation setQueuePriority:p];
 }
 
 - (void)dealloc

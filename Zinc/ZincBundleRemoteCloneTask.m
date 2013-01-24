@@ -72,7 +72,7 @@
     if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
         NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleId version:self.version];
         ZincTaskDescriptor* taskDesc = [ZincManifestDownloadTask taskDescriptorForResource:manifestRes];
-        manifestDownloadTask = [self queueSubtaskForDescriptor:taskDesc];
+        manifestDownloadTask = [self queueChildTaskForDescriptor:taskDesc];
     }
     
     if (manifestDownloadTask != nil) {
@@ -141,7 +141,7 @@
             
             NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
-            ZincTask* archiveOp = [self queueSubtaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
+            ZincTask* archiveOp = [self queueChildTaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
             
             [archiveOp waitUntilFinished];
             if (self.isCancelled) return NO;
@@ -164,7 +164,7 @@
                 NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
                 ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
                 
-                ZincTask* fileOp = [self queueSubtaskForDescriptor:fileTaskDesc input:formats];
+                ZincTask* fileOp = [self queueChildTaskForDescriptor:fileTaskDesc input:formats];
                 if (fileOp != nil) {
                     // can be nil if cancelled
                     [fileOps addObject:fileOp];
