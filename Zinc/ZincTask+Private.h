@@ -16,11 +16,11 @@
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input;
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource;
 
-- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
-- (ZincTask*) queueSubtaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
+- (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
+- (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
 
 /* Currently for network ops ONLY. Consider refactoring to clean up the API */
-- (void) addOperation:(NSOperation*)operation;
+- (void) queueChildOperation:(NSOperation*)operation;
 
 /* just the events logged on this task */
 @property (readonly) NSArray* events;

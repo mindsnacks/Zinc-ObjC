@@ -52,7 +52,7 @@
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
     ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
-    [self addOperation:requestOp];
+    [self queueChildOperation:requestOp];
     
     [requestOp waitUntilFinished];
     if (self.isCancelled) return;
@@ -85,7 +85,7 @@
     NSURL* catalogRes = [NSURL zincResourceForCatalogWithId:catalog.identifier];
     ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
     
-    ZincTask* catalogTask = [self queueSubtaskForDescriptor:taskDesc input:catalog];
+    ZincTask* catalogTask = [self queueChildTaskForDescriptor:taskDesc input:catalog];
     
     [catalogTask waitUntilFinished];
     if (self.isCancelled) return;

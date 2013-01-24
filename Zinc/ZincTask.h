@@ -26,12 +26,24 @@
 
 @property (readonly, retain) NSString* title;
 
-@property (readonly) NSArray* subtasks;
+/**
+ @discussion All child operations queued by this Task.
+ */
+@property (readonly) NSArray* childOperations;
 
-/* all events including events from subtasks */
+/**
+ @discussion All child operations queued by this Task that are also ZincTasks
+ */
+@property (readonly) NSArray* childTasks;
+
+/**
+ @discussion all events including events from child tasks 
+ */
 - (NSArray*) allEvents;
 
-/* all errors that occurred including errors from subtasks */
+/**
+ @discussion all errors that occurred including errors from child tasks
+ */
 - (NSArray*) allErrors;
 
 @end
