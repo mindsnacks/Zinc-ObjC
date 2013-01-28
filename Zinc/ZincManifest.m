@@ -32,6 +32,20 @@
         self.version = [[dict objectForKey:@"version"] integerValue];
         self.files = [dict objectForKey:@"files"];
         self.flavors = [dict objectForKey:@"flavors"];
+        
+        if (self.flavors == nil) {  // try to build flavors for files
+            
+            NSMutableSet* flavorSet = [NSMutableSet set];
+            
+            [self.files enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+                NSArray* fileFlavors = [obj objectForKey:@"flavors"];
+                if (fileFlavors != nil) {
+                    [flavorSet addObjectsFromArray:fileFlavors];
+                }
+            }];
+            
+            self.flavors = [flavorSet allObjects];
+        }
     }
     return self;
 }
@@ -44,6 +58,7 @@
     }
     return self;
 }
+
 
 + (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError
 {
@@ -121,7 +136,7 @@
 
 - (NSArray*) filesForFlavor:(NSString*)flavor
 {
-    if (flavor == nil) {
+    if (flavor == nil || ![self.flavors containsObject:flavor]) {
         return [self allFiles];
     }
     
@@ -156,6 +171,7 @@
     [d setObject:self.catalogId forKey:@"catalog"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
+    if (self.flavors != nil) [d setObject:self.flavors forKey:@"flavors"];
     return d;
 }
 

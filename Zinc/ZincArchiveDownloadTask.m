@@ -7,6 +7,7 @@
 //
 
 #import "ZincArchiveDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincResource.h"
 #import "ZincBundle.h"
@@ -56,7 +57,6 @@
     
     NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogId];
 
-    
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
     
@@ -66,22 +66,22 @@
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        ZincHTTPRequestOperation* downloadOp = [self queuedOperationForRequest:request outputStream:outStream context:self.bundleId];
+        [self queueOperationForRequest:request outputStream:outStream context:self.bundleId];
         
-        [downloadOp waitUntilFinished];
+        [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
         
-        if (!downloadOp.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:downloadOp.error source:self]];
+        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         } else {
-            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL]];
+            [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
         [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
         ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath] autorelease];
-        [self addOperation:extractOp];
+        [self queueChildOperation:extractOp];
         
         [extractOp waitUntilFinished];
         if (self.isCancelled) return;

@@ -7,79 +7,91 @@
 //
 
 #import "ZincDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincEvent.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "ZincTaskActions.h"
+#import "ZincRepo.h"
 
 @interface ZincDownloadTask()
 @property (nonatomic, retain, readwrite) id context;
+@property (atomic, readwrite) BOOL trackingProgress;
 @end
 
 @implementation ZincDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-@synthesize context = _context;
 
 + (NSString *)action
 {
     return ZincTaskActionUpdate;
 }
 
-- (ZincHTTPRequestOperation *) queuedOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
+- (void) queueOperationForRequest:(NSURLRequest *)request outputStream:(NSOutputStream *)outputStream context:(id)context
 {
-    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
+    NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    requestOp.outputStream = outputStream;
+    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    
+    if (outputStream != nil) {
+        requestOp.outputStream = outputStream;
+    }
+    
+    if (self.repo.executeTasksInBackgroundEnabled) {
+        [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    }
     
     self.context = context;
     
-    __block typeof(self) blockself = self;
+    [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
+    
+    self.httpRequestOperation = requestOp;
+    
+    [self queueChildOperation:requestOp];
+}
+
+- (void)addProgressTrackingIfNeeded
+{
+    @synchronized(self) {
+        if (self.trackingProgress) return;
+        self.trackingProgress = YES;
+    }
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
-    [requestOp setDownloadProgressBlock:^(NSInteger bytesRead, NSInteger totalBytesRead, NSInteger totalBytesExpectedToRead) {
+    [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
         BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
-        if (enoughTimePassedSinceLastNotification)
+        BOOL downloadCompleted = totalBytesRead == totalBytesExpectedToRead;
+        if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
-    
-    [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
-    
-    [self addOperation:requestOp];
-    
-    return requestOp;
 }
 
-- (NSInteger) currentProgressValue
+- (long long) currentProgressValue
 {
+    [self addProgressTrackingIfNeeded];
     return self.bytesRead;
 }
 
-- (NSInteger) maxProgressValue
+- (long long) maxProgressValue
 {
+    [self addProgressTrackingIfNeeded];
     return MAX(self.totalBytesToRead, self.bytesRead);
 }
 
 - (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
 {
-    [self willChangeValueForKey:@"currentProgressValue"];
-    [self willChangeValueForKey:@"maxProgressValue"];
     self.bytesRead = currentBytes;
     self.totalBytesToRead = totalBytes;
-    [self didChangeValueForKey:@"currentProgressValue"];
-    [self didChangeValueForKey:@"maxProgressValue"];
 }
 
 - (void)dealloc

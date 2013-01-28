@@ -8,8 +8,20 @@
 
 #import "ZincOperation.h"
 
+@class ZincTask;
+
 @interface ZincTaskRef : ZincOperation
 
-- (NSArray*) getAllErrors;
++ (ZincTaskRef*) taskRefForTask:(ZincTask*)task;
+
+- (BOOL) isValid;
+
+- (BOOL) isSuccessful;
+
+- (NSArray*) allErrors;
+
+#pragma mark Private
+
+- (void) addError:(NSError*)error;
 
 @end

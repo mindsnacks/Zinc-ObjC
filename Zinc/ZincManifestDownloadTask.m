@@ -7,6 +7,7 @@
 //
 
 #import "ZincManifestDownloadTask.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincBundle.h"
 #import "ZincSource.h"
@@ -14,7 +15,7 @@
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"
@@ -67,19 +68,19 @@
         
         NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
-        ZincHTTPRequestOperation* requestOp = [self queuedOperationForRequest:request outputStream:nil context:nil];
+        [self queueOperationForRequest:request outputStream:nil context:nil];
         
-        [requestOp waitUntilFinished];
+        [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
 
-        if (!requestOp.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
+        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
             continue;
         }
         
-        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL]]];
+        [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL] size:self.bytesRead]];
         
-        NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
+        NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
             error = ZincError(ZINC_ERR_DECOMPRESS_FAILED);
             [self addEvent:[ZincErrorEvent eventWithError:error source:self]];

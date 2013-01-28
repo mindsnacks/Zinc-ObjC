@@ -12,9 +12,10 @@ NSString* const ZincDownloadPolicyPriorityChangeNotification = @"ZincDownloadPol
 NSString* const ZincDownloadPolicyPriorityChangeBundleIDKey = @"bundleID";
 NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 
+#define kInitialDefaultConnectionType ZincConnectionTypeAny
 
 @interface ZincDownloadPolicy ()
-@property (nonatomic, retain) NSMutableDictionary* requiredConnectionTypeByPriority;
+@property (nonatomic, retain) NSMutableDictionary* prioritiesByRequiredConnectionType;
 @property (nonatomic, retain) NSMutableDictionary* prioritiesByBundleId;
 @end
 
@@ -24,16 +25,16 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 {
     self = [super init];
     if (self) {
-        _requiredConnectionTypeByPriority = [[NSMutableDictionary alloc] init];
+        _prioritiesByRequiredConnectionType = [[NSMutableDictionary alloc] init];
         _prioritiesByBundleId = [[NSMutableDictionary alloc] init];
-        _defaultRequiredConnectionType = ZincConnectionTypeAny;
+        _defaultRequiredConnectionType = kInitialDefaultConnectionType;
     }
     return self;
 }
 
 - (void)dealloc
 {
-    [_requiredConnectionTypeByPriority release];
+    [_prioritiesByRequiredConnectionType release];
     [_prioritiesByBundleId release];
     [super dealloc];
 }
@@ -70,31 +71,45 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 
 - (ZincConnectionType)requiredConnectionTypeForPriority:(NSOperationQueuePriority)priority
 {
-    @synchronized(self.requiredConnectionTypeByPriority) {
+    @synchronized(self.prioritiesByRequiredConnectionType) {
         
-        NSNumber *specificRequiredConnectionType = [self.requiredConnectionTypeByPriority objectForKey:
-                                                    [NSNumber numberWithInteger:priority]];
-        if (specificRequiredConnectionType != nil) {
-            return [specificRequiredConnectionType integerValue];
+        NSArray* connectionTypes = [self.prioritiesByRequiredConnectionType allKeys];
+        for (NSNumber* connectionType in connectionTypes) {
+            NSNumber* registeredPriority = self.prioritiesByRequiredConnectionType[connectionType];
+            if (priority >= [registeredPriority integerValue]) {
+                return [connectionType integerValue];
+            }
         }
-        
         return self.defaultRequiredConnectionType;
     }
 }
 
-- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPriority:(NSOperationQueuePriority)priority
+- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPrioritiesGreaterThanOrEqualToPriority:(NSOperationQueuePriority)priority
 {
-    @synchronized(self.requiredConnectionTypeByPriority) {
-        [self.requiredConnectionTypeByPriority setObject:[NSNumber numberWithInteger:connectionType]
-                                                  forKey:[NSNumber numberWithInteger:priority]];
+    @synchronized(self.prioritiesByRequiredConnectionType) {
+        [self.prioritiesByRequiredConnectionType setObject:[NSNumber numberWithInteger:priority]
+                                                    forKey:[NSNumber numberWithInteger:connectionType]];
     }
 }
 
-- (void)removeConnectionTypeRequirementForPriority:(NSOperationQueuePriority)priority
+- (void)removePriorityForConnectionType:(ZincConnectionType)connectionType
 {
-    @synchronized(self.requiredConnectionTypeByPriority) {
-        [self.requiredConnectionTypeByPriority removeObjectForKey:[NSNumber numberWithInteger:priority]];
+    @synchronized(self.prioritiesByRequiredConnectionType) {
+        [self.prioritiesByRequiredConnectionType removeObjectForKey:[NSNumber numberWithInteger:connectionType]];
     }
+}
+
+- (void) reset
+{
+    @synchronized(self.prioritiesByRequiredConnectionType) {
+        [self.prioritiesByRequiredConnectionType removeAllObjects];
+    }
+    
+    @synchronized(self.prioritiesByBundleId) {
+        [self.prioritiesByBundleId removeAllObjects];
+    }
+    
+    self.defaultRequiredConnectionType = kInitialDefaultConnectionType;
 }
 
 - (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID

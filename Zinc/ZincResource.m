@@ -70,6 +70,13 @@
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"bundle" path:path] autorelease];
 }
 
++ (NSURL*) zincResourceForBundleDescriptor:(NSString*)bundleDescriptor
+{
+    NSString* bundleID = ZincBundleIDFromBundleDescriptor(bundleDescriptor);
+    ZincVersion version = ZincBundleVersionFromBundleDescriptor(bundleDescriptor);
+    return [self zincResourceForBundleWithId:bundleID version:version];
+}
+
 - (BOOL) isZincBundleResource
 {
     return [self isZincResourceOfType:@"bundle"];

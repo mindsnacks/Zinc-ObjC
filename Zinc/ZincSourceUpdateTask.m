@@ -7,7 +7,8 @@
 //
 
 #import "ZincSourceUpdateTask.h"
-#import "ZincHTTPURLConnectionOperation.h"
+#import "ZincTask+Private.h"
+#import "ZincHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincCatalog.h"
 #import "ZincRepo.h"
@@ -50,9 +51,8 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    ZincHTTPURLConnectionOperation* requestOp = [[[ZincHTTPURLConnectionOperation alloc] initWithRequest:request] autorelease];
-    [requestOp setAcceptableStatusCodes:[NSIndexSet indexSetWithIndex:200]];
-    [self addOperation:requestOp];
+    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    [self queueChildOperation:requestOp];
     
     [requestOp waitUntilFinished];
     if (self.isCancelled) return;
@@ -70,7 +70,6 @@
         return;
     }
     
-//    NSString* jsonString = [[[NSString alloc] initWithData:uncompressed encoding:NSUTF8StringEncoding] autorelease];
     ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
@@ -86,7 +85,7 @@
     NSURL* catalogRes = [NSURL zincResourceForCatalogWithId:catalog.identifier];
     ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
     
-    ZincTask* catalogTask = [self queueSubtaskForDescriptor:taskDesc input:catalog];
+    ZincTask* catalogTask = [self queueChildTaskForDescriptor:taskDesc input:catalog];
     
     [catalogTask waitUntilFinished];
     if (self.isCancelled) return;

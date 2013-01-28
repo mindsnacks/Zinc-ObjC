@@ -1,12 +1,13 @@
 //
 //  ZincBundleCloneTask.m
-//  
+//
 //
 //  Created by Andy Mroczkowski on 6/19/12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import "ZincBundleCloneTask.h"
+#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincResource.h"
@@ -51,11 +52,17 @@
     [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self context:self.bundleId]];
 }
 
-- (void) complete
+- (void) completeWithSuccess:(BOOL)success
 {
-    [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId]];
-    self.finishedSuccessfully = YES;
+    if (success) {
+        [self.repo registerBundle:self.resource status:ZincBundleStateAvailable];
+    } else {
+        [self.repo registerBundle:self.resource status:ZincBundleStateNone];
+    }
+
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId success:success]];
+    
+    self.finishedSuccessfully = success;
 }
 
 - (BOOL) createBundleLinksForManifest:(ZincManifest*)manifest
@@ -78,36 +85,22 @@
     for (NSString* relativeDir in allDirs) {
         NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
         if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
             return NO;
         }
     }
     
     // Link files
     for (NSString* file in allFiles) {
-        NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-        NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-        
-        NSString* shaPathDest = [self.fileManager destinationOfSymbolicLinkAtPath:shaPath error:NULL];
-        if (shaPathDest == nil) {
-            // if it's nil, it's not a symbolic link. use the original file.
-            shaPathDest = shaPath;
-        }
-        
-        NSString* dst = [self.fileManager destinationOfSymbolicLinkAtPath:filePath error:&error];
-        BOOL dstDoesNotExist = (dst == nil);
-        BOOL dstNotEqualToShaPath = ![dst isEqualToString:shaPathDest];
-        BOOL createLink = dstDoesNotExist || dstNotEqualToShaPath;
-        
-        if (createLink) {
-            // remove regardless and ignore errors. there are too many cases to
-            // handle cleanly, with non-existant files, symlinks, etc. if something
-            // fails it will be caught in the linkItemAtPath call below.
-            [self.fileManager removeItemAtPath:filePath error:NULL];
-
-            if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
-                return NO;
+        @autoreleasepool {
+            NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
+            const BOOL createLink = ![self.fileManager fileExistsAtPath:filePath];
+            if (createLink) {
+                NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
+                if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
+                    [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+                    return NO;
+                }
             }
         }
     }

@@ -10,11 +10,21 @@
 #import "ZincGlobals.h"
 #import "ZincRepo.h"
 
+#define kZincRepoIndexCurrentFormat (2)
+
 @class ZincTrackingInfo;
+@class ZincExternalBundleInfo;
 
 @interface ZincRepoIndex : NSObject
 
+/**
+ @discussion Inits with current format kZincRepoIndexCurrentFormat
+ */
 - (id) init;
+- (id) initWithFormat:(NSInteger)format;
+
+@property (nonatomic, assign) NSInteger format;
++ (NSSet*) validFormats;
 
 - (void) addSourceURL:(NSURL*)url;
 - (void) removeSourceURL:(NSURL*)url;
@@ -39,6 +49,17 @@
 - (NSArray*) availableVersionsForBundleId:(NSString*)bundleId;
 
 - (ZincVersion) newestAvailableVersionForBundleId:(NSString*)bundleId;
+
+#pragma mark External Bundles
+/* 
+ !!!: External bundles are not persisted by design, they should be re-registered each launch.
+ */
+
+- (void) registerExternalBundle:(NSURL*)bundleRes manifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath;
+
+- (ZincExternalBundleInfo*) infoForExternalBundle:(NSURL*)bundleRes;
+
+- (NSArray*) registeredExternalBundles;
 
 #pragma mark Encoding
 

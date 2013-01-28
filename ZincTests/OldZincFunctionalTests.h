@@ -10,7 +10,7 @@
 
 @class ZincRepo;
 
-@interface ZincFunctionalTests : SenTestCase
+@interface OldZincFunctionalTests : SenTestCase
 
 @property (nonatomic, retain) ZincRepo* repo;
 

@@ -13,11 +13,6 @@
 
 @implementation NSFileManager (Zinc)
 
-+ (NSFileManager *) zinc_newFileManager
-{
-    return [[[NSFileManager alloc] init] autorelease];
-}
-
 - (BOOL) zinc_directoryExistsAtPath:(NSString*)path
 {
     BOOL isDir;
@@ -32,10 +27,8 @@
 
 - (BOOL) zinc_createDirectoryIfNeededAtPath:(NSString*)path error:(NSError**)outError
 {
-//    if (![self zinc_directoryExistsAtPath:path]) {
-        if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:outError]) {
-            return NO;
-//        }
+    if (![self createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:outError]) {
+        return NO;
     }
     return YES;
 }
@@ -43,33 +36,6 @@
 - (BOOL) zinc_createDirectoryIfNeededAtURL:(NSURL*)url error:(NSError**)outError
 {
     return [self zinc_createDirectoryIfNeededAtPath:[url path] error:outError];
-}
-
-#define SHA_READ_BUFFER_SIZE (4096)
-
-- (NSString*) zinc_sha1ForPath:(NSString*)path
-{
-    if (![self fileExistsAtPath:path]) {
-        return nil;
-    }
- 
-    NSData* data = [[NSData alloc] initWithContentsOfFile:path];
-    NSString* sha = [data zinc_sha1];
-    [data release];
-    return sha;
-}
-
-- (BOOL) zinc_gzipInflate:(NSString*)sourcePath destination:(NSString*)destPath  error:(NSError**)outError
-{
-    NSData* compressed = [[[NSData alloc] initWithContentsOfFile:sourcePath options:0 error:outError] autorelease];
-    if (compressed == nil) return NO;
-                    
-    NSData* uncompressed = [compressed zinc_gzipInflate];
-    if (![uncompressed writeToFile:destPath options:0 error:outError]) {
-        return NO;
-    }
-
-    return YES;
 }
 
 - (BOOL) zinc_removeItemAtPath:(NSString*)path error:(NSError**)outError

@@ -11,10 +11,13 @@
 
 NSString *const kZincEventAttributesSourceKey = @"source";
 NSString *const kZincEventAttributesURLKey = @"url";
+NSString *const kZincEventAttributesSizeKey = @"size";
 NSString *const kZincEventAttributesPathKey = @"path";
 NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
 NSString *const kZincEventAttributesContextKey = @"context";
+NSString *const kZincEventAttributesCloneSuccessKey = @"success";
+NSString *const kZincEventAttributesActionKey = @"action";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
@@ -25,8 +28,8 @@ NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneB
 NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
 NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveExtractBeginNotification";
 NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
-NSString *const kZincEventGarbageCollectionBeginNotification = @"ZincEventGarbageCollectionBeginNotification";
-NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGarbageCollectionCompleteNotification";
+NSString *const kZincEventMaintenanceBeginNotification = @"ZincEventMaintenanceionBeginNotification";
+NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMaintenanceionCompleteNotification";
 
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
@@ -203,10 +206,11 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 @implementation ZincDownloadCompleteEvent
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          url, kZincEventAttributesURLKey, nil];
+                          url, kZincEventAttributesURLKey,
+                          @(size), kZincEventAttributesSizeKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:nil attributes:attr] autorelease];
     
@@ -225,6 +229,11 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 - (NSURL*) url
 {
     return [self.attributes objectForKey:kZincEventAttributesURLKey];
+}
+
+- (NSInteger) size
+{
+    return [[self.attributes objectForKey:kZincEventAttributesSizeKey] integerValue];
 }
 
 @end
@@ -269,18 +278,19 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 
 @implementation ZincBundleCloneCompleteEvent
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context success:(BOOL)success
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           bundleResource, kZincEventAttributesBundleResourceKey,
-                          context ?: [NSNull null], kZincEventAttributesContextKey, nil];
+                          context ?: [NSNull null], kZincEventAttributesContextKey,
+                          @(success), kZincEventAttributesCloneSuccessKey, nil];
     
     return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:source attributes:attr] autorelease];
 }
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success
 {
-    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:nil context:context];
+    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:nil context:context success:success];
 }
 
 + (NSString*) name
@@ -366,42 +376,57 @@ NSString *const kZincEventGarbageCollectionCompleteNotification = @"ZincEventGar
 @end
 
 
-@implementation ZincGarbageCollectionBeginEvent
+@implementation ZincMaintenanceBeginEvent
 
-+ (id) event
++ (id) maintenanceEventWithAction:(NSString*)category;
 {
-    return [[[self alloc] initWithType:ZincEventTypeGarbageCollectBegin source:nil] autorelease];
+    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          category, kZincEventAttributesActionKey, nil];
+    return [[[self alloc] initWithType:ZincEventTypeMaintenanceBegin source:nil attributes:attr] autorelease];
 }
 
 + (NSString*) name
 {
-    return @"GARBAGECOLLECT-BEGIN";
+    return @"MAINTENANCE-BEGIN";
 }
 
 + (NSString *)notificationName
 {
-    return kZincEventGarbageCollectionBeginNotification;
+    return kZincEventMaintenanceBeginNotification;
+}
+
+- (NSString*) action
+{
+    return self.attributes[kZincEventAttributesActionKey];
 }
 
 @end
 
 
-@implementation ZincGarbageCollectionCompleteEvent
+@implementation ZincMaintenanceCompleteEvent
 
-+ (id) event
++ (id) maintenanceEventWithAction:(NSString*)category
 {
-    return [[[self alloc] initWithType:ZincEventTypeGarbageCollectComplete source:nil] autorelease];
+    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
+                          category, kZincEventAttributesActionKey, nil];
+    return [[[self alloc] initWithType:ZincEventTypeMaintenanceComplete source:nil attributes:attr] autorelease];
 }
 
 + (NSString*) name
 {
-    return @"GARBAGECOLLECT-COMPLETE";
+    return @"MAINTENANCE-COMPLETE";
 }
 
 + (NSString *)notificationName
 {
-    return kZincEventGarbageCollectionCompleteNotification;
+    return kZincEventMaintenanceionCompleteNotification;
 }
+
+- (NSString*) action
+{
+    return self.attributes[kZincEventAttributesActionKey];
+}
+
 @end
 
 

@@ -7,6 +7,7 @@
 //
 
 #import "ZincBundleDeleteTask.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
 #import "ZincEvent.h"
@@ -139,15 +140,9 @@
             continue;
         }
         
-        // don't delete _symbolic_ links, and only delete hard-linked files if
-        // their reference count is 1
-        
+        // delete hard-linked files if their reference count is 1
         NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
-        NSString* type = [attr objectForKey:NSFileType];
-        
-        BOOL shouldDeleteFile = ![type isEqualToString:NSFileTypeSymbolicLink]
-                                    && [linkCount integerValue] == 1;
-        
+        const BOOL shouldDeleteFile = [linkCount integerValue] == 1;
         if (shouldDeleteFile) {
             if (![fm zinc_removeItemAtPath:shaPath error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
@@ -175,11 +170,3 @@
 
 @end
 
-
-/*
- Relevant attributes for SYMLINKS
-{
-    NSFileReferenceCount = 1;
-    NSFileType = NSFileTypeSymbolicLink;
-}
- */
