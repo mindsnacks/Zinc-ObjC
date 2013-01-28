@@ -21,12 +21,7 @@ typedef enum {
     ZincBundleStateDeleting  = 3,
 } ZincBundleState;
 
-static NSString* ZincBundleStateName[] = {
-    @"None",
-    @"Cloning",
-    @"Available",
-    @"Deleting",
-};
+extern NSString* const ZincBundleStateName[];
 
 extern ZincBundleState ZincBundleStateFromName(NSString* name);
 

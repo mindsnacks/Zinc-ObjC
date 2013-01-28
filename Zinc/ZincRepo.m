@@ -69,6 +69,13 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
+NSString* const ZincBundleStateName[] = {
+    @"None",
+    @"Cloning",
+    @"Available",
+    @"Deleting",
+};
+
 ZincBundleState ZincBundleStateFromName(NSString* name)
 {
     if ([name isEqualToString:ZincBundleStateName[ZincBundleStateNone]]) {
