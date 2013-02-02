@@ -58,13 +58,4 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     return ZincProgressCalculate(self);
 }
 
-- (void) cancel
-{
-    @synchronized(self) {
-        [super cancel];
-        [self.dependencies makeObjectsPerformSelector:@selector(cancel)];
-    }
-}
-
-
 @end

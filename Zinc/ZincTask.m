@@ -233,4 +233,13 @@ typedef id ZincBackgroundTaskIdentifier;
 }
 #endif
 
+- (void) cancel
+{
+    @synchronized(self.myChildOperations) {
+        [self.myChildOperations makeObjectsPerformSelector:@selector(cancel)];
+    }
+    
+    [super cancel];
+}
+
 @end
