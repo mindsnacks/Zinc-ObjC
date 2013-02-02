@@ -48,8 +48,6 @@
  */
 - (NSArray*) availableVersionsForBundleId:(NSString*)bundleId;
 
-- (ZincVersion) newestAvailableVersionForBundleId:(NSString*)bundleId;
-
 #pragma mark External Bundles
 /* 
  !!!: External bundles are not persisted by design, they should be re-registered each launch.

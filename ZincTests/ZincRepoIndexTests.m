@@ -92,30 +92,6 @@
     [self _testDictionaryRoundtrip:i1];
 }
 
-- (void) testNewestAvailableBundle_NoExistingBundle
-{
-    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincVersion version = [i1 newestAvailableVersionForBundleId:@"com.foo.bundle"];
-    STAssertTrue(version == ZincVersionInvalid, @"should be invalid version");
-}
-
-- (void) testNewestAvailableBundle_LocalBundle
-{
-    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    [i1 setState:ZincBundleStateAvailable forBundle:[NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:0]];
-    ZincVersion version = [i1 newestAvailableVersionForBundleId:@"com.foo.bundle"];
-    STAssertTrue(version == 0, @"should be 0");
-}
-
-- (void) testNewestAvailableBundle_MultipleVersions
-{
-    ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    [i1 setState:ZincBundleStateAvailable forBundle:[NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:2]];
-    [i1 setState:ZincBundleStateAvailable forBundle:[NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:0]];
-    ZincVersion version = [i1 newestAvailableVersionForBundleId:@"com.foo.bundle"];
-    STAssertTrue(version == 2, @"should be 2");
-}
-
 - (void) testReturnsNilTrackingRefIfBundleIsNotTracked
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
