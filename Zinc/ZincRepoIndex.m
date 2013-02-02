@@ -107,11 +107,14 @@
 
 - (NSMutableDictionary*)bundleInfoDictForId:(NSString*)bundleId createIfMissing:(BOOL)create
 {
-    NSMutableDictionary* bundleInfo = [self.myBundles objectForKey:bundleId];
-    if (bundleInfo == nil && create) {
-        bundleInfo = [NSMutableDictionary dictionaryWithCapacity:2];
-        [bundleInfo setObject:[NSMutableDictionary dictionaryWithCapacity:2] forKey:@"versions"];
-        [self.myBundles setObject:bundleInfo forKey:bundleId];
+    NSMutableDictionary* bundleInfo = nil;
+    @synchronized(self.myBundles) {
+        bundleInfo = [self.myBundles objectForKey:bundleId];
+        if (bundleInfo == nil && create) {
+            bundleInfo = [NSMutableDictionary dictionaryWithCapacity:2];
+            [bundleInfo setObject:[NSMutableDictionary dictionaryWithCapacity:2] forKey:@"versions"];
+            [self.myBundles setObject:bundleInfo forKey:bundleId];
+        }
     }
     return bundleInfo;
 }
@@ -311,15 +314,6 @@
     }
     
     return [versions sortedArrayUsingSelector:@selector(compare:)];
-}
-
-- (ZincVersion) newestAvailableVersionForBundleId:(NSString*)bundleId
-{
-    NSNumber* version = [[self availableVersionsForBundleId:bundleId] lastObject];
-    if (version != nil) {
-        return [version integerValue];
-    }
-    return ZincVersionInvalid;
 }
 
 + (id) repoIndexFromDictionary_1:(NSDictionary*)dict
