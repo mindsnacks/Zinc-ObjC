@@ -49,11 +49,13 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
     
     if (!self.isMonitoring) return;
     
-    self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
-                                                         target:self
-                                                       selector:@selector(update)
-                                                       userInfo:nil
-                                                        repeats:YES];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
+                                                             target:self
+                                                           selector:@selector(update)
+                                                           userInfo:nil
+                                                            repeats:YES];
+    });
 }
 
 - (void)stopRefreshTimer
