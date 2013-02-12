@@ -1,0 +1,6 @@
+[submodule "Dependencies/External/AFNetworking"]
+	path = Dependencies/External/AFNetworking
+	url = git@github.com:mindsnacks/AFNetworking.git
+[submodule "Dependencies/External/KSReachability"]
+	path = Dependencies/External/KSReachability
+	url = git@github.com:mindsnacks/KSReachability.git

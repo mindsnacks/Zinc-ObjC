@@ -8,13 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3961E34F1649E4700008A65B /* Default-568h@2x.png */; };
-		B308D67116CA1F8E008A1237 /* GHUnitIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67016CA1F8E008A1237 /* GHUnitIOS.framework */; };
-		B308D67316CA20F4008A1237 /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67216CA20F4008A1237 /* libAFNetworking.a */; };
-		B308D67516CA210B008A1237 /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67416CA210A008A1237 /* libKSReachability.a */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
 		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
-		B3106DB614E341510052438D /* NSFileManager+ZincTar.m in Sources */ = {isa = PBXBuildFile; fileRef = B3106DB314E341510052438D /* NSFileManager+ZincTar.m */; };
 		B317E4F215C9F8AF00DE9D73 /* ZincJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */; };
+		B31DE37616CAFED9004F88ED /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37516CAFED9004F88ED /* libAFNetworking.a */; };
+		B31DE37816CAFF15004F88ED /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37716CAFF15004F88ED /* libKSReachability.a */; };
+		B31DE38616CAFFD3004F88ED /* GHUnitIOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE38516CAFFD3004F88ED /* GHUnitIOS.framework */; };
+		B31DE38716CB0030004F88ED /* NSFileManager+ZincTar.m in Sources */ = {isa = PBXBuildFile; fileRef = B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */; };
 		B3215E2314BE5AF800FC7FA7 /* ZincTaskDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */; };
 		B3215E2714BE600E00FC7FA7 /* ZincResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2514BE600E00FC7FA7 /* ZincResource.m */; };
 		B3215E2B14BE7E3C00FC7FA7 /* ZincCatalogUpdateTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2914BE7E3B00FC7FA7 /* ZincCatalogUpdateTask.m */; };
@@ -198,19 +198,19 @@
 
 /* Begin PBXFileReference section */
 		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
-		B308D67016CA1F8E008A1237 /* GHUnitIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GHUnitIOS.framework; path = Dependencies/GHUnitIOS/GHUnitIOS.framework; sourceTree = SOURCE_ROOT; };
-		B308D67216CA20F4008A1237 /* libAFNetworking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAFNetworking.a; path = "../../../../../../../../Library/Developer/Xcode/DerivedData/MindSnacks-enthpepwhlmuzaczeuoxkdrgobsy/Build/Products/Debug-iphoneos/libAFNetworking.a"; sourceTree = "<group>"; };
-		B308D67416CA210A008A1237 /* libKSReachability.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKSReachability.a; path = "../../../../../../../../Library/Developer/Xcode/DerivedData/MindSnacks-enthpepwhlmuzaczeuoxkdrgobsy/Build/Products/Debug-iphoneos/libKSReachability.a"; sourceTree = "<group>"; };
 		B308D67616CA221F008A1237 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
-		B3106DA914E3404B0052438D /* AMError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMError.h; sourceTree = "<group>"; };
-		B3106DAA14E3404B0052438D /* AMFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMFoundation.h; sourceTree = "<group>"; };
-		B3106DAB14E3404B0052438D /* AMLogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMLogMacros.h; sourceTree = "<group>"; };
-		B3106DAC14E3404B0052438D /* AMUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMUtility.h; sourceTree = "<group>"; };
-		B3106DB214E341510052438D /* NSFileManager+ZincTar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSFileManager+ZincTar.h"; sourceTree = "<group>"; };
-		B3106DB314E341510052438D /* NSFileManager+ZincTar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+ZincTar.m"; sourceTree = "<group>"; };
 		B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincJSONSerialization.h; sourceTree = "<group>"; };
 		B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincJSONSerialization.m; sourceTree = "<group>"; };
+		B31DE37516CAFED9004F88ED /* libAFNetworking.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libAFNetworking.a; path = "Dependencies/External/AFNetworking/build/Release-iphoneos/libAFNetworking.a"; sourceTree = "<group>"; };
+		B31DE37716CAFF15004F88ED /* libKSReachability.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libKSReachability.a; path = "Dependencies/External/KSReachability/build/Release-iphoneos/libKSReachability.a"; sourceTree = "<group>"; };
+		B31DE37916CAFF4A004F88ED /* AMError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMError.h; path = Dependencies/Internal/AMFoundation/AMError.h; sourceTree = SOURCE_ROOT; };
+		B31DE37A16CAFF4A004F88ED /* AMFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMFoundation.h; path = Dependencies/Internal/AMFoundation/AMFoundation.h; sourceTree = SOURCE_ROOT; };
+		B31DE37B16CAFF4A004F88ED /* AMLogMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMLogMacros.h; path = Dependencies/Internal/AMFoundation/AMLogMacros.h; sourceTree = SOURCE_ROOT; };
+		B31DE37C16CAFF4A004F88ED /* AMUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AMUtility.h; path = Dependencies/Internal/AMFoundation/AMUtility.h; sourceTree = SOURCE_ROOT; };
+		B31DE37D16CAFF58004F88ED /* NSFileManager+ZincTar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSFileManager+ZincTar.h"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.h"; sourceTree = SOURCE_ROOT; };
+		B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSFileManager+ZincTar.m"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.m"; sourceTree = SOURCE_ROOT; };
+		B31DE38516CAFFD3004F88ED /* GHUnitIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GHUnitIOS.framework; sourceTree = "<group>"; };
 		B31E269015D472F600B913D9 /* ZincBundleTrackingRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleTrackingRequest.h; sourceTree = "<group>"; };
 		B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskDescriptor.h; sourceTree = "<group>"; };
 		B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskDescriptor.m; sourceTree = "<group>"; };
@@ -399,9 +399,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B31DE37816CAFF15004F88ED /* libKSReachability.a in Frameworks */,
+				B31DE37616CAFED9004F88ED /* libAFNetworking.a in Frameworks */,
 				B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */,
-				B308D67516CA210B008A1237 /* libKSReachability.a in Frameworks */,
-				B308D67316CA20F4008A1237 /* libAFNetworking.a in Frameworks */,
 				B33A362B1698FB4D007F0A57 /* libz.dylib in Frameworks */,
 				B33A362A1698FB3F007F0A57 /* SystemConfiguration.framework in Frameworks */,
 				B33A36271698FB29007F0A57 /* libZinc.a in Frameworks */,
@@ -409,7 +409,7 @@
 				B33A36031698F3A5007F0A57 /* Foundation.framework in Frameworks */,
 				B33A36041698F3A5007F0A57 /* CoreGraphics.framework in Frameworks */,
 				B33A362C1698FB5B007F0A57 /* CFNetwork.framework in Frameworks */,
-				B308D67116CA1F8E008A1237 /* GHUnitIOS.framework in Frameworks */,
+				B31DE38616CAFFD3004F88ED /* GHUnitIOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -453,18 +453,9 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B308D66F16CA1F54008A1237 /* GHUnit */ = {
-			isa = PBXGroup;
-			children = (
-				B308D67016CA1F8E008A1237 /* GHUnitIOS.framework */,
-			);
-			name = GHUnit;
-			sourceTree = "<group>";
-		};
 		B31056F7148D934B0069F0D5 /* Dependencies */ = {
 			isa = PBXGroup;
 			children = (
-				B308D66F16CA1F54008A1237 /* GHUnit */,
 				B3106DA814E3404B0052438D /* AMFoundation */,
 				B3106DB114E341510052438D /* Light-Untar-for-iOS+Zinc */,
 			);
@@ -475,10 +466,10 @@
 		B3106DA814E3404B0052438D /* AMFoundation */ = {
 			isa = PBXGroup;
 			children = (
-				B3106DAA14E3404B0052438D /* AMFoundation.h */,
-				B3106DA914E3404B0052438D /* AMError.h */,
-				B3106DAB14E3404B0052438D /* AMLogMacros.h */,
-				B3106DAC14E3404B0052438D /* AMUtility.h */,
+				B31DE37916CAFF4A004F88ED /* AMError.h */,
+				B31DE37A16CAFF4A004F88ED /* AMFoundation.h */,
+				B31DE37B16CAFF4A004F88ED /* AMLogMacros.h */,
+				B31DE37C16CAFF4A004F88ED /* AMUtility.h */,
 			);
 			name = AMFoundation;
 			path = Dependencies/AMFoundation;
@@ -487,12 +478,29 @@
 		B3106DB114E341510052438D /* Light-Untar-for-iOS+Zinc */ = {
 			isa = PBXGroup;
 			children = (
-				B3106DB214E341510052438D /* NSFileManager+ZincTar.h */,
-				B3106DB314E341510052438D /* NSFileManager+ZincTar.m */,
+				B31DE37D16CAFF58004F88ED /* NSFileManager+ZincTar.h */,
+				B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */,
 			);
 			name = "Light-Untar-for-iOS+Zinc";
 			path = "Dependencies/Light-Untar-for-iOS+Zinc";
 			sourceTree = SOURCE_ROOT;
+		};
+		B31DE38316CAFFC6004F88ED /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				B31DE38416CAFFD3004F88ED /* GHUnitIOS */,
+			);
+			name = Dependencies;
+			sourceTree = "<group>";
+		};
+		B31DE38416CAFFD3004F88ED /* GHUnitIOS */ = {
+			isa = PBXGroup;
+			children = (
+				B31DE38516CAFFD3004F88ED /* GHUnitIOS.framework */,
+			);
+			name = GHUnitIOS;
+			path = Dependencies/GHUnitIOS;
+			sourceTree = "<group>";
 		};
 		B33A36051698F3A5007F0A57 /* Zinc Functional Tests */ = {
 			isa = PBXGroup;
@@ -501,6 +509,7 @@
 				B33A363116990DE4007F0A57 /* ZincFunctionalTestCase.m */,
 				B33A36251698F6BF007F0A57 /* DemoCatalogTests.m */,
 				B33A362E16990BA5007F0A57 /* ExternalBundleTests.m */,
+				B31DE38316CAFFC6004F88ED /* Dependencies */,
 				B33A36061698F3A5007F0A57 /* Supporting Files */,
 			);
 			path = "Zinc Functional Tests";
@@ -685,8 +694,8 @@
 				B387430A1489B830004B227B /* Foundation.framework */,
 				B387430C1489B830004B227B /* CoreGraphics.framework */,
 				B340F94A148D514600206F86 /* SenTestingKit.framework */,
-				B308D67216CA20F4008A1237 /* libAFNetworking.a */,
-				B308D67416CA210A008A1237 /* libKSReachability.a */,
+				B31DE37516CAFED9004F88ED /* libAFNetworking.a */,
+				B31DE37716CAFF15004F88ED /* libKSReachability.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1105,7 +1114,6 @@
 				B338E4E114CCC33200BC0915 /* ZincDeepCopying.m in Sources */,
 				B338E50914CE0FBC00BC0915 /* ZincGlobals.m in Sources */,
 				B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */,
-				B3106DB614E341510052438D /* NSFileManager+ZincTar.m in Sources */,
 				B396E30D1590FB8D00584F83 /* ZincBundleCloneTask.m in Sources */,
 				B3F14A5E15BB840900F7E22E /* ZincTaskActions.m in Sources */,
 				B347EBE115C3593500FA0649 /* ZincOperation.m in Sources */,
@@ -1127,6 +1135,7 @@
 				B38E8CAA16AA5468009C03BC /* ZincCleanLegacySymlinksTask.m in Sources */,
 				B32FC70016AE055300E3A2C2 /* ZincInitializationTask.m in Sources */,
 				B32FC70516AE0A2100E3A2C2 /* ZincCompleteInitializationTask.m in Sources */,
+				B31DE38716CB0030004F88ED /* NSFileManager+ZincTar.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1218,7 +1227,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Dependencies/GHUnitIOS\"",
+					"\"$(SRCROOT)/Zinc Functional Tests/Dependencies/GHUnitIOS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Zinc Functional Tests/Zinc Functional Tests-Prefix.pch";
@@ -1248,7 +1257,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/Dependencies/GHUnitIOS\"",
+					"\"$(SRCROOT)/Zinc Functional Tests/Dependencies/GHUnitIOS\"",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Zinc Functional Tests/Zinc Functional Tests-Prefix.pch";
