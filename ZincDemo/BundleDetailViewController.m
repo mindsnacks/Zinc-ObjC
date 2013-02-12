@@ -7,7 +7,7 @@
 //
 
 #import "BundleDetailViewController.h"
-#import "Zinc.h"
+#import <Zinc/Zinc.h>
 
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"

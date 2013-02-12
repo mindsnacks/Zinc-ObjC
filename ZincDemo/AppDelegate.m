@@ -14,7 +14,7 @@
 #import "ZincEvent.h"
 #import "ZincUtils.h"
 #import "UIImage+Zinc.h"
-#import "Zinc.h"
+#import <Zinc/Zinc.h>
 
 @interface AppDelegate()
 @property (strong, nonatomic) BundleListViewController *viewController;

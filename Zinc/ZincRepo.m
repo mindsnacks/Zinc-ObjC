@@ -40,7 +40,7 @@
 #import "ZincTaskRef.h"
 #import "ZincBundleTrackingRequest.h"
 #import "ZincDownloadPolicy.h"
-#import "ZincKSReachability.h"
+#import <KSReachability/KSReachability.h>
 #import "NSError+Zinc.h"
 #import "ZincTaskActions.h"
 #import "ZincExternalBundleInfo.h"
@@ -106,7 +106,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 @property (nonatomic, retain) NSMutableArray* myTasks;
 @property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
-@property (nonatomic, retain) ZincKSReachability* reachability;
+@property (nonatomic, retain) KSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
 @property (nonatomic, retain) NSOperationQueue* initializationQueue;
 @property (nonatomic, retain) ZincCompleteInitializationTask* completeInitializationTask;
@@ -173,7 +173,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
     }
     
-    ZincKSReachability* reachability = [ZincKSReachability reachabilityToLocalNetwork];
+    KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
     
     ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability] autorelease];
     if (![repo createDirectoriesIfNeeded:outError]) {
@@ -221,7 +221,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 }
 
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(ZincKSReachability*)reachability
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability
 {
     self = [super init];
     if (self) {
@@ -360,7 +360,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
-- (void) setReachability:(ZincKSReachability*)reachability
+- (void) setReachability:(KSReachability*)reachability
 {
     if (_reachability == reachability) return;
     
@@ -373,7 +373,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     
     if (_reachability != nil) {
         __block typeof(self) blockself = self;
-        _reachability.onReachabilityChanged = ^(ZincKSReachability *reachability) {
+        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
             @synchronized(self.myTasks) {
                 NSArray* remoteBundleUpdateTasks = [self.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                     return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
