@@ -212,7 +212,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
+		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		44082801C7384F68A833F8E5 /* Pods-Zinc Functional Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc Functional Tests.xcconfig"; path = "Pods/Pods-Zinc Functional Tests.xcconfig"; sourceTree = SOURCE_ROOT; };
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B3106DA914E3404B0052438D /* AMError.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AMError.h; sourceTree = "<group>"; };
@@ -544,6 +544,7 @@
 		B33A363316991112007F0A57 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3961E34F1649E4700008A65B /* Default-568h@2x.png */,
 				B33A363A16991124007F0A57 /* com.mindsnacks.demo1.cats */,
 			);
 			name = Resources;
@@ -672,7 +673,6 @@
 		B38742F91489B830004B227B = {
 			isa = PBXGroup;
 			children = (
-				3961E34F1649E4700008A65B /* Default-568h@2x.png */,
 				B340F972148D52D800206F86 /* Zinc */,
 				B387430E1489B830004B227B /* Demo */,
 				B340F984148D52D800206F86 /* ZincTests */,
