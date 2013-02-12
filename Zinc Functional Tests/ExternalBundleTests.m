@@ -11,6 +11,7 @@
 #import "ZincManifest.h"
 #import "ZincUtils.h"
 #import "ZincResource.h"
+#import "ZincBundle.h"
 
 @interface ExternalBundleTests : ZincFunctionalTestCase
 

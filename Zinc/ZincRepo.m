@@ -34,7 +34,6 @@
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
 #import "ZincJSONSerialization.h"
-#import "ZincHTTPRequestOperation.h"
 #import "ZincErrors.h"
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
@@ -605,7 +604,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (void) addOperation:(NSOperation*)operation
 {
-    if ([operation isKindOfClass:[ZincURLConnectionOperation class]]) {
+    if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
         [self.networkQueue addOperation:operation];
     } else if ([operation isKindOfClass:[ZincInitializationTask class]]) {
         [self.initializationQueue addOperation:operation];

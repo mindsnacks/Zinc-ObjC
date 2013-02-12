@@ -15,7 +15,6 @@
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
 #import "ZincResource.h"
-#import "ZincHTTPRequestOperation.h"
 #import "NSData+Zinc.h"
 #import "ZincEvent.h"
 #import "ZincErrors.h"

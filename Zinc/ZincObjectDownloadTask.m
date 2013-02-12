@@ -18,7 +18,6 @@
 #import "NSData+Zinc.h"
 #import "ZincErrors.h"
 #import "ZincUtils.h"
-#import "ZincHTTPRequestOperation.h"
 #import "ZincSHA.h"
 
 @interface ZincObjectDownloadTask ()

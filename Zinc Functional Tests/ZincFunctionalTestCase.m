@@ -8,6 +8,8 @@
 
 #import "ZincFunctionalTestCase.h"
 
+#import "ZincUtils.h"
+
 @implementation ZincFunctionalTestCase
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
