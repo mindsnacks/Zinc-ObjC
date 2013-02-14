@@ -184,7 +184,7 @@
 		B31DE37D16CAFF58004F88ED /* NSFileManager+ZincTar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSFileManager+ZincTar.h"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.h"; sourceTree = SOURCE_ROOT; };
 		B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSFileManager+ZincTar.m"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.m"; sourceTree = SOURCE_ROOT; };
 		B31DE38516CAFFD3004F88ED /* GHUnitIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GHUnitIOS.framework; sourceTree = "<group>"; };
-		B31DE3FC16CD822A004F88ED /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libOCMock.a; path = "Dependencies/External/OCMock/Source/build/Release-iphoneos/libOCMock.a"; sourceTree = "<group>"; };
+		B31DE3FC16CD822A004F88ED /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libOCMock.a; path = "Dependencies/External/OCMock/Source/build/Release-iphoneos/libOCMock.a"; sourceTree = "<group>"; };
 		B31E269015D472F600B913D9 /* ZincBundleTrackingRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleTrackingRequest.h; sourceTree = "<group>"; };
 		B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskDescriptor.h; sourceTree = "<group>"; };
 		B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskDescriptor.m; sourceTree = "<group>"; };
@@ -1240,10 +1240,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Zinc Functional Tests/Zinc Functional Tests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../../Library/Developer/Xcode/DerivedData/MindSnacks-enthpepwhlmuzaczeuoxkdrgobsy/Build/Products/Debug-iphoneos\"",
-				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1270,10 +1266,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				INFOPLIST_FILE = "Zinc Functional Tests/Zinc Functional Tests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/../../../../../../../../Library/Developer/Xcode/DerivedData/MindSnacks-enthpepwhlmuzaczeuoxkdrgobsy/Build/Products/Debug-iphoneos\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
