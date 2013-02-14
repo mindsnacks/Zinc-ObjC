@@ -33,6 +33,10 @@
 		B31DE3B416CCBACA004F88ED /* UIImage+Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B38A06F114C0DADC00AEC367 /* UIImage+Zinc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B31DE3B516CCBACA004F88ED /* ZincUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E46B5414C3DF7800030349 /* ZincUtils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B31DE3B616CCBACA004F88ED /* ZincOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B347EBDE15C3593500FA0649 /* ZincOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B31DE3FD16CD822A004F88ED /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE3FC16CD822A004F88ED /* libOCMock.a */; };
+		B31DE40216CD8275004F88ED /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
+		B31DE40316CD8283004F88ED /* libAFNetworking.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37516CAFED9004F88ED /* libAFNetworking.a */; };
+		B31DE40416CD8283004F88ED /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37716CAFF15004F88ED /* libKSReachability.a */; };
 		B3215E2314BE5AF800FC7FA7 /* ZincTaskDescriptor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */; };
 		B3215E2714BE600E00FC7FA7 /* ZincResource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2514BE600E00FC7FA7 /* ZincResource.m */; };
 		B3215E2B14BE7E3C00FC7FA7 /* ZincCatalogUpdateTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2914BE7E3B00FC7FA7 /* ZincCatalogUpdateTask.m */; };
@@ -89,7 +93,6 @@
 		B340F989148D52D800206F86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B340F987148D52D800206F86 /* InfoPlist.strings */; };
 		B340F996148D543B00206F86 /* ZincBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F994148D543B00206F86 /* ZincBundle.m */; };
 		B340F999148D546300206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
-		B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F9B3148D581200206F86 /* libOCMock.a */; };
 		B340F9BC148D5C6200206F86 /* ZincBundleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F9BB148D5C6200206F86 /* ZincBundleTests.m */; };
 		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
 		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
@@ -181,6 +184,7 @@
 		B31DE37D16CAFF58004F88ED /* NSFileManager+ZincTar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSFileManager+ZincTar.h"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.h"; sourceTree = SOURCE_ROOT; };
 		B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSFileManager+ZincTar.m"; path = "Dependencies/Internal/Light-Untar-for-iOS+Zinc/NSFileManager+ZincTar.m"; sourceTree = SOURCE_ROOT; };
 		B31DE38516CAFFD3004F88ED /* GHUnitIOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = GHUnitIOS.framework; sourceTree = "<group>"; };
+		B31DE3FC16CD822A004F88ED /* libOCMock.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = libOCMock.a; path = "Dependencies/External/OCMock/Source/build/Release-iphoneos/libOCMock.a"; sourceTree = "<group>"; };
 		B31E269015D472F600B913D9 /* ZincBundleTrackingRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleTrackingRequest.h; sourceTree = "<group>"; };
 		B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskDescriptor.h; sourceTree = "<group>"; };
 		B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskDescriptor.m; sourceTree = "<group>"; };
@@ -395,13 +399,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B31DE40216CD8275004F88ED /* MobileCoreServices.framework in Frameworks */,
+				B31DE40316CD8283004F88ED /* libAFNetworking.a in Frameworks */,
+				B31DE40416CD8283004F88ED /* libKSReachability.a in Frameworks */,
+				B31DE3FD16CD822A004F88ED /* libOCMock.a in Frameworks */,
 				B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */,
 				B3215E3814BFC68D00FC7FA7 /* libz.dylib in Frameworks */,
 				B340F97E148D52D800206F86 /* SenTestingKit.framework in Frameworks */,
 				B340F97F148D52D800206F86 /* UIKit.framework in Frameworks */,
 				B340F980148D52D800206F86 /* Foundation.framework in Frameworks */,
 				B340F983148D52D800206F86 /* libZinc.a in Frameworks */,
-				B340F9B4148D581200206F86 /* libOCMock.a in Frameworks */,
 				B336A5F9162790FC0042157C /* SystemConfiguration.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -655,6 +662,7 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B31DE3FC16CD822A004F88ED /* libOCMock.a */,
 				B30B763B14B75750004E6587 /* libz.dylib */,
 				B329B05C14E3152D0091019F /* libcommonCrypto.dylib */,
 				B308D67616CA221F008A1237 /* MobileCoreServices.framework */,
@@ -1315,12 +1323,7 @@
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PREFIX_HEADER = "ZincTests/ZincTests-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77/Headers\"/**";
 				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";
@@ -1336,12 +1339,7 @@
 					"$(DEVELOPER_LIBRARY_DIR)/Frameworks",
 				);
 				GCC_PREFIX_HEADER = "ZincTests/ZincTests-Prefix.pch";
-				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77/Headers\"/**";
 				INFOPLIST_FILE = "ZincTests/ZincTests-Info.plist";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"\"$(SRCROOT)/ZincTests/Dependencies/OCMock-1.77\"",
-				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "";
