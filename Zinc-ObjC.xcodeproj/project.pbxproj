@@ -314,6 +314,8 @@
 		B396E30E1590FBE800584F83 /* ZincBundleCloneTask+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincBundleCloneTask+Private.h"; sourceTree = "<group>"; };
 		B398DE8C16ADDAC7003F7D3F /* ZincDownloadPolicyTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadPolicyTest.h; sourceTree = "<group>"; };
 		B398DE8D16ADDAC7003F7D3F /* ZincDownloadPolicyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadPolicyTest.m; sourceTree = "<group>"; };
+		B3A395FB16CEB5B4000C4F83 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
+		B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = libZinc.xcconfig; sourceTree = "<group>"; };
 		B3ACA22B15DCC94C000C842D /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		B3AE4612149C0DDC00767CBD /* ZincCatalog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincCatalog.h; sourceTree = "<group>"; };
@@ -637,6 +639,7 @@
 		B38742F91489B830004B227B = {
 			isa = PBXGroup;
 			children = (
+				B3A395FA16CEB58D000C4F83 /* Build Settings */,
 				B340F972148D52D800206F86 /* Zinc */,
 				B387430E1489B830004B227B /* Demo */,
 				B340F984148D52D800206F86 /* ZincTests */,
@@ -707,6 +710,15 @@
 				B38743161489B830004B227B /* Zinc-Demo-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B3A395FA16CEB58D000C4F83 /* Build Settings */ = {
+			isa = PBXGroup;
+			children = (
+				B3A395FB16CEB5B4000C4F83 /* Base.xcconfig */,
+				B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */,
+			);
+			name = "Build Settings";
 			sourceTree = "<group>";
 		};
 		B3CAB5F515FC3644008502AC /* Activity */ = {
@@ -1275,13 +1287,10 @@
 		};
 		B340F98E148D52D800206F86 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/include\"",
-					"$(inherited)",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1289,20 +1298,16 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
 		B340F98F148D52D800206F86 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */;
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/include\"",
-					"$(inherited)",
-				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1310,7 +1315,6 @@
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "include/$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Release;
