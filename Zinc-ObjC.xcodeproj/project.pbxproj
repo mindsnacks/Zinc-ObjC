@@ -1278,6 +1278,10 @@
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/include\"",
+					"$(inherited)",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1295,6 +1299,10 @@
 			buildSettings = {
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				HEADER_SEARCH_PATHS = (
+					"\"$(BUILD_ROOT)/../IntermediateBuildFilesPath/UninstalledProducts/include\"",
+					"$(inherited)",
+				);
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
