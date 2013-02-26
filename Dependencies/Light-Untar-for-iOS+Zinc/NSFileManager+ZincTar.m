@@ -51,6 +51,8 @@
 #define TAR_ERROR_CODE_SOURCE_NOT_FOUND 2
 #define TAR_ERROR_CODE_BAD_FILE 3
 
+#define TAR_ERROR_FILE_PATH_ERROR_KEY @"path"
+
 #pragma mark - Private Methods
 @interface NSFileManager (ZincTar_Private)
 -(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error;
@@ -89,8 +91,11 @@
         [fileHandle closeFile];
         return result;
     }
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Source file not found" 
-                                                         forKey:NSLocalizedDescriptionKey];
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: @"Source file not found",
+                               TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                               };
+
     if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_SOURCE_NOT_FOUND userInfo:userInfo];
     return NO;
 }
@@ -98,8 +103,11 @@
 -(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
 {
     if (size % TAR_BLOCK_SIZE != 0) {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid tar file"
-                                                             forKey:NSLocalizedDescriptionKey];
+        NSDictionary *userInfo = @{
+                                   NSLocalizedDescriptionKey: @"Invalid tar file",
+                                   TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                                   };
+
         if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_BAD_FILE userInfo:userInfo];
         return NO;
     }
@@ -177,8 +185,10 @@
             }          
             default: // It's not a tar type
             {
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid block type found" 
-                                                                     forKey:NSLocalizedDescriptionKey];
+                NSDictionary *userInfo = @{
+                                           NSLocalizedDescriptionKey: @"Invalid block type found",
+                                           TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                                           };
                 if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_BAD_BLOCK userInfo:userInfo];
                 return NO;
             }
