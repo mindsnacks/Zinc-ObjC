@@ -1115,6 +1115,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         parentOp.completionBlock = completion;
     }
     
+    NSMutableArray *taskDescriptors = [NSMutableArray array];
+    
     @synchronized(self.index) {
         
         NSSet* trackBundles = [self.index trackedBundleIds];
@@ -1156,13 +1158,20 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             }
             
             [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            [self queueIndexSaveTask];
             
             ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
-            [parentOp addDependency:bundleTask];
+            [taskDescriptors addObject:taskDesc];
         }
     }
+    
+     // the following should not be done within an @synchronized block because it obtains other locks
+    
+    for (ZincTaskDescriptor* taskDesc in taskDescriptors) {
+        ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
+        [parentOp addDependency:bundleTask];
+    }
+    
+    [self queueIndexSaveTask];
     
     if (completion != nil) {
         [self addOperation:parentOp];
