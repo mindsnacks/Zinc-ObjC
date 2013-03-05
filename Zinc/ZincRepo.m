@@ -390,22 +390,28 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (void) restartRefreshTimer
 {
-    [self stopRefreshTimer];
-    
-    if (self.autoRefreshInterval > 0) {
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
-                                                             target:self
-                                                           selector:@selector(refreshTimerFired:)
-                                                           userInfo:nil
-                                                            repeats:YES];
-        [self.refreshTimer fire];
+    @synchronized(self)
+    {
+        [self stopRefreshTimer];
+
+        if (self.autoRefreshInterval > 0) {
+            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
+                                                                 target:self
+                                                               selector:@selector(refreshTimerFired:)
+                                                               userInfo:nil
+                                                                repeats:YES];
+            [self.refreshTimer fire];
+        }
     }
 }
 
 - (void) stopRefreshTimer
 {
-    [self.refreshTimer invalidate];
-    self.refreshTimer = nil;
+    @synchronized(self)
+    {
+        [self.refreshTimer invalidate];
+        self.refreshTimer = nil;
+    }
 }
 
 - (void) checkForBundleDeletion
