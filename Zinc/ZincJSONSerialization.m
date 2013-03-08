@@ -10,9 +10,23 @@
 
 @implementation ZincJSONSerialization
 
-+ (id)JSONObjectWithData:(NSData *)data options:(ZincJSONReadingOptions)opt error:(NSError **)error
++ (id)JSONObjectWithData:(NSData *)data options:(ZincJSONReadingOptions)opt error:(NSError **)outError
 {
-    return [NSJSONSerialization JSONObjectWithData:data options:opt error:error];
+    NSError *error = nil;
+    id object = [NSJSONSerialization JSONObjectWithData:data options:opt error:&error];
+
+    if (error && outError) {
+        // Add the original JSON string to the user info
+        NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
+        NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        userInfo[@"zinc_JSONString"] = JSONString ?: @"<nil>";
+        [JSONString release];
+
+        error = [NSError errorWithDomain:error.domain code:error.code userInfo:userInfo];
+        *outError = error;
+    }
+
+    return object;
 }
 
 + (NSData *)dataWithJSONObject:(id)obj options:(ZincJSONReadingOptions)opt error:(NSError **)error
