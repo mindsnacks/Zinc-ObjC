@@ -1,0 +1,8 @@
+//
+// Prefix header for all source files of the 'zinc-objc-untar' target in the 'zinc-objc-untar' project
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+    #import "AMFoundation.h"
+#endif
