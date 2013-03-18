@@ -51,16 +51,18 @@
 #define TAR_ERROR_CODE_SOURCE_NOT_FOUND 2
 #define TAR_ERROR_CODE_BAD_FILE 3
 
+#define TAR_ERROR_FILE_PATH_ERROR_KEY @"path"
+
 #pragma mark - Private Methods
 @interface NSFileManager (ZincTar_Private)
--(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error;
+-(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(unsigned long long)size error:(NSError **)error;
 - (BOOL)zinc_writeFileDataForObject:(id)object inRange:(NSRange)range atPath:(NSString*)path error:(NSError**)outError;
 @end
 
 @interface ZincNSFileManagerTarHelper : NSObject
-+ (char)typeForObject:(id)object atOffset:(int)offset;
-+ (NSString*)nameForObject:(id)object atOffset:(int)offset;
-+ (int)sizeForObject:(id)object atOffset:(int)offset;
++ (char)typeForObject:(id)object atOffset:(unsigned long long)offset;
++ (NSString*)nameForObject:(id)object atOffset:(unsigned long long)offset;
++ (unsigned long long)sizeForObject:(id)object atOffset:(unsigned long long)offset;
 + (NSData*)dataForObject:(id)object inRange:(NSRange)range;
 @end
 
@@ -82,24 +84,30 @@
     NSFileManager * filemanager = [NSFileManager defaultManager];
     if([filemanager fileExistsAtPath:tarPath]){
         NSDictionary * attributes = [filemanager attributesOfItemAtPath:tarPath error:nil];        
-        int size = [[attributes objectForKey:NSFileSize] intValue];
+        unsigned long long size = [[attributes objectForKey:NSFileSize] unsignedLongLongValue];
         
         NSFileHandle* fileHandle = [NSFileHandle fileHandleForReadingAtPath:tarPath];
         BOOL result = [self zinc_createFilesAndDirectoriesAtPath:path withTarObject:fileHandle size:size error:error];
         [fileHandle closeFile];
         return result;
     }
-    NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Source file not found" 
-                                                         forKey:NSLocalizedDescriptionKey];
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: @"Source file not found",
+                               TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                               };
+
     if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_SOURCE_NOT_FOUND userInfo:userInfo];
     return NO;
 }
 
--(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(int)size error:(NSError **)error
+-(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(unsigned long long)size error:(NSError **)error
 {
     if (size % TAR_BLOCK_SIZE != 0) {
-        NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid tar file"
-                                                             forKey:NSLocalizedDescriptionKey];
+        NSDictionary *userInfo = @{
+                                   NSLocalizedDescriptionKey: @"Invalid tar file",
+                                   TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                                   };
+
         if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_BAD_FILE userInfo:userInfo];
         return NO;
     }
@@ -177,8 +185,10 @@
             }          
             default: // It's not a tar type
             {
-                NSDictionary *userInfo = [NSDictionary dictionaryWithObject:@"Invalid block type found" 
-                                                                     forKey:NSLocalizedDescriptionKey];
+                NSDictionary *userInfo = @{
+                                           NSLocalizedDescriptionKey: @"Invalid block type found",
+                                           TAR_ERROR_FILE_PATH_ERROR_KEY: path
+                                           };
                 if (error != NULL) *error = [NSError errorWithDomain:TAR_ERROR_DOMAIN code:TAR_ERROR_CODE_BAD_BLOCK userInfo:userInfo];
                 return NO;
             }
@@ -213,8 +223,7 @@
             
         } else {
             if (outError != NULL) {
-                *outError = ZincErrorWithInfo(
-                                              ZINC_ERR_COULD_NOT_OPEN_FILE, @{@"path" : path});
+                *outError = ZincErrorWithInfo(ZINC_ERR_COULD_NOT_OPEN_FILE, @{@"path" : path});
             }
             
             return NO;
@@ -228,14 +237,14 @@
 
 @implementation ZincNSFileManagerTarHelper
 
-+ (char)typeForObject:(id)object atOffset:(int)offset
++ (char)typeForObject:(id)object atOffset:(unsigned long long)offset
 {
     char type;
     memcpy(&type,[self dataForObject:object inRange:NSMakeRange(offset+TAR_TYPE_POSITION, 1)].bytes, 1);
     return type;
 }
 
-+ (NSString*)nameForObject:(id)object atOffset:(int)offset
++ (NSString*)nameForObject:(id)object atOffset:(unsigned long long)offset
 {
     char nameBytes[TAR_NAME_SIZE+1]; // TAR_NAME_SIZE+1 for nul char at end
     memset(&nameBytes, '\0', TAR_NAME_SIZE+1); // Fill byte array with nul char
@@ -243,7 +252,7 @@
     return [NSString stringWithCString:nameBytes encoding:NSASCIIStringEncoding];
 }
 
-+ (int)sizeForObject:(id)object atOffset:(int)offset
++ (unsigned long long)sizeForObject:(id)object atOffset:(unsigned long long)offset
 {
     char sizeBytes[TAR_SIZE_SIZE+1]; // TAR_SIZE_SIZE+1 for nul char at end
     memset(&sizeBytes, '\0', TAR_SIZE_SIZE+1); // Fill byte array with nul char

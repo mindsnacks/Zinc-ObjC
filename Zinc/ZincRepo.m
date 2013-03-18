@@ -98,7 +98,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 // runtime state
 @property (nonatomic, retain) NSMutableDictionary* sourcesByCatalog;
 @property (nonatomic, retain) NSOperationQueue* networkQueue;
-@property (nonatomic, retain) ZincOperationQueueGroup* queueGroup;
+@property (nonatomic, retain) ZincOperationQueueGroup* taskQueueGroup;
 @property (nonatomic, retain) NSTimer* refreshTimer;
 @property (nonatomic, retain) NSMutableDictionary* loadedBundles;
 @property (nonatomic, retain) NSCache* cache;
@@ -107,7 +107,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) KSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
-@property (nonatomic, retain) NSOperationQueue* initializationQueue;
+@property (nonatomic, retain) NSOperationQueue* internalQueue;
 @property (nonatomic, retain) ZincCompleteInitializationTask* completeInitializationTask;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 
@@ -144,20 +144,6 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 
 @implementation ZincRepo
-
-@synthesize delegate = _delegate;
-@synthesize index = _index;
-@synthesize url = _url;
-@synthesize networkQueue = _networkQueue;
-@synthesize sourcesByCatalog = _sourcesByCatalog;
-@synthesize fileManager = _fileManager;
-@synthesize cache = _cache;
-@synthesize autoRefreshInterval = _refreshInterval;
-@synthesize refreshTimer = _refreshTimer;
-@synthesize loadedBundles = _loadedBundles;
-@synthesize myTasks = _myTasks;
-@synthesize queueGroup = _queueGroup;
-@synthesize executeTasksInBackgroundEnabled = _shouldExecuteTasksInBackground;
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
@@ -199,7 +185,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         repo.index = index;
     }
     
-    [repo.queueGroup setSuspended:YES];
+    [repo.taskQueueGroup setSuspended:YES];
     
     if (![repo queueInitializationTasks]) {
         repo.isInitialized = YES;
@@ -227,18 +213,19 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         self.url = fileURL;
         self.index = [[[ZincRepoIndex alloc] init] autorelease];
         self.networkQueue = networkQueue;
-        self.queueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
-        [self.queueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
-        [self.queueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:kZincRepoDefaultObjectDownloadCount forClass:[ZincObjectDownloadTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
-        [self.queueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
+        self.internalQueue = [[[NSOperationQueue alloc] init] autorelease];
+        self.taskQueueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
+        [self.taskQueueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
+        [self.taskQueueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
+        [self.taskQueueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
+        [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
+        [self.taskQueueGroup setMaxConcurrentOperationCount:kZincRepoDefaultObjectDownloadCount forClass:[ZincObjectDownloadTask class]];
+        [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
+        [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
         self.fileManager = [[[NSFileManager alloc] init] autorelease];
         self.cache = [[[NSCache alloc] init] autorelease];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
-        _refreshInterval = kZincRepoDefaultAutoRefreshInterval;
+        _autoRefreshInterval = kZincRepoDefaultAutoRefreshInterval;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
@@ -246,8 +233,6 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
-        self.initializationQueue = [[[NSOperationQueue alloc] init] autorelease];
-        [self.initializationQueue setMaxConcurrentOperationCount:1];
     }
     return self;
 }
@@ -289,7 +274,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     @synchronized(self) {
         if (self.isInitialized || self.completeInitializationTask == nil) return nil;
         ZincTaskRef* taskRef = [ZincTaskRef taskRefForTask:self.completeInitializationTask];
-        [self.initializationQueue addOperation:taskRef];
+        [self.internalQueue addOperation:taskRef];
         return taskRef;
     }
 }
@@ -306,7 +291,6 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             // no longer need to hold onto the initialization queue or task
             __block typeof(self) blockself = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                blockself.initializationQueue = nil;
                 blockself.completeInitializationTask = nil;
             });
         }
@@ -321,7 +305,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (void) setAutoRefreshInterval:(NSTimeInterval)refreshInterval
 {
-    _refreshInterval = refreshInterval;
+    _autoRefreshInterval = refreshInterval;
     [self restartRefreshTimer];
 }
 
@@ -389,22 +373,28 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (void) restartRefreshTimer
 {
-    [self stopRefreshTimer];
-    
-    if (self.autoRefreshInterval > 0) {
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
-                                                             target:self
-                                                           selector:@selector(refreshTimerFired:)
-                                                           userInfo:nil
-                                                            repeats:YES];
-        [self.refreshTimer fire];
+    @synchronized(self)
+    {
+        [self stopRefreshTimer];
+
+        if (self.autoRefreshInterval > 0) {
+            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
+                                                                 target:self
+                                                               selector:@selector(refreshTimerFired:)
+                                                               userInfo:nil
+                                                                repeats:YES];
+            [self.refreshTimer fire];
+        }
     }
 }
 
 - (void) stopRefreshTimer
 {
-    [self.refreshTimer invalidate];
-    self.refreshTimer = nil;
+    @synchronized(self)
+    {
+        [self.refreshTimer invalidate];
+        self.refreshTimer = nil;
+    }
 }
 
 - (void) checkForBundleDeletion
@@ -462,12 +452,12 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [_index release];
     // TODO: stop operations?
     [_networkQueue release];
-    [_queueGroup release];
+    [_internalQueue release];
+    [_taskQueueGroup release];
     [_sourcesByCatalog release];
     [_cache release];
     [_loadedBundles release];
     [_myTasks release];
-    [_initializationQueue release];
     [_completeInitializationTask release];
     [super dealloc];
 }
@@ -606,10 +596,12 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 {
     if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
         [self.networkQueue addOperation:operation];
-    } else if ([operation isKindOfClass:[ZincInitializationTask class]]) {
-        [self.initializationQueue addOperation:operation];
+    } else if ([operation isKindOfClass:[ZincInitializationTask class]] ||
+               [operation isKindOfClass:[ZincRepoIndexUpdateTask class]] ||
+               [operation isKindOfClass:[ZincTaskRef class]]) {
+        [self.internalQueue addOperation:operation];
     } else {
-        [self.queueGroup addOperation:operation];
+        [self.taskQueueGroup addOperation:operation];
     }
 }
 
@@ -1114,6 +1106,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         parentOp.completionBlock = completion;
     }
     
+    NSMutableArray *taskDescriptors = [NSMutableArray array];
+    
     @synchronized(self.index) {
         
         NSSet* trackBundles = [self.index trackedBundleIds];
@@ -1155,13 +1149,20 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             }
             
             [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            [self queueIndexSaveTask];
             
             ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
-            [parentOp addDependency:bundleTask];
+            [taskDescriptors addObject:taskDesc];
         }
     }
+    
+     // the following should not be done within an @synchronized block because it obtains other locks
+    
+    for (ZincTaskDescriptor* taskDesc in taskDescriptors) {
+        ZincTask* bundleTask = [self queueTaskForDescriptor:taskDesc];
+        [parentOp addDependency:bundleTask];
+    }
+    
+    [self queueIndexSaveTask];
     
     if (completion != nil) {
         [self addOperation:parentOp];
@@ -1292,18 +1293,18 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 - (void) suspendAllTasks
 {
     [self stopRefreshTimer];
-    [self.queueGroup setSuspended:YES];
+    [self.taskQueueGroup setSuspended:YES];
 }
 
 - (void) suspendAllTasksAndWaitExecutingTasksToComplete
 {
     [self suspendAllTasks];
-    [self.queueGroup suspendAndWaitForExecutingOperationsToComplete];
+    [self.taskQueueGroup suspendAndWaitForExecutingOperationsToComplete];
 }
 
 - (void) resumeAllTasks
 {
-    [self.queueGroup setSuspended:NO];
+    [self.taskQueueGroup setSuspended:NO];
     [self restartRefreshTimer];
 }
 
