@@ -43,12 +43,12 @@
     
     NSData* jsonData = [self.repo.index jsonRepresentation:&error];
     if (jsonData == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
     
     if (![jsonData zinc_writeToFile:[[self.repo indexURL] path] atomically:YES createDirectories:NO skipBackup:YES error:&error]) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
 

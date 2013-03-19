@@ -49,7 +49,7 @@
 - (void) setUp
 {
     self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:self context:self.bundleId]];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId]];
 }
 
 - (void) completeWithSuccess:(BOOL)success
@@ -60,7 +60,7 @@
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
     }
 
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:self context:self.bundleId success:success]];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId success:success]];
     
     self.finishedSuccessfully = success;
 }
@@ -85,7 +85,7 @@
     for (NSString* relativeDir in allDirs) {
         NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
         if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
             return NO;
         }
     }
@@ -98,7 +98,7 @@
             if (createLink) {
                 NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
                 if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:self]];
+                    [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
                     return NO;
                 }
             }
