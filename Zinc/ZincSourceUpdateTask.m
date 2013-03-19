@@ -19,6 +19,7 @@
 #import "ZincResource.h"
 #import "ZincErrors.h"
 #import "ZincTaskActions.h"
+#import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
 @implementation ZincSourceUpdateTask
 
@@ -58,7 +59,7 @@
     if (self.isCancelled) return;
     
     if (![requestOp hasAcceptableStatusCode]) {
-        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
@@ -66,19 +67,19 @@
     
     NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
     if (uncompressed == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_DECOMPRESS_FAILED) source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
     ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
     NSData* data = [catalog jsonRepresentation:&error];
     if (data == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
     

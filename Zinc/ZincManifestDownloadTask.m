@@ -21,6 +21,7 @@
 #import "ZincErrors.h"
 #import "ZincJSONSerialization.h"
 #import "ZincTaskActions.h"
+#import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
 @implementation ZincManifestDownloadTask
 
@@ -59,8 +60,8 @@
     if (sources == nil || [sources count] == 0) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                               catalogId, @"catalogId", nil];
-        error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        error = ZincError(ZINC_ERR_NO_SOURCES_FOR_CATALOG);
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:info]];
         return;
     }
     
@@ -74,7 +75,7 @@
         if (self.isCancelled) return;
 
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         }
         
@@ -82,21 +83,20 @@
         
         NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
-            error = ZincError(ZINC_ERR_DECOMPRESS_FAILED);
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         }
         
         id json = [ZincJSONSerialization JSONObjectWithData:uncompressed options:0 error:&error];
         if (json == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         }
         
         ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
         NSData* data = [manifest jsonRepresentation:&error];
         if (data == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             continue;
         }
         
@@ -106,7 +106,7 @@
         [fm removeItemAtPath:path error:NULL];
         
         if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             continue;
         }
         
