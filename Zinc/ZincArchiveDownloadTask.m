@@ -18,6 +18,7 @@
 #import "ZincHTTPRequestOperation.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincArchiveExtractOperation.h"
+#import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
 @implementation ZincArchiveDownloadTask
 
@@ -72,7 +73,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];

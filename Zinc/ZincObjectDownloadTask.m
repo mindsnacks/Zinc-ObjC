@@ -20,6 +20,7 @@
 #import "ZincUtils.h"
 #import "ZincHTTPRequestOperation.h"
 #import "ZincSHA.h"
+#import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;
@@ -109,7 +110,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
@@ -121,7 +122,7 @@
             NSData* compressed = [[[NSData alloc] initWithContentsOfFile:downloadPath] autorelease];
             NSData* uncompressed = [compressed zinc_gzipInflate];
             if (![uncompressed writeToFile:uncompressedPath options:0 error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:self attributes:[self.httpRequestOperation zinc_contextInfo]]];
                 // don't return/continue! still need to clean up
             }
         } 
