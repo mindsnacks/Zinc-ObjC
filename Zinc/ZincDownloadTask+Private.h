@@ -21,10 +21,4 @@
                      outputStream:(NSOutputStream *)outputStream
                           context:(id)context;
 
-/**
- @discussion Internal method to build a dictionary of relevant information
- to be included with a ZincError
- */
-- (NSDictionary*) getErrorContextInfo;
-
 @end
