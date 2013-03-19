@@ -874,7 +874,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         if (catalogVersion == ZincVersionInvalid) {
             NSDictionary* info = @{@"bundleID" : bundleId, @"distro": distro};
             NSError* error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
-            [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }
         
         return catalogVersion;
@@ -1038,7 +1038,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         if (trackingInfo == nil) {
             NSDictionary* info = @{@"bundleID" : bundleID};
             NSError* error = ZincErrorWithInfo(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE, info);
-            [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             if (taskRef != nil) {
                 [taskRef addError:error];
                 [self addOperation:taskRef];  // queue the operation so the completion block gets executed
@@ -1049,7 +1049,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         ZincVersion version = [self catalogVersionForBundleId:bundleID distribution:trackingInfo.distribution];
         if (version == ZincVersionInvalid) {
             NSError* error = ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS);
-            [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             if (taskRef != nil) {
                 [taskRef addError:error];
                 [self addOperation:taskRef]; // queue the operation so the completion block gets executed
