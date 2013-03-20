@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+
+#pragma mark Event Types
+
 typedef enum {
     ZincEventTypeError,
     ZincEventTypeBundleUpdate,
@@ -23,6 +26,9 @@ typedef enum {
     ZincEventTypeMaintenanceComplete,
 } ZincEventType;
 
+
+#pragma mark Attributes
+
 extern NSString *const kZincEventAttributesSourceKey;
 extern NSString *const kZincEventAttributesURLKey;
 extern NSString *const kZincEventAttributesSizeKey;
@@ -32,6 +38,7 @@ extern NSString *const kZincEventAttributesArchiveResourceKey;
 extern NSString *const kZincEventAttributesContextKey;
 extern NSString *const kZincEventAttributesCloneSuccessKey;
 extern NSString *const kZincEventAttributesActionKey;
+
 
 #pragma mark Notifications
 
@@ -47,10 +54,28 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 extern NSString *const kZincEventMaintenanceBeginNotification;
 extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
+
+#pragma mark Event Source Utils
+
+#define ZINC_EVENT_SRC() _ZincEventSrcMake(self, __PRETTY_FUNCTION__, __LINE__)
+
+static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int line)
+{
+    return @{
+             @"object": [NSString stringWithFormat:@"%p", obj],
+             @"class": NSStringFromClass([obj class]),
+             @"function": [NSString stringWithFormat:@"%s", func],
+             @"line": [NSString stringWithFormat:@"%d", line],
+             };
+}
+
+
+#pragma mark -
+
 @interface ZincEvent : NSObject
 
-- (id) initWithType:(ZincEventType)type source:(id)source;
-- (id) initWithType:(ZincEventType)type source:(id)source attributes:(NSDictionary*)attributes;;
+- (id) initWithType:(ZincEventType)type source:(NSDictionary*)source;
+- (id) initWithType:(ZincEventType)type source:(NSDictionary*)source attributes:(NSDictionary*)attributes;;
 
 + (NSString*) name;
 
@@ -60,21 +85,20 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
 @end
 
-
 @interface ZincErrorEvent : ZincEvent
 
-- (id) initWithError:(NSError*)error source:(id)source attributes:(NSDictionary*)attributes;
+- (id) initWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
 @property (nonatomic, retain, readonly) NSError* error;
 
-+ (id) eventWithError:(NSError*)error source:(id)source;
-+ (id) eventWithError:(NSError*)error source:(id)source attributes:(NSDictionary*)attributes;
++ (id) eventWithError:(NSError*)error source:(NSDictionary*)source;
++ (id) eventWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
 
 @end
 
 
 @interface ZincDeleteEvent : ZincEvent 
 
-+ (id) deleteEventForPath:(NSString*)path source:(id)source;
++ (id) deleteEventForPath:(NSString*)path source:(NSDictionary*)source;
 @property (readonly) NSString* path;
 
 @end
@@ -100,7 +124,7 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 @interface ZincBundleCloneBeginEvent : ZincEvent 
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context;
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context;
++ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;
 
@@ -109,7 +133,7 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(id)source context:(id)context success:(BOOL)success;
++ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context success:(BOOL)success;
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;

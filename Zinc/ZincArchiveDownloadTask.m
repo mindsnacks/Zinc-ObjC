@@ -17,6 +17,7 @@
 #import "ZincSource.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincArchiveExtractOperation.h"
+#import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
 @implementation ZincArchiveDownloadTask
 
@@ -50,7 +51,7 @@
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                               catalogId, @"catalogId", nil];
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
-        [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
     
@@ -71,7 +72,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
@@ -86,7 +87,7 @@
         if (self.isCancelled) return;
 
         if (extractOp.error != nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:ZINC_EVENT_SRC()]];
             continue;
         }
         

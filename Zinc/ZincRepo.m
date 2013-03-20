@@ -873,7 +873,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         if (catalogVersion == ZincVersionInvalid) {
             NSDictionary* info = @{@"bundleID" : bundleId, @"distro": distro};
             NSError* error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
-            [self logEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }
         
         return catalogVersion;
@@ -1036,13 +1036,23 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleID];
         if (trackingInfo == nil) {
             NSDictionary* info = @{@"bundleID" : bundleID};
-            [taskRef addError:ZincErrorWithInfo(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE, info)];
+            NSError* error = ZincErrorWithInfo(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE, info);
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            if (taskRef != nil) {
+                [taskRef addError:error];
+                [self addOperation:taskRef];  // queue the operation so the completion block gets executed
+            }
             return;
         }
         
         ZincVersion version = [self catalogVersionForBundleId:bundleID distribution:trackingInfo.distribution];
         if (version == ZincVersionInvalid) {
-            [taskRef addError:ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS)];
+            NSError* error = ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS);
+            [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            if (taskRef != nil) {
+                [taskRef addError:error];
+                [self addOperation:taskRef]; // queue the operation so the completion block gets executed
+            }
             return;
         }
         
@@ -1056,11 +1066,14 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
             ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
             ZincTask* task = [self queueTaskForDescriptor:taskDesc];
-            [taskRef addDependency:task];
+            
+            if (taskRef != nil) {
+                [taskRef addDependency:task];
+                [self addOperation:taskRef];
+            }
         }
     }
     
-    if (taskRef != nil) [self addOperation:taskRef];
     [self queueIndexSaveTask];
 }
 
