@@ -25,5 +25,4 @@
 #import <Zinc/ZincRepoMonitor.h>
 #import <Zinc/ZincBundleAvailabilityMonitor.h>
 
-
 #endif

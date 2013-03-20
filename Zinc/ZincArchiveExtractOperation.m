@@ -101,7 +101,7 @@
             cleanup();
             return;
         }
-        
+
         if (![actualSHA isEqualToString:expectedSHA]) {
             
             NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -109,7 +109,7 @@
                                   actualSHA, @"actualSHA",
                                   self.archivePath, @"archivePath",
                                   nil];
-            error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
+            self.error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
             cleanup();
             return;
 

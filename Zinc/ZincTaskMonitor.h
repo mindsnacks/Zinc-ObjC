@@ -20,6 +20,11 @@
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
 /**
+ @discussion taskRef the monitor was initialized with
+ */
+@property (nonatomic, retain, readonly) ZincTaskRef* taskRef;
+
+/**
  @discussion Similar to NSOperation, the exact execution context for your completion block is not guaranteed but is typically a secondary thread.
  */
 @property (nonatomic, copy) ZincCompletionBlock completionBlock;

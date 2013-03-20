@@ -34,13 +34,13 @@
     for (NSURL *theURL in filesEnum) {
         NSNumber *isRegularFile;
         if (![theURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             continue;
         }
         if ([isRegularFile boolValue]) {
             NSNumber *linkCount;
             if (![theURL getResourceValue:&linkCount forKey:NSURLLinkCountKey error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:self]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
                 continue;
             }
             if ([linkCount integerValue] < 2) {

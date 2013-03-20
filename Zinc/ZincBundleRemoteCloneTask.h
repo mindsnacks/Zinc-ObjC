@@ -9,7 +9,7 @@
 #import "ZincTask.h"
 #import "ZincGlobals.h"
 
-#define kZincBundleCloneTaskDefaultHTTPOverheadConstant (100000)//(0.5)
+#define kZincBundleCloneTaskDefaultHTTPOverheadConstant (100000)
 
 #import "ZincBundleCloneTask.h"
 
