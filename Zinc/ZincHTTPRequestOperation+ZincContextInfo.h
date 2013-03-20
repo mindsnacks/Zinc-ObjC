@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincHTTPRequestOperation.h"
+#import <AFNetworking/AFNetworking.h>
 
-@interface ZincHTTPRequestOperation (ZincContextInfo)
+@interface AFHTTPRequestOperation (ZincContextInfo)
 
 - (NSDictionary*) zinc_contextInfo;
 

@@ -8,7 +8,7 @@
 
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
-@implementation ZincHTTPRequestOperation (ZincContextInfo)
+@implementation AFHTTPRequestOperation (ZincContextInfo)
 
 - (NSDictionary*) zinc_contextInfo
 {
