@@ -22,8 +22,10 @@ typedef enum {
     ZincEventTypeBundleCloneComplete,
     ZincEventTypeArchiveExtractBegin,
     ZincEventTypeArchiveExtractComplete,
-    ZincEventTypeMaintenanceBegin,
-    ZincEventTypeMaintenanceComplete,
+    ZincEventTypeGarbageCollectBegin,
+    ZincEventTypeGarbageCollectComplete,
+    ZincEventTypeTaskBegin,
+    ZincEventTypeTaskComplete,
 } ZincEventType;
 
 
@@ -37,7 +39,6 @@ extern NSString *const kZincEventAttributesBundleResourceKey;
 extern NSString *const kZincEventAttributesArchiveResourceKey;
 extern NSString *const kZincEventAttributesContextKey;
 extern NSString *const kZincEventAttributesCloneSuccessKey;
-extern NSString *const kZincEventAttributesActionKey;
 
 
 #pragma mark Notifications
@@ -51,8 +52,8 @@ extern NSString *const kZincEventBundleCloneBeginNotification;
 extern NSString *const kZincEventBundleCloneCompleteNotification;
 extern NSString *const kZincEventArchiveExtractBeginNotification;
 extern NSString *const kZincEventArchiveExtractCompleteNotification;
-extern NSString *const kZincEventMaintenanceBeginNotification;
-extern NSString *const kZincEventMaintenanceionCompleteNotification;
+extern NSString *const kZincEventTaskBeginNotification;
+extern NSString *const kZincEventTaskCompleteNotification;
 
 
 #pragma mark Event Source Utils
@@ -158,17 +159,15 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @end
 
 
-@interface ZincMaintenanceBeginEvent : ZincEvent
+@interface ZincTaskBeginEvent : ZincEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)category;
-@property (readonly) NSString* action;
++ (id) taskBeginEventWithSource:(NSDictionary*)source;
 
 @end
 
 
-@interface ZincMaintenanceCompleteEvent : ZincEvent
+@interface ZincTaskCompleteEvent : ZincEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)action;
-@property (readonly) NSString* action;
++ (id) taskCompleteEventWithSource:(NSDictionary*)source;
 
 @end

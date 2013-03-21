@@ -37,7 +37,7 @@
     return [self.resource zincBundleVersion];
 }
 
-- (void) main
+- (void) taskMain
 {
     NSString* flavor = self.input;
     

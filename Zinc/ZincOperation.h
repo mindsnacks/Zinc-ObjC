@@ -12,9 +12,22 @@
 // 0.5 - the same as NSOperation default
 extern double const kZincOperationInitialDefaultThreadPriority;
 
+@class ZincRepo;
+
 @interface ZincOperation : NSOperation <ZincProgress>
+
+- (id)initWithRepo:(ZincRepo*)repo;
+@property (nonatomic, assign, readonly) ZincRepo* repo;
+
+
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+- (void)setShouldExecuteAsBackgroundTask;
+#endif
+
 
 + (void) setDefaultThreadPriority:(double)defaultThreadPriority;
 + (double) defaultThreadPriority;
+
+
 
 @end

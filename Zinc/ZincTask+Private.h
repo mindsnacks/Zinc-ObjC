@@ -7,6 +7,7 @@
 //
 
 #import "ZincTask.h"
+#import "ZincOperation+Private.h"
 
 @class ZincEvent;
 
@@ -25,18 +26,12 @@
 /* just the events logged on this task */
 @property (readonly) NSArray* events;
 
-- (void) addEvent:(ZincEvent*)event;
-
 @property (readwrite, retain) NSString* title;
 
 @property (assign) BOOL finishedSuccessfully;
 
 + (NSString*) taskMethod;
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource;
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-- (void)setShouldExecuteAsBackgroundTask;
-#endif
 
 
 /**

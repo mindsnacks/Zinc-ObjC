@@ -18,10 +18,10 @@
 
 + (NSString *)action
 {
-    return @"GarbageCollect";
+    return [self taskMethod];
 }
 
-- (void) doMaintenance
+- (void) taskMain
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];

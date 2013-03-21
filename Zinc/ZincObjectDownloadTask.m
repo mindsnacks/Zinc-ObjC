@@ -43,7 +43,7 @@
     return [self.resource zincObjectSHA];
 }
 
-- (void) main
+- (void) taskMain
 {
     NSError* error = nil;
     BOOL gz = NO;

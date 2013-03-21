@@ -195,7 +195,7 @@
     return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
 }
 
-- (void) main
+- (void) taskMain
 {
     [self setUp];
     

@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincRepoIndexUpdateTask.h"
+#import "ZincRepoIndexSaveTask.h"
 #import "ZincTask+Private.h"
 #import "ZincResource.h"
 #import "ZincRepo.h"
@@ -16,29 +16,24 @@
 #import "NSData+Zinc.h"
 #import "ZincTaskActions.h"
 
-@implementation ZincRepoIndexUpdateTask
+
+@implementation ZincRepoIndexSaveTask
+
 
 + (NSString *)action
 {
     return ZincTaskActionUpdate;
 }
 
-- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
-{
-    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
-    if (self) {
-        self.title = NSLocalizedString(@"Updating Index", @"ZincRepoIndexUpdateTask");
-    }
-    return self;
-}
 
 - (void)dealloc 
 {
     [super dealloc];
 }
 
-- (void) main
-{
+
+- (void) taskMain
+{    
     NSError* error = nil;
     
     NSData* jsonData = [self.repo.index jsonRepresentation:&error];
@@ -54,5 +49,6 @@
 
     self.finishedSuccessfully = YES;
 }
+
 
 @end

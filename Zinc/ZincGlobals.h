@@ -11,25 +11,43 @@
 
 extern NSString* const kZincPackageName;
 
+
+// ----------------------------------------------------------------------------
+#pragma mark Repo Formats
+
 typedef NSInteger ZincFormat;
-typedef NSInteger ZincVersion;
 
 enum  {
     ZincFormatInvalid = -1,
 };
+
+
+// ----------------------------------------------------------------------------
+#pragma mark Versions
+
+typedef NSInteger ZincVersion;
 
 enum  {
     ZincVersionInvalid = -1,
     ZincVersionUnknown = 0,
 };
 
+
+// ----------------------------------------------------------------------------
+#pragma mark File Object Formats
+
 extern NSString* const ZincFileFormatRaw;
 extern NSString* const ZincFileFormatGZ;
 
-extern NSString* const ZincDistributionLocal;
+
+// ----------------------------------------------------------------------------
+#pragma mark Other Types
 
 typedef void (^ZincCompletionBlock)(NSArray* errors);
 
+
+// ----------------------------------------------------------------------------
+#pragma mark Logging
 
 #ifdef ZINC_DEBUG
     #define ZINC_DEBUG_LOG(fmt, ...) (NSLog(fmt, ##__VA_ARGS__));

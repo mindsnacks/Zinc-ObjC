@@ -63,8 +63,12 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @property (nonatomic, assign) id<ZincRepoDelegate> delegate;
 @property (nonatomic, retain, readonly) NSURL* url;
 
+// ----------------------------------------------------------------------------
+#pragma mark Initialization
+
 /**
- @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed.
+ @discussion The repo may need to perform some initialization tasks. This will 
+    be NO until they are performed.
  */
 @property (nonatomic, assign, readonly) BOOL isInitialized;
 
@@ -74,9 +78,13 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) waitForInitialization;
 
 /**
- @discussion Returns an task reference for any initialization tasks that need to be done. Returns nil if no initialization is required.
+ @discussion Returns an task reference for any initialization tasks that need 
+    to be done. Returns nil if no initialization is required.
  */
 - (ZincTaskRef*) taskRefForInitialization;
+
+// ----------------------------------------------------------------------------
+#pragma mark -
 
 /**
  @discussion Manually trigger refresh of sources and bundles.
@@ -102,6 +110,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  */
 @property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
 
+// ----------------------------------------------------------------------------
 #pragma mark Sources
 
 - (void) addSourceURL:(NSURL*)url;
@@ -110,10 +119,12 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
+// ----------------------------------------------------------------------------
 #pragma mark External Bundles
 
 - (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
 
+// ----------------------------------------------------------------------------
 #pragma mark Tracking Remote Bundles
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
@@ -124,32 +135,35 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 - (NSSet*) trackedBundleIds;
 
+// ----------------------------------------------------------------------------
 #pragma mark mark Updating Bundles
 
 /**
- @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
- of connectivity.
+ @discussion Manually update a bundle. Currently ignores downloadPolicy and 
+ will update regardles of connectivity.
  */
-- (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+- (void) updateBundleWithID:(NSString*)bundleID completionBlock:(ZincCompletionBlock)completion;
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
 /**
- @discussion Update all bundles
+ @discussion Update all bundles.
  */
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
 - (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
+// ----------------------------------------------------------------------------
 #pragma mark -
 
 /**
- @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
+ @discussion Main, offical way to get a bundle of files. Will raise an 
+    exception if the repo is not initialized.
  */
 - (ZincBundle*) bundleWithId:(NSString*)bundleId;
 
 - (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
 
-
+// ----------------------------------------------------------------------------
 #pragma mark Tasks
 
 @property (readonly) NSArray* tasks;
@@ -159,17 +173,20 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) resumeAllTasks;
 - (BOOL) isSuspended;
 
+// ----------------------------------------------------------------------------
 #pragma mark Utility
 
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority;
 
 /**
- @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
+ @discussion Perform cleanup tasks. Runs automatically at repo initialization, 
+ but can be queued manually as well.
  */
 - (void)cleanWithCompletion:(dispatch_block_t)completion;
        
 @end
 
+// ----------------------------------------------------------------------------
 
 @protocol ZincRepoDelegate <NSObject>
 

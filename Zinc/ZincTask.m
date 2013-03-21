@@ -13,41 +13,34 @@
 #import "ZincTaskDescriptor.h"
 #import "ZincEvent.h"
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <UIKit/UIKit.h>
-typedef UIBackgroundTaskIdentifier ZincBackgroundTaskIdentifier;
-#else
-typedef id ZincBackgroundTaskIdentifier;
-#endif
 
 @interface ZincTask ()
-@property (nonatomic, assign, readwrite) ZincRepo* repo;
 @property (nonatomic, retain, readwrite) NSURL* resource;
 @property (nonatomic, retain, readwrite) id input;
 @property (atomic, retain) NSMutableArray* myChildOperations;
-@property (atomic, retain) NSMutableArray* myEvents;
-@property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
+
 
 @implementation ZincTask
 
+
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
-    self = [super init];
+    self = [super initWithRepo:repo];
     if (self) {
-        self.repo = repo;
         self.resource = resource;
         self.input = input;
-        self.myEvents = [NSMutableArray array];
         self.myChildOperations = [NSMutableArray array];
     }
     return self;
 }
 
+
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource
 {
     return [self initWithRepo:repo resourceDescriptor:resource input:nil];
 }
+
 
 + (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo input:(id)input
 {
@@ -56,26 +49,21 @@ typedef id ZincBackgroundTaskIdentifier;
     return task;
 }
 
+
 + (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo
 {
     return [self taskWithDescriptor:taskDesc repo:repo];
 }
 
+
 - (void)dealloc 
 {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-    if (_backgroundTaskIdentifier) {
-        [[UIApplication sharedApplication] endBackgroundTask:_backgroundTaskIdentifier];
-        _backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-    }
-#endif
-    
-    [_myEvents release];
     [_myChildOperations release];
     [_resource release];
     [_input release];
     [super dealloc];
 }
+
 
 + (NSString *)action
 {
@@ -83,20 +71,24 @@ typedef id ZincBackgroundTaskIdentifier;
     return nil;
 }
 
+
 + (NSString*) taskMethod
 {
     return NSStringFromClass(self);
 }
+
 
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
     return [ZincTaskDescriptor taskDescriptorWithResource:resource action:[self action] method:[self taskMethod]];
 }
 
+
 - (ZincTaskDescriptor*) taskDescriptor
 {
-    return [[self class] taskDescriptorForResource:self.resource];    
+    return [[self class] taskDescriptorForResource:self.resource];
 }
+
 
 - (void) setQueuePriority:(NSOperationQueuePriority)p
 {
@@ -110,6 +102,7 @@ typedef id ZincBackgroundTaskIdentifier;
     }
 }
 
+
 - (void) addChildOperation:(NSOperation*)childOp
 {
     @synchronized(self.myChildOperations) {
@@ -119,10 +112,12 @@ typedef id ZincBackgroundTaskIdentifier;
     [self addDependency:childOp];
 }
 
+
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
 {
     return [self queueChildTaskForDescriptor:taskDescriptor input:nil];
 }
+
 
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
 {
@@ -140,6 +135,7 @@ typedef id ZincBackgroundTaskIdentifier;
     return task;
 }
 
+
 - (void) queueChildOperation:(NSOperation*)operation
 {
     if (self.isCancelled) return;
@@ -147,6 +143,7 @@ typedef id ZincBackgroundTaskIdentifier;
     [self addChildOperation:operation];
     [self.repo addOperation:operation];
 }
+
 
 - (NSArray*) childOperations
 {
@@ -159,6 +156,7 @@ typedef id ZincBackgroundTaskIdentifier;
     return childOps;
 }
 
+
 - (NSArray*) childTasks
 {
     NSArray* subops = [self childOperations];
@@ -168,16 +166,6 @@ typedef id ZincBackgroundTaskIdentifier;
     }]];
 }
 
-- (void) addEvent:(ZincEvent*)event
-{
-    [self.myEvents addObject:event];
-    [self.repo logEvent:event];
-}
-
-- (NSArray*) events
-{
-    return [NSArray arrayWithArray:self.myEvents];
-}
 
 - (NSArray*) allEvents
 {
@@ -185,11 +173,12 @@ typedef id ZincBackgroundTaskIdentifier;
     for (ZincTask* task in self.childTasks) {
         [allEvents addObjectsFromArray:[task events]];
     }
-    [allEvents addObjectsFromArray:self.myEvents];
+    [allEvents addObjectsFromArray:self.events];
     
     NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
     return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
 }
+
 
 - (NSArray*) allErrors
 {
@@ -207,31 +196,13 @@ typedef id ZincBackgroundTaskIdentifier;
     return allErrors;
 }
 
+
 - (void) updateReadiness
 {
     [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
     [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
 }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-- (void)setShouldExecuteAsBackgroundTask
-{
-    if (!self.backgroundTaskIdentifier) {
-        
-        UIApplication *application = [UIApplication sharedApplication];
-        __block typeof(self) blockSelf = self;
-        self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
-            
-            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;
-            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-            
-            [blockSelf cancel];
-            
-            [application endBackgroundTask:backgroundTaskIdentifier];
-        }];
-    }
-}
-#endif
 
 - (void) cancel
 {
@@ -241,5 +212,20 @@ typedef id ZincBackgroundTaskIdentifier;
     
     [super cancel];
 }
+
+
+- (void) main
+{
+    [self addEvent:[ZincTaskBeginEvent taskBeginEventWithSource:ZINC_EVENT_SRC()]];
+    [self taskMain];
+    [self addEvent:[ZincTaskCompleteEvent taskCompleteEventWithSource:ZINC_EVENT_SRC()]];
+}
+
+
+- (void)taskMain
+{
+    NSAssert(NO, @"method must be defined by subclass");
+}
+
 
 @end

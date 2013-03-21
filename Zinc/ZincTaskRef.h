@@ -14,14 +14,13 @@
 
 + (ZincTaskRef*) taskRefForTask:(ZincTask*)task;
 
+/**
+ @discussion Returns YES if successfully attached to a task. NO otherwise.
+ */
 - (BOOL) isValid;
 
 - (BOOL) isSuccessful;
 
 - (NSArray*) allErrors;
-
-#pragma mark Private
-
-- (void) addError:(NSError*)error;
 
 @end

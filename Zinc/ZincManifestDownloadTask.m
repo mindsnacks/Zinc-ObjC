@@ -49,7 +49,7 @@
     return [self.resource zincBundleVersion];
 }
 
-- (void) main
+- (void) taskMain
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];

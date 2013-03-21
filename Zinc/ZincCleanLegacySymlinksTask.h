@@ -6,9 +6,9 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincInitializationTask.h"
+#import "ZincInternalTask.h"
 
-@interface ZincCleanLegacySymlinksTask : ZincInitializationTask
+@interface ZincCleanLegacySymlinksTask : ZincInternalTask
 
 
 @end

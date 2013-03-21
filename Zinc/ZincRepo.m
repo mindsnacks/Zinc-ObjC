@@ -1,5 +1,5 @@
 //
-//  ZCBundleManager.m
+//  ZincRepo.m
 //  Zinc-iOS
 //
 //  Created by Andy Mroczkowski on 12/6/11.
@@ -27,7 +27,7 @@
 #import "ZincGarbageCollectTask.h"
 #import "ZincCleanLegacySymlinksTask.h"
 #import "ZincCompleteInitializationTask.h"
-#import "ZincRepoIndexUpdateTask.h"
+#import "ZincRepoIndexSaveTask.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincOperationQueueGroup.h"
 #import "ZincUtils.h"
@@ -37,7 +37,7 @@
 #import "ZincHTTPRequestOperation.h"
 #import "ZincErrors.h"
 #import "ZincTrackingInfo.h"
-#import "ZincTaskRef.h"
+#import "ZincTaskRef+Private.h"
 #import "ZincBundleTrackingRequest.h"
 #import "ZincDownloadPolicy.h"
 #import "ZincKSReachability.h"
@@ -597,8 +597,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 {
     if ([operation isKindOfClass:[ZincURLConnectionOperation class]]) {
         [self.networkQueue addOperation:operation];
-    } else if ([operation isKindOfClass:[ZincInitializationTask class]] ||
-               [operation isKindOfClass:[ZincRepoIndexUpdateTask class]] ||
+    } else if ([operation isKindOfClass:[ZincInternalTask class]] ||
                [operation isKindOfClass:[ZincTaskRef class]]) {
         [self.internalQueue addOperation:operation];
     } else {
@@ -701,7 +700,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (ZincTask*) queueIndexSaveTask
 {
-    ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self indexURL]];
+    ZincTaskDescriptor* taskDesc = [ZincRepoIndexSaveTask taskDescriptorForResource:[self indexURL]];
     return [self queueTaskForDescriptor:taskDesc];
 }
 
