@@ -7,7 +7,7 @@
 //
 
 #import "ZincHTTPStreamOperation.h"
-#import "ZincHTTPRequestOperation+Private.h"
+//#import "ZincHTTPRequestOperation+Private.h"
 
 
 static void ReadStreamClientCallback (CFReadStreamRef stream, CFStreamEventType event, void *myPtr);

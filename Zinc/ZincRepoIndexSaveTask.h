@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
+#import "ZincInternalTask.h"
 
-@interface ZincRepoIndexUpdateTask : ZincTask
+@interface ZincRepoIndexSaveTask : ZincInternalTask
 
 @end

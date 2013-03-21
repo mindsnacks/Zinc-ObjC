@@ -47,7 +47,7 @@
     return self.resource;
 }
 
-- (void) main
+- (void) taskMain
 {
     NSError* error = nil;
     

@@ -20,7 +20,6 @@
 
 - (ZincTaskDescriptor*) taskDescriptor;
 
-@property (nonatomic, assign, readonly) ZincRepo* repo;
 @property (nonatomic, retain, readonly) NSURL* resource;
 @property (nonatomic, retain, readonly) id input;
 

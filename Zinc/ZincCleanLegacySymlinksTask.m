@@ -19,22 +19,20 @@
 
 @implementation ZincCleanLegacySymlinksTask
 
-+ (NSString *)action
-{
-    return @"CleanLegacySymlinks";
-}
 
 - (long long) currentProgressValue
 {
     return self.itemsCleaned;
 }
 
+
 - (long long) maxProgressValue
 {
     return self.totalItemsToClean;
 }
 
-- (void) doMaintenance
+
+- (void) taskMain
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];

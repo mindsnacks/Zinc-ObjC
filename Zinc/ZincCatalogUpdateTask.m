@@ -41,7 +41,7 @@
     return self.input;
 }
 
-- (void) main
+- (void) taskMain
 {
     NSError* error = nil;
     

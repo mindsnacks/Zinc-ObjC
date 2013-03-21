@@ -6,8 +6,8 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincMaintenanceTask.h"
+#import "ZincInternalTask.h"
 
-@interface ZincGarbageCollectTask : ZincMaintenanceTask
+@interface ZincGarbageCollectTask : ZincInternalTask
 
 @end

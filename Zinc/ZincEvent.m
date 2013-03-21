@@ -17,7 +17,6 @@ NSString *const kZincEventAttributesBundleResourceKey = @"bundleResource";
 NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
 NSString *const kZincEventAttributesContextKey = @"context";
 NSString *const kZincEventAttributesCloneSuccessKey = @"success";
-NSString *const kZincEventAttributesActionKey = @"action";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
@@ -28,8 +27,8 @@ NSString *const kZincEventBundleCloneBeginNotification = @"ZincEventBundleCloneB
 NSString *const kZincEventBundleCloneCompleteNotification = @"ZincEventBundleCloneCompleteNotification";
 NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveExtractBeginNotification";
 NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
-NSString *const kZincEventMaintenanceBeginNotification = @"ZincEventMaintenanceionBeginNotification";
-NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMaintenanceionCompleteNotification";
+NSString *const kZincEventTaskBeginNotification = @"ZincEventTaskBeginNotification";
+NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNotification";
 
 
 @interface ZincEvent ()
@@ -48,9 +47,13 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
         self.type = type;
         self.timestamp = [NSDate date];
         if (source != nil) {
-            NSMutableDictionary *mutableAttributes = [[attributes mutableCopy] autorelease];;
-            [mutableAttributes setObject:[source description] forKey:kZincEventAttributesSourceKey];
-            self.attributes = mutableAttributes;
+            if (attributes != nil) {
+                NSMutableDictionary *mutableAttributes = [[attributes mutableCopy] autorelease];;
+                [mutableAttributes setObject:[source description] forKey:kZincEventAttributesSourceKey];
+                self.attributes = mutableAttributes;
+            } else {
+                self.attributes = source;
+            }
         } else {
             self.attributes = attributes;
         }
@@ -182,9 +185,9 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           url, kZincEventAttributesURLKey, nil];
     return [[[self alloc] initWithType:ZincEventTypeDownloadBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
-
-}
     
+}
+
 + (NSString*) name
 {
     return @"DOWNLOAD-BEGIN";
@@ -199,7 +202,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 {
     return [self.attributes objectForKey:kZincEventAttributesURLKey];
 }
-                          
+
 @end
 
 @implementation ZincDownloadCompleteEvent
@@ -374,55 +377,41 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 @end
 
 
-@implementation ZincMaintenanceBeginEvent
+@implementation ZincTaskBeginEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)category;
++ (id) taskBeginEventWithSource:(NSDictionary*)source
 {
-    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          category, kZincEventAttributesActionKey, nil];
-    return [[[self alloc] initWithType:ZincEventTypeMaintenanceBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeTaskBegin source:source attributes:nil] autorelease];
 }
 
 + (NSString*) name
 {
-    return @"MAINTENANCE-BEGIN";
+    return @"TASK-BEGIN";
 }
 
 + (NSString *)notificationName
 {
-    return kZincEventMaintenanceBeginNotification;
-}
-
-- (NSString*) action
-{
-    return self.attributes[kZincEventAttributesActionKey];
+    return kZincEventTaskBeginNotification;
 }
 
 @end
 
 
-@implementation ZincMaintenanceCompleteEvent
+@implementation ZincTaskCompleteEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)category
++ (id) taskCompleteEventWithSource:(NSDictionary*)source
 {
-    NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
-                          category, kZincEventAttributesActionKey, nil];
-    return [[[self alloc] initWithType:ZincEventTypeMaintenanceComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeTaskComplete source:source attributes:nil] autorelease];
 }
 
 + (NSString*) name
 {
-    return @"MAINTENANCE-COMPLETE";
+    return @"TASK-COMPLETE";
 }
 
 + (NSString *)notificationName
 {
-    return kZincEventMaintenanceionCompleteNotification;
-}
-
-- (NSString*) action
-{
-    return self.attributes[kZincEventAttributesActionKey];
+    return kZincEventTaskCompleteNotification;
 }
 
 @end

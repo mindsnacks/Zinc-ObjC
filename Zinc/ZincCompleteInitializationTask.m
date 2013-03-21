@@ -9,19 +9,17 @@
 #import "ZincCompleteInitializationTask.h"
 #import "ZincRepo+Private.h"
 
+
 @implementation ZincCompleteInitializationTask
 
-+ (NSString *)action
-{
-    return @"CompleteInitialization";
-}
 
-- (void) doMaintenance
+- (void) taskMain
 {
     NSArray* allErrors = [self allErrors];
     if ([allErrors count] == 0) {
         [self.repo completeInitialization];
     }
 }
+
 
 @end
