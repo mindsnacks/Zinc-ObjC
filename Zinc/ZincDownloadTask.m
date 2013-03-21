@@ -59,7 +59,7 @@
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
     
-    [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
+    [self.httpRequestOperation setDownloadProgressBlock:^(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
