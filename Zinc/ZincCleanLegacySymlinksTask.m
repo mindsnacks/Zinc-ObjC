@@ -32,7 +32,7 @@
 }
 
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
@@ -68,7 +68,7 @@
         
         NSNumber *isSymlink;
         if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
         }
         if ([isSymlink boolValue]) {
@@ -85,7 +85,7 @@
         
         NSNumber *isSymlink;
         if (![theURL getResourceValue:&isSymlink forKey:NSURLIsSymbolicLinkKey error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
         }
         if ([isSymlink boolValue]) {
@@ -106,7 +106,7 @@
     for (NSURL* bundleRes in bundlesToDelete) {
         NSString* path = [self.repo pathForBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
         if (![fm removeItemAtPath:path error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         }
         [self.repo deregisterBundle:bundleRes];
         

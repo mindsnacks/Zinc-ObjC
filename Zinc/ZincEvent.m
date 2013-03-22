@@ -184,7 +184,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           url, kZincEventAttributesURLKey, nil];
-    return [[[self alloc] initWithType:ZincEventTypeDownloadBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeDownloadBegin source:ZINC_EVENT_SRC_METHOD() attributes:attr] autorelease];
     
 }
 
@@ -213,7 +213,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
                           url, kZincEventAttributesURLKey,
                           @(size), kZincEventAttributesSizeKey, nil];
     
-    return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:ZINC_EVENT_SRC_METHOD() attributes:attr] autorelease];
     
 }
 
@@ -252,7 +252,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context
 {
-    return [self bundleCloneBeginEventForBundleResource:bundleResource source:ZINC_EVENT_SRC() context:context];
+    return [self bundleCloneBeginEventForBundleResource:bundleResource source:ZINC_EVENT_SRC_METHOD() context:context];
 }
 
 + (NSString*) name
@@ -291,7 +291,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
 
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success
 {
-    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:ZINC_EVENT_SRC() context:context success:success];
+    return [self bundleCloneCompleteEventForBundleResource:bundleResource source:ZINC_EVENT_SRC_METHOD() context:context success:success];
 }
 
 + (NSString*) name
@@ -322,7 +322,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
 {
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           archiveResource, kZincEventAttributesArchiveResourceKey, nil];
-    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:ZINC_EVENT_SRC_METHOD() attributes:attr] autorelease];
     
 }
 
@@ -350,7 +350,7 @@ NSString *const kZincEventTaskCompleteNotification = @"ZincEventTaskCompleteNoti
     NSDictionary* attr = [NSDictionary dictionaryWithObjectsAndKeys:
                           archiveResource, kZincEventAttributesArchiveResourceKey,
                           context ?: [NSNull null], kZincEventAttributesContextKey, nil];
-    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:ZINC_EVENT_SRC_METHOD() attributes:attr] autorelease];
     
 }
 

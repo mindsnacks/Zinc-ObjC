@@ -21,7 +21,7 @@
     return [self taskMethod];
 }
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
@@ -34,13 +34,13 @@
     for (NSURL *theURL in filesEnum) {
         NSNumber *isRegularFile;
         if (![theURL getResourceValue:&isRegularFile forKey:NSURLIsRegularFileKey error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
         }
         if ([isRegularFile boolValue]) {
             NSNumber *linkCount;
             if (![theURL getResourceValue:&linkCount forKey:NSURLLinkCountKey error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 continue;
             }
             if ([linkCount integerValue] < 2) {

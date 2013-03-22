@@ -43,7 +43,7 @@
     return [self.resource zincObjectSHA];
 }
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     BOOL gz = NO;
@@ -74,7 +74,7 @@
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                               catalogId, @"catalogId", nil];
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     
@@ -85,14 +85,14 @@
         
         if ([fm fileExistsAtPath:uncompressedPath]) {
             if (![fm removeItemAtPath:uncompressedPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 continue;
             }
         }
         
         if ([fm fileExistsAtPath:compressedPath]) {
             if (![fm removeItemAtPath:compressedPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 continue;
             }
         }
@@ -110,7 +110,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC_METHOD() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
@@ -122,14 +122,14 @@
             NSData* compressed = [[[NSData alloc] initWithContentsOfFile:downloadPath] autorelease];
             NSData* uncompressed = [compressed zinc_gzipInflate];
             if (![uncompressed writeToFile:uncompressedPath options:0 error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD() attributes:[self.httpRequestOperation zinc_contextInfo]]];
                 // don't return/continue! still need to clean up
             }
         } 
         
         NSString* actualSHA = ZincSHA1HashFromPath(uncompressedPath, 0, &error);
         if (actualSHA == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
         }
         
@@ -141,21 +141,21 @@
                     source, @"source",
                     nil];
             error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
             
         } else {
             
             NSString* targetDir = [targetPath stringByDeletingLastPathComponent];
             if (![fm zinc_createDirectoryIfNeededAtPath:targetDir error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 continue;
             }
 
             if (![fm moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
                 if (error.code != NSFileWriteFileExistsError) // ignore error if file already existed
                 {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                     continue;
                 }
             }

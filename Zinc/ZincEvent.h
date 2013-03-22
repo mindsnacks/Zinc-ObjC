@@ -58,16 +58,25 @@ extern NSString *const kZincEventTaskCompleteNotification;
 
 #pragma mark Event Source Utils
 
-#define ZINC_EVENT_SRC() _ZincEventSrcMake(self, __PRETTY_FUNCTION__, __LINE__)
+#define ZINC_EVENT_SRC_METHOD() _ZincEventSrcMake(self, __PRETTY_FUNCTION__, __LINE__)
+
+#define ZINC_EVENT_SRC_OBJECT() _ZincEventSrcMake(self, NULL, 0)
 
 static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int line)
 {
-    return @{
-             @"object": [NSString stringWithFormat:@"%p", obj],
-             @"class": NSStringFromClass([obj class]),
-             @"function": [NSString stringWithFormat:@"%s", func],
-             @"line": [NSString stringWithFormat:@"%d", line],
-             };
+    if (func != NULL) {
+        return @{
+                 @"object": [NSString stringWithFormat:@"%p", obj],
+                 @"class": NSStringFromClass([obj class]),
+                 @"function": [NSString stringWithFormat:@"%s", func],
+                 @"line": [NSString stringWithFormat:@"%d", line],
+                 };
+    } else {
+        return @{
+                 @"object": [NSString stringWithFormat:@"%p", obj],
+                 @"class": NSStringFromClass([obj class]),
+                 };
+    }
 }
 
 

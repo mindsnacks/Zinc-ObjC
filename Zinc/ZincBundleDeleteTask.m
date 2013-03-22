@@ -39,7 +39,7 @@
     return [self.resource zincBundleVersion];
 }
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
@@ -53,7 +53,7 @@
 
     ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     
@@ -115,10 +115,10 @@
     
     // remove the bundle dir
     if (![fm zinc_removeItemAtPath:bundlePath error:&error]) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     } else {
-        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:ZINC_EVENT_SRC_OBJECT()]];
     }
     
     NSString* flavor = [self.repo.index trackedFlavorForBundleId:self.bundleId];
@@ -135,7 +135,7 @@
         NSDictionary* attr = [fm attributesOfItemAtPath:shaPath error:&error];
         if (attr == nil) {
             if (![error zinc_isFileNotFoundError]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
             }
             continue;
         }
@@ -145,22 +145,22 @@
         const BOOL shouldDeleteFile = [linkCount integerValue] == 1;
         if (shouldDeleteFile) {
             if (![fm zinc_removeItemAtPath:shaPath error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 continue;
             } else {
-                [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:ZINC_EVENT_SRC()]];
+                [self addEvent:[ZincDeleteEvent deleteEventForPath:shaPath source:ZINC_EVENT_SRC_OBJECT()]];
             }
         }
     }
     
     // finally remove the manifest
     if(![self.repo removeManifestForBundleId:self.bundleId version:self.version error:&error]) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     } else {
         // kinda odd to ask for the path after deleting, but thats how the API works ATM
         NSString* bundlePath = [self.repo pathForManifestWithBundleId:self.bundleId version:self.version];
-        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:ZINC_EVENT_SRC_OBJECT()]];
     }
     
     [self.repo deregisterBundle:self.resource];

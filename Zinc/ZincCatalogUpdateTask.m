@@ -41,19 +41,19 @@
     return self.input;
 }
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     
     NSData* data = [self.catalog jsonRepresentation:&error];
     if (data == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     
     NSString* path = [self.repo pathForCatalogIndex:self.catalog];
     if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     

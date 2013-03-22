@@ -47,7 +47,7 @@
     return self.resource;
 }
 
-- (void) taskMain
+- (void) main
 {
     NSError* error = nil;
     
@@ -59,7 +59,7 @@
     if (self.isCancelled) return;
     
     if (![requestOp hasAcceptableStatusCode]) {
-        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC_METHOD() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
@@ -67,19 +67,19 @@
     
     NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
     if (uncompressed == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
     ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD() attributes:[requestOp zinc_contextInfo]]];
         return;
     }
     
     NSData* data = [catalog jsonRepresentation:&error];
     if (data == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     

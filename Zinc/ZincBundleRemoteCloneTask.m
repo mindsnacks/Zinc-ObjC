@@ -103,7 +103,7 @@
         
         NSString* format = [manifest bestFormatForFile:path];
         if (format == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_INVALID_FORMAT) source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:ZincError(ZINC_ERR_INVALID_FORMAT) source:ZINC_EVENT_SRC_METHOD()]];
             return NO;
         }
         
@@ -121,7 +121,7 @@
                 if ([self.fileManager copyItemAtPath:localPath toPath:repoPath error:&error]) {
                     continue;
                 } else {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
                 }
             }
             
@@ -195,7 +195,7 @@
     return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
 }
 
-- (void) taskMain
+- (void) main
 {
     [self setUp];
     
@@ -208,7 +208,7 @@
     
     ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
     if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC_METHOD()]];
         [self completeWithSuccess:NO];
         return;
     }

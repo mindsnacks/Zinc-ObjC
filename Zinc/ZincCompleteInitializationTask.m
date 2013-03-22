@@ -13,7 +13,7 @@
 @implementation ZincCompleteInitializationTask
 
 
-- (void) taskMain
+- (void) main
 {
     NSArray* allErrors = [self allErrors];
     if ([allErrors count] == 0) {

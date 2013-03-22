@@ -20,6 +20,9 @@
 @property (atomic, retain) NSMutableArray* myChildOperations;
 @end
 
+static NSString* kvo_isExecuting = @"kvo_isExecuting";
+static NSString* kvo_isFinished = @"kvo_isFinished";
+
 
 @implementation ZincTask
 
@@ -31,6 +34,9 @@
         self.resource = resource;
         self.input = input;
         self.myChildOperations = [NSMutableArray array];
+        
+        [self addObserver:self forKeyPath:NSStringFromSelector(@selector(isExecuting)) options:NSKeyValueObservingOptionOld |  NSKeyValueObservingOptionNew context:&kvo_isExecuting];
+        [self addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew context:&kvo_isFinished];
     }
     return self;
 }
@@ -56,8 +62,11 @@
 }
 
 
-- (void)dealloc 
+- (void)dealloc
 {
+    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(isExecuting)) context:&kvo_isExecuting];
+    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_isFinished];
+
     [_myChildOperations release];
     [_resource release];
     [_input release];
@@ -131,7 +140,7 @@
         task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
         [self addChildOperation:task];
     }
-
+    
     return task;
 }
 
@@ -214,18 +223,27 @@
 }
 
 
-- (void) main
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    [self addEvent:[ZincTaskBeginEvent taskBeginEventWithSource:ZINC_EVENT_SRC()]];
-    [self taskMain];
-    [self addEvent:[ZincTaskCompleteEvent taskCompleteEventWithSource:ZINC_EVENT_SRC()]];
+    if (context == &kvo_isExecuting) {
+        
+        if (![[change objectForKey:NSKeyValueChangeOldKey] boolValue] &&
+            [[change objectForKey:NSKeyValueChangeNewKey] boolValue]) {
+            
+            [self addEvent:[ZincTaskBeginEvent taskBeginEventWithSource:ZINC_EVENT_SRC_OBJECT()]];
+        }
+        
+    } else if (context == &kvo_isFinished) {
+        
+        if (![[change objectForKey:NSKeyValueChangeOldKey] boolValue] &&
+            [[change objectForKey:NSKeyValueChangeNewKey] boolValue]) {
+            
+            [self addEvent:[ZincTaskCompleteEvent taskCompleteEventWithSource:ZINC_EVENT_SRC_OBJECT()]];
+        }
+        
+    } else {
+        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
 }
-
-
-- (void)taskMain
-{
-    NSAssert(NO, @"method must be defined by subclass");
-}
-
 
 @end

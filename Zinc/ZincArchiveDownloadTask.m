@@ -37,7 +37,7 @@
     return [self.resource zincBundleVersion];
 }
 
-- (void) taskMain
+- (void) main
 {
     NSString* flavor = self.input;
     
@@ -52,7 +52,7 @@
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
                               catalogId, @"catalogId", nil];
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC_METHOD()]];
         return;
     }
     
@@ -73,7 +73,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC_METHOD() attributes:[self.httpRequestOperation zinc_contextInfo]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
@@ -88,7 +88,7 @@
         if (self.isCancelled) return;
 
         if (extractOp.error != nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:ZINC_EVENT_SRC()]];
+            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:ZINC_EVENT_SRC_METHOD()]];
             continue;
         }
         
