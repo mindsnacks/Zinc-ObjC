@@ -13,7 +13,7 @@
 
 - (NSURL*) urlForCatalogIndex
 {
-    return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self] absoluteURL];
+    return [[NSURL URLWithString:@"catalog.json.gz" relativeToURL:self] absoluteURL];
 }
 
 - (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
