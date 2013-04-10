@@ -198,8 +198,13 @@
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleId createIfMissing:YES];
         NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
-        [versionInfo setObject:[NSNumber numberWithInteger:state] 
-                        forKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]];
+        NSString* versionKey = [[NSNumber numberWithInteger:bundleVersion] stringValue];
+        if (state == ZincBundleStateNone) {
+            [versionInfo removeObjectForKey:versionKey];
+        } else {
+            [versionInfo setObject:[NSNumber numberWithInteger:state]
+                            forKey:versionKey];
+        }
     }
 }
 
