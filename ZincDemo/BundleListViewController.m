@@ -7,7 +7,7 @@
 //
 
 #import "BundleListViewController.h"
-#import "Zinc.h"
+#import <Zinc/Zinc.h>
 #import "BundleDetailViewController.h"
 
 @interface BundleListViewController ()

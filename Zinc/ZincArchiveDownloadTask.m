@@ -15,7 +15,6 @@
 #import "ZincErrors.h"
 #import "ZincEvent.h"
 #import "ZincSource.h"
-#import "ZincHTTPRequestOperation.h"
 #import "NSFileManager+Zinc.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"

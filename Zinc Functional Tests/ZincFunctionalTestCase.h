@@ -8,7 +8,7 @@
 
 #import <GHUnitIOS/GHUnit.h>
 
-#import "Zinc.h"
+#import "ZincRepo.h"
 
 @interface ZincFunctionalTestCase : GHAsyncTestCase <ZincRepoDelegate>
 

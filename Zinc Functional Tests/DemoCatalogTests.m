@@ -9,6 +9,8 @@
 #import "ZincFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
 #import "ZincJSONSerialization.h"
+#import "ZincBundle.h"
+#import "ZincUtils.h"
 
 #define DEMO_CATALOG_URL [NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]
 #define DEMO_CATALOG_ID @"com.mindsnacks.demo1"
