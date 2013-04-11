@@ -197,7 +197,10 @@ typedef id ZincBackgroundTaskIdentifier;
     NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
     for (ZincEvent* event in allEvents) {
         if([event isKindOfClass:[ZincErrorEvent class]]) {
-            [allErrors addObject:[(ZincErrorEvent*)event error]];
+            NSError* error = [(ZincErrorEvent*)event error];
+            if (error) {
+                [allErrors addObject:error];
+            }
         }
     }
     // TODO: write a test for this
