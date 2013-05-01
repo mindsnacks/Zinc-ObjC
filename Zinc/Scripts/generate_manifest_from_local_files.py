@@ -5,7 +5,7 @@ import json
 import os.path
 import argparse
 import re
-from zinc import ZincManifest
+from zinc.models import ZincManifest
 from zinc.utils import sha1_for_path
 
 IGNORE_PATTERNS=['\.DS_Store']
@@ -27,12 +27,12 @@ def main():
         dest = os.path.join(os.environ['BUILT_PRODUCTS_DIR'],
                 os.environ['UNLOCALIZED_RESOURCES_FOLDER_PATH'])
         src_count = int(os.environ['SCRIPT_INPUT_FILE_COUNT'])
-        src_dirs = [os.environ['SCRIPT_INPUT_FILE_%d' % (i)] 
+        src_dirs = [os.environ['SCRIPT_INPUT_FILE_%d' % (i)]
                 for i in range(src_count)]
     else:
         src_dirs = args.src_dirs
         dest = args.dest
-    
+
     for src_dir in src_dirs:
         src_dir = os.path.realpath(src_dir)
         bundle_catalog_id = os.path.split(src_dir)[-1]
@@ -57,7 +57,7 @@ def main():
         out_file = os.path.join(dest, catalog_id + '.' + bundle_id + '.json')
         print out_file
         with open(out_file, 'w') as f:
-            f.write(json.dumps(manifest.to_json()))
+            f.write(manifest.to_bytes())
 
 if __name__ == "__main__":
     main()
