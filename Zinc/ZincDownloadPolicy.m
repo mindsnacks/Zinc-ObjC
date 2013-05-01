@@ -17,6 +17,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 @interface ZincDownloadPolicy ()
 @property (nonatomic, retain) NSMutableDictionary* prioritiesByRequiredConnectionType;
 @property (nonatomic, retain) NSMutableDictionary* prioritiesByBundleId;
+@property (nonatomic, retain) NSMutableArray* rules;
 @end
 
 @implementation ZincDownloadPolicy
@@ -27,6 +28,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     if (self) {
         _prioritiesByRequiredConnectionType = [[NSMutableDictionary alloc] init];
         _prioritiesByBundleId = [[NSMutableDictionary alloc] init];
+        _rules = [[NSMutableArray alloc] init];
         _defaultRequiredConnectionType = kInitialDefaultConnectionType;
     }
     return self;
@@ -36,14 +38,15 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 {
     [_prioritiesByRequiredConnectionType release];
     [_prioritiesByBundleId release];
+    [_rules release];
     [super dealloc];
 }
 
-- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleId
+- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleID
 {
     @synchronized(self.prioritiesByBundleId)
     {
-        NSNumber* prio = [self.prioritiesByBundleId objectForKey:bundleId];
+        NSNumber* prio = [self.prioritiesByBundleId objectForKey:bundleID];
         if (prio != nil) {
             return [prio integerValue];
         } else {
@@ -52,7 +55,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     }
 }
 
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithID:(NSString*)bundleId
 {
     @synchronized(self.prioritiesByBundleId)
     {
@@ -99,6 +102,20 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     }
 }
 
+- (void)addRule:(id<ZincDownloadPolicyRule>)rule
+{
+    @synchronized(self.rules) {
+        [self.rules addObject:rule];
+    }
+}
+
+- (void)removeRule:(id<ZincDownloadPolicyRule>)rule
+{
+    @synchronized(self.rules) {
+        [self.rules removeObject:rule];
+    }
+}
+
 - (void) reset
 {
     @synchronized(self.prioritiesByRequiredConnectionType) {
@@ -107,6 +124,10 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     
     @synchronized(self.prioritiesByBundleId) {
         [self.prioritiesByBundleId removeAllObjects];
+    }
+
+    @synchronized(self.rules) {
+        [self.rules removeAllObjects];
     }
     
     self.defaultRequiredConnectionType = kInitialDefaultConnectionType;
@@ -121,5 +142,44 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     }
 }
 
+- (BOOL) doRulesAllowBundleID:(NSString*)bundleID
+{
+    @synchronized(self.rules) {
+        for (id<ZincDownloadPolicyRule> rule in self.rules) {
+            if (![rule allowBundleWithID:bundleID priority:[self priorityForBundleWithID:bundleID]]) {
+                return NO;
+            }
+        }
+    }
+    return YES;
+}
+
+@end
+
+
+@interface ZincDownloadPolicyBlockRule ()
+@property (nonatomic, copy) ZincDownloadPolicyBlockRuleHandler block;
+@end
+
+
+@implementation ZincDownloadPolicyBlockRule
+
++ (instancetype)ruleWithBlock:(ZincDownloadPolicyBlockRuleHandler)block
+{
+    ZincDownloadPolicyBlockRule* r = [[[self alloc] init] autorelease];
+    r.block = block;
+    return r;
+}
+
+- (void)dealloc
+{
+    [_block release];
+    [super dealloc];
+}
+
+- (BOOL) allowBundleWithID:(NSString*)bundleID priority:(NSOperationQueuePriority)priority
+{
+    return self.block(bundleID, priority);
+}
 
 @end

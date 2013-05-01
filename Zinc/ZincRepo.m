@@ -38,11 +38,12 @@
 #import "ZincTrackingInfo.h"
 #import "ZincTaskRef.h"
 #import "ZincBundleTrackingRequest.h"
-#import "ZincDownloadPolicy.h"
-#import <KSReachability/KSReachability.h>
+#import "ZincDownloadPolicy+Private.h"
 #import "NSError+Zinc.h"
 #import "ZincTaskActions.h"
 #import "ZincExternalBundleInfo.h"
+
+#import <KSReachability/KSReachability.h>
 
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
@@ -1103,12 +1104,16 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
 {
+    // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
+    // I also hestitate to add reachability support to it directly.
+
     ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
     
     if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
         return NO;
     }
-    return YES;
+
+    return [self.downloadPolicy doRulesAllowBundleID:bundleID];
 }
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
