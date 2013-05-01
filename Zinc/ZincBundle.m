@@ -70,16 +70,9 @@
     return (NSBundle*)self;
 }
 
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)aSelector
+- (id)forwardingTargetForSelector:(SEL)selector
 {
-    NSMethodSignature* sig = [self.bundle methodSignatureForSelector:aSelector];
-    return sig;
-}
-
-- (void)forwardInvocation:(NSInvocation *)anInvocation
-{
-    [anInvocation setTarget:self.bundle];
-    [anInvocation invoke];
+    return self.bundle;
 }
 
 
