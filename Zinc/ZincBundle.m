@@ -22,12 +22,6 @@
 
 @implementation ZincBundle
 
-@synthesize repo = _repo;
-@synthesize bundleId = _bundleId;
-@synthesize version = _version;
-@synthesize url = _url;
-@synthesize bundle = _bundle;
-
 - (id) initWithRepo:(ZincRepo*)repo bundleId:(NSString*)bundleId version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
 {
     self.repo = repo;
@@ -66,7 +60,6 @@
 
 - (NSBundle*) NSBundle
 {
-//    return [NSBundle bundleWithURL:self.url];
     return (NSBundle*)self;
 }
 
@@ -74,7 +67,6 @@
 {
     return self.bundle;
 }
-
 
 #pragma mark -
 
@@ -93,12 +85,6 @@
     return [NSString stringWithFormat:@"%@-%d", bundleId, version];
 }
 
-@end
-
-
-
-@implementation NSBundle (ZincBundle)
-
 - (NSURL *)URLForResource:(NSString *)name
 {
     return [NSURL fileURLWithPath:
@@ -109,7 +95,7 @@
 {
     NSString* base = [name stringByDeletingPathExtension];
     NSString* ext = [name pathExtension];
-    return [self pathForResource:base ofType:ext];
+    return [[self NSBundle] pathForResource:base ofType:ext];
 }
 
 @end
