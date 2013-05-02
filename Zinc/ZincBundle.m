@@ -94,12 +94,19 @@
 
 - (NSURL *)URLForResource:(NSString *)name
 {
-    return [[self NSBundle] URLForResource:name];
+    // NOTE: this is re-implemented for the NSBundle (ZincBundle) category.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
+    return [NSURL fileURLWithPath:
+            [self pathForResource:name]];
 }
 
 - (NSString *)pathForResource:(NSString *)name
 {
-    return [[self NSBundle] pathForResource:name];
+    // NOTE: this is re-implemented for the NSBundle (ZincBundle) category.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
+    NSString* base = [name stringByDeletingPathExtension];
+    NSString* ext = [name pathExtension];
+    return [(NSBundle *)self pathForResource:base ofType:ext];
 }
 
 @end
@@ -109,12 +116,16 @@
 
 - (NSURL *)URLForResource:(NSString *)name
 {
+    // NOTE: this is re-implemented for the ZincBundle object.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
     return [NSURL fileURLWithPath:
             [self pathForResource:name]];
 }
 
 - (NSString *)pathForResource:(NSString *)name
 {
+    // NOTE: this is re-implemented for the ZincBundle object.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
     NSString* base = [name stringByDeletingPathExtension];
     NSString* ext = [name pathExtension];
     return [self pathForResource:base ofType:ext];
