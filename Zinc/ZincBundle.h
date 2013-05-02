@@ -18,6 +18,12 @@
 
 @end
 
+
+@interface NSBundle (ZincBundle) <ZincBundle>
+
+@end
+
+
 @interface ZincBundle : NSProxy <ZincBundle>
 
 @property (nonatomic, retain, readonly) ZincRepo* repo;
@@ -37,9 +43,3 @@
 @end
 
 
-@interface NSBundle (ZincBundle) <ZincBundle>  
-
-- (NSURL *)URLForResource:(NSString *)name;
-- (NSString *)pathForResource:(NSString *)name;
-
-@end
