@@ -21,6 +21,9 @@
 
 @interface NSBundle (ZincBundle) <ZincBundle>
 
+- (NSURL *)URLForResource:(NSString *)name;
+- (NSString *)pathForResource:(NSString *)name;
+
 @end
 
 

@@ -94,6 +94,21 @@
 
 - (NSURL *)URLForResource:(NSString *)name
 {
+    return [[self NSBundle] URLForResource:name];
+}
+
+- (NSString *)pathForResource:(NSString *)name
+{
+    return [[self NSBundle] pathForResource:name];
+}
+
+@end
+
+
+@implementation NSBundle (ZincBundle)
+
+- (NSURL *)URLForResource:(NSString *)name
+{
     return [NSURL fileURLWithPath:
             [self pathForResource:name]];
 }
@@ -102,7 +117,7 @@
 {
     NSString* base = [name stringByDeletingPathExtension];
     NSString* ext = [name pathExtension];
-    return [[self NSBundle] pathForResource:base ofType:ext];
+    return [self pathForResource:base ofType:ext];
 }
 
 @end
