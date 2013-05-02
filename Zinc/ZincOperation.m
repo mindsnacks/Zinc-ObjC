@@ -7,6 +7,7 @@
 //
 
 #import "ZincOperation.h"
+#import "NSOperation+Zinc.h"
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
 
@@ -56,6 +57,12 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 - (float) progress
 {
     return ZincProgressCalculate(self);
+}
+
+- (void)addDependency:(NSOperation *)op
+{
+    NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Depedency: %@", self, op);
+    [super addDependency:op];
 }
 
 @end
