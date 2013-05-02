@@ -12,26 +12,29 @@
 
 - (NSArray*) zinc_allDependencies
 {
-    NSMutableArray *todo = [NSMutableArray arrayWithObject:self];
-    NSMutableSet *done = [NSMutableSet set];
-    NSMutableArray *allDeps = [NSMutableArray array];
+    NSMutableArray *pendingOperationsToVisit = [NSMutableArray arrayWithObject:self];
+    NSMutableSet *visitedOperations = [NSMutableSet set];
+    NSMutableSet *allDependencies = [NSMutableSet set];
 
-    while ([todo count] > 0) {
+    while ([pendingOperationsToVisit count] > 0) {
 
-        NSOperation *op = [todo lastObject];
-        [todo removeLastObject];
-        [done addObject:op];
+        // mark the operation as "visited"
+        NSOperation *op = [pendingOperationsToVisit lastObject];
+        [pendingOperationsToVisit removeLastObject];
+        [visitedOperations addObject:op];
 
+        // loop through all dependencies, but only recusively visit those
+        // we haven't already visited
         NSArray* deps = [op dependencies];
         for (id obj in deps) {
-            [allDeps addObject:obj];
-            if (![done containsObject:obj]) {
-                [todo addObject:obj];
+            [allDependencies addObject:obj];
+            if (![visitedOperations containsObject:obj]) {
+                [pendingOperationsToVisit addObject:obj];
             }
         }
     }
     
-    return allDeps;
+    return [allDependencies allObjects];
 }
 
 @end
