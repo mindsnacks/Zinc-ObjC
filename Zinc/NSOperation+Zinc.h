@@ -14,6 +14,6 @@
 /**
  @discussion returns ALL dependencies of the operation, recursively.
  */
-- (NSArray*) zinc_allDependencies;
+- (NSSet*) zinc_allDependencies;
 
 @end

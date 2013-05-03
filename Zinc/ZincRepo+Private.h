@@ -63,9 +63,24 @@
 
 #pragma mark Tasks
 
+/**
+ 
+ @discussion Internal method to queue or get a task.
+ 
+ @param taskDescriptor Descriptor describing the task to be queued. Will attempt to get an existing task if present
+ @param input Abritrary data to pass to the task, akin to `userInfo`
+ @param parent If not nil, the task will be added as a dependency to parent, i.e., `[parent addDependency:task]`
+ @param dependencies Additional dependencies of the task. i.e., `[task addDependency:dep]`
+
+ */
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input parent:(NSOperation*)parent dependencies:(NSArray*)dependencies;
+
+// Convenience methods - omitted parameters are nil
+
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies;
+
 - (void) addOperation:(NSOperation*)operation;
 
 #pragma mark Paths

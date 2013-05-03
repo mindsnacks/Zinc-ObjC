@@ -117,6 +117,7 @@ typedef id ZincBackgroundTaskIdentifier;
     }
     childOp.queuePriority = self.queuePriority;
     [self addDependency:childOp];
+    // childOp may already be added as a dependency if created via queueTaskForDescriptor, but it's not a problem
 }
 
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
@@ -133,7 +134,7 @@ typedef id ZincBackgroundTaskIdentifier;
     @synchronized(self) {
         // synchronizing on self here because there is a slight race condition. The task is created
         // and queued before it is added to myChildOperations.
-        task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
+        task = [self.repo queueTaskForDescriptor:taskDescriptor input:input parent:self dependencies:nil];
         [self addChildOperation:task];
     }
 

@@ -61,7 +61,7 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 
 - (void)addDependency:(NSOperation *)op
 {
-    NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Depedency: %@", self, op);
+    NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Dependency: %@", self, op);
     [super addDependency:op];
 }
 

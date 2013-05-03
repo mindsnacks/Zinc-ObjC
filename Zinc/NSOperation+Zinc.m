@@ -10,7 +10,7 @@
 
 @implementation NSOperation (Zinc)
 
-- (NSArray*) zinc_allDependencies
+- (NSSet*) zinc_allDependencies
 {
     NSMutableArray *pendingOperationsToVisit = [NSMutableArray arrayWithObject:self];
     NSMutableSet *visitedOperations = [NSMutableSet set];
@@ -34,7 +34,7 @@
         }
     }
     
-    return [allDependencies allObjects];
+    return allDependencies;
 }
 
 @end
