@@ -116,6 +116,7 @@ typedef id ZincBackgroundTaskIdentifier;
         [self.myChildOperations addObject:childOp];
     }
     childOp.queuePriority = self.queuePriority;
+    [self addDependency:childOp];
 }
 
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
