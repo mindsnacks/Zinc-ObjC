@@ -7,6 +7,7 @@
 //
 
 #import "ZincOperationQueueGroup.h"
+#import "NSOperation+Zinc.h"
 
 @interface ZincOperationQueueGroup ()
 @property (atomic, retain) NSMutableDictionary* infoByClassName;
@@ -125,7 +126,13 @@
             deps = [self getAllBarrierOperations];
         }
         for (NSOperation* dep in deps) {
-            [theOperation addDependency:dep];
+
+            // only add a new dependency if the target doesn't already depend
+            // on this operation to avoid cycles
+
+            if (![[dep zinc_allDependencies] containsObject:theOperation]) {
+                [theOperation addDependency:dep];
+            }
         }
         
         if (info != nil) {

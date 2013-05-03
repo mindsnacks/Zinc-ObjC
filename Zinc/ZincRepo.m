@@ -1419,7 +1419,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return [self queueTaskForDescriptor:taskDesc];
 }
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input parent:(NSOperation*)parent dependencies:(NSArray*)dependencies
 {
     ZincTask* task = nil;
     
@@ -1453,7 +1453,10 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         }
         
         NSAssert(task, @"task is nil");
-        
+
+        // add dependency to parent (nil is OK)
+        [parent addDependency:task];
+
         // add all explicit deps
         for (NSOperation* dep in dependencies) {
             [task addDependency:dep];
@@ -1466,6 +1469,11 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
     
     return task;
+}
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
+{
+    return [self queueTaskForDescriptor:taskDescriptor input:input parent:nil dependencies:dependencies];
 }
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
