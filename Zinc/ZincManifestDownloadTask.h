@@ -13,7 +13,7 @@
 
 @interface ZincManifestDownloadTask : ZincDownloadTask
 
-@property (readonly) NSString* bundleId;
+@property (readonly) NSString* bundleID;
 @property (readonly) ZincVersion version;
 
 @end

@@ -27,7 +27,7 @@
     
     NSString *bundleID = @"com.mindsnacks.demo.cats";
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {

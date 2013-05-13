@@ -44,11 +44,11 @@
 
 - (void) testBundleIdentifierParsing
 {
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleId:@"mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIdFromBundleId:@"mindsnacks.assets"], @"mindsnacks", @"should be 'mindsnacks'");
+    STAssertEqualObjects([ZincBundle bundleNameFromBundleID:@"mindsnacks.assets"], @"assets", @"should be 'assets'");
+    STAssertEqualObjects([ZincBundle catalogIDFromBundleID:@"mindsnacks.assets"], @"mindsnacks", @"should be 'mindsnacks'");
     
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleId:@"com.mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIdFromBundleId:@"com.mindsnacks.assets"], @"com.mindsnacks", @"should be 'com.mindsnacks'");
+    STAssertEqualObjects([ZincBundle bundleNameFromBundleID:@"com.mindsnacks.assets"], @"assets", @"should be 'assets'");
+    STAssertEqualObjects([ZincBundle catalogIDFromBundleID:@"com.mindsnacks.assets"], @"com.mindsnacks", @"should be 'com.mindsnacks'");
 }
 
 

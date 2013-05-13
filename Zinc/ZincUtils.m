@@ -47,9 +47,9 @@ NSString* ZincGetApplicationCacheDirectory(void)
     return dir;
 }
 
-NSString* ZincCatalogIdFromBundleId(NSString* bundleId)
+NSString* ZincCatalogIDFromBundleID(NSString* bundleID)
 {
-    NSArray* comps = [bundleId componentsSeparatedByString:@"."];
+    NSArray* comps = [bundleID componentsSeparatedByString:@"."];
     NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
     return sourceId;
 }
@@ -62,14 +62,14 @@ NSString* ZincGetUniqueTemporaryDirectory(void)
     return tmpDir;
 }
 
-NSString* ZincBundleNameFromBundleId(NSString* bundleId)
+NSString* ZincBundleNameFromBundleID(NSString* bundleID)
 {
-    return [[bundleId componentsSeparatedByString:@"."] lastObject];
+    return [[bundleID componentsSeparatedByString:@"."] lastObject];
 }
 
-NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName)
+NSString* ZincBundleIDFromCatalogIDAndBundleName(NSString* catalogID, NSString* bundleName)
 {
-    return [NSString stringWithFormat:@"%@.%@", catalogId, bundleName];
+    return [NSString stringWithFormat:@"%@.%@", catalogID, bundleName];
 }
 
 NSString* ZincBundleIDFromBundleDescriptor(NSString* bundleDescriptor)

@@ -328,7 +328,7 @@
 - (ZincManifest*) _manifestForDictionaryRepresentationTest
 {
     ZincManifest* manifest = [[[ZincManifest alloc] init] autorelease];
-    manifest.catalogId = @"com.mindsnacks.food";
+    manifest.catalogID = @"com.mindsnacks.food";
     manifest.bundleName = @"pork";
     manifest.version = 5;
     return manifest;
@@ -349,7 +349,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogId, @"catalog id doesn't match");
+    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogID, @"catalog id doesn't match");
 }
 
 - (void) testDictionaryRepresentation_version

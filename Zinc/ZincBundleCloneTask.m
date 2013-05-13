@@ -31,9 +31,9 @@
     [super dealloc];
 }
 
-- (NSString*) bundleId
+- (NSString*) bundleID
 {
-    return [self.resource zincBundleId];
+    return [self.resource zincBundleID];
 }
 
 - (ZincVersion) version
@@ -43,13 +43,13 @@
 
 - (NSString*) getTrackedFlavor
 {
-    return [self.repo.index trackedFlavorForBundleId:self.bundleId];
+    return [self.repo.index trackedFlavorForBundleID:self.bundleID];
 }
 
 - (void) setUp
 {
     self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId]];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleID]];
 }
 
 - (void) completeWithSuccess:(BOOL)success
@@ -60,7 +60,7 @@
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
     }
 
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId success:success]];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleID success:success]];
     
     self.finishedSuccessfully = success;
 }
@@ -71,7 +71,7 @@
     
     NSString* flavor = [self getTrackedFlavor];
     
-    NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
+    NSString* bundlePath = [self.repo pathForBundleWithID:self.bundleID version:self.version];
     NSArray* allFiles = [manifest filesForFlavor:flavor];
     
     // Build a list of all dirs needed for the bundle

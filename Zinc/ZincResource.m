@@ -24,9 +24,9 @@
     return YES;
 }
 
-+ (NSURL*) zincResourceForCatalogWithId:(NSString*)catalogId
++ (NSURL*) zincResourceForCatalogWithId:(NSString*)catalogID
 {
-    NSString* path = [@"/" stringByAppendingString:catalogId];
+    NSString* path = [@"/" stringByAppendingString:catalogID];
    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"catalog" path:path] autorelease];
 }
 
@@ -35,27 +35,27 @@
     return [self isZincResourceOfType:@"catalog"];
 }
 
-- (NSString*) zincCatalogId
+- (NSString*) zincCatalogID
 {
     if ([self isZincCatalogResource]) {
         return [[self path] substringFromIndex:1];
         
     } else if ([self isZincBundleResource]) {
-        return ZincCatalogIdFromBundleId([self zincBundleId]);
+        return ZincCatalogIDFromBundleID([self zincBundleID]);
 
     } else if ([self isZincObjectResource]) {
-        NSString* catalogId = [self path];
-        catalogId = [catalogId stringByDeletingLastPathComponent]; // strip version
-        catalogId = [catalogId substringFromIndex:1]; // strip leading /
-        return catalogId;
+        NSString* catalogID = [self path];
+        catalogID = [catalogID stringByDeletingLastPathComponent]; // strip version
+        catalogID = [catalogID substringFromIndex:1]; // strip leading /
+        return catalogID;
     }
     
     return nil;
 }
 
-+ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleId version:(ZincVersion)version
++ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleId, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"manifest" path:path] autorelease];
 }
 
@@ -64,9 +64,9 @@
     return [self isZincResourceOfType:@"manifest"];
 }
 
-+ (NSURL*) zincResourceForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
++ (NSURL*) zincResourceForBundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleId, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"bundle" path:path] autorelease];
 }
 
@@ -74,7 +74,7 @@
 {
     NSString* bundleID = ZincBundleIDFromBundleDescriptor(bundleDescriptor);
     ZincVersion version = ZincBundleVersionFromBundleDescriptor(bundleDescriptor);
-    return [self zincResourceForBundleWithId:bundleID version:version];
+    return [self zincResourceForBundleWithID:bundleID version:version];
 }
 
 - (BOOL) isZincBundleResource
@@ -82,9 +82,9 @@
     return [self isZincResourceOfType:@"bundle"];
 }
 
-+ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version
++ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleId, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"archive" path:path] autorelease];
 }
 
@@ -93,7 +93,7 @@
     return [self isZincResourceOfType:@"archive"];
 }
 
-- (NSString*) zincBundleId
+- (NSString*) zincBundleID
 {
     if (![self isZincManifestResource] &&
         ![self isZincBundleResource] &&
@@ -101,10 +101,10 @@
         return nil;
     }
     
-    NSString* bundleId = [self path];
-    bundleId = [bundleId stringByDeletingLastPathComponent]; // strip version
-    bundleId = [bundleId substringFromIndex:1]; // strip leading /
-    return bundleId;
+    NSString* bundleID = [self path];
+    bundleID = [bundleID stringByDeletingLastPathComponent]; // strip version
+    bundleID = [bundleID substringFromIndex:1]; // strip leading /
+    return bundleID;
 }
 
 - (ZincVersion) zincBundleVersion
@@ -120,9 +120,9 @@
     return [version integerValue];
 }
 
-+ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId
++ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogID:(NSString*)catalogID
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%@", catalogId, sha];
+    NSString* path = [NSString stringWithFormat:@"/%@/%@", catalogID, sha];
     return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"object" path:path] autorelease];
 }
 

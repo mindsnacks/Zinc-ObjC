@@ -18,9 +18,9 @@ extern NSString* ZincGetApplicationDocumentsDirectory(void);
 extern NSString* ZincGetApplicationCacheDirectory(void);
 extern NSString* ZincGetUniqueTemporaryDirectory(void);
 
-extern NSString* ZincCatalogIdFromBundleId(NSString* bundleId);
-extern NSString* ZincBundleNameFromBundleId(NSString* bundleId);
-extern NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName);
+extern NSString* ZincCatalogIDFromBundleID(NSString* bundleID);
+extern NSString* ZincBundleNameFromBundleID(NSString* bundleID);
+extern NSString* ZincBundleIDFromCatalogIDAndBundleName(NSString* catalogID, NSString* bundleName);
 
 /**
  * @discussion a bundle descriptor is <bundleid>-<version>, ie, com.mindsnacks.cats-2

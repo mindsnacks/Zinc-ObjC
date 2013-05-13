@@ -42,9 +42,9 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 #pragma mark Bundle Prioritization
 
-- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleId;
+- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleID;
 
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithID:(NSString*)bundleId;
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithID:(NSString*)bundleID;
 
 
 #pragma mark Connectivity Rules

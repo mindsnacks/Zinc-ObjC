@@ -106,7 +106,7 @@
         self.itemsCleaned++;
     }
     for (NSURL* bundleRes in bundlesToDelete) {
-        NSString* path = [self.repo pathForBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
+        NSString* path = [self.repo pathForBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
         if (![fm removeItemAtPath:path error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }

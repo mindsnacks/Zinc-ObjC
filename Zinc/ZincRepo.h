@@ -32,7 +32,7 @@ extern NSString* const ZincRepoBundleWillStopTrackingNotification;
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
 // -- Bundle Notification UserInfo Keys
-extern NSString* const ZincRepoBundleChangeNotificationBundleIdKey;
+extern NSString* const ZincRepoBundleChangeNotificationBundleIDKey;
 extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
 
 // -- Task Notifications
@@ -117,12 +117,12 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 #pragma mark Tracking Remote Bundles
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
 
-- (void) stopTrackingBundleWithId:(NSString*)bundleId;
+- (void) stopTrackingBundleWithID:(NSString*)bundleID;
 
-- (NSSet*) trackedBundleIds;
+- (NSSet*) trackedBundleIDs;
 
 #pragma mark mark Updating Bundles
 
@@ -130,7 +130,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
  @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
  of connectivity.
  */
-- (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+- (void) updateBundleWithID:(NSString*)bundleID completionBlock:(ZincCompletionBlock)completion;
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
 /**
@@ -145,9 +145,9 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 /**
  @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
  */
-- (ZincBundle*) bundleWithId:(NSString*)bundleId;
+- (ZincBundle*) bundleWithID:(NSString*)bundleID;
 
-- (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
 
 
 #pragma mark Tasks

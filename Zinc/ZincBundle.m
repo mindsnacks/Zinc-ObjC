@@ -14,7 +14,7 @@
 
 @interface ZincBundle ()
 @property (nonatomic, retain, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSString* bundleId;
+@property (nonatomic, retain, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
 @property (nonatomic, retain, readwrite) NSURL* url;
 @property (nonatomic, retain, readwrite) NSBundle* bundle;
@@ -22,10 +22,10 @@
 
 @implementation ZincBundle
 
-- (id) initWithRepo:(ZincRepo*)repo bundleId:(NSString*)bundleId version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
+- (id) initWithRepo:(ZincRepo*)repo bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
 {
     self.repo = repo;
-    self.bundleId = bundleId;
+    self.bundleID = bundleID;
     self.version = version;
     self.url = bundleURL;
     self.bundle = [NSBundle bundleWithURL:bundleURL];
@@ -43,14 +43,14 @@
     [self.repo bundleWillDeallocate:self];
     [_repo release];
     [_bundle release];
-    [_bundleId release];
+    [_bundleID release];
     [_url release];
     [super dealloc];
 }
 
 - (NSURL*) resource
 {
-    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
+    return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
 }
  
 - (BOOL)isKindOfClass:(Class)aClass
@@ -77,19 +77,19 @@
 
 #pragma mark -
 
-+ (NSString*) catalogIdFromBundleId:(NSString*)bundleId
++ (NSString*) catalogIDFromBundleID:(NSString*)bundleID
 {
-    return ZincCatalogIdFromBundleId(bundleId);
+    return ZincCatalogIDFromBundleID(bundleID);
 }
 
-+ (NSString*) bundleNameFromBundleId:(NSString*)bundleId
++ (NSString*) bundleNameFromBundleID:(NSString*)bundleID
 {
-    return ZincBundleNameFromBundleId(bundleId);
+    return ZincBundleNameFromBundleID(bundleID);
 }
 
-+ (NSString*) descriptorForBundleId:(NSString*)bundleId version:(ZincVersion)version
++ (NSString*) descriptorForBundleID:(NSString*)bundleID version:(ZincVersion)version
 {
-    return [NSString stringWithFormat:@"%@-%d", bundleId, version];
+    return [NSString stringWithFormat:@"%@-%d", bundleID, version];
 }
 
 - (NSURL *)URLForResource:(NSString *)name

@@ -26,9 +26,9 @@
     [super dealloc];
 }
 
-- (NSString*) bundleId
+- (NSString*) bundleID
 {
-    return [self.resource zincBundleId];
+    return [self.resource zincBundleID];
 }
 
 - (ZincVersion) version
@@ -43,19 +43,19 @@
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
 
-    NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
+    NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
+    NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
     
-    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
+    NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              catalogId, @"catalogId", nil];
+                              catalogID, @"catalogID", nil];
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
     
-    NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogId];
+    NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogID];
 
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
                               [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
@@ -66,7 +66,7 @@
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
         NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
-        [self queueOperationForRequest:request outputStream:outStream context:self.bundleId];
+        [self queueOperationForRequest:request outputStream:outStream context:self.bundleID];
         
         [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
@@ -91,7 +91,7 @@
             continue;
         }
         
-        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleId]];
+        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleID]];
         
         self.finishedSuccessfully = YES;
     }

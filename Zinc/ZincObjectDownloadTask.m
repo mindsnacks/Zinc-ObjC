@@ -66,12 +66,12 @@
         ext = @"gz";
     }
     
-    NSString* catalogId = [self.resource zincCatalogId];
+    NSString* catalogID = [self.resource zincCatalogID];
     
-    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
+    NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              catalogId, @"catalogId", nil];
+                              catalogID, @"catalogID", nil];
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;

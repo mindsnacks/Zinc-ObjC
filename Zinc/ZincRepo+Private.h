@@ -26,25 +26,25 @@
 - (void) completeInitialization;
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
-- (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
+- (NSArray*) sourcesForCatalogID:(NSString*)catalogID;
 
 - (void) registerCatalog:(ZincCatalog*)catalog;
 - (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
 
-- (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
-- (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
-- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
-- (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
+- (void) addManifest:(ZincManifest*)manifest forBundleID:(NSString*)bundleID;
+- (BOOL) removeManifestForBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
+- (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version;
+- (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
+- (NSString*) pathForManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version;
 
 #pragma mark Bundles
 
-- (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro;
+- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 
-- (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
+- (NSString*) pathForBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
 
 // includes all currently tracked and open bundles
 // returns NSURLs (ZincBundleDescriptors)

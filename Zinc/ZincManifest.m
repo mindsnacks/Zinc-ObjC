@@ -18,7 +18,7 @@
 @implementation ZincManifest
 
 @synthesize bundleName = _bundleName;
-@synthesize catalogId = _catalogId;
+@synthesize catalogID = _catalogID;
 @synthesize version = _version;
 @synthesize files = _files;
 @synthesize flavors = _flavors;
@@ -28,7 +28,7 @@
     self = [super init];
     if (self) {
         self.bundleName = [dict objectForKey:@"bundle"];
-        self.catalogId = [dict objectForKey:@"catalog"];
+        self.catalogID = [dict objectForKey:@"catalog"];
         self.version = [[dict objectForKey:@"version"] integerValue];
         self.files = [dict objectForKey:@"files"];
         self.flavors = [dict objectForKey:@"flavors"];
@@ -77,16 +77,16 @@
 
 - (void)dealloc
 {
-    [_catalogId release];
+    [_catalogID release];
     [_bundleName release];
     [_files release];
     [_flavors release];
     [super dealloc];
 }
 
-- (NSString*) bundleId
+- (NSString*) bundleID
 {
-    return [NSString stringWithFormat:@"%@.%@", self.catalogId, self.bundleName];
+    return [NSString stringWithFormat:@"%@.%@", self.catalogID, self.bundleName];
 }
 
 - (NSString*) shaForFile:(NSString*)path
@@ -161,14 +161,14 @@
 
 - (NSURL*) bundleResource
 {
-    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
+    return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
 }
 
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
     [d setObject:self.bundleName forKey:@"bundle"];
-    [d setObject:self.catalogId forKey:@"catalog"];
+    [d setObject:self.catalogID forKey:@"catalog"];
     [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
     [d setObject:self.files forKey:@"files"];
     if (self.flavors != nil) [d setObject:self.flavors forKey:@"flavors"];

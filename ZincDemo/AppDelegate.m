@@ -95,27 +95,27 @@
     [repo resumeAllTasks];
     
 
-    NSArray* bundleIdsToBootstrap = [NSArray arrayWithObjects:
+    NSArray* bundleIDsToBootstrap = [NSArray arrayWithObjects:
                                      @"com.mindsnacks.demo1.cats",
                                      @"com.mindsnacks.demo1.sphalerites", nil];
     
-    for (NSString* bundleId in bundleIdsToBootstrap) {
+    for (NSString* bundleID in bundleIDsToBootstrap) {
         
         ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
-        req.bundleID = bundleId;
+        req.bundleID = bundleID;
         
         [repo bootstrapBundleWithRequest:req fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
             if ([errors count] > 0) {
                 NSLog(@"%@", errors);
                 abort();
             }
-            NSLog(@"bootstrapped %@", bundleId);
+            NSLog(@"bootstrapped %@", bundleID);
         }];
     }
 
     [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
     
-    [repo beginTrackingBundleWithId:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" automaticallyUpdate:NO];
+    [repo beginTrackingBundleWithID:@"com.mindsnacks.demo1.sphalerites" distribution:@"master" automaticallyUpdate:NO];
 
     [repo updateBundleWithID:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
     }];

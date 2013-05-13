@@ -11,24 +11,24 @@
 
 @interface NSURL (ZincResource)
 
-+ (NSURL*) zincResourceForCatalogWithId:(NSString*)catalogId;
++ (NSURL*) zincResourceForCatalogWithId:(NSString*)catalogID;
 - (BOOL) isZincCatalogResource;
-- (NSString*) zincCatalogId;
+- (NSString*) zincCatalogID;
 
-+ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleId version:(ZincVersion)verion;
++ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)verion;
 - (BOOL) isZincManifestResource;
 
-+ (NSURL*) zincResourceForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
++ (NSURL*) zincResourceForBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
 + (NSURL*) zincResourceForBundleDescriptor:(NSString*)bundleDescriptor;
 - (BOOL) isZincBundleResource;
 
-+ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleId version:(ZincVersion)version;
++ (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleID version:(ZincVersion)version;
 - (BOOL) isZincArchiveResource;
 
-- (NSString*) zincBundleId;
+- (NSString*) zincBundleID;
 - (ZincVersion) zincBundleVersion;
 
-+ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogId:(NSString*)catalogId;
++ (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogID:(NSString*)catalogID;
 - (BOOL) isZincObjectResource;
 - (NSString*) zincObjectSHA;
 

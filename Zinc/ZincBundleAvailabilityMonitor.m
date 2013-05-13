@@ -127,10 +127,10 @@
     if (![task.taskDescriptor.resource isZincBundleResource]) return;
     if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) return;
     
-    NSString* taskBundleID = [task.resource zincBundleId];
+    NSString* taskBundleID = [task.resource zincBundleID];
     
     if (![self.bundleIDs containsObject:taskBundleID]) return;
-    if ([self.repo stateForBundleWithId:taskBundleID] == ZincBundleStateAvailable) return;
+    if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
     
     ZincBundleAvailabilityMonitorItem* item = [self.myItems objectForKey:taskBundleID];
     item.task = task;
@@ -169,7 +169,7 @@
     if ([self isFinished]) return;
 
     ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
-    ZincBundleState state = [bundleMon.repo stateForBundleWithId:self.bundleID];
+    ZincBundleState state = [bundleMon.repo stateForBundleWithID:self.bundleID];
 
     if (state == ZincBundleStateAvailable) {
         [self finish];

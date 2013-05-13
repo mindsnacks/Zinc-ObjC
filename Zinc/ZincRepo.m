@@ -57,7 +57,7 @@ NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDelet
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
 NSString* const ZincRepoBundleWillStopTrackingNotification = @"ZincRepoBundleWillStopTrackingNotification";
 
-NSString* const ZincRepoBundleChangeNotificationBundleIdKey = @"bundleId";
+NSString* const ZincRepoBundleChangeNotificationBundleIDKey = @"bundleID";
 NSString* const ZincRepoBundleChangeNotifiationStatusKey = @"status";
 
 NSString* const ZincRepoTaskAddedNotification = @"ZincRepoTaskAddedNotification";
@@ -126,20 +126,20 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 - (ZincTask*) queueGarbageCollectTask;
 - (void) resumeBundleActions;
 
-- (NSString*) cacheKeyForCatalogId:(NSString*)identifier;
-- (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
-- (NSString*) cacheKeyForBundleId:(NSString*)identifier version:(ZincVersion)version;
+- (NSString*) cacheKeyForCatalogID:(NSString*)identifier;
+- (NSString*) cacheKeyManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version;
+- (NSString*) cacheKeyForBundleID:(NSString*)identifier version:(ZincVersion)version;
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
-- (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
+- (NSArray*) sourcesForCatalogID:(NSString*)catalogID;
 
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
 
 - (void) checkForBundleDeletion;
-- (void) deleteBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
+- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
 
-- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
+- (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version;
+- (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
 
 @end
 
@@ -337,7 +337,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     NSOperationQueuePriority priority = [[[note userInfo] objectForKey:ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
     
     @synchronized(self.myTasks) {
-        NSArray* tasks = [self tasksForBundleId:bundleID];
+        NSArray* tasks = [self tasksForBundleID:bundleID];
         for (ZincTask* task in tasks) {
             [task setQueuePriority:priority];
         }
@@ -414,7 +414,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         for (NSURL* bundleRes in available) {
             if (![active containsObject:bundleRes]) {
                 //ZINC_DEBUG_LOG(@"deleting: %@", bundleRes);
-                [self deleteBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
+                [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
             }
         }
     }
@@ -475,19 +475,19 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }];
 }
 
-- (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId state:(ZincBundleState)state
+- (void) postNotification:(NSString*)notificationName bundleID:(NSString*)bundleID state:(ZincBundleState)state
 {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleId, ZincRepoBundleChangeNotificationBundleIdKey,
+                              bundleID, ZincRepoBundleChangeNotificationBundleIDKey,
                               [NSNumber numberWithInteger:state], ZincRepoBundleChangeNotifiationStatusKey,
                               nil];
     [self postNotification:notificationName userInfo:userInfo];
 }
 
-- (void) postNotification:(NSString*)notificationName bundleId:(NSString*)bundleId
+- (void) postNotification:(NSString*)notificationName bundleID:(NSString*)bundleID
 {
     NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleId, ZincRepoBundleChangeNotificationBundleIdKey,
+                              bundleID, ZincRepoBundleChangeNotificationBundleIDKey,
                               nil];
     [self postNotification:notificationName userInfo:userInfo];
 }
@@ -559,9 +559,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return [self pathForCatalogIndexWithIdentifier:catalog.identifier];
 }
 
-- (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version
+- (NSString*) pathForManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:identifier version:version];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:identifier version:version];
     ZincExternalBundleInfo* extInfo = [self.index infoForExternalBundle:bundleRes];
     if (extInfo != nil) {
         return extInfo.manifestPath;
@@ -620,8 +620,8 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 - (void) removeSourceURL:(NSURL*)source
 {
     @synchronized(self.sourcesByCatalog) {
-        for (NSString* catalogId in [self.sourcesByCatalog allKeys]) {
-            NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalogId];
+        for (NSString* catalogID in [self.sourcesByCatalog allKeys]) {
+            NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalogID];
             [sources removeObject:source];
         }
     }
@@ -650,7 +650,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             }
         }
         [sources addObject:source];
-        [self.cache setObject:catalog forKey:[self cacheKeyForCatalogId:catalog.identifier]];
+        [self.cache setObject:catalog forKey:[self cacheKeyForCatalogID:catalog.identifier]];
     }
 }
 
@@ -675,24 +675,24 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
-- (NSArray*) sourcesForCatalogId:(NSString*)catalogId
+- (NSArray*) sourcesForCatalogID:(NSString*)catalogID
 {
-    return [self.sourcesByCatalog objectForKey:catalogId];
+    return [self.sourcesByCatalog objectForKey:catalogID];
 }
 
 #pragma mark Caching
 
-- (NSString*) cacheKeyForCatalogId:(NSString*)identifier
+- (NSString*) cacheKeyForCatalogID:(NSString*)identifier
 {
     return [@"Catalog:" stringByAppendingString:identifier];
 }
 
-- (NSString*) cacheKeyManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version
+- (NSString*) cacheKeyManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version
 {
     return [[@"Manifest:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
 }
 
-- (NSString*) cacheKeyForBundleId:(NSString*)identifier version:(ZincVersion)version
+- (NSString*) cacheKeyForBundleID:(NSString*)identifier version:(ZincVersion)version
 {
     return [[@"Bundle:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
 }
@@ -709,7 +709,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (void) registerCatalog:(ZincCatalog*)catalog
 {
-    NSString* key = [self cacheKeyForCatalogId:catalog.identifier];
+    NSString* key = [self cacheKeyForCatalogID:catalog.identifier];
     [self.cache setObject:catalog forKey:key];
 }
 
@@ -730,7 +730,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 - (ZincCatalog*) catalogWithIdentifier:(NSString*)identifier error:(NSError**)outError
 {
-    NSString* key = [self cacheKeyForCatalogId:identifier];
+    NSString* key = [self cacheKeyForCatalogID:identifier];
     ZincCatalog* catalog = [self.cache objectForKey:key];
     if (catalog == nil) {
         catalog = [self loadCatalogWithIdentifier:identifier error:outError];
@@ -743,25 +743,25 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 
 #pragma mark Bundles
 
-- (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId
+- (void) addManifest:(ZincManifest*)manifest forBundleID:(NSString*)bundleID
 {
-    NSString* cacheKey = [self cacheKeyManifestWithBundleId:bundleId version:manifest.version];
+    NSString* cacheKey = [self cacheKeyManifestWithBundleID:bundleID version:manifest.version];
     [self.cache setObject:manifest forKey:cacheKey];
 }
 
-- (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+- (BOOL) removeManifestForBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError
 {
-    NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
+    NSString* manifestPath = [self pathForManifestWithBundleID:bundleID version:version];
     if (![self.fileManager zinc_removeItemAtPath:manifestPath error:outError]) {
         return NO;
     }
-    [self.cache removeObjectForKey:[self cacheKeyManifestWithBundleId:bundleId version:version]];
+    [self.cache removeObjectForKey:[self cacheKeyManifestWithBundleID:bundleID version:version]];
     return YES;
 }
 
-- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version
+- (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [self pathForManifestWithBundleId:bundleId version:version];
+    NSString* path = [self pathForManifestWithBundleID:bundleID version:version];
     return [self.fileManager fileExistsAtPath:path];
 }
 
@@ -776,7 +776,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     // copy manifest to repo
     NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
-    NSString* manifestRepoPath = [self pathForManifestWithBundleId:manifest.bundleId version:manifest.version];
+    NSString* manifestRepoPath = [self pathForManifestWithBundleID:manifest.bundleID version:manifest.version];
     
     BOOL shouldCopy = NO;
     if (manifest.version == 0) {  // version 0 always needs to be re-written
@@ -795,9 +795,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return manifest;
 }
 
-- (ZincManifest*) loadManifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+- (ZincManifest*) loadManifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError
 {
-    NSString* manifestPath = [self pathForManifestWithBundleId:bundleId version:version];
+    NSString* manifestPath = [self pathForManifestWithBundleID:bundleID version:version];
     NSData* jsonData = [NSData dataWithContentsOfFile:manifestPath options:0 error:outError];
     if (jsonData == nil) {
         return nil;
@@ -810,12 +810,12 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return manifest;
 }
 
-- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError
+- (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError
 {
-    NSString* key = [self cacheKeyManifestWithBundleId:bundleId version:version];
+    NSString* key = [self cacheKeyManifestWithBundleID:bundleID version:version];
     ZincManifest* manifest = [self.cache objectForKey:key];
     if (manifest == nil) {
-        manifest = [self loadManifestWithBundleId:bundleId version:version error:outError];
+        manifest = [self loadManifestWithBundleID:bundleID version:version error:outError];
         if (manifest != nil) {
             [self.cache setObject:manifest forKey:key];
         }
@@ -828,11 +828,11 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     NSMutableSet* activeBundles = [NSMutableSet set];
     
     @synchronized(self.index) {
-        NSSet* trackBundles = [self.index trackedBundleIds];
-        for (NSString* bundleId in trackBundles) {
-            NSString* dist = [self.index trackedDistributionForBundleId:bundleId];
-            ZincVersion version = [self versionForBundleId:bundleId distribution:dist];
-            [activeBundles addObject:[NSURL zincResourceForBundleWithId:bundleId version:version]];
+        NSSet* trackBundles = [self.index trackedBundleIDs];
+        for (NSString* bundleID in trackBundles) {
+            NSString* dist = [self.index trackedDistributionForBundleID:bundleID];
+            ZincVersion version = [self versionForBundleID:bundleID distribution:dist];
+            [activeBundles addObject:[NSURL zincResourceForBundleWithID:bundleID version:version]];
         }
         
         [activeBundles addObjectsFromArray:[self.index registeredExternalBundles]];
@@ -858,21 +858,21 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
-- (ZincVersion) catalogVersionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
-    NSParameterAssert(bundleId);
+    NSParameterAssert(bundleID);
     NSParameterAssert(distro);
     
     NSError* error = nil;
     
-    NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
-    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:&error];
+    NSString* catalogID = [ZincBundle catalogIDFromBundleID:bundleID];
+    ZincCatalog* catalog = [self catalogWithIdentifier:catalogID error:&error];
     if (catalog != nil) {
-        NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
-        ZincVersion catalogVersion = [catalog versionForBundleId:bundleName distribution:distro];
+        NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+        ZincVersion catalogVersion = [catalog versionForBundleID:bundleName distribution:distro];
         
         if (catalogVersion == ZincVersionInvalid) {
-            NSDictionary* info = @{@"bundleID" : bundleId, @"distro": distro};
+            NSDictionary* info = @{@"bundleID" : bundleID, @"distro": distro};
             NSError* error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
             [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }
@@ -883,16 +883,16 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return ZincVersionInvalid;
 }
 
-- (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
-    NSArray* availableVersions = [self.index availableVersionsForBundleId:bundleId];
+    NSArray* availableVersions = [self.index availableVersionsForBundleID:bundleID];
     
     if ([availableVersions count] == 0) {
         return ZincVersionInvalid;
     }
     
     if (distro != nil) {
-        ZincVersion catalogVersion = [self catalogVersionForBundleId:bundleId distribution:distro];
+        ZincVersion catalogVersion = [self catalogVersionForBundleID:bundleID distribution:distro];
         if ([availableVersions containsObject:[NSNumber numberWithInteger:catalogVersion]]) {
             return catalogVersion;
         }
@@ -901,22 +901,22 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return [[availableVersions lastObject] integerValue];
 }
 
-- (BOOL) hasManifestForBundleId:(NSString *)bundleId distribution:(NSString*)distro
+- (BOOL) hasManifestForBundleID:(NSString *)bundleID distribution:(NSString*)distro
 {
-    NSString* catalogId = [ZincBundle catalogIdFromBundleId:bundleId];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
-    ZincCatalog* catalog = [self catalogWithIdentifier:catalogId error:NULL];
+    NSString* catalogID = [ZincBundle catalogIDFromBundleID:bundleID];
+    NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+    ZincCatalog* catalog = [self catalogWithIdentifier:catalogID error:NULL];
     if (catalog == nil) {
         return NO;
     }
-    ZincVersion version = [catalog versionForBundleId:bundleName distribution:distro];
-    return [self hasManifestForBundleIdentifier:bundleId version:version];
+    ZincVersion version = [catalog versionForBundleID:bundleName distribution:distro];
+    return [self hasManifestForBundleIDentifier:bundleID version:version];
 }
 
 - (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
 {
     if ([task.resource isZincBundleResource]) {
-        return [self.downloadPolicy priorityForBundleWithID:[task.resource zincBundleId]];
+        return [self.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
     }
     return NSOperationQueuePriorityNormal;
 }
@@ -945,7 +945,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         return NO;
     }
     
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:manifest.bundleId version:manifest.version];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:manifest.bundleID version:manifest.version];
     @synchronized(self.index) {
         [self.index registerExternalBundle:bundleRes manifestPath:manifestPath bundleRootPath:rootPath];
         [self registerLocalFilesFromExternalManifest:manifest bundleRootPath:rootPath];
@@ -957,20 +957,20 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
 {
     NSParameterAssert(req);
-    [self beginTrackingBundleWithId:req.bundleID distribution:req.distribution flavor:req.flavor automaticallyUpdate:req.updateAutomatically];
+    [self beginTrackingBundleWithID:req.bundleID distribution:req.distribution flavor:req.flavor automaticallyUpdate:req.updateAutomatically];
 }
 
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
 {
-    NSParameterAssert(bundleId);
+    NSParameterAssert(bundleID);
     NSParameterAssert(distro);
-    [self beginTrackingBundleWithId:bundleId distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
+    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
 }
 
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
 {
-    NSString* catalogId = ZincCatalogIdFromBundleId(bundleId);
-    if (catalogId == nil) {
+    NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);
+    if (catalogID == nil) {
         [NSException raise:NSInvalidArgumentException
                     format:@"does not appear to be a valid bundle id"];
     }
@@ -981,7 +981,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
     
     @synchronized(self.index) {
-        ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleId];
+        ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleID:bundleID];
         if (trackingInfo == nil) {
             trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
         }
@@ -998,13 +998,13 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         trackingInfo.distribution = distro;
         trackingInfo.updateAutomatically = autoUpdate;
         if (autoUpdate) {
-            trackingInfo.version = [self catalogVersionForBundleId:bundleId distribution:distro];
+            trackingInfo.version = [self catalogVersionForBundleID:bundleID distribution:distro];
         }
-        [self.index setTrackingInfo:trackingInfo forBundleId:bundleId];
+        [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
     }
     
     [self queueIndexSaveTask];
-    [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleId:bundleId];
+    [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleID:bundleID];
 }
 
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID
@@ -1034,7 +1034,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     
     @synchronized(self.index) {
         
-        ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleID];
+        ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleID:bundleID];
         if (trackingInfo == nil) {
             NSDictionary* info = @{@"bundleID" : bundleID};
             NSError* error = ZincErrorWithInfo(ZINC_ERR_NO_TRACKING_DISTRO_FOR_BUNDLE, info);
@@ -1046,7 +1046,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
             return;
         }
         
-        ZincVersion version = [self catalogVersionForBundleId:bundleID distribution:trackingInfo.distribution];
+        ZincVersion version = [self catalogVersionForBundleID:bundleID distribution:trackingInfo.distribution];
         if (version == ZincVersionInvalid) {
             NSError* error = ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS);
             [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
@@ -1058,9 +1058,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         }
         
         trackingInfo.version = version;
-        [self.index setTrackingInfo:trackingInfo forBundleId:bundleID];
+        [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
         
-        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleID version:version];
+        NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
         
         ZincBundleState state = [self.index stateForBundle:bundleRes];
         if (state != ZincBundleStateAvailable) {
@@ -1078,18 +1078,18 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [self queueIndexSaveTask];
 }
 
-- (void) stopTrackingBundleWithId:(NSString*)bundleId
+- (void) stopTrackingBundleWithID:(NSString*)bundleID
 {
-    [self postNotification:ZincRepoBundleWillStopTrackingNotification bundleId:bundleId];
+    [self postNotification:ZincRepoBundleWillStopTrackingNotification bundleID:bundleID];
     @synchronized(self.index) {
-        [self.index removeTrackedBundleId:bundleId];
+        [self.index removeTrackedBundleID:bundleID];
     }
     [self queueIndexSaveTask];
 }
 
-- (NSSet*) trackedBundleIds
+- (NSSet*) trackedBundleIDs
 {
-    return [self.index trackedBundleIds];
+    return [self.index trackedBundleIDs];
 }
 
 - (void) resumeBundleActions
@@ -1128,11 +1128,11 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     
     @synchronized(self.index) {
         
-        NSSet* trackBundles = [self.index trackedBundleIds];
+        NSSet* trackBundles = [self.index trackedBundleIDs];
         
-        for (NSString* bundleId in trackBundles) {
+        for (NSString* bundleID in trackBundles) {
             
-            ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleId:bundleId];
+            ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleID:bundleID];
             ZincVersion targetVersion = ZincVersionInvalid;
             
             /*
@@ -1141,7 +1141,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
              */
             // TODO: this really needs to be testable
             if (trackingInfo.updateAutomatically || trackingInfo.version == ZincVersionInvalid) {
-                targetVersion = [self catalogVersionForBundleId:bundleId distribution:trackingInfo.distribution];
+                targetVersion = [self catalogVersionForBundleID:bundleID distribution:trackingInfo.distribution];
             } else {
                 targetVersion = trackingInfo.version;
             }
@@ -1154,11 +1154,11 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
              small optimization to prevent tasks tasks aren't allowed by policy to be enqueued
              task will still respect isReady as well
              */
-            if (![self doesPolicyAllowDownloadForBundleID:bundleId]) {
+            if (![self doesPolicyAllowDownloadForBundleID:bundleID]) {
                 continue;
             }
             
-            NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:targetVersion];
+            NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:targetVersion];
             ZincBundleState state = [self.index stateForBundle:bundleRes];
             
             if (state == ZincBundleStateCloning || state == ZincBundleStateAvailable) {
@@ -1187,9 +1187,9 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
-- (void) deleteBundleWithId:(NSString*)bundleId version:(ZincVersion)version
+- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
     ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
     [self queueTaskForDescriptor:taskDesc];
 }
@@ -1201,13 +1201,13 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     @synchronized(self.index) {
         [self.index setState:status forBundle:bundleResource];
     }
-    [self postNotification:ZincRepoBundleStatusChangeNotification bundleId:[bundleResource zincBundleId] state:status];
+    [self postNotification:ZincRepoBundleStatusChangeNotification bundleID:[bundleResource zincBundleID] state:status];
     [self queueIndexSaveTask];
 }
 
 - (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion
 {
-    [self postNotification:ZincRepoBundleWillDeleteNotification bundleId:[bundleResource zincBundleId]];
+    [self postNotification:ZincRepoBundleWillDeleteNotification bundleID:[bundleResource zincBundleID]];
     @synchronized(self.index) {
         [self.index removeBundle:bundleResource];
     }
@@ -1225,24 +1225,24 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     [self deregisterBundle:bundleResource completion:nil];
 }
 
-- (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version
+- (NSString*) pathForBundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
     ZincExternalBundleInfo* extInfo = [self.index infoForExternalBundle:bundleRes];
     if (extInfo != nil) {
         return extInfo.bundleRootPath;
     }
     
-    NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleId, version];
+    NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleID, version];
     NSString* bundlePath = [[self bundlesPath] stringByAppendingPathComponent:bundleDirName];
     return bundlePath;
 }
 
-- (ZincBundle*) bundleWithId:(NSString*)bundleId version:(ZincVersion)version
+- (ZincBundle*) bundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
     ZincBundle* bundle = nil;
-    NSURL* res = [NSURL zincResourceForBundleWithId:bundleId version:version];
-    NSString* path = [self pathForBundleWithId:bundleId version:version];
+    NSURL* res = [NSURL zincResourceForBundleWithID:bundleID version:version];
+    NSString* path = [self pathForBundleWithID:bundleID version:version];
     
     // Special case to handle a missing bundle dir
     if (![self.fileManager fileExistsAtPath:path]) {
@@ -1262,7 +1262,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
         bundle = [[self.loadedBundles objectForKey:res] pointerValue];
         
         if (bundle == nil) {
-            bundle = [[[ZincBundle alloc] initWithRepo:self bundleId:bundleId version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
+            bundle = [[[ZincBundle alloc] initWithRepo:self bundleID:bundleID version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
             
             [self.loadedBundles setObject:[NSValue valueWithPointer:bundle] forKey:res];
@@ -1272,18 +1272,18 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     return bundle;
 }
 
-- (ZincBundleState) stateForBundleWithId:(NSString*)bundleId
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID
 {
     @synchronized(self.index) {
-        NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
-        ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
-        NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleId version:version];
+        NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
+        ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
+        NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
         ZincBundleState state = [self.index stateForBundle:bundleRes];
         return state;
     }
 }
 
-- (ZincBundle*) bundleWithId:(NSString*)bundleId
+- (ZincBundle*) bundleWithID:(NSString*)bundleID
 {
     if (!self.isInitialized) {
         @throw [NSException
@@ -1292,13 +1292,13 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
                 userInfo:nil];
     }
     
-    NSString* distro = [self.index trackedDistributionForBundleId:bundleId];
-    ZincVersion version = [self versionForBundleId:bundleId distribution:distro];
+    NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
+    ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
     }
     
-    return [self bundleWithId:bundleId version:version];
+    return [self bundleWithID:bundleID version:version];
 }
 
 #pragma mark Tasks
@@ -1364,14 +1364,14 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 }
 
-- (NSArray*) tasksForBundleId:(NSString*)bundleId
+- (NSArray*) tasksForBundleID:(NSString*)bundleID
 {
     @synchronized(self.myTasks)
     {
         NSMutableArray* tasks = [NSMutableArray array];
         for (ZincTask* task in self.myTasks) {
             if ([task.resource isZincBundleResource]) {
-                if ([[task.resource zincBundleId] isEqualToString:bundleId]) {
+                if ([[task.resource zincBundleID] isEqualToString:bundleID]) {
                     [tasks addObject:task];
                 }
             }

@@ -30,12 +30,12 @@
 - (void) removeSourceURL:(NSURL*)url;
 - (NSSet*) sourceURLs;
 
-- (void) setTrackingInfo:(ZincTrackingInfo*)ref forBundleId:(NSString*)bundleId;
-- (void) removeTrackedBundleId:(NSString*)bundleId;
-- (NSSet*) trackedBundleIds;
-- (NSString*) trackedDistributionForBundleId:(NSString*)bundleId;
-- (NSString*) trackedFlavorForBundleId:(NSString*)bundleId;
-- (ZincTrackingInfo*) trackingInfoForBundleId:(NSString*)bundleId;
+- (void) setTrackingInfo:(ZincTrackingInfo*)ref forBundleID:(NSString*)bundleID;
+- (void) removeTrackedBundleID:(NSString*)bundleID;
+- (NSSet*) trackedBundleIDs;
+- (NSString*) trackedDistributionForBundleID:(NSString*)bundleID;
+- (NSString*) trackedFlavorForBundleID:(NSString*)bundleID;
+- (ZincTrackingInfo*) trackingInfoForBundleID:(NSString*)bundleID;
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
@@ -46,7 +46,7 @@
 /*
  * Returns a _sorted_ array of available bundle versions
  */
-- (NSArray*) availableVersionsForBundleId:(NSString*)bundleId;
+- (NSArray*) availableVersionsForBundleID:(NSString*)bundleID;
 
 #pragma mark External Bundles
 /* 

@@ -30,7 +30,7 @@
 @interface ZincBundle : NSProxy <ZincBundle>
 
 @property (nonatomic, retain, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) NSString* bundleId;
+@property (nonatomic, retain, readonly) NSString* bundleID;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
 - (NSURL*) resource;
@@ -40,8 +40,8 @@
 #pragma mark Utility
 
 // Deprecated, use functions in ZincUtils
-+ (NSString*) catalogIdFromBundleId:(NSString*)bundleId;
-+ (NSString*) bundleNameFromBundleId:(NSString*)bundleId;
++ (NSString*) catalogIDFromBundleID:(NSString*)bundleID;
++ (NSString*) bundleNameFromBundleID:(NSString*)bundleID;
 
 @end
 

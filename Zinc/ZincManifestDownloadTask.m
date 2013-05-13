@@ -38,9 +38,9 @@
     [super dealloc];
 }
 
-- (NSString*) bundleId
+- (NSString*) bundleID
 {
-    return [self.resource zincBundleId];
+    return [self.resource zincBundleID];
 }
 
 - (ZincVersion) version
@@ -53,12 +53,12 @@
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     
-    NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
+    NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
     
-    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
+    NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
         NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              catalogId, @"catalogId", nil];
+                              catalogID, @"catalogID", nil];
         error = ZincError(ZINC_ERR_NO_SOURCES_FOR_CATALOG);
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:info]];
         return;
@@ -66,7 +66,7 @@
     
     for (NSURL* source in sources) {
         
-        NSString* bundleName = [ZincBundle bundleNameFromBundleId:self.bundleId];
+        NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
         [self queueOperationForRequest:request outputStream:nil context:nil];
         
@@ -99,7 +99,7 @@
             continue;
         }
         
-        NSString* path = [self.repo pathForManifestWithBundleId:self.bundleId version:manifest.version];
+        NSString* path = [self.repo pathForManifestWithBundleID:self.bundleID version:manifest.version];
         
         // try remove existing. it shouldn't exist, but being defensive.
         [fm removeItemAtPath:path error:NULL];
@@ -109,7 +109,7 @@
             continue;
         }
         
-        [self.repo addManifest:manifest forBundleId:self.bundleId];
+        [self.repo addManifest:manifest forBundleID:self.bundleID];
         
         self.finishedSuccessfully = YES;
         

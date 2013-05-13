@@ -12,7 +12,7 @@
 
 @interface BundleListViewController ()
 @property (nonatomic, retain, readwrite) ZincRepo* repo;
-@property (nonatomic, retain) NSMutableArray* bundleIds;
+@property (nonatomic, retain) NSMutableArray* bundleIDs;
 
 @property (nonatomic, retain) NSMutableDictionary *bundleProgress;
 @end
@@ -20,7 +20,7 @@
 @implementation BundleListViewController
 
 @synthesize repo = _repo;
-@synthesize bundleIds = _bundleIds;
+@synthesize bundleIDs = _bundleIDs;
 @synthesize bundleProgress = _bundleProgress;
 
 - (id) initWithRepo:(ZincRepo *)repo
@@ -28,7 +28,7 @@
     self = [self initWithStyle:UITableViewStylePlain];
     if (self) {
         _repo = [repo retain];
-        _bundleIds = [[NSMutableArray alloc] initWithArray:[[_repo trackedBundleIds] allObjects]];
+        _bundleIDs = [[NSMutableArray alloc] initWithArray:[[_repo trackedBundleIDs] allObjects]];
         _bundleProgress = [[NSMutableDictionary alloc] init];
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(bundleWillBeginTrackingNotification:) 
@@ -60,7 +60,7 @@
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     [_repo release];
-    [_bundleIds release];
+    [_bundleIDs release];
     [_bundleProgress release];
     [super dealloc];
 }
@@ -89,7 +89,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.bundleIds count];
+    return [self.bundleIDs count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -101,16 +101,16 @@
         cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
     }
     
-    NSString* bundleId = [self.bundleIds objectAtIndex:[indexPath row]];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleId:bundleId];
-    ZincBundleState state = [self.repo stateForBundleWithId:bundleId];
+    NSString* bundleID = [self.bundleIDs objectAtIndex:[indexPath row]];
+    NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+    ZincBundleState state = [self.repo stateForBundleWithID:bundleID];
     NSString *stateName = ZincBundleStateName[state];
     
     NSString *cellDetailText = stateName;
 
     if (state == ZincBundleStateCloning)
     {
-        double downloadProgress = [[self.bundleProgress valueForKey:bundleId] doubleValue];
+        double downloadProgress = [[self.bundleProgress valueForKey:bundleID] doubleValue];
         
         if (downloadProgress == 1)
         {
@@ -138,8 +138,8 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {    
-    NSString* bundleId = [self.bundleIds objectAtIndex:[indexPath row]];
-    ZincBundle* bundle = [self.repo bundleWithId:bundleId];
+    NSString* bundleID = [self.bundleIDs objectAtIndex:[indexPath row]];
+    ZincBundle* bundle = [self.repo bundleWithID:bundleID];
 
     BundleDetailViewController* vc = [[[BundleDetailViewController alloc] initWithBundle:bundle repo:self.repo] autorelease];
     [self.navigationController pushViewController:vc animated:YES];
@@ -158,26 +158,26 @@
 
 - (void) bundleWillBeginTrackingNotification:(NSNotification *)note
 {
-    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIdKey];
-    if (![self.bundleIds containsObject:bundleId]) {
-        [self.bundleIds addObject:bundleId];
+    NSString* bundleID = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIDKey];
+    if (![self.bundleIDs containsObject:bundleID]) {
+        [self.bundleIDs addObject:bundleID];
         [self.tableView reloadData];
     }
 }
 
 - (void)bundleCloneCompleteNotification:(NSNotification *)note
 {
-    NSString *bundleId = [note.userInfo valueForKey:kZincEventAttributesContextKey];
+    NSString *bundleID = [note.userInfo valueForKey:kZincEventAttributesContextKey];
     
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIds indexOfObject:bundleId]
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:[NSIndexPath indexPathForRow:[self.bundleIDs indexOfObject:bundleID]
                                                                                        inSection:0]]
                           withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void) bundleWillDeleteNotification:(NSNotification *)note
 {
-    //    NSString* bundleId = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIdKey];
-    //[self.bundleIds removeObject:bundleId];
+    //    NSString* bundleID = [[note userInfo] objectForKey:ZincRepoBundleChangeNotificationBundleIDKey];
+    //[self.bundleIDs removeObject:bundleID];
 }
 
 

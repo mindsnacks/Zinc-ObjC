@@ -68,9 +68,9 @@
 
 #pragma mark -
 
-- (NSInteger) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (NSInteger) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
-    NSDictionary* bundleInfo = [self.bundleInfoById objectForKey:bundleId];
+    NSDictionary* bundleInfo = [self.bundleInfoById objectForKey:bundleID];
     
     NSNumber* version = [[bundleInfo objectForKey:@"distributions"]
                          objectForKey:distro];

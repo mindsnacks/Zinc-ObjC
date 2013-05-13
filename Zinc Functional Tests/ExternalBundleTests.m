@@ -36,12 +36,12 @@
     BOOL registerSuccess = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath error:&error];
     GHAssertTrue(registerSuccess, @"error:", error);
     
-    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState state = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(state, ZincBundleStateAvailable, @"should be available");
     
     // -- verify data
     
-    ZincBundle *catsBundle = [self.zincRepo bundleWithId:bundleID];
+    ZincBundle *catsBundle = [self.zincRepo bundleWithID:bundleID];
     
     UIImage *image1 = [UIImage imageWithContentsOfFile:[catsBundle pathForResource:@"kucing.jpeg"]];
     GHAssertNotNil(image1, @"image should not be nil");
@@ -61,7 +61,7 @@
     BOOL registerSuccess = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath1 bundleRootPath:resourcePath error:&error];
     GHAssertTrue(registerSuccess, @"error:", error);
     
-    NSString *manifestPath2 = [self.zincRepo pathForManifestWithBundleId:bundleID version:0];
+    NSString *manifestPath2 = [self.zincRepo pathForManifestWithBundleID:bundleID version:0];
     
     GHAssertEqualStrings(manifestPath1, manifestPath2, @"paths are wrong");
 }
