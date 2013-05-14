@@ -268,9 +268,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self) {
         if (isInitialized) {
             // no longer need to hold onto the initialization queue or task
-            __weak typeof(self) blockself = self;
+            __weak typeof(self) weakself = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                blockself.completeInitializationTask = nil;
+                __strong typeof(weakself) strongself = weakself;
+                strongself.completeInitializationTask = nil;
             });
         }
         _isInitialized = isInitialized;
@@ -332,17 +333,18 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     _reachability = reachability;
     
     if (_reachability != nil) {
-        __weak typeof(self) blockself = self;
+        __weak typeof(self) weakself = self;
         _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-            @synchronized(blockself.myTasks) {
-                NSArray* remoteBundleUpdateTasks = [blockself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            __strong typeof(weakself) strongself = weakself;
+            @synchronized(strongself.myTasks) {
+                NSArray* remoteBundleUpdateTasks = [weakself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                     return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
                 }]];
                 
                 [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
             }
-            [blockself refreshSourcesWithCompletion:^{
-                [blockself refreshBundlesWithCompletion:nil];
+            [weakself refreshSourcesWithCompletion:^{
+                [weakself refreshBundlesWithCompletion:nil];
             }];
         };
     }
@@ -969,9 +971,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[ZincTaskRef alloc] init];
-        __weak typeof(taskRef) block_taskRef = taskRef;
+        __weak typeof(taskRef) weak_taskRef = taskRef;
         taskRef.completionBlock = ^{
-            completion([block_taskRef allErrors]);
+            __strong typeof(weak_taskRef) strong_taskRef = weak_taskRef;
+            completion([strong_taskRef allErrors]);
         };
     }
     [self updateBundleWithID:bundleID taskRef:taskRef];
@@ -1425,10 +1428,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) logEvent:(ZincEvent*)event
 {
-    __weak typeof(self) blockself = self;
+    __weak typeof(self) weakself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
-            [blockself.delegate zincRepo:blockself didReceiveEvent:event];
+        __strong typeof(weakself) strongself = weakself;
+        if ([strongself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
+            [strongself.delegate zincRepo:strongself didReceiveEvent:event];
         
         NSMutableDictionary* userInfo = [event.attributes mutableCopy];
         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];

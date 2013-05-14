@@ -58,10 +58,12 @@
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
-    __weak typeof(self) blockself = self;
+    __weak typeof(self) weakself = self;
     
     [self.httpRequestOperation setDownloadProgressBlock:^(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-        
+
+        __weak typeof(weakself) strongself = weakself;
+
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
@@ -70,7 +72,7 @@
         if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [strongself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
 }
