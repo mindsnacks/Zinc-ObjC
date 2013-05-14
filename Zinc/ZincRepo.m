@@ -52,6 +52,7 @@
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
+
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
@@ -65,31 +66,7 @@ NSString* const ZincRepoTaskFinishedNotification = @"ZincRepoTaskFinishedNotific
 
 NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
-
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
-
-NSString* const ZincBundleStateName[] = {
-    @"None",
-    @"Cloning",
-    @"Available",
-    @"Deleting",
-};
-
-ZincBundleState ZincBundleStateFromName(NSString* name)
-{
-    if ([name isEqualToString:ZincBundleStateName[ZincBundleStateNone]]) {
-        return ZincBundleStateNone;
-    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateAvailable]]) {
-        return ZincBundleStateAvailable;
-    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateCloning]]) {
-        return ZincBundleStateCloning;
-    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateDeleting]]) {
-        return ZincBundleStateDeleting;
-    }
-    
-    NSCAssert(NO, @"unknown bundle state name: %@", name);
-    return -1;
-}
 
 
 @interface ZincRepo ()

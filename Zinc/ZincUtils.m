@@ -9,6 +9,22 @@
 #import "ZincUtils.h"
 #import <sys/xattr.h> // for AddSkipBackupAttributeToFile
 
+ZincBundleState ZincBundleStateFromName(NSString* name)
+{
+    if ([name isEqualToString:ZincBundleStateName[ZincBundleStateNone]]) {
+        return ZincBundleStateNone;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateAvailable]]) {
+        return ZincBundleStateAvailable;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateCloning]]) {
+        return ZincBundleStateCloning;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateDeleting]]) {
+        return ZincBundleStateDeleting;
+    }
+
+    NSCAssert(NO, @"unknown bundle state name: %@", name);
+    return -1;
+}
+
 int ZincAddSkipBackupAttributeToFileWithPath(NSString * path)
 {
     u_int8_t b = 1;

@@ -12,6 +12,8 @@
 
 #pragma mark Utility Functions
 
+extern ZincBundleState ZincBundleStateFromName(NSString* name);
+
 extern int ZincAddSkipBackupAttributeToFileWithPath(NSString * path);
 extern int ZincAddSkipBackupAttributeToFileWithURL(NSURL* url);
 extern NSString* ZincGetApplicationDocumentsDirectory(void);

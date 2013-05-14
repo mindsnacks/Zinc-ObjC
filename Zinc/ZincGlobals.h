@@ -23,10 +23,17 @@ enum  {
     ZincVersionUnknown = 0,
 };
 
+typedef enum {
+    ZincBundleStateNone      = 0,
+    ZincBundleStateCloning   = 1,
+    ZincBundleStateAvailable = 2,
+    ZincBundleStateDeleting  = 3,
+} ZincBundleState;
+
+extern NSString* const ZincBundleStateName[];
+
 extern NSString* const ZincFileFormatRaw;
 extern NSString* const ZincFileFormatGZ;
-
-extern NSString* const ZincDistributionLocal;
 
 typedef void (^ZincCompletionBlock)(NSArray* errors);
 

@@ -13,6 +13,7 @@
 #import "ZincErrors.h"
 #import "ZincTrackingInfo.h"
 #import "ZincExternalBundleInfo.h"
+#import "ZincUtils.h"
 
 @interface ZincRepoIndex ()
 @property (nonatomic, retain) NSMutableSet* mySourceURLs;
