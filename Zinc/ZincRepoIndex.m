@@ -383,7 +383,6 @@
         if (outError != NULL) {
             *outError = ZincError(ZINC_ERR_INVALID_REPO_FORMAT);
         }
-        [self autorelease];
         return nil;
     }
     
