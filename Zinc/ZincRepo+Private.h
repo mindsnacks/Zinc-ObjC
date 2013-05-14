@@ -25,6 +25,7 @@
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(KSReachability*)reachability;
 @property (nonatomic, retain) ZincRepoIndex* index;
+@property (nonatomic, retain) NSFileManager* fileManager;
 
 - (NSURL*) indexURL;
 
@@ -47,6 +48,7 @@
 - (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
+- (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 
 - (NSString*) pathForBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
@@ -54,8 +56,6 @@
 // includes all currently tracked and open bundles
 // returns NSURLs (ZincBundleDescriptors)
 - (NSSet*) activeBundles;
-
-- (void) bundleWillDeallocate:(ZincBundle*)bundle;
 
 #pragma mark Files
 

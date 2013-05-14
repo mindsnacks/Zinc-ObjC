@@ -42,6 +42,7 @@
 #import "NSError+Zinc.h"
 #import "ZincTaskActions.h"
 #import "ZincExternalBundleInfo.h"
+#import "ZincRepoBundleManager.h"
 
 #import <KSReachability/KSReachability.h>
 
@@ -68,7 +69,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
-
 @interface ZincRepo ()
 
 @property (nonatomic, retain) NSURL* url;
@@ -78,16 +78,17 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, retain) NSOperationQueue* networkQueue;
 @property (nonatomic, retain) ZincOperationQueueGroup* taskQueueGroup;
 @property (nonatomic, retain) NSTimer* refreshTimer;
-@property (nonatomic, retain) NSMutableDictionary* loadedBundles;
 @property (nonatomic, retain) NSCache* cache;
 @property (nonatomic, retain) NSMutableArray* myTasks;
-@property (nonatomic, retain) NSFileManager* fileManager;
 @property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, retain) KSReachability* reachability;
 @property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
 @property (nonatomic, retain) NSOperationQueue* internalQueue;
 @property (nonatomic, retain) ZincCompleteInitializationTask* completeInitializationTask;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
+@property (nonatomic, retain) ZincRepoBundleManager* bundleManager;
+
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability;
 
 - (void) restartRefreshTimer;
 - (void) stopRefreshTimer;
@@ -117,6 +118,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version;
 - (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
+
 
 @end
 
@@ -183,7 +185,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [[NSFileManager defaultManager] fileExistsAtPath:path];
 }
 
-
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability
 {
     self = [super init];
@@ -205,12 +206,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.cache.countLimit = kZincRepoDefaultCacheCount;
         _autoRefreshInterval = kZincRepoDefaultAutoRefreshInterval;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
-        self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
         self.myTasks = [NSMutableArray array];
         self.executeTasksInBackgroundEnabled = YES;
         self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
+        self.bundleManager = [[[ZincRepoBundleManager alloc] initWithZincRepo:self] autorelease];
     }
     return self;
 }
@@ -422,21 +423,22 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void)dealloc
 {
+    [self suspendAllTasksAndWaitExecutingTasksToComplete];
+
     // set to nil to unsubscribe from notitifcations
     self.reachability = nil;
     self.downloadPolicy = nil;
     
     [_url release];
     [_index release];
-    // TODO: stop operations?
     [_networkQueue release];
     [_internalQueue release];
     [_taskQueueGroup release];
     [_sourcesByCatalog release];
     [_cache release];
-    [_loadedBundles release];
     [_myTasks release];
     [_completeInitializationTask release];
+    [_bundleManager release];
     [super dealloc];
 }
 
@@ -444,10 +446,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) postNotification:(NSString*)notificationName userInfo:(NSDictionary*)userInfo
 {
-    __block typeof(self) blockself = self;
+    // NOTE: intentionally capturing `self` here to prevent the repo from being
+    // deallocated before the notification fires.
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [[NSNotificationCenter defaultCenter] postNotificationName:notificationName
-                                                            object:blockself
+                                                            object:self
                                                           userInfo:userInfo];
     }];
 }
@@ -810,26 +813,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         
         [activeBundles addObjectsFromArray:[self.index registeredExternalBundles]];
     }
-    
-    @synchronized(self.loadedBundles) {
-        for (NSURL* bundleRes in [self.loadedBundles allKeys]) {
-            // make sure to request the object, and check if the ref is now nil
-            ZincBundle* bundle = [(self.loadedBundles)[bundleRes] pointerValue];
-            if (bundle != nil) {
-                [activeBundles addObject:bundleRes];
-            }
-        }
-    }
-    
+
+    NSSet* loadedBundles = [self.bundleManager activeBundles];
+    [activeBundles addObjectsFromArray:[loadedBundles allObjects]];
+
     return activeBundles;
 }
 
-- (void) bundleWillDeallocate:(ZincBundle*)bundle
-{
-    @synchronized(self.loadedBundles) {
-        [self.loadedBundles removeObjectForKey:[bundle resource]];
-    }
-}
 
 - (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
@@ -1211,39 +1201,26 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return bundlePath;
 }
 
-- (ZincBundle*) bundleWithID:(NSString*)bundleID version:(ZincVersion)version
-{
-    ZincBundle* bundle = nil;
-    NSURL* res = [NSURL zincResourceForBundleWithID:bundleID version:version];
-    NSString* path = [self pathForBundleWithID:bundleID version:version];
-    
-    // Special case to handle a missing bundle dir
-    if (![self.fileManager fileExistsAtPath:path]) {
-        
-        dispatch_group_t group = dispatch_group_create();
-        dispatch_group_enter(group);
-        [self deregisterBundle:res completion:^{
-            dispatch_group_leave(group);
-        }];
-        dispatch_group_wait(group, DISPATCH_TIME_FOREVER);
-        dispatch_release(group);
-        
-        return nil;
-    }
-    
-    @synchronized(self.loadedBundles) {
-        bundle = [(self.loadedBundles)[res] pointerValue];
-        
-        if (bundle == nil) {
-            bundle = [[[ZincBundle alloc] initWithRepo:self bundleID:bundleID version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
-            if (bundle == nil) return nil;
-            
-            (self.loadedBundles)[res] = [NSValue valueWithPointer:bundle];
+
+     - (ZincBundle*) bundleWithID:(NSString*)bundleID
+    {
+        if (!self.isInitialized) {
+            @throw [NSException
+                    exceptionWithName:NSInternalInconsistencyException
+                    reason:[NSString stringWithFormat:@"repo not initialized"]
+                    userInfo:nil];
         }
-        [[bundle retain] autorelease];
+
+        NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
+        ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
+        if (version == ZincVersionInvalid) {
+            return nil;
+        }
+
+        return [self.bundleManager bundleWithID:bundleID version:version];
     }
-    return bundle;
-}
+
+
 
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID
 {
@@ -1256,23 +1233,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (ZincBundle*) bundleWithID:(NSString*)bundleID
-{
-    if (!self.isInitialized) {
-        @throw [NSException
-                exceptionWithName:NSInternalInconsistencyException
-                reason:[NSString stringWithFormat:@"repo not initialized"]
-                userInfo:nil];
-    }
-    
-    NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-    ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
-    if (version == ZincVersionInvalid) {
-        return nil;
-    }
-    
-    return [self bundleWithID:bundleID version:version];
-}
 
 #pragma mark Tasks
 

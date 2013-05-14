@@ -8,8 +8,10 @@
 
 #import "ZincBundle.h"
 
+@class ZincRepoBundleManager;
+
 @interface ZincBundle ()
 
-- (id) initWithRepo:(ZincRepo*)repo bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL;
+- (id) initWithRepoBundleManager:(ZincRepoBundleManager*)bundleManager bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL;
 
 @end

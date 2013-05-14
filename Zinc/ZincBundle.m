@@ -11,9 +11,10 @@
 #import "ZincResource.h"
 #import "ZincRepo+Private.h"
 #import "ZincUtils.h"
+#import "ZincRepoBundleManager.h"
 
 @interface ZincBundle ()
-@property (nonatomic, retain, readwrite) ZincRepo* repo;
+@property (nonatomic, retain, readwrite) ZincRepoBundleManager* bundleManager;
 @property (nonatomic, retain, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
 @property (nonatomic, retain, readwrite) NSURL* url;
@@ -22,9 +23,9 @@
 
 @implementation ZincBundle
 
-- (id) initWithRepo:(ZincRepo*)repo bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
+- (id) initWithRepoBundleManager:(ZincRepoBundleManager*)bundleManager bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
 {
-    self.repo = repo;
+    self.bundleManager = bundleManager;
     self.bundleID = bundleID;
     self.version = version;
     self.url = bundleURL;
@@ -40,8 +41,8 @@
 
 - (void) dealloc 
 {
-    [self.repo bundleWillDeallocate:self];
-    [_repo release];
+    [self.bundleManager bundleWillDeallocate:self];
+    [_bundleManager release];
     [_bundle release];
     [_bundleID release];
     [_url release];
@@ -51,6 +52,11 @@
 - (NSURL*) resource
 {
     return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
+}
+
+- (ZincRepo*) repo
+{
+    return self.bundleManager.repo;
 }
  
 - (BOOL)isKindOfClass:(Class)aClass
