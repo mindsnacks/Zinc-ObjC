@@ -15,6 +15,7 @@
 
 @interface ZincBundle ()
 @property (nonatomic, retain, readwrite) ZincRepoBundleManager* bundleManager;
+@property (nonatomic, retain, readwrite) ZincRepo* repo;
 @property (nonatomic, retain, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
 @property (nonatomic, retain, readwrite) NSURL* url;
@@ -26,6 +27,7 @@
 - (id) initWithRepoBundleManager:(ZincRepoBundleManager*)bundleManager bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
 {
     self.bundleManager = bundleManager;
+    self.repo = self.bundleManager.repo; // make sure we retain the repo as well
     self.bundleID = bundleID;
     self.version = version;
     self.url = bundleURL;
@@ -43,6 +45,7 @@
 {
     [self.bundleManager bundleWillDeallocate:self];
     [_bundleManager release];
+    [_repo release];
     [_bundle release];
     [_bundleID release];
     [_url release];
@@ -54,11 +57,6 @@
     return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
 }
 
-- (ZincRepo*) repo
-{
-    return self.bundleManager.repo;
-}
- 
 - (BOOL)isKindOfClass:(Class)aClass
 {
     return aClass == [ZincBundle class] || aClass == [NSBundle class];
