@@ -335,8 +335,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (_reachability != nil) {
         __block typeof(self) blockself = self;
         _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-            @synchronized(self.myTasks) {
-                NSArray* remoteBundleUpdateTasks = [self.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            @synchronized(blockself.myTasks) {
+                NSArray* remoteBundleUpdateTasks = [blockself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                     return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
                 }]];
                 
