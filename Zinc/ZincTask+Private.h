@@ -23,11 +23,11 @@
 - (void) queueChildOperation:(NSOperation*)operation;
 
 /* just the events logged on this task */
-@property (readonly) NSArray* events;
+@property (weak, readonly) NSArray* events;
 
 - (void) addEvent:(ZincEvent*)event;
 
-@property (readwrite, retain) NSString* title;
+@property (readwrite, strong) NSString* title;
 
 @property (assign) BOOL finishedSuccessfully;
 

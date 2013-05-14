@@ -10,7 +10,7 @@
 #import "ZincTask.h"
 
 @interface ZincTaskRef ()
-@property (nonatomic, retain) NSMutableArray* errors;
+@property (nonatomic, strong) NSMutableArray* errors;
 @end
 
 @implementation ZincTaskRef
@@ -28,16 +28,11 @@
 
 + (ZincTaskRef*) taskRefForTask:(ZincTask*)task
 {
-    ZincTaskRef* ref = [[[ZincTaskRef alloc] init] autorelease];
+    ZincTaskRef* ref = [[ZincTaskRef alloc] init];
     [ref addDependency:task];
     return ref;
 }
 
-- (void)dealloc
-{
-    [_errors release];
-    [super dealloc];
-}
 
 - (void)addError:(NSError *)error
 {

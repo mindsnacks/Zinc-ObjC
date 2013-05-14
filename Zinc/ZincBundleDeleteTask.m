@@ -24,10 +24,6 @@
     return ZincTaskActionDelete;
 }
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 - (NSString*) bundleID
 {
@@ -42,7 +38,7 @@
 - (void) main
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     if (![self.repo hasManifestForBundleIDentifier:self.bundleID version:self.version]) {
         // exit early

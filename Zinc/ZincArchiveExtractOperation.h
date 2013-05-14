@@ -12,9 +12,9 @@
 
 - (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath;                
 
-@property (nonatomic, assign, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) NSString* archivePath;
+@property (nonatomic, weak, readonly) ZincRepo* repo;
+@property (nonatomic, strong, readonly) NSString* archivePath;
 
-@property (nonatomic, retain, readonly) NSError* error;
+@property (nonatomic, strong, readonly) NSError* error;
 
 @end

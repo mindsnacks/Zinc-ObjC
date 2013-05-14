@@ -20,7 +20,6 @@
         NSMutableDictionary *userInfo = [NSMutableDictionary dictionaryWithDictionary:error.userInfo];
         NSString *JSONString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         userInfo[@"zinc_JSONString"] = JSONString ?: @"<nil>";
-        [JSONString release];
 
         error = [NSError errorWithDomain:error.domain code:error.code userInfo:userInfo];
         *outError = error;

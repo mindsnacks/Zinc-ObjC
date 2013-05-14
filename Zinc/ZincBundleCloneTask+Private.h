@@ -12,7 +12,7 @@
 
 @interface ZincBundleCloneTask ()
 
-@property (retain) NSFileManager* fileManager;
+@property (strong) NSFileManager* fileManager;
 
 - (void) setUp;
 - (void) completeWithSuccess:(BOOL)success;

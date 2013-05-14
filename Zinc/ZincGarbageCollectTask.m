@@ -24,7 +24,7 @@
 - (void) doMaintenance
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
                                 includingPropertiesForKeys:@[NSURLIsRegularFileKey, NSURLLinkCountKey]
                                                    options:0

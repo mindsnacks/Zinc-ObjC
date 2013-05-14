@@ -10,6 +10,6 @@
 
 @interface ZincSourceUpdateTask : ZincTask
 
-@property (readonly) NSURL* sourceURL;
+@property (weak, readonly) NSURL* sourceURL;
 
 @end

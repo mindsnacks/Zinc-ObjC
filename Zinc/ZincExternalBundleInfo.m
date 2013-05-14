@@ -15,20 +15,13 @@
     NSParameterAssert(resource);
     NSParameterAssert(manifestPath);
     NSParameterAssert(bundleRootPath);
-    ZincExternalBundleInfo* ref = [[[ZincExternalBundleInfo alloc] init] autorelease];
+    ZincExternalBundleInfo* ref = [[ZincExternalBundleInfo alloc] init];
     ref.bundleResource = resource;
     ref.manifestPath = manifestPath;
     ref.bundleRootPath = bundleRootPath;
     return ref;
 }
 
-- (void)dealloc
-{
-    [_bundleResource release];
-    [_manifestPath release];
-    [_bundleRootPath release];
-    [super dealloc];
-}
 
 - (NSString*) description
 {

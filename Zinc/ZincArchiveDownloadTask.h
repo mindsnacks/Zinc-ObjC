@@ -11,7 +11,7 @@
 
 @interface ZincArchiveDownloadTask : ZincDownloadTask
 
-@property (readonly) NSString* bundleID;
+@property (weak, readonly) NSString* bundleID;
 @property (readonly) ZincVersion version;
 
 @end

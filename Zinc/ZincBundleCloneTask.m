@@ -25,11 +25,6 @@
     return ZincTaskActionUpdate;
 }
 
-- (void)dealloc
-{
-    [_fileManager release];
-    [super dealloc];
-}
 
 - (NSString*) bundleID
 {
@@ -48,7 +43,7 @@
 
 - (void) setUp
 {
-    self.fileManager = [[[NSFileManager alloc] init] autorelease];
+    self.fileManager = [[NSFileManager alloc] init];
     [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleID]];
 }
 

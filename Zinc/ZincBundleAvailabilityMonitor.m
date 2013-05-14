@@ -15,8 +15,8 @@
 #import "ZincTaskActions.h"
 
 @interface ZincBundleAvailabilityMonitor ()
-@property (nonatomic, readwrite, retain) NSArray* bundleIDs;
-@property (nonatomic, retain) NSMutableDictionary* myItems;
+@property (nonatomic, readwrite, strong) NSArray* bundleIDs;
+@property (nonatomic, strong) NSMutableDictionary* myItems;
 @property (nonatomic, readwrite, assign) float totalProgress;
 @end
 
@@ -34,19 +34,12 @@
 {
     self = [super init];
     if (self) {
-        _repo = [repo retain];
-        _bundleIDs = [bundleIDs retain];
+        _repo = repo;
+        _bundleIDs = bundleIDs;
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [_myItems release];
-    [_repo release];
-    [_bundleIDs release];
-    [super dealloc];
-}
 
 - (NSArray*) items
 {
@@ -103,7 +96,7 @@
     
     NSMutableDictionary* items = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
     for (NSString* bundleID in self.bundleIDs) {
-        ZincBundleAvailabilityMonitorItem* item = [[[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID] autorelease];
+        ZincBundleAvailabilityMonitorItem* item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID];
         items[bundleID] = item;
     }
     
@@ -153,16 +146,11 @@
 {
     self = [super initWithActivityMonitor:monitor];
     if (self) {
-        _bundleID = [bundleID retain];
+        _bundleID = bundleID;
     }
     return self;
 }
 
-- (void) dealloc
-{
-    [_bundleID release];
-    [super dealloc];
-}
 
 - (void) update
 {

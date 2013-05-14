@@ -29,8 +29,8 @@
 
 @interface ZincBundle : NSProxy <ZincBundle>
 
-@property (nonatomic, retain, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) NSString* bundleID;
+@property (nonatomic, strong, readonly) ZincRepo* repo;
+@property (nonatomic, strong, readonly) NSString* bundleID;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
 - (NSURL*) resource;

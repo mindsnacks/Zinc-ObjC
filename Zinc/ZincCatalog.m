@@ -23,12 +23,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_identifier release];
-    [_bundleInfoById release];
-    [super dealloc];
-}
 
 #pragma mark Encoding
 
@@ -90,7 +84,7 @@
     if (json == nil) {
         return nil;
     }
-    ZincCatalog* catalog = [[[ZincCatalog alloc] initWithDictionary:json] autorelease];
+    ZincCatalog* catalog = [[ZincCatalog alloc] initWithDictionary:json];
     return catalog;
 }
 

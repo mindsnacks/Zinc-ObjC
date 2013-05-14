@@ -91,5 +91,5 @@ done:
     
     if (error != nil) return nil;
 
-    return [[[NSString alloc] initWithCString:hash encoding:NSUTF8StringEncoding] autorelease];
+    return [[NSString alloc] initWithCString:hash encoding:NSUTF8StringEncoding];
 }

@@ -34,8 +34,8 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
-@property (nonatomic, retain, readwrite) NSDate* timestamp;
-@property (nonatomic, retain, readwrite) NSDictionary* attributes;
+@property (nonatomic, strong, readwrite) NSDate* timestamp;
+@property (nonatomic, strong, readwrite) NSDictionary* attributes;
 @end
 
 
@@ -48,7 +48,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
         self.type = type;
         self.timestamp = [NSDate date];
         if (source != nil) {
-            NSMutableDictionary *mutableAttributes = [[attributes mutableCopy] autorelease];;
+            NSMutableDictionary *mutableAttributes = [attributes mutableCopy];;
             mutableAttributes[kZincEventAttributesSourceKey] = [source description];
             self.attributes = mutableAttributes;
         } else {
@@ -63,12 +63,6 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     return [self initWithType:type source:source attributes:nil];
 }
 
-- (void)dealloc
-{
-    [_timestamp release];
-    [_attributes release];
-    [super dealloc];
-}
 
 + (NSString*) name
 {
@@ -95,7 +89,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 #pragma mark -
 
 @interface ZincErrorEvent ()
-@property (nonatomic, retain, readwrite) NSError* error;
+@property (nonatomic, strong, readwrite) NSError* error;
 @end
 
 @implementation ZincErrorEvent
@@ -111,20 +105,15 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     return self;
 }
 
-- (void)dealloc
-{
-    [_error release];
-    [super dealloc];
-}
 
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source
 {
-    return [[[ZincErrorEvent alloc] initWithError:error source:source attributes:nil] autorelease];
+    return [[ZincErrorEvent alloc] initWithError:error source:source attributes:nil];
 }
 
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
 {
-    return [[[ZincErrorEvent alloc] initWithError:error source:source attributes:attributes] autorelease];
+    return [[ZincErrorEvent alloc] initWithError:error source:source attributes:attributes];
 }
 
 + (NSString*) name
@@ -154,7 +143,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 + (id) deleteEventForPath:(NSString*)path source:(NSDictionary*)source
 {
     NSDictionary* attr = @{kZincEventAttributesPathKey: path};
-    return [[[self alloc] initWithType:ZincEventTypeDelete source:source attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeDelete source:source attributes:attr];
 }
 
 + (NSString*) name
@@ -179,7 +168,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 + (id) downloadBeginEventForURL:(NSURL*)url
 {
     NSDictionary* attr = @{kZincEventAttributesURLKey: url};
-    return [[[self alloc] initWithType:ZincEventTypeDownloadBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeDownloadBegin source:ZINC_EVENT_SRC() attributes:attr];
 
 }
     
@@ -207,7 +196,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     NSDictionary* attr = @{kZincEventAttributesURLKey: url,
                           kZincEventAttributesSizeKey: @(size)};
     
-    return [[[self alloc] initWithType:ZincEventTypeDownloadComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeDownloadComplete source:ZINC_EVENT_SRC() attributes:attr];
     
 }
 
@@ -240,7 +229,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     NSDictionary* attr = @{kZincEventAttributesBundleResourceKey: bundleResource,
                           kZincEventAttributesContextKey: context ?: [NSNull null]};
     
-    return [[[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:source attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeBundleCloneBegin source:source attributes:attr];
 }
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context
@@ -278,7 +267,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
                           kZincEventAttributesContextKey: context ?: [NSNull null],
                           kZincEventAttributesCloneSuccessKey: @(success)};
     
-    return [[[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:source attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeBundleCloneComplete source:source attributes:attr];
 }
 
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success
@@ -313,7 +302,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 + (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource
 {
     NSDictionary* attr = @{kZincEventAttributesArchiveResourceKey: archiveResource};
-    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeArchiveExtractBegin source:ZINC_EVENT_SRC() attributes:attr];
     
 }
 
@@ -340,7 +329,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 {
     NSDictionary* attr = @{kZincEventAttributesArchiveResourceKey: archiveResource,
                           kZincEventAttributesContextKey: context ?: [NSNull null]};
-    return [[[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeArchiveExtractComplete source:ZINC_EVENT_SRC() attributes:attr];
     
 }
 
@@ -372,7 +361,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 + (id) maintenanceEventWithAction:(NSString*)category;
 {
     NSDictionary* attr = @{kZincEventAttributesActionKey: category};
-    return [[[self alloc] initWithType:ZincEventTypeMaintenanceBegin source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeMaintenanceBegin source:ZINC_EVENT_SRC() attributes:attr];
 }
 
 + (NSString*) name
@@ -398,7 +387,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 + (id) maintenanceEventWithAction:(NSString*)category
 {
     NSDictionary* attr = @{kZincEventAttributesActionKey: category};
-    return [[[self alloc] initWithType:ZincEventTypeMaintenanceComplete source:ZINC_EVENT_SRC() attributes:attr] autorelease];
+    return [[self alloc] initWithType:ZincEventTypeMaintenanceComplete source:ZINC_EVENT_SRC() attributes:attr];
 }
 
 + (NSString*) name

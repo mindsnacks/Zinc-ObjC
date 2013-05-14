@@ -14,7 +14,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 
 @interface ZincActivityMonitor ()
-@property (nonatomic, retain) NSTimer* refreshTimer;
+@property (nonatomic, strong) NSTimer* refreshTimer;
 @property (nonatomic, readwrite, assign) BOOL isMonitoring;
 @end
 
@@ -38,9 +38,6 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 {
     [self stopMonitoring];
     
-    [_progressBlock release];
-    [_refreshTimer release];
-    [super dealloc];
 }
 
 - (void)restartRefreshTimer
@@ -132,11 +129,6 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 }
 
 
-- (void)dealloc
-{
-    [_task release];
-    [super dealloc];
-}
 
 - (void) finish
 {

@@ -80,15 +80,15 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 + (NSString*) name;
 
 @property (nonatomic, assign, readonly) ZincEventType type;
-@property (nonatomic, retain, readonly) NSDate* timestamp;
-@property (nonatomic, retain, readonly) NSDictionary* attributes;
+@property (nonatomic, strong, readonly) NSDate* timestamp;
+@property (nonatomic, strong, readonly) NSDictionary* attributes;
 
 @end
 
 @interface ZincErrorEvent : ZincEvent
 
 - (id) initWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
-@property (nonatomic, retain, readonly) NSError* error;
+@property (nonatomic, strong, readonly) NSError* error;
 
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source;
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
@@ -99,7 +99,7 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincDeleteEvent : ZincEvent 
 
 + (id) deleteEventForPath:(NSString*)path source:(NSDictionary*)source;
-@property (readonly) NSString* path;
+@property (weak, readonly) NSString* path;
 
 @end
 
@@ -107,7 +107,7 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincDownloadBeginEvent : ZincEvent 
 
 + (id) downloadBeginEventForURL:(NSURL*)url;
-@property (readonly) NSURL* url;
+@property (weak, readonly) NSURL* url;
 
 @end
 
@@ -115,7 +115,7 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
 + (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size;
-@property (readonly) NSURL* url;
+@property (weak, readonly) NSURL* url;
 @property (readonly) NSInteger size;
 
 @end
@@ -125,8 +125,8 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context;
 + (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context;
-@property (readonly) NSURL* bundleResource;
-@property (readonly) id context;
+@property (weak, readonly) NSURL* bundleResource;
+@property (weak, readonly) id context;
 
 @end
 
@@ -135,8 +135,8 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context success:(BOOL)success;
 + (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success;
-@property (readonly) NSURL* bundleResource;
-@property (readonly) id context;
+@property (weak, readonly) NSURL* bundleResource;
+@property (weak, readonly) id context;
 
 @end
 
@@ -144,7 +144,7 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincAchiveExtractBeginEvent : ZincEvent 
 
 + (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource;
-@property (readonly) NSURL* archiveResource;
+@property (weak, readonly) NSURL* archiveResource;
 
 @end
 
@@ -152,8 +152,8 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincAchiveExtractCompleteEvent : ZincEvent 
 
 + (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context;
-@property (readonly) NSURL* archiveResource;
-@property (readonly) id context;
+@property (weak, readonly) NSURL* archiveResource;
+@property (weak, readonly) id context;
 
 @end
 
@@ -161,7 +161,7 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincMaintenanceBeginEvent : ZincEvent
 
 + (id) maintenanceEventWithAction:(NSString*)category;
-@property (readonly) NSString* action;
+@property (weak, readonly) NSString* action;
 
 @end
 
@@ -169,6 +169,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 @interface ZincMaintenanceCompleteEvent : ZincEvent
 
 + (id) maintenanceEventWithAction:(NSString*)action;
-@property (readonly) NSString* action;
+@property (weak, readonly) NSString* action;
 
 @end

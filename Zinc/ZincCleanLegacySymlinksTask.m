@@ -37,7 +37,7 @@
 - (void) doMaintenance
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     
     // -- Create both enumerators
     

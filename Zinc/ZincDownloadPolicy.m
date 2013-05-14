@@ -15,9 +15,9 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 #define kInitialDefaultConnectionType ZincConnectionTypeAny
 
 @interface ZincDownloadPolicy ()
-@property (nonatomic, retain) NSMutableDictionary* prioritiesByRequiredConnectionType;
-@property (nonatomic, retain) NSMutableDictionary* prioritiesByBundleID;
-@property (nonatomic, retain) NSMutableArray* rules;
+@property (nonatomic, strong) NSMutableDictionary* prioritiesByRequiredConnectionType;
+@property (nonatomic, strong) NSMutableDictionary* prioritiesByBundleID;
+@property (nonatomic, strong) NSMutableArray* rules;
 @end
 
 @implementation ZincDownloadPolicy
@@ -34,13 +34,6 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
     return self;
 }
 
-- (void)dealloc
-{
-    [_prioritiesByRequiredConnectionType release];
-    [_prioritiesByBundleID release];
-    [_rules release];
-    [super dealloc];
-}
 
 - (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleID
 {
@@ -163,16 +156,11 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 
 + (instancetype)ruleWithBlock:(ZincDownloadPolicyBlockRuleHandler)block
 {
-    ZincDownloadPolicyBlockRule* r = [[[self alloc] init] autorelease];
+    ZincDownloadPolicyBlockRule* r = [[self alloc] init];
     r.block = block;
     return r;
 }
 
-- (void)dealloc
-{
-    [_block release];
-    [super dealloc];
-}
 
 - (BOOL) allowBundleWithID:(NSString*)bundleID priority:(NSOperationQueuePriority)priority
 {

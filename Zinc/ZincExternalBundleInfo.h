@@ -12,9 +12,9 @@
 
 + (ZincExternalBundleInfo*) infoForBundleResource:(NSURL*)resource manifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)bundleRootPath;
 
-@property (nonatomic, retain) NSURL* bundleResource;
+@property (nonatomic, strong) NSURL* bundleResource;
 
-@property (nonatomic, retain) NSString* manifestPath;
-@property (nonatomic, retain) NSString* bundleRootPath;
+@property (nonatomic, strong) NSString* manifestPath;
+@property (nonatomic, strong) NSString* bundleRootPath;
 
 @end

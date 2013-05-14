@@ -14,12 +14,12 @@
 #import "ZincRepoBundleManager.h"
 
 @interface ZincBundle ()
-@property (nonatomic, retain, readwrite) ZincRepoBundleManager* bundleManager;
-@property (nonatomic, retain, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSString* bundleID;
+@property (nonatomic, strong, readwrite) ZincRepoBundleManager* bundleManager;
+@property (nonatomic, strong, readwrite) ZincRepo* repo;
+@property (nonatomic, strong, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
-@property (nonatomic, retain, readwrite) NSURL* url;
-@property (nonatomic, retain, readwrite) NSBundle* bundle;
+@property (nonatomic, strong, readwrite) NSURL* url;
+@property (nonatomic, strong, readwrite) NSBundle* bundle;
 @end
 
 @implementation ZincBundle
@@ -44,12 +44,6 @@
 - (void) dealloc 
 {
     [self.bundleManager bundleWillDeallocate:self];
-    [_bundleManager release];
-    [_repo release];
-    [_bundle release];
-    [_bundleID release];
-    [_url release];
-    [super dealloc];
 }
 
 - (NSURL*) resource

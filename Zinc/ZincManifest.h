@@ -16,12 +16,12 @@
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-@property (nonatomic, retain) NSString* bundleName;
-@property (nonatomic, retain) NSString* catalogID;
+@property (nonatomic, strong) NSString* bundleName;
+@property (nonatomic, strong) NSString* catalogID;
 @property (nonatomic, assign) ZincVersion version;
-@property (nonatomic, retain) NSArray* flavors;
+@property (nonatomic, strong) NSArray* flavors;
 
-@property (nonatomic, readonly) NSString* bundleID;
+@property (weak, nonatomic, readonly) NSString* bundleID;
 
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) formatsForFile:(NSString*)path;

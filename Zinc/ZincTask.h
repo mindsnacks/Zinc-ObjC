@@ -20,21 +20,21 @@
 
 - (ZincTaskDescriptor*) taskDescriptor;
 
-@property (nonatomic, assign, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) NSURL* resource;
-@property (nonatomic, retain, readonly) id input;
+@property (nonatomic, weak, readonly) ZincRepo* repo;
+@property (nonatomic, strong, readonly) NSURL* resource;
+@property (nonatomic, strong, readonly) id input;
 
-@property (readonly, retain) NSString* title;
+@property (readonly, strong) NSString* title;
 
 /**
  @discussion All child operations queued by this Task.
  */
-@property (readonly) NSArray* childOperations;
+@property (weak, readonly) NSArray* childOperations;
 
 /**
  @discussion All child operations queued by this Task that are also ZincTasks
  */
-@property (readonly) NSArray* childTasks;
+@property (weak, readonly) NSArray* childTasks;
 
 /**
  @discussion all events including events from child tasks 

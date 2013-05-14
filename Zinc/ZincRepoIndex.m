@@ -16,9 +16,9 @@
 #import "ZincUtils.h"
 
 @interface ZincRepoIndex ()
-@property (nonatomic, retain) NSMutableSet* mySourceURLs;
-@property (nonatomic, retain) NSMutableDictionary* myBundles;
-@property (nonatomic, retain) NSMutableDictionary* myExternalBundlesByResource;
+@property (nonatomic, strong) NSMutableSet* mySourceURLs;
+@property (nonatomic, strong) NSMutableDictionary* myBundles;
+@property (nonatomic, strong) NSMutableDictionary* myExternalBundlesByResource;
 @end
 
 
@@ -41,13 +41,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_mySourceURLs release];
-    [_myBundles release];
-    [_myExternalBundlesByResource release];
-    [super dealloc];
-}
 
 + (NSSet*) validFormats
 {
@@ -160,7 +153,7 @@
         id trackingInfoObj = (self.myBundles)[bundleID][@"tracking"];
         if ([trackingInfoObj isKindOfClass:[NSString class]]) {
             // !!!: temporary kludge to read old style tracking infos
-            trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
+            trackingInfo = [[ZincTrackingInfo alloc] init];
             trackingInfo.version = ZincVersionInvalid;
             trackingInfo.distribution = trackingInfoObj;
             trackingInfo.updateAutomatically = YES; // all old tracking infos updated automatically
@@ -323,7 +316,7 @@
 
 + (id) repoIndexFromDictionary_1:(NSDictionary*)dict
 {
-    ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithFormat:1] autorelease];
+    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:1];
     
     NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
@@ -344,7 +337,7 @@
 
 + (id) repoIndexFromDictionary_2:(NSDictionary*)dict
 {
-    ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithFormat:2] autorelease];
+    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:2];
     
     NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
