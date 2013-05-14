@@ -12,6 +12,6 @@
 
 @interface ZincCatalogUpdateTask : ZincTask
 
-@property (weak, readonly) ZincCatalog* catalog;
+@property (readonly) ZincCatalog* catalog;
 
 @end

@@ -176,7 +176,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 #pragma mark -
 #pragma mark Tasks
 
-@property (weak, readonly) NSArray* tasks;
+@property (readonly) NSArray* tasks;
 
 - (void) suspendAllTasks;
 - (void) suspendAllTasksAndWaitExecutingTasksToComplete;

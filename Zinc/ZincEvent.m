@@ -34,8 +34,8 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @interface ZincEvent ()
 @property (nonatomic, assign, readwrite) ZincEventType type;
-@property (nonatomic, strong, readwrite) NSDate* timestamp;
-@property (nonatomic, strong, readwrite) NSDictionary* attributes;
+@property (nonatomic, copy, readwrite) NSDate* timestamp;
+@property (nonatomic, copy, readwrite) NSDictionary* attributes;
 @end
 
 

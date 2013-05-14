@@ -24,7 +24,6 @@
     return ZincTaskActionDelete;
 }
 
-
 - (NSString*) bundleID
 {
     return [self.resource zincBundleID];

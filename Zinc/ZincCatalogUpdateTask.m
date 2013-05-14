@@ -31,7 +31,6 @@
     return self;
 }
 
-
 - (ZincCatalog*) catalog
 {
     return self.input;

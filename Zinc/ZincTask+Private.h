@@ -23,7 +23,7 @@
 - (void) queueChildOperation:(NSOperation*)operation;
 
 /* just the events logged on this task */
-@property (weak, readonly) NSArray* events;
+@property (readonly) NSArray* events;
 
 - (void) addEvent:(ZincEvent*)event;
 
