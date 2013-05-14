@@ -58,7 +58,7 @@
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
-    __block typeof(self) blockself = self;
+    __weak typeof(self) blockself = self;
     
     [self.httpRequestOperation setDownloadProgressBlock:^(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
         

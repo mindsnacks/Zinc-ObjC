@@ -218,7 +218,7 @@ typedef id ZincBackgroundTaskIdentifier;
     if (!self.backgroundTaskIdentifier) {
         
         UIApplication *application = [UIApplication sharedApplication];
-        __block typeof(self) blockSelf = self;
+        __weak typeof(self) blockSelf = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
             
             UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;

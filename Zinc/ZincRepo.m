@@ -268,7 +268,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self) {
         if (isInitialized) {
             // no longer need to hold onto the initialization queue or task
-            __block typeof(self) blockself = self;
+            __weak typeof(self) blockself = self;
             dispatch_async(dispatch_get_main_queue(), ^{
                 blockself.completeInitializationTask = nil;
             });
@@ -332,7 +332,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     _reachability = reachability;
     
     if (_reachability != nil) {
-        __block typeof(self) blockself = self;
+        __weak typeof(self) blockself = self;
         _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
             @synchronized(blockself.myTasks) {
                 NSArray* remoteBundleUpdateTasks = [blockself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
@@ -398,7 +398,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) refreshWithCompletion:(dispatch_block_t)completion
 {
-    __block typeof(self) blockself = self;
+    __weak typeof(self) blockself = self;
     [blockself refreshSourcesWithCompletion:^{
         [blockself resumeBundleActions];
         [blockself refreshBundlesWithCompletion:^{
@@ -969,7 +969,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
         taskRef = [[ZincTaskRef alloc] init];
-        __block typeof(taskRef) block_taskRef = taskRef;
+        __weak typeof(taskRef) block_taskRef = taskRef;
         taskRef.completionBlock = ^{
             completion([block_taskRef allErrors]);
         };
@@ -1425,7 +1425,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) logEvent:(ZincEvent*)event
 {
-    __block typeof(self) blockself = self;
+    __weak typeof(self) blockself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
             [blockself.delegate zincRepo:blockself didReceiveEvent:event];
