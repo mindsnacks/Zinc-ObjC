@@ -98,7 +98,7 @@
 		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
 		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
 		B3443A381742A965000920B8 /* ZincRepoBundleManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B3443A361742A964000920B8 /* ZincRepoBundleManager.h */; };
-		B3443A391742A965000920B8 /* ZincRepoBundleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3443A371742A964000920B8 /* ZincRepoBundleManager.m */; };
+		B3443A391742A965000920B8 /* ZincRepoBundleManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3443A371742A964000920B8 /* ZincRepoBundleManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		B3466BD8171DB9C100021D84 /* ZincDownloadPolicy+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = B3466BD7171DB9C100021D84 /* ZincDownloadPolicy+Private.h */; };
 		B347EBE115C3593500FA0649 /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B347EBDF15C3593500FA0649 /* ZincOperation.m */; };
 		B3549DF0148DB80900DD63D1 /* ZincManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZincManifest.m */; };
