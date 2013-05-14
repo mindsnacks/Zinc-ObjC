@@ -400,15 +400,25 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) refreshWithCompletion:(dispatch_block_t)completion
 {
-    __weak typeof(self) blockself = self;
-    [blockself refreshSourcesWithCompletion:^{
-        [blockself resumeBundleActions];
-        [blockself refreshBundlesWithCompletion:^{
-            [blockself checkForBundleDeletion];
+    __weak typeof(self) weakself = self;
+
+    [self refreshSourcesWithCompletion:^{
+
+        __strong typeof(weakself) strongself = weakself;
+
+        [strongself resumeBundleActions];
+
+        __weak typeof(strongself) weakself2 = strongself;
+
+        [strongself refreshBundlesWithCompletion:^{
+
+            __strong typeof(weakself2) strongself2 = weakself2;
+
+            [strongself2 checkForBundleDeletion];
+
             if (completion != nil) completion();
         }];
-    }];
-    
+    }];    
 }
 
 - (void) refresh
