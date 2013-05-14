@@ -26,7 +26,7 @@
     NSError* error = nil;
     NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                                includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, nil]
+                                includingPropertiesForKeys:@[NSURLIsRegularFileKey, NSURLLinkCountKey]
                                                    options:0
                                               errorHandler:^(NSURL* url, NSError* error){
                                                   return YES;

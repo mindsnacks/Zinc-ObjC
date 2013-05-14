@@ -41,7 +41,7 @@ NSString* ZincGetApplicationDocumentsDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0] retain];
         if([dir length] == 0) {
             [NSException raise:@"Documents dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
@@ -54,7 +54,7 @@ NSString* ZincGetApplicationCacheDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        dir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] retain];
         if([dir length] == 0) {
             [NSException raise:@"Caches dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
@@ -74,7 +74,7 @@ NSString* ZincGetUniqueTemporaryDirectory(void)
 {
     NSString* tmpFormat = [NSTemporaryDirectory() stringByAppendingPathComponent:@"zinc.XXXXXXXX"];
     char* tmpDirCstring = mkdtemp((char*)[tmpFormat cStringUsingEncoding:NSUTF8StringEncoding]);
-    NSString* tmpDir = [NSString stringWithCString:tmpDirCstring encoding:NSUTF8StringEncoding];
+    NSString* tmpDir = @(tmpDirCstring);
     return tmpDir;
 }
 

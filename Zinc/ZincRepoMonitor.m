@@ -127,7 +127,7 @@
 
 - (void) taskAdded:(NSNotification*)note
 {
-    ZincTask* task = [[note userInfo] objectForKey:ZincRepoTaskNotificationTaskKey];
+    ZincTask* task = [note userInfo][ZincRepoTaskNotificationTaskKey];
     
     if ([self.taskPredicate evaluateWithObject:task]) {
         [self addTask:task];

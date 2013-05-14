@@ -192,7 +192,7 @@
 - (ZincOperationQueueGroupInfo*) infoForClass:(Class)theClass
 {
     NSString* className = NSStringFromClass(theClass);
-    return [self.infoByClassName objectForKey:className];
+    return (self.infoByClassName)[className];
 }
 
 - (NSArray*) getAllQueues

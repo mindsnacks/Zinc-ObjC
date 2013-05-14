@@ -45,10 +45,10 @@
     if (dict == nil) return nil;
     
     ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
-    info.distribution = [dict objectForKey:kCodingKey_Distribution];
-    info.version = [[dict objectForKey:kCodingKey_Version] integerValue];
-    info.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
-    info.flavor = [dict objectForKey:kCodingKey_Flavor];
+    info.distribution = dict[kCodingKey_Distribution];
+    info.version = [dict[kCodingKey_Version] integerValue];
+    info.updateAutomatically = [dict[kCodingKey_UpdateAutomatically] boolValue];
+    info.flavor = dict[kCodingKey_Flavor];
     return info;
 }
 
@@ -74,11 +74,11 @@
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:3];
     if (self.distribution != nil)
-        [dict setObject:self.distribution forKey:kCodingKey_Distribution];
-    [dict setObject:[NSNumber numberWithInteger:self.version] forKey:kCodingKey_Version];
-    [dict setObject:[NSNumber numberWithBool:self.updateAutomatically] forKey:kCodingKey_UpdateAutomatically];
+        dict[kCodingKey_Distribution] = self.distribution;
+    dict[kCodingKey_Version] = @(self.version);
+    dict[kCodingKey_UpdateAutomatically] = @(self.updateAutomatically);
     if (self.flavor != nil)
-        [dict setObject:self.flavor forKey:kCodingKey_Flavor];
+        dict[kCodingKey_Flavor] = self.flavor;
     return dict;
 }
 

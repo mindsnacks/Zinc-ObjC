@@ -310,8 +310,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
 {
-    NSString* bundleID = [[note userInfo] objectForKey:ZincDownloadPolicyPriorityChangeBundleIDKey];
-    NSOperationQueuePriority priority = [[[note userInfo] objectForKey:ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
+    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
+    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
     
     @synchronized(self.myTasks) {
         NSArray* tasks = [self tasksForBundleID:bundleID];
@@ -454,18 +454,14 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) postNotification:(NSString*)notificationName bundleID:(NSString*)bundleID state:(ZincBundleState)state
 {
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleID, ZincRepoBundleChangeNotificationBundleIDKey,
-                              [NSNumber numberWithInteger:state], ZincRepoBundleChangeNotifiationStatusKey,
-                              nil];
+    NSDictionary* userInfo = @{ZincRepoBundleChangeNotificationBundleIDKey: bundleID,
+                              ZincRepoBundleChangeNotifiationStatusKey: @(state)};
     [self postNotification:notificationName userInfo:userInfo];
 }
 
 - (void) postNotification:(NSString*)notificationName bundleID:(NSString*)bundleID
 {
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleID, ZincRepoBundleChangeNotificationBundleIDKey,
-                              nil];
+    NSDictionary* userInfo = @{ZincRepoBundleChangeNotificationBundleIDKey: bundleID};
     [self postNotification:notificationName userInfo:userInfo];
 }
 
@@ -598,7 +594,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     @synchronized(self.sourcesByCatalog) {
         for (NSString* catalogID in [self.sourcesByCatalog allKeys]) {
-            NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalogID];
+            NSMutableArray* sources = (self.sourcesByCatalog)[catalogID];
             [sources removeObject:source];
         }
     }
@@ -615,10 +611,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog
 {
     @synchronized(self.sourcesByCatalog) {
-        NSMutableArray* sources = [self.sourcesByCatalog objectForKey:catalog.identifier];
+        NSMutableArray* sources = (self.sourcesByCatalog)[catalog.identifier];
         if (sources == nil) {
             sources = [NSMutableArray array];
-            [self.sourcesByCatalog setObject:sources forKey:catalog.identifier];
+            (self.sourcesByCatalog)[catalog.identifier] = sources;
         }
         // TODO: cleaner duplicate check
         for (NSURL* existingSource in sources) {
@@ -654,7 +650,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSArray*) sourcesForCatalogID:(NSString*)catalogID
 {
-    return [self.sourcesByCatalog objectForKey:catalogID];
+    return (self.sourcesByCatalog)[catalogID];
 }
 
 #pragma mark Caching
@@ -818,7 +814,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.loadedBundles) {
         for (NSURL* bundleRes in [self.loadedBundles allKeys]) {
             // make sure to request the object, and check if the ref is now nil
-            ZincBundle* bundle = [[self.loadedBundles objectForKey:bundleRes] pointerValue];
+            ZincBundle* bundle = [(self.loadedBundles)[bundleRes] pointerValue];
             if (bundle != nil) {
                 [activeBundles addObject:bundleRes];
             }
@@ -870,7 +866,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     if (distro != nil) {
         ZincVersion catalogVersion = [self catalogVersionForBundleID:bundleID distribution:distro];
-        if ([availableVersions containsObject:[NSNumber numberWithInteger:catalogVersion]]) {
+        if ([availableVersions containsObject:@(catalogVersion)]) {
             return catalogVersion;
         }
     }
@@ -1236,13 +1232,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     @synchronized(self.loadedBundles) {
-        bundle = [[self.loadedBundles objectForKey:res] pointerValue];
+        bundle = [(self.loadedBundles)[res] pointerValue];
         
         if (bundle == nil) {
             bundle = [[[ZincBundle alloc] initWithRepo:self bundleID:bundleID version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
             if (bundle == nil) return nil;
             
-            [self.loadedBundles setObject:[NSValue valueWithPointer:bundle] forKey:res];
+            (self.loadedBundles)[res] = [NSValue valueWithPointer:bundle];
         }
         [[bundle retain] autorelease];
     }

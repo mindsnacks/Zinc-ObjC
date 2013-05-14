@@ -18,7 +18,7 @@
         if ([obj respondsToSelector:@selector(zinc_deepCopy)]) {
             val = [obj zinc_deepCopy];
         }
-        [dict setObject:val forKey:key];
+        dict[key] = val;
     }];
     return [NSDictionary dictionaryWithDictionary:dict];
 }
@@ -31,7 +31,7 @@
         if ([obj respondsToSelector:@selector(zinc_deepMutableCopy)]) {
             val = [obj zinc_deepMutableCopy];
         }
-        [dict setObject:val forKey:key];
+        dict[key] = val;
     }];
     return dict;
 }

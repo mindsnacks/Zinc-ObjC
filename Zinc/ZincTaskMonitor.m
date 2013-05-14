@@ -89,7 +89,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if (context == &kvo_taskIsFinished) {
-        BOOL finished = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+        BOOL finished = [change[NSKeyValueChangeNewKey] boolValue];
         if (finished) {
             [self update];
             [self callCompletionBlock];

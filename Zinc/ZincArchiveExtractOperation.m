@@ -104,11 +104,9 @@
 
         if (![actualSHA isEqualToString:expectedSHA]) {
             
-            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  expectedSHA, @"expectedSHA",
-                                  actualSHA, @"actualSHA",
-                                  self.archivePath, @"archivePath",
-                                  nil];
+            NSDictionary* info = @{@"expectedSHA": expectedSHA,
+                                  @"actualSHA": actualSHA,
+                                  @"archivePath": self.archivePath};
             self.error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
             cleanup();
             return;

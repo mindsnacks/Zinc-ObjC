@@ -46,7 +46,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 {
     @synchronized(self.prioritiesByBundleID)
     {
-        NSNumber* prio = [self.prioritiesByBundleID objectForKey:bundleID];
+        NSNumber* prio = (self.prioritiesByBundleID)[bundleID];
         if (prio != nil) {
             return [prio integerValue];
         } else {
@@ -59,13 +59,11 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 {
     @synchronized(self.prioritiesByBundleID)
     {
-        [self.prioritiesByBundleID setObject:[NSNumber numberWithInteger:priority] forKey:bundleID];
+        (self.prioritiesByBundleID)[bundleID] = @(priority);
     }
     
-    NSDictionary* userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
-                              bundleID, ZincDownloadPolicyPriorityChangeBundleIDKey,
-                              [NSNumber numberWithInteger:priority], ZincDownloadPolicyPriorityChangePriorityKey,
-                              nil];
+    NSDictionary* userInfo = @{ZincDownloadPolicyPriorityChangeBundleIDKey: bundleID,
+                              ZincDownloadPolicyPriorityChangePriorityKey: @(priority)};
     
     [[NSNotificationCenter defaultCenter] postNotificationName:ZincDownloadPolicyPriorityChangeNotification
                                                         object:self
@@ -90,15 +88,14 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
 - (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPrioritiesGreaterThanOrEqualToPriority:(NSOperationQueuePriority)priority
 {
     @synchronized(self.prioritiesByRequiredConnectionType) {
-        [self.prioritiesByRequiredConnectionType setObject:[NSNumber numberWithInteger:priority]
-                                                    forKey:[NSNumber numberWithInteger:connectionType]];
+        (self.prioritiesByRequiredConnectionType)[@(connectionType)] = @(priority);
     }
 }
 
 - (void)removePriorityForConnectionType:(ZincConnectionType)connectionType
 {
     @synchronized(self.prioritiesByRequiredConnectionType) {
-        [self.prioritiesByRequiredConnectionType removeObjectForKey:[NSNumber numberWithInteger:connectionType]];
+        [self.prioritiesByRequiredConnectionType removeObjectForKey:@(connectionType)];
     }
 }
 

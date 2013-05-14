@@ -55,7 +55,7 @@
 
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID
 {
-    return [self.myItems objectForKey:bundleID];
+    return (self.myItems)[bundleID];
 }
 
 - (void) update
@@ -104,7 +104,7 @@
     NSMutableDictionary* items = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
     for (NSString* bundleID in self.bundleIDs) {
         ZincBundleAvailabilityMonitorItem* item = [[[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID] autorelease];
-        [items setObject:item forKey:bundleID];
+        items[bundleID] = item;
     }
     
     self.myItems = items;
@@ -132,13 +132,13 @@
     if (![self.bundleIDs containsObject:taskBundleID]) return;
     if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
     
-    ZincBundleAvailabilityMonitorItem* item = [self.myItems objectForKey:taskBundleID];
+    ZincBundleAvailabilityMonitorItem* item = (self.myItems)[taskBundleID];
     item.task = task;
 }
 
 - (void) taskAdded:(NSNotification*)note
 {
-    ZincTask* task = [[note userInfo] objectForKey:ZincRepoTaskNotificationTaskKey];
+    ZincTask* task = [note userInfo][ZincRepoTaskNotificationTaskKey];
     [self associateTaskWithActivityItem:task];
 }
 

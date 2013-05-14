@@ -57,8 +57,7 @@
     
     NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              catalogID, @"catalogID", nil];
+        NSDictionary* info = @{@"catalogID": catalogID};
         error = ZincError(ZINC_ERR_NO_SOURCES_FOR_CATALOG);
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:info]];
         return;

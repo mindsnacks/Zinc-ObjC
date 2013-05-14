@@ -16,14 +16,14 @@
 
     if (self.request != nil) {
         NSMutableDictionary* requestInfo = [NSMutableDictionary dictionary];
-        [info setObject:requestInfo forKey:@"URLRequest"];
-        [requestInfo setObject:self.request.URL forKey:@"URL"];
+        info[@"URLRequest"] = requestInfo;
+        requestInfo[@"URL"] = self.request.URL;
     }
     
     if (self.response != nil ) {
         NSMutableDictionary* responseInfo = [NSMutableDictionary dictionary];
-        [info setObject:responseInfo forKey:@"URLResponse"];
-        [responseInfo setObject:[self.response allHeaderFields] forKey:@"Headers"];
+        info[@"URLResponse"] = responseInfo;
+        responseInfo[@"Headers"] = [self.response allHeaderFields];
     }
     
     return info;

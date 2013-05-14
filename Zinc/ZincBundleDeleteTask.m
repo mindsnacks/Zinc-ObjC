@@ -141,7 +141,7 @@
         }
         
         // delete hard-linked files if their reference count is 1
-        NSNumber* linkCount = [attr objectForKey:NSFileReferenceCount];
+        NSNumber* linkCount = attr[NSFileReferenceCount];
         const BOOL shouldDeleteFile = [linkCount integerValue] == 1;
         if (shouldDeleteFile) {
             if (![fm zinc_removeItemAtPath:shaPath error:&error]) {

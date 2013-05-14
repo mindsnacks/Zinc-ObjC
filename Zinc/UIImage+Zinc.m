@@ -67,7 +67,7 @@
     
     NSString* bundlePath = [bundle bundlePath];
     NSString* relParentDir = nil;
-    NSArray* searchDirs = [NSArray arrayWithObjects:ZincGetApplicationDocumentsDirectory(), ZincGetApplicationCacheDirectory(), nil];
+    NSArray* searchDirs = @[ZincGetApplicationDocumentsDirectory(), ZincGetApplicationCacheDirectory()];
     
     for (NSString* pathPrefix in searchDirs) {
         if ([bundlePath hasPrefix:pathPrefix]) {

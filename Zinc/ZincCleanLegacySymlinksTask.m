@@ -42,7 +42,7 @@
     // -- Create both enumerators
     
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                                includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsSymbolicLinkKey, nil]
+                                includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                    options:0
                                               errorHandler:^(NSURL* url, NSError* error){
                                                   return YES;
@@ -50,7 +50,7 @@
     
     NSString* bundlesPath = [self.repo bundlesPath];
     NSDirectoryEnumerator* bundlesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:bundlesPath]
-                                  includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsSymbolicLinkKey, nil]
+                                  includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                      options:0
                                                 errorHandler:^(NSURL* url, NSError* error){
                                                     return YES;
@@ -94,7 +94,7 @@
             
             NSUInteger endIndexOfBundleDir = NSMaxRange([[theURL path] rangeOfString:bundlesPath]);
             NSString* relPath = [[theURL path] substringFromIndex:endIndexOfBundleDir + 1];
-            NSString* bundleDesc = [[relPath pathComponents] objectAtIndex:0];
+            NSString* bundleDesc = [relPath pathComponents][0];
             NSURL* bundleRes = [NSURL zincResourceForBundleDescriptor:bundleDesc];
             [bundlesToDelete addObject:bundleRes];
 

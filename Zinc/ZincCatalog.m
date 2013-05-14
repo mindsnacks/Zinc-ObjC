@@ -36,9 +36,9 @@
 {
     self = [super init];
     if (self) {
-        self.identifier = [dict objectForKey:@"id"]; 
-        self.format = [[dict objectForKey:@"format"] integerValue];
-        self.bundleInfoById = [dict objectForKey:@"bundles"];
+        self.identifier = dict[@"id"]; 
+        self.format = [dict[@"format"] integerValue];
+        self.bundleInfoById = dict[@"bundles"];
     }
     return self;
 }
@@ -46,9 +46,9 @@
 - (NSDictionary*) dictionaryRepresentation
 {
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:4];
-    [d setObject:self.identifier forKey:@"id"];
-    [d setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
-    [d setObject:self.bundleInfoById forKey:@"bundles"];
+    d[@"id"] = self.identifier;
+    d[@"format"] = @(self.format);
+    d[@"bundles"] = self.bundleInfoById;
     return d;
 }
 
@@ -70,10 +70,9 @@
 
 - (NSInteger) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
-    NSDictionary* bundleInfo = [self.bundleInfoById objectForKey:bundleID];
+    NSDictionary* bundleInfo = (self.bundleInfoById)[bundleID];
     
-    NSNumber* version = [[bundleInfo objectForKey:@"distributions"]
-                         objectForKey:distro];
+    NSNumber* version = bundleInfo[@"distributions"][distro];
     if (version != nil) {
         return [version integerValue];
     }

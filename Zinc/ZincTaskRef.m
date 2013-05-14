@@ -47,7 +47,7 @@
 - (ZincTask*) getTask
 {
     if ([self.dependencies count] > 0) {
-        return [self.dependencies objectAtIndex:0];
+        return (self.dependencies)[0];
     }
     return nil;
 }

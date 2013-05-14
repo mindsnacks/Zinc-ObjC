@@ -189,7 +189,7 @@ typedef id ZincBackgroundTaskIdentifier;
     [allEvents addObjectsFromArray:self.myEvents];
     
     NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
-    return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
+    return [allEvents sortedArrayUsingDescriptors:@[timestampSort]];
 }
 
 - (NSArray*) allErrors

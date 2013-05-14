@@ -56,7 +56,7 @@
 
 - (void) setFormat:(NSInteger)format
 {
-    if (![[[self class] validFormats] containsObject:[NSNumber numberWithInteger:format]]) {
+    if (![[[self class] validFormats] containsObject:@(format)]) {
         @throw [NSException
                 exceptionWithName:NSInternalInconsistencyException
                 reason:[NSString stringWithFormat:@"Invalid format version"]
@@ -110,11 +110,11 @@
 {
     NSMutableDictionary* bundleInfo = nil;
     @synchronized(self.myBundles) {
-        bundleInfo = [self.myBundles objectForKey:bundleID];
+        bundleInfo = (self.myBundles)[bundleID];
         if (bundleInfo == nil && create) {
             bundleInfo = [NSMutableDictionary dictionaryWithCapacity:2];
-            [bundleInfo setObject:[NSMutableDictionary dictionaryWithCapacity:2] forKey:@"versions"];
-            [self.myBundles setObject:bundleInfo forKey:bundleID];
+            bundleInfo[@"versions"] = [NSMutableDictionary dictionaryWithCapacity:2];
+            (self.myBundles)[bundleID] = bundleInfo;
         }
     }
     return bundleInfo;
@@ -125,7 +125,7 @@
     @synchronized(self.myBundles) {
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:YES];
         NSDictionary* trackingInfoDict = [trackingInfo dictionaryRepresentation];
-        [bundleInfo setObject:trackingInfoDict forKey:@"tracking"];
+        bundleInfo[@"tracking"] = trackingInfoDict;
     }    
 }
 
@@ -157,7 +157,7 @@
 {
     ZincTrackingInfo* trackingInfo = nil;
     @synchronized(self.myBundles) {
-        id trackingInfoObj = [[self.myBundles objectForKey:bundleID] objectForKey:@"tracking"];
+        id trackingInfoObj = (self.myBundles)[bundleID][@"tracking"];
         if ([trackingInfoObj isKindOfClass:[NSString class]]) {
             // !!!: temporary kludge to read old style tracking infos
             trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
@@ -198,13 +198,12 @@
         NSString* bundleID = [bundleResource zincBundleID];
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:YES];
-        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
-        NSString* versionKey = [[NSNumber numberWithInteger:bundleVersion] stringValue];
+        NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
+        NSString* versionKey = [@(bundleVersion) stringValue];
         if (state == ZincBundleStateNone) {
             [versionInfo removeObjectForKey:versionKey];
         } else {
-            [versionInfo setObject:[NSNumber numberWithInteger:state]
-                            forKey:versionKey];
+            versionInfo[versionKey] = @(state);
         }
     }
 }
@@ -221,8 +220,8 @@
         NSString* bundleID = [bundleResource zincBundleID];
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:NO];
-        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
-        ZincBundleState state = [[versionInfo objectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]] integerValue];
+        NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
+        ZincBundleState state = [versionInfo[[@(bundleVersion) stringValue]] integerValue];
         return state;
     }
 }
@@ -233,8 +232,8 @@
         NSString* bundleID = [bundleResource zincBundleID];
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:NO];
-        NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
-        [versionInfo removeObjectForKey:[[NSNumber numberWithInteger:bundleVersion] stringValue]];
+        NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
+        [versionInfo removeObjectForKey:[@(bundleVersion) stringValue]];
     }
 }
 
@@ -268,11 +267,11 @@
         set = [NSMutableSet set];
         NSArray* allBundleIDs = [self.myBundles allKeys];
         for (NSString* bundleID in allBundleIDs) {
-            NSDictionary* bundleInfo = [self.myBundles objectForKey:bundleID];
-            NSDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+            NSDictionary* bundleInfo = (self.myBundles)[bundleID];
+            NSDictionary* versionInfo = bundleInfo[@"versions"];
             NSArray* allVersions = [versionInfo allKeys];
             for (NSNumber* version in allVersions) {
-                ZincBundleState state = [[versionInfo objectForKey:version] integerValue];
+                ZincBundleState state = [versionInfo[version] integerValue];
                 if (state == targetState) {
                     [set addObject:[NSURL zincResourceForBundleWithID:bundleID version:[version integerValue]]];
                 }
@@ -301,12 +300,12 @@
 {
     NSMutableArray* versions = [NSMutableArray arrayWithCapacity:5];
     NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:NO];
-    NSMutableDictionary* versionInfo = [bundleInfo objectForKey:@"versions"];
+    NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
 
     [versionInfo enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
         if ([obj integerValue] == ZincBundleStateAvailable) {
             NSInteger version = [key integerValue];
-            [versions addObject:[NSNumber numberWithInteger:version]];
+            [versions addObject:@(version)];
         }
     }];
     
@@ -314,7 +313,7 @@
         [self.myExternalBundlesByResource enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
             NSURL* bundleRes = key;
             if ([[bundleRes zincBundleID] isEqualToString:bundleID]) {
-                [versions addObject:[NSNumber numberWithInteger:[bundleRes zincBundleVersion]]];
+                [versions addObject:@([bundleRes zincBundleVersion])];
             }
         }];
     }
@@ -326,13 +325,13 @@
 {
     ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithFormat:1] autorelease];
     
-    NSArray* sourceURLs = [dict objectForKey:@"sources"];
+    NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
     for (NSString* sourceURL in sourceURLs) {
         [index.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
     }
     
-    NSMutableDictionary* bundles = [dict objectForKey:@"bundles"];
+    NSMutableDictionary* bundles = dict[@"bundles"];
     if (bundles != nil) {
         bundles = [bundles zinc_deepMutableCopy];
     } else {
@@ -347,13 +346,13 @@
 {
     ZincRepoIndex* index = [[[ZincRepoIndex alloc] initWithFormat:2] autorelease];
     
-    NSArray* sourceURLs = [dict objectForKey:@"sources"];
+    NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
     for (NSString* sourceURL in sourceURLs) {
         [index.mySourceURLs addObject:[NSURL URLWithString:sourceURL]];
     }
     
-    NSMutableDictionary* bundles = [dict objectForKey:@"bundles"];
+    NSMutableDictionary* bundles = dict[@"bundles"];
     if (bundles != nil) {
         bundles = [bundles zinc_deepMutableCopy];
         
@@ -366,7 +365,7 @@
             for (NSString* versionKey in versionKeys) {
                 NSString* name = versionInfo[versionKey];
                 ZincBundleState state = ZincBundleStateFromName(name);
-                versionInfo[versionKey] = [NSNumber numberWithInteger:state];
+                versionInfo[versionKey] = @(state);
             }
         }
     } else {
@@ -379,8 +378,8 @@
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError
 {
-    NSInteger format = [[dict objectForKey:@"format"] intValue];
-    if (![[[self class] validFormats] containsObject:[NSNumber numberWithInteger:format]]) {
+    NSInteger format = [dict[@"format"] intValue];
+    if (![[[self class] validFormats] containsObject:@(format)]) {
         if (outError != NULL) {
             *outError = ZincError(ZINC_ERR_INVALID_REPO_FORMAT);
         }
@@ -407,14 +406,14 @@
         for (NSURL* sourceURL in self.mySourceURLs) {
             [sourceURLs addObject:[sourceURL absoluteString]];
         }
-        [dict setObject:sourceURLs forKey:@"sources"];
+        dict[@"sources"] = sourceURLs;
     }
         
     @synchronized(self.myBundles) {
-        [dict setObject:[self.myBundles zinc_deepCopy] forKey:@"bundles"];
+        dict[@"bundles"] = [self.myBundles zinc_deepCopy];
     }
     
-    [dict setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
+    dict[@"format"] = @(self.format);
     
     return dict;
 }
@@ -428,7 +427,7 @@
         for (NSURL* sourceURL in self.mySourceURLs) {
             [sourceURLs addObject:[sourceURL absoluteString]];
         }
-        [dict setObject:sourceURLs forKey:@"sources"];
+        dict[@"sources"] = sourceURLs;
     }
     
     NSMutableDictionary* bundles;
@@ -447,9 +446,9 @@
             versionInfo[versionKey] = ZincBundleStateName[state];
         }
     }
-    [dict setObject:bundles forKey:@"bundles"];
+    dict[@"bundles"] = bundles;
     
-    [dict setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
+    dict[@"format"] = @(self.format);
     
     return dict;
 }

@@ -27,18 +27,18 @@
 {
     self = [super init];
     if (self) {
-        self.bundleName = [dict objectForKey:@"bundle"];
-        self.catalogID = [dict objectForKey:@"catalog"];
-        self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [dict objectForKey:@"files"];
-        self.flavors = [dict objectForKey:@"flavors"];
+        self.bundleName = dict[@"bundle"];
+        self.catalogID = dict[@"catalog"];
+        self.version = [dict[@"version"] integerValue];
+        self.files = dict[@"files"];
+        self.flavors = dict[@"flavors"];
         
         if (self.flavors == nil) {  // try to build flavors for files
             
             NSMutableSet* flavorSet = [NSMutableSet set];
             
             [self.files enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                NSArray* fileFlavors = [obj objectForKey:@"flavors"];
+                NSArray* fileFlavors = obj[@"flavors"];
                 if (fileFlavors != nil) {
                     [flavorSet addObjectsFromArray:fileFlavors];
                 }
@@ -91,12 +91,12 @@
 
 - (NSString*) shaForFile:(NSString*)path
 {
-    return [[self.files objectForKey:path] objectForKey:@"sha"];
+    return (self.files)[path][@"sha"];
 }
 
 - (NSArray*) formatsForFile:(NSString*)path
 {
-    return [[[self.files objectForKey:path] objectForKey:@"formats"] allKeys];
+    return [(self.files)[path][@"formats"] allKeys];
 }
 
 - (NSString*) bestFormatForFile:(NSString*)path withPreferredFormats:(NSArray*)preferredFormats
@@ -112,21 +112,18 @@
 
 - (NSString*) bestFormatForFile:(NSString*)path
 {
-    return [self bestFormatForFile:path withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
+    return [self bestFormatForFile:path withPreferredFormats:@[ZincFileFormatGZ, ZincFileFormatRaw]];
 }
 
 - (NSUInteger) sizeForFile:(NSString*)path format:(NSString*)format 
 {
-    return [[[[[self.files objectForKey:path] 
-               objectForKey:@"formats"] 
-              objectForKey:format ]
-             objectForKey:@"size"] unsignedIntegerValue];
+    return [(self.files)[path][@"formats"][format][@"size"] unsignedIntegerValue];
 }
 
 - (NSArray*) flavorsForFile:(NSString*)path
 {
-    NSDictionary* fileDict = [self.files objectForKey:path];
-    return [fileDict objectForKey:@"flavors"];
+    NSDictionary* fileDict = (self.files)[path];
+    return fileDict[@"flavors"];
 }
 
 - (NSArray*) allFiles
@@ -167,11 +164,11 @@
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
-    [d setObject:self.bundleName forKey:@"bundle"];
-    [d setObject:self.catalogID forKey:@"catalog"];
-    [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
-    [d setObject:self.files forKey:@"files"];
-    if (self.flavors != nil) [d setObject:self.flavors forKey:@"flavors"];
+    d[@"bundle"] = self.bundleName;
+    d[@"catalog"] = self.catalogID;
+    d[@"version"] = @(self.version);
+    d[@"files"] = self.files;
+    if (self.flavors != nil) d[@"flavors"] = self.flavors;
     return d;
 }
 
