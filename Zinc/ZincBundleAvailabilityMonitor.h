@@ -17,7 +17,7 @@
 - (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
 
 @property (nonatomic, readonly, strong) ZincRepo* repo;
-@property (nonatomic, readonly, strong) NSArray* bundleIDs;
+@property (nonatomic, readonly, copy) NSArray* bundleIDs;
 
 #pragma mark -
 
@@ -41,6 +41,6 @@
 
 @interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
 
-@property (nonatomic, readonly, strong) NSString* bundleID;
+@property (nonatomic, readonly, copy) NSString* bundleID;
 
 @end

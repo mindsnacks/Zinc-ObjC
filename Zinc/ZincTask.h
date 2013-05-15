@@ -24,7 +24,7 @@
 @property (nonatomic, strong, readonly) NSURL* resource;
 @property (nonatomic, strong, readonly) id input;
 
-@property (readonly, strong) NSString* title;
+@property (readonly, copy) NSString* title;
 
 /**
  @discussion All child operations queued by this Task.

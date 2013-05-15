@@ -16,7 +16,7 @@
 @interface ZincBundle ()
 @property (nonatomic, strong, readwrite) ZincRepoBundleManager* bundleManager;
 @property (nonatomic, strong, readwrite) ZincRepo* repo;
-@property (nonatomic, strong, readwrite) NSString* bundleID;
+@property (nonatomic, copy, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
 @property (nonatomic, strong, readwrite) NSURL* url;
 @property (nonatomic, strong, readwrite) NSBundle* bundle;

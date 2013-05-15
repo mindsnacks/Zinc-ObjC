@@ -17,8 +17,8 @@
 
 @interface ZincArchiveExtractOperation ()
 @property (nonatomic, weak, readwrite) ZincRepo* repo;
-@property (nonatomic, strong, readwrite) NSString* archivePath;
-@property (nonatomic, strong, readwrite) NSError* error;
+@property (nonatomic, copy, readwrite) NSString* archivePath;
+@property (nonatomic, copy, readwrite) NSError* error;
 @end
 
 @implementation ZincArchiveExtractOperation

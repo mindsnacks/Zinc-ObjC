@@ -15,7 +15,7 @@
 #import "ZincTaskActions.h"
 
 @interface ZincBundleAvailabilityMonitor ()
-@property (nonatomic, readwrite, strong) NSArray* bundleIDs;
+@property (nonatomic, readwrite, copy) NSArray* bundleIDs;
 @property (nonatomic, strong) NSMutableDictionary* myItems;
 @property (nonatomic, readwrite, assign) float totalProgress;
 @end
@@ -35,7 +35,7 @@
     self = [super init];
     if (self) {
         _repo = repo;
-        _bundleIDs = bundleIDs;
+        self.bundleIDs = bundleIDs;
     }
     return self;
 }

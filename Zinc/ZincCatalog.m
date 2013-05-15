@@ -9,6 +9,11 @@
 #import "ZincCatalog.h"
 #import "ZincJSONSerialization.h"
 
+@interface ZincCatalog ()
+@property (nonatomic, strong, readwrite) NSString* identifier;
+@property (nonatomic, strong, readwrite) NSDictionary* bundleInfoById;
+@end
+
 @implementation ZincCatalog
 
 @synthesize identifier = _identifier;
