@@ -21,7 +21,7 @@
 @property (nonatomic, assign) ZincVersion version;
 @property (nonatomic, copy) NSArray* flavors;
 
-@property (weak, nonatomic, readonly) NSString* bundleID;
+@property (nonatomic, readonly) NSString* bundleID;
 
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) formatsForFile:(NSString*)path;
