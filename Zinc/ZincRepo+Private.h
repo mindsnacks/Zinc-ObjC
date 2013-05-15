@@ -24,8 +24,8 @@
 @interface ZincRepo ()
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(KSReachability*)reachability;
-@property (nonatomic, retain) ZincRepoIndex* index;
-@property (nonatomic, retain) NSFileManager* fileManager;
+@property (nonatomic, strong) ZincRepoIndex* index;
+@property (nonatomic, strong) NSFileManager* fileManager;
 
 - (NSURL*) indexURL;
 

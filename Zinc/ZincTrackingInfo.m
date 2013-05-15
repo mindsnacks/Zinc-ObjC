@@ -23,7 +23,7 @@
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                              updateAutomatically:(BOOL)updateAutomatically
 {
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = ZincVersionInvalid;
     info.updateAutomatically = updateAutomatically;
@@ -33,7 +33,7 @@
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                                          version:(ZincVersion)version
 {
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = version;
     info.updateAutomatically = NO;
@@ -44,7 +44,7 @@
 {
     if (dict == nil) return nil;
     
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = dict[kCodingKey_Distribution];
     info.version = [dict[kCodingKey_Version] integerValue];
     info.updateAutomatically = [dict[kCodingKey_UpdateAutomatically] boolValue];
@@ -63,12 +63,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_distribution release];
-    [_flavor release];
-    [super dealloc];
-}
 
 - (NSDictionary*) dictionaryRepresentation
 {

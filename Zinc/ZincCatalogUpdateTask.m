@@ -31,11 +31,6 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [super dealloc];
-}
-
 - (ZincCatalog*) catalog
 {
     return self.input;

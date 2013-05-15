@@ -36,10 +36,6 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [super dealloc];
-}
 
 - (NSURL*) sourceURL
 {
@@ -51,7 +47,7 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    AFHTTPRequestOperation* requestOp = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     [self queueChildOperation:requestOp];
     
     [requestOp waitUntilFinished];

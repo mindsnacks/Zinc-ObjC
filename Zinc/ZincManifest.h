@@ -16,10 +16,10 @@
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-@property (nonatomic, retain) NSString* bundleName;
-@property (nonatomic, retain) NSString* catalogID;
+@property (nonatomic, copy) NSString* bundleName;
+@property (nonatomic, copy) NSString* catalogID;
 @property (nonatomic, assign) ZincVersion version;
-@property (nonatomic, retain) NSArray* flavors;
+@property (nonatomic, copy) NSArray* flavors;
 
 @property (nonatomic, readonly) NSString* bundleID;
 

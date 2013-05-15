@@ -10,20 +10,13 @@
 
 @implementation ZincBundleTrackingRequest
 
-- (void)dealloc
-{
-    [_bundleID release];
-    [_distribution release];
-    [_flavor release];
-    [super dealloc];
-}
 
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
                                                           flavor:(NSString*)flavor
                                              automaticallyUpdate:(BOOL)automaticallyUpdate
 {
-    ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
+    ZincBundleTrackingRequest* req = [[ZincBundleTrackingRequest alloc] init];
     req.bundleID = bundleID;
     req.distribution = distribution;
     req.flavor = flavor;
@@ -35,7 +28,7 @@
                                                     distribution:(NSString*)distribution
                                              automaticallyUpdate:(BOOL)automaticallyUpdate
 {
-    ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
+    ZincBundleTrackingRequest* req = [[ZincBundleTrackingRequest alloc] init];
     req.bundleID = bundleID;
     req.distribution = distribution;
     req.updateAutomatically = automaticallyUpdate;

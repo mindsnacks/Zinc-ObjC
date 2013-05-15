@@ -26,7 +26,7 @@
         finalhash[(j*2) + 1] = hexval[(digest[j]) & 0x0F];
     }
     
-    NSString* sha = [[[NSString alloc] initWithBytes:finalhash length:40 encoding:NSUTF8StringEncoding] autorelease];
+    NSString* sha = [[NSString alloc] initWithBytes:finalhash length:40 encoding:NSUTF8StringEncoding];
     return sha;
 }
 
@@ -122,7 +122,7 @@
     if (useAuxiliaryFile) options = NSDataWritingAtomic;
     
     if (createIntermediates) {
-        NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+        NSFileManager* fm = [[NSFileManager alloc] init];
         if (![fm zinc_createDirectoryIfNeededAtPath:[path stringByDeletingLastPathComponent] error:outError]) {
             return NO;
         }

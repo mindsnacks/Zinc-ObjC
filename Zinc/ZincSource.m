@@ -18,7 +18,7 @@
 
 - (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
 {
-    NSMutableURLRequest* req = [[[NSMutableURLRequest alloc] initWithURL:url] autorelease];
+    NSMutableURLRequest* req = [[NSMutableURLRequest alloc] initWithURL:url];
     [req setHTTPMethod:@"GET"];
     
 //    [req setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];

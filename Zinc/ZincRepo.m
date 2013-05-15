@@ -71,22 +71,22 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @interface ZincRepo ()
 
-@property (nonatomic, retain) NSURL* url;
+@property (nonatomic, strong) NSURL* url;
 
 // runtime state
-@property (nonatomic, retain) NSMutableDictionary* sourcesByCatalog;
-@property (nonatomic, retain) NSOperationQueue* networkQueue;
-@property (nonatomic, retain) ZincOperationQueueGroup* taskQueueGroup;
-@property (nonatomic, retain) NSTimer* refreshTimer;
-@property (nonatomic, retain) NSCache* cache;
-@property (nonatomic, retain) NSMutableArray* myTasks;
-@property (nonatomic, retain, readwrite) ZincDownloadPolicy* downloadPolicy;
-@property (nonatomic, retain) KSReachability* reachability;
-@property (nonatomic, retain) NSMutableDictionary* localFilesBySHA;
-@property (nonatomic, retain) NSOperationQueue* internalQueue;
-@property (nonatomic, retain) ZincCompleteInitializationTask* completeInitializationTask;
+@property (nonatomic, strong) NSMutableDictionary* sourcesByCatalog;
+@property (nonatomic, strong) NSOperationQueue* networkQueue;
+@property (nonatomic, strong) ZincOperationQueueGroup* taskQueueGroup;
+@property (nonatomic, strong) NSTimer* refreshTimer;
+@property (nonatomic, strong) NSCache* cache;
+@property (nonatomic, strong) NSMutableArray* myTasks;
+@property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
+@property (nonatomic, strong) KSReachability* reachability;
+@property (nonatomic, strong) NSMutableDictionary* localFilesBySHA;
+@property (nonatomic, strong) NSOperationQueue* internalQueue;
+@property (nonatomic, strong) ZincCompleteInitializationTask* completeInitializationTask;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
-@property (nonatomic, retain) ZincRepoBundleManager* bundleManager;
+@property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 
 - (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability;
 
@@ -127,7 +127,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
-    NSOperationQueue* operationQueue = [[[NSOperationQueue alloc] init] autorelease];
+    NSOperationQueue* operationQueue = [[NSOperationQueue alloc] init];
     [operationQueue setMaxConcurrentOperationCount:kZincRepoDefaultNetworkOperationCount];
     return [self repoWithURL:fileURL networkOperationQueue:operationQueue error:outError];
 }
@@ -140,7 +140,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
     
-    ZincRepo* repo = [[[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability] autorelease];
+    ZincRepo* repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability];
     if (![repo createDirectoriesIfNeeded:outError]) {
         return nil;
     }
@@ -148,7 +148,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
     if ([repo.fileManager fileExistsAtPath:indexPath]) {
         
-        NSData* jsonData = [[[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError] autorelease];
+        NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError];
         if (jsonData == nil) {
             return nil;
         }
@@ -190,10 +190,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     self = [super init];
     if (self) {
         self.url = fileURL;
-        self.index = [[[ZincRepoIndex alloc] init] autorelease];
+        self.index = [[ZincRepoIndex alloc] init];
         self.networkQueue = networkQueue;
-        self.internalQueue = [[[NSOperationQueue alloc] init] autorelease];
-        self.taskQueueGroup = [[[ZincOperationQueueGroup alloc] init] autorelease];
+        self.internalQueue = [[NSOperationQueue alloc] init];
+        self.taskQueueGroup = [[ZincOperationQueueGroup alloc] init];
         [self.taskQueueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
         [self.taskQueueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
@@ -201,17 +201,17 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self.taskQueueGroup setMaxConcurrentOperationCount:kZincRepoDefaultObjectDownloadCount forClass:[ZincObjectDownloadTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
-        self.fileManager = [[[NSFileManager alloc] init] autorelease];
-        self.cache = [[[NSCache alloc] init] autorelease];
+        self.fileManager = [[NSFileManager alloc] init];
+        self.cache = [[NSCache alloc] init];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
         _autoRefreshInterval = kZincRepoDefaultAutoRefreshInterval;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
         self.myTasks = [NSMutableArray array];
         self.executeTasksInBackgroundEnabled = YES;
-        self.downloadPolicy = [[[ZincDownloadPolicy alloc] init] autorelease];
+        self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
-        self.bundleManager = [[[ZincRepoBundleManager alloc] initWithZincRepo:self] autorelease];
+        self.bundleManager = [[ZincRepoBundleManager alloc] initWithZincRepo:self];
     }
     return self;
 }
@@ -227,7 +227,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     // Check for v1 -> v2 migration
     if (self.index.format == 1) {
-        ZincCleanLegacySymlinksTask* cleanSymlinksTask = [[[ZincCleanLegacySymlinksTask alloc] initWithRepo:self resourceDescriptor:[self url]] autorelease];
+        ZincCleanLegacySymlinksTask* cleanSymlinksTask = [[ZincCleanLegacySymlinksTask alloc] initWithRepo:self resourceDescriptor:[self url]];
         cleanSymlinksTask.completionBlock = ^{
             self.index.format = 2;
             [self queueIndexSaveTask];
@@ -237,7 +237,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     
     if ([initOps count] > 0) {
-        self.completeInitializationTask = [[[ZincCompleteInitializationTask alloc] initWithRepo:self resourceDescriptor:self.url] autorelease];
+        self.completeInitializationTask = [[ZincCompleteInitializationTask alloc] initWithRepo:self resourceDescriptor:self.url];
         
         for (NSOperation* initOp in initOps) {
             [self.completeInitializationTask addDependency:initOp];
@@ -268,9 +268,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self) {
         if (isInitialized) {
             // no longer need to hold onto the initialization queue or task
-            __block typeof(self) blockself = self;
+            __weak typeof(self) weakself = self;
             dispatch_async(dispatch_get_main_queue(), ^{
-                blockself.completeInitializationTask = nil;
+                __strong typeof(weakself) strongself = weakself;
+                strongself.completeInitializationTask = nil;
             });
         }
         _isInitialized = isInitialized;
@@ -298,8 +299,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                                                       object:_downloadPolicy];
     }
     
-    [_downloadPolicy release];
-    _downloadPolicy = [downloadPolicy retain];
+    _downloadPolicy = downloadPolicy;
     
     if (_downloadPolicy != nil) {
         [[NSNotificationCenter defaultCenter] addObserver:self
@@ -330,21 +330,21 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         _reachability.onReachabilityChanged = nil;
     }
     
-    [_reachability release];
-    _reachability = [reachability retain];
+    _reachability = reachability;
     
     if (_reachability != nil) {
-        __block typeof(self) blockself = self;
+        __weak typeof(self) weakself = self;
         _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-            @synchronized(blockself.myTasks) {
-                NSArray* remoteBundleUpdateTasks = [blockself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+            __strong typeof(weakself) strongself = weakself;
+            @synchronized(strongself.myTasks) {
+                NSArray* remoteBundleUpdateTasks = [weakself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                     return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
                 }]];
                 
                 [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
             }
-            [blockself refreshSourcesWithCompletion:^{
-                [blockself refreshBundlesWithCompletion:nil];
+            [weakself refreshSourcesWithCompletion:^{
+                [weakself refreshBundlesWithCompletion:nil];
             }];
         };
     }
@@ -400,15 +400,25 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) refreshWithCompletion:(dispatch_block_t)completion
 {
-    __block typeof(self) blockself = self;
-    [blockself refreshSourcesWithCompletion:^{
-        [blockself resumeBundleActions];
-        [blockself refreshBundlesWithCompletion:^{
-            [blockself checkForBundleDeletion];
+    __weak typeof(self) weakself = self;
+
+    [self refreshSourcesWithCompletion:^{
+
+        __strong typeof(weakself) strongself = weakself;
+
+        [strongself resumeBundleActions];
+
+        __weak typeof(strongself) weakself2 = strongself;
+
+        [strongself refreshBundlesWithCompletion:^{
+
+            __strong typeof(weakself2) strongself2 = weakself2;
+
+            [strongself2 checkForBundleDeletion];
+
             if (completion != nil) completion();
         }];
-    }];
-    
+    }];    
 }
 
 - (void) refresh
@@ -429,17 +439,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     self.reachability = nil;
     self.downloadPolicy = nil;
     
-    [_url release];
-    [_index release];
-    [_networkQueue release];
-    [_internalQueue release];
-    [_taskQueueGroup release];
-    [_sourcesByCatalog release];
-    [_cache release];
-    [_myTasks release];
-    [_completeInitializationTask release];
-    [_bundleManager release];
-    [super dealloc];
 }
 
 #pragma mark Notifications
@@ -636,7 +635,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     NSOperation* parentOp = nil;
     if (completion != nil) {
-        parentOp = [[[NSOperation alloc] init] autorelease];
+        parentOp = [[NSOperation alloc] init];
         parentOp.completionBlock = completion;
     }
     
@@ -700,7 +699,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (jsonDict == nil) {
         return nil;
     }
-    ZincCatalog* catalog = [[[ZincCatalog alloc] initWithDictionary:jsonDict] autorelease];
+    ZincCatalog* catalog = [[ZincCatalog alloc] initWithDictionary:jsonDict];
     return catalog;
 }
 
@@ -751,7 +750,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     
     // copy manifest to repo
     NSDictionary* manifestDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
-    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    ZincManifest* manifest = [[ZincManifest alloc] initWithDictionary:manifestDict];
     NSString* manifestRepoPath = [self pathForManifestWithBundleID:manifest.bundleID version:manifest.version];
     
     BOOL shouldCopy = NO;
@@ -782,7 +781,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (jsonDict == nil) {
         return nil;
     }
-    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:jsonDict] autorelease];
+    ZincManifest* manifest = [[ZincManifest alloc] initWithDictionary:jsonDict];
     return manifest;
 }
 
@@ -796,7 +795,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             [self.cache setObject:manifest forKey:key];
         }
     }
-    return [[manifest retain] autorelease];
+    return manifest;
 }
 
 - (NSSet*) activeBundles
@@ -946,7 +945,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     @synchronized(self.index) {
         ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleID:bundleID];
         if (trackingInfo == nil) {
-            trackingInfo = [[[ZincTrackingInfo alloc] init] autorelease];
+            trackingInfo = [[ZincTrackingInfo alloc] init];
         }
         
         if (trackingInfo.flavor != nil && ![trackingInfo.flavor isEqualToString:flavor]) {
@@ -972,7 +971,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID
 {
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
     [self updateBundleWithID:bundleID taskRef:taskRef];
     return taskRef;
 }
@@ -981,10 +980,11 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     ZincTaskRef* taskRef = nil;
     if (completion != nil) {
-        taskRef = [[[ZincTaskRef alloc] init] autorelease];
-        __block typeof(taskRef) block_taskRef = taskRef;
+        taskRef = [[ZincTaskRef alloc] init];
+        __weak typeof(taskRef) weak_taskRef = taskRef;
         taskRef.completionBlock = ^{
-            completion([block_taskRef allErrors]);
+            __strong typeof(weak_taskRef) strong_taskRef = weak_taskRef;
+            completion([strong_taskRef allErrors]);
         };
     }
     [self updateBundleWithID:bundleID taskRef:taskRef];
@@ -1083,7 +1083,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     NSOperation* parentOp = nil;
     if (completion != nil) {
-        parentOp = [[[NSOperation alloc] init] autorelease];
+        parentOp = [[NSOperation alloc] init];
         parentOp.completionBlock = completion;
     }
     
@@ -1176,7 +1176,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
     ZincTask* saveTask = [self queueIndexSaveTask];
     if (completion != nil) {
-        ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+        ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
         [taskRef addDependency:saveTask];
         taskRef.completionBlock = completion;
         [self addOperation:taskRef];
@@ -1333,7 +1333,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void)cleanWithCompletion:(dispatch_block_t)completion
 {
-    ZincTaskRef* taskRef = [[[ZincTaskRef alloc] init] autorelease];
+    ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
     ZincTask* garbageTask = [self queueGarbageCollectTask];
     [taskRef addDependency:garbageTask];
     taskRef.completionBlock = completion;
@@ -1438,12 +1438,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) logEvent:(ZincEvent*)event
 {
-    __block typeof(self) blockself = self;
+    __weak typeof(self) weakself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if ([blockself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
-            [blockself.delegate zincRepo:blockself didReceiveEvent:event];
+        __strong typeof(weakself) strongself = weakself;
+        if ([strongself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
+            [strongself.delegate zincRepo:strongself didReceiveEvent:event];
         
-        NSMutableDictionary* userInfo = [[event.attributes mutableCopy] autorelease];
+        NSMutableDictionary* userInfo = [event.attributes mutableCopy];
         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];
     }];
 }

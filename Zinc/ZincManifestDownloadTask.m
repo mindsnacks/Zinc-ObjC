@@ -33,10 +33,6 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [super dealloc];
-}
 
 - (NSString*) bundleID
 {
@@ -51,7 +47,7 @@
 - (void) main
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     
     NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
     
@@ -91,7 +87,7 @@
             continue;
         }
         
-        ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:json] autorelease];
+        ZincManifest* manifest = [[ZincManifest alloc] initWithDictionary:json];
         NSData* data = [manifest jsonRepresentation:&error];
         if (data == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];

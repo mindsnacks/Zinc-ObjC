@@ -27,7 +27,7 @@
 + (NSURL*) zincResourceForCatalogWithId:(NSString*)catalogID
 {
     NSString* path = [@"/" stringByAppendingString:catalogID];
-   return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"catalog" path:path] autorelease];
+   return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"catalog" path:path];
 }
 
 - (BOOL) isZincCatalogResource
@@ -56,7 +56,7 @@
 + (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)version
 {
     NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
-    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"manifest" path:path] autorelease];
+    return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"manifest" path:path];
 }
 
 - (BOOL) isZincManifestResource
@@ -67,7 +67,7 @@
 + (NSURL*) zincResourceForBundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
     NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
-    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"bundle" path:path] autorelease];
+    return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"bundle" path:path];
 }
 
 + (NSURL*) zincResourceForBundleDescriptor:(NSString*)bundleDescriptor
@@ -85,7 +85,7 @@
 + (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleID version:(ZincVersion)version
 {
     NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
-    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"archive" path:path] autorelease];
+    return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"archive" path:path];
 }
 
 - (BOOL) isZincArchiveResource
@@ -123,7 +123,7 @@
 + (NSURL*) zincResourceForObjectWithSHA:(NSString*)sha inCatalogID:(NSString*)catalogID
 {
     NSString* path = [NSString stringWithFormat:@"/%@/%@", catalogID, sha];
-    return [[[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"object" path:path] autorelease];
+    return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"object" path:path];
 }
 
 - (BOOL) isZincObjectResource

@@ -11,7 +11,7 @@
 #import "ZincTask.h" // TODO: remove dependency?
 
 @interface ZincTaskMonitor ()
-@property (nonatomic, retain, readwrite) ZincTaskRef* taskRef;
+@property (nonatomic, strong, readwrite) ZincTaskRef* taskRef;
 @property (nonatomic, assign, readwrite) long long currentProgressValue;
 @property (nonatomic, assign, readwrite) long long maxProgressValue;
 @property (nonatomic, assign, readwrite) float progress;
@@ -31,23 +31,20 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     self = [super init];
     if (self) {
-        _taskRef = [taskRef retain];
+        _taskRef = taskRef;
     }
     return self;
 }
 
 + (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef
 {
-    return [[[[self class] alloc] initWithTaskRef:taskRef] autorelease];
+    return [[[self class] alloc] initWithTaskRef:taskRef];
 }
 
 - (void)dealloc
 {
     [self stopMonitoring];
     
-    [_completionBlock release];
-    [_taskRef release];
-    [super dealloc];
 }
 
 - (void) monitoringDidStart

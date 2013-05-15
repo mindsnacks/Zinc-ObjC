@@ -41,7 +41,7 @@ NSString* ZincGetApplicationDocumentsDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0] retain];
+        dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         if([dir length] == 0) {
             [NSException raise:@"Documents dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
@@ -54,7 +54,7 @@ NSString* ZincGetApplicationCacheDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0] retain];
+        dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
         if([dir length] == 0) {
             [NSException raise:@"Caches dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];

@@ -12,7 +12,7 @@
 #import "ZincResource.h"
 
 @interface ZincManifest ()
-@property (nonatomic, retain) NSMutableDictionary* files;
+@property (nonatomic, strong) NSMutableDictionary* files;
 @end
 
 @implementation ZincManifest
@@ -71,18 +71,10 @@
     if (manifestDict == nil) {
         return nil;
     }
-    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    ZincManifest* manifest = [[ZincManifest alloc] initWithDictionary:manifestDict];
     return manifest;
 }
 
-- (void)dealloc
-{
-    [_catalogID release];
-    [_bundleName release];
-    [_files release];
-    [_flavors release];
-    [super dealloc];
-}
 
 - (NSString*) bundleID
 {

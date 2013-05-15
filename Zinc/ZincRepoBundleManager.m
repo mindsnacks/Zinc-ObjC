@@ -22,15 +22,9 @@
     self = [super init];
     if (self) {
         self.repo = zincRepo;
-        self.loadedBundles = [[[NSMutableDictionary alloc] init] autorelease];
+        self.loadedBundles = [[NSMutableDictionary alloc] init];
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_loadedBundles release];
-    [super dealloc];
 }
 
 - (ZincBundle*) bundleWithID:(NSString*)bundleID version:(ZincVersion)version
@@ -57,12 +51,11 @@
         bundle = [(self.loadedBundles)[res] pointerValue];
 
         if (bundle == nil) {
-            bundle = [[[ZincBundle alloc] initWithRepoBundleManager:self bundleID:bundleID version:version bundleURL:[NSURL fileURLWithPath:path]] autorelease];
+            bundle = [[ZincBundle alloc] initWithRepoBundleManager:self bundleID:bundleID version:version bundleURL:[NSURL fileURLWithPath:path]];
             if (bundle == nil) return nil;
 
-            (self.loadedBundles)[res] = [NSValue valueWithPointer:bundle];
+            (self.loadedBundles)[res] = [NSValue valueWithPointer:(__bridge const void *)(bundle)];
         }
-        [[bundle retain] autorelease];
     }
     return bundle;
 }
@@ -83,7 +76,6 @@
     
     return activeBundles;
 }
-
 
 - (void) bundleWillDeallocate:(ZincBundle*)bundle
 {

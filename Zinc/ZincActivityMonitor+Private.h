@@ -25,7 +25,7 @@
 
 - (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor;
 
-@property (nonatomic, readwrite, retain) ZincTask* task;
+@property (nonatomic, readwrite, strong) ZincTask* task;
 @property (nonatomic, assign, readwrite) long long currentProgressValue;
 @property (nonatomic, assign, readwrite) long long maxProgressValue;
 @property (nonatomic, assign, readwrite) float progress;
