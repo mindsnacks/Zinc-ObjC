@@ -17,9 +17,9 @@
 #import "ZincTaskActions.h"
 
 @interface ZincRepoMonitor ()
-@property (nonatomic, readwrite, retain) ZincRepo* repo;
-@property (nonatomic, readwrite, retain) NSPredicate* taskPredicate;
-@property (nonatomic, retain) NSMutableArray* myItems;
+@property (nonatomic, readwrite, strong) ZincRepo* repo;
+@property (nonatomic, readwrite, strong) NSPredicate* taskPredicate;
+@property (nonatomic, strong) NSMutableArray* myItems;
 @end
 
 
@@ -33,20 +33,13 @@
 {
     self = [super init];
     if (self) {
-        _repo = [repo retain];
-        _taskPredicate = [taskPredicate retain];
+        _repo = repo;
+        _taskPredicate = taskPredicate;
         _myItems = [[NSMutableArray alloc] initWithCapacity:20];
     }
     return self;
 }
 
-- (void)dealloc
-{
-    [_myItems release];
-    [_repo release];
-    [_taskPredicate release];
-    [super dealloc];
-}
 
 + (ZincRepoMonitor*) repoMonitorForBundleCloneTasksInRepo:(ZincRepo*)repo
 {
@@ -64,7 +57,7 @@
                              return YES;
                          }];
     
-    return [[[self alloc] initWithRepo:repo taskPredicate:pred] autorelease];
+    return [[self alloc] initWithRepo:repo taskPredicate:pred];
 }
 
 - (NSArray*) items
@@ -84,7 +77,7 @@
         NSArray* tasks = self.repo.tasks;
         for (ZincTask* task in tasks) {
             if ([self.taskPredicate evaluateWithObject:task]) {
-                ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
+                ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self];
                 item.task = task;
                 [self.myItems addObject:item];
             }
@@ -119,7 +112,7 @@
 - (void) addTask:(ZincTask*)task
 {
     @synchronized(self.myItems) {
-        ZincActivityItem* item = [[[ZincActivityItem alloc] initWithActivityMonitor:self] autorelease];
+        ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self];
         item.task = task;
         [self.myItems addObject:item];
     }

@@ -36,9 +36,9 @@ extern NSString* const ZincActivityMonitorRefreshedNotification;
 
 @interface ZincActivityItem : NSObject <ZincObservableProgress>
 
-@property (nonatomic, readonly, assign) ZincActivityMonitor* monitor;
+@property (nonatomic, readonly, weak) ZincActivityMonitor* monitor;
 
-@property (nonatomic, readonly, retain) ZincTask* task;
+@property (nonatomic, readonly, strong) ZincTask* task;
 
 - (BOOL) isFinished;
 

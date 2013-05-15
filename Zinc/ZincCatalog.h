@@ -13,9 +13,9 @@
 
 - (id) init;
 
-@property (nonatomic, retain) NSString* identifier;
+@property (nonatomic, strong, readonly) NSString* identifier;
 @property (nonatomic, assign) ZincFormat format;
-@property (nonatomic, retain) NSDictionary* bundleInfoById;
+@property (nonatomic, strong, readonly) NSDictionary* bundleInfoById;
 
 #pragma mark -
 - (ZincVersion) versionForBundleID:(NSString*)bundleName distribution:(NSString*)distro;

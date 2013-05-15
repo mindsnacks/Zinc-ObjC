@@ -14,7 +14,7 @@
 #import "ZincRepo.h"
 
 @interface ZincDownloadTask()
-@property (nonatomic, retain, readwrite) id context;
+@property (nonatomic, strong, readwrite) id context;
 @property (atomic, readwrite) BOOL trackingProgress;
 @end
 
@@ -30,7 +30,7 @@
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    AFHTTPRequestOperation* requestOp = [[[AFHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    AFHTTPRequestOperation* requestOp = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
@@ -58,10 +58,12 @@
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
-    __block typeof(self) blockself = self;
+    __weak typeof(self) weakself = self;
     
     [self.httpRequestOperation setDownloadProgressBlock:^(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-        
+
+        __weak typeof(weakself) strongself = weakself;
+
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
@@ -70,7 +72,7 @@
         if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [blockself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [strongself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
 }
@@ -96,9 +98,6 @@
 - (void)dealloc
 {
     [self.httpRequestOperation waitUntilFinished];
-    [_httpRequestOperation release];
-    [_context release];
-    [super dealloc];
 }
 
 @end

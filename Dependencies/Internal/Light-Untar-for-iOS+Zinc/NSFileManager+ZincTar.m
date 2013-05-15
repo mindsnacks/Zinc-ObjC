@@ -210,7 +210,7 @@
         
         int fd = open([path fileSystemRepresentation], O_CREAT|O_WRONLY, S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
         if (fd > 0) {
-            NSFileHandle *destinationFile = [[[NSFileHandle alloc] initWithFileDescriptor:fd] autorelease];
+            NSFileHandle *destinationFile = [[NSFileHandle alloc] initWithFileDescriptor:fd];
             [object seekToFileOffset:range.location];
             
             int maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;

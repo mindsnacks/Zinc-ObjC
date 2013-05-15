@@ -16,9 +16,9 @@
 #import "ZincGzip.h"
 
 @interface ZincArchiveExtractOperation ()
-@property (nonatomic, assign, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSString* archivePath;
-@property (nonatomic, retain, readwrite) NSError* error;
+@property (nonatomic, weak, readwrite) ZincRepo* repo;
+@property (nonatomic, copy, readwrite) NSString* archivePath;
+@property (nonatomic, copy, readwrite) NSError* error;
 @end
 
 @implementation ZincArchiveExtractOperation
@@ -37,17 +37,11 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [_archivePath release];
-    [_error release];
-    [super dealloc];
-}
 
 - (void) main
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     NSString* untarDir = [ZincGetUniqueTemporaryDirectory() stringByAppendingPathComponent:
                           [[self.archivePath lastPathComponent] stringByDeletingPathExtension]];

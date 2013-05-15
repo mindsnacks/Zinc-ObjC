@@ -12,6 +12,11 @@
 
 @implementation ZincFunctionalTestCase
 
+- (void)tearDown
+{
+    self.zincRepo = nil;
+}
+
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {
     NSLog(@"%@", event);
@@ -33,8 +38,7 @@
 - (void)setupZincRepo
 {
     NSString *repoDir = ZincGetUniqueTemporaryDirectory();
-    [self setupZincRepoWithRootDir:repoDir];
-    
+    [self setupZincRepoWithRootDir:repoDir];    
 }
 
 

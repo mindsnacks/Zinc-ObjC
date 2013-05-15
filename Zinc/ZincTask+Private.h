@@ -27,7 +27,7 @@
 
 - (void) addEvent:(ZincEvent*)event;
 
-@property (readwrite, retain) NSString* title;
+@property (readwrite, copy) NSString* title;
 
 @property (assign) BOOL finishedSuccessfully;
 

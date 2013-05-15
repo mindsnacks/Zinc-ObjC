@@ -80,15 +80,15 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 + (NSString*) name;
 
 @property (nonatomic, assign, readonly) ZincEventType type;
-@property (nonatomic, retain, readonly) NSDate* timestamp;
-@property (nonatomic, retain, readonly) NSDictionary* attributes;
+@property (nonatomic, copy, readonly) NSDate* timestamp;
+@property (nonatomic, copy, readonly) NSDictionary* attributes;
 
 @end
 
 @interface ZincErrorEvent : ZincEvent
 
 - (id) initWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
-@property (nonatomic, retain, readonly) NSError* error;
+@property (nonatomic, strong, readonly) NSError* error;
 
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source;
 + (id) eventWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;

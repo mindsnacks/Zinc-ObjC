@@ -41,8 +41,8 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @interface ZincRepo : NSObject
 
-@property (nonatomic, assign) id<ZincRepoDelegate> delegate;
-@property (nonatomic, retain, readonly) NSURL* url;
+@property (nonatomic, weak) id<ZincRepoDelegate> delegate;
+@property (nonatomic, strong, readonly) NSURL* url;
 
 // !!!: Note all repos start suspended. After obtaining a repo object,
 // you must all [repo resumeAllTasks]
@@ -167,7 +167,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 /**
  */
-@property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
+@property (nonatomic, strong, readonly) ZincDownloadPolicy* downloadPolicy;
 
 - (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 

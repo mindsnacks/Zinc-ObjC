@@ -32,10 +32,6 @@
 @synthesize bytesRead = _bytesRead;
 @synthesize totalBytesToRead = _totalBytesToRead;
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 - (NSString*) sha
 {
@@ -46,7 +42,7 @@
 {
     NSError* error = nil;
     BOOL gz = NO;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     // don't need to donwload if the file already exists
     if ([self.repo hasFileWithSHA:self.sha])
@@ -101,7 +97,7 @@
         }
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
-        NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
+        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
         [self queueOperationForRequest:request outputStream:outStream context:nil];
         
         [self.httpRequestOperation waitUntilFinished];
@@ -117,7 +113,7 @@
         NSString* targetPath = [self.repo pathForFileWithSHA:self.sha];
         
         if (gz) {
-            NSData* compressed = [[[NSData alloc] initWithContentsOfFile:downloadPath] autorelease];
+            NSData* compressed = [[NSData alloc] initWithContentsOfFile:downloadPath];
             NSData* uncompressed = [compressed zinc_gzipInflate];
             if (![uncompressed writeToFile:uncompressedPath options:0 error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];

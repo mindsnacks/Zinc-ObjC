@@ -21,10 +21,6 @@
 
 @implementation ZincArchiveDownloadTask
 
-- (void)dealloc
-{
-    [super dealloc];
-}
 
 - (NSString*) bundleID
 {
@@ -41,7 +37,7 @@
     NSString* flavor = self.input;
     
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
     NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
@@ -64,7 +60,7 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
-        NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
+        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
         [self queueOperationForRequest:request outputStream:outStream context:self.bundleID];
         
         [self.httpRequestOperation waitUntilFinished];
@@ -79,7 +75,7 @@
         
         [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
-        ZincArchiveExtractOperation* extractOp = [[[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath] autorelease];
+        ZincArchiveExtractOperation* extractOp = [[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath];
         [self queueChildOperation:extractOp];
         
         [extractOp waitUntilFinished];
