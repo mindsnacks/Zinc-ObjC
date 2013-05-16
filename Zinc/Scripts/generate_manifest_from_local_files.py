@@ -18,7 +18,7 @@ def main():
     parser.add_argument('-d', '--dest', dest='dest',
             help='destination directory', default='.')
     parser.add_argument('-c', '--catalog', dest='catalog_id',
-            help='bundle ID (if different from directory name)')
+            help='catalog ID (if different from directory name)')
     parser.add_argument('-x', '--xcode', dest='xcode_mode', action='store_true',
             help='Use environment variables from Xcode. Overrides other \
             settings', default=False)
