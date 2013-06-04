@@ -88,38 +88,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability;
-
-- (void) restartRefreshTimer;
-- (void) stopRefreshTimer;
-
-- (BOOL) createDirectoriesIfNeeded:(NSError**)outError;
-- (NSString*) catalogsPath;
-- (NSString*) manifestsPath;
-- (NSString*) filesPath;
-- (NSString*) bundlesPath;
-- (NSString*) downloadsPath;
-
-- (ZincTask*) queueIndexSaveTask;
-- (ZincTask*) queueGarbageCollectTask;
-- (void) resumeBundleActions;
-
-- (NSString*) cacheKeyForCatalogID:(NSString*)identifier;
-- (NSString*) cacheKeyManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version;
-- (NSString*) cacheKeyForBundleID:(NSString*)identifier version:(ZincVersion)version;
-
-- (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
-- (NSArray*) sourcesForCatalogID:(NSString*)catalogID;
-
-- (ZincCatalog*) catalogWithIdentifier:(NSString*)source error:(NSError**)outError;
-
-- (void) checkForBundleDeletion;
-- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
-
-- (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
-
-
 @end
 
 
