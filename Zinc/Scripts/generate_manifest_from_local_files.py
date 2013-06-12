@@ -17,6 +17,8 @@ def main():
             nargs='*', help='')
     parser.add_argument('-d', '--dest', dest='dest',
             help='destination directory', default='.')
+    parser.add_argument('-c', '--catalog', dest='catalog_id',
+            help='catalog ID (if different from directory name)')
     parser.add_argument('-x', '--xcode', dest='xcode_mode', action='store_true',
             help='Use environment variables from Xcode. Overrides other \
             settings', default=False)
@@ -33,11 +35,14 @@ def main():
         src_dirs = args.src_dirs
         dest = args.dest
 
+    catalog_id = args.catalog_id
+
     for src_dir in src_dirs:
         src_dir = os.path.realpath(src_dir)
         bundle_catalog_id = os.path.split(src_dir)[-1]
         bundle_id = bundle_catalog_id.split('.')[-1]
-        catalog_id = bundle_catalog_id[:-len(bundle_id)-1]
+        if catalog_id is None:
+            catalog_id = bundle_catalog_id[:-len(bundle_id)-1]
         print catalog_id, bundle_id
         manifest = ZincManifest(catalog_id, bundle_id, 0)
 
