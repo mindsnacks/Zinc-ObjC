@@ -252,47 +252,48 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 }
 
-//QQQ
-//- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
-//{
-//    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
-//    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
-//    
-//    @synchronized(self.myTasks) {
-//        NSArray* tasks = [self.taskManager tasksForBundleID:bundleID];
-//        for (ZincTask* task in tasks) {
-//            [task setQueuePriority:priority];
-//        }
-//    }
-//}
-//
-//- (void) setReachability:(KSReachability*)reachability
-//{
-//    if (_reachability == reachability) return;
-//    
-//    if (_reachability != nil) {
-//        _reachability.onReachabilityChanged = nil;
-//    }
-//    
-//    _reachability = reachability;
-//    
-//    if (_reachability != nil) {
-//        __weak typeof(self) weakself = self;
-//        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-//            __strong typeof(weakself) strongself = weakself;
-//            @synchronized(strongself.myTasks) {
-//                NSArray* remoteBundleUpdateTasks = [weakself.myTasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-//                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-//                }]];
-//                
-//                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-//            }
-//            [weakself refreshSourcesWithCompletion:^{
-//                [weakself refreshBundlesWithCompletion:nil];
-//            }];
-//        };
-//    }
-//}
+- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
+{
+    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
+    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
+    
+    @synchronized(self.taskManager.tasks) {
+        NSArray* tasks = [self.taskManager tasksForBundleID:bundleID];
+        for (ZincTask* task in tasks) {
+            [task setQueuePriority:priority];
+        }
+    }
+}
+
+- (void) setReachability:(KSReachability*)reachability
+{
+    if (_reachability == reachability) return;
+    
+    if (_reachability != nil) {
+        _reachability.onReachabilityChanged = nil;
+    }
+    
+    _reachability = reachability;
+    
+    if (_reachability != nil) {
+
+        __weak typeof(self) weakself = self;
+        
+        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
+
+            __strong typeof(weakself) strongself = weakself;
+            
+            @synchronized(strongself.taskManager.tasks) {
+                NSArray* remoteBundleUpdateTasks = [strongself.taskManager.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
+                }]];
+                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
+            }
+            
+            [strongself refreshWithCompletion:nil];
+        };
+    }
+}
 
 - (void) restartRefreshTimer
 {
