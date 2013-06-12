@@ -121,9 +121,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         repo.index = index;
     }
 
-    // QQQ
-//    [repo.taskQueueGroup setSuspended:YES];
-    
     if (![repo queueInitializationTasks]) {
         repo.isInitialized = YES;
     }
@@ -222,21 +219,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     [[self taskRefForInitialization] waitUntilFinished];
 }
-
-//- (void) setIsInitialized:(BOOL)isInitialized
-//{
-//    @synchronized(self) {
-//        if (isInitialized) {
-//            // no longer need to hold onto the initialization queue or task
-//            __weak typeof(self) weakself = self;
-//            dispatch_async(dispatch_get_main_queue(), ^{
-//                __strong typeof(weakself) strongself = weakself;
-//                strongself.completeInitializationTask = nil;
-//            });
-//        }
-//        _isInitialized = isInitialized;
-//    }
-//}
 
 - (void) completeInitialization
 {
