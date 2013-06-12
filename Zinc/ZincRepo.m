@@ -154,6 +154,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
         self.bundleManager = [[ZincRepoBundleManager alloc] initWithZincRepo:self];
+        self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
     }
     return self;
 }
