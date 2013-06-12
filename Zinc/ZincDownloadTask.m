@@ -13,7 +13,7 @@
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
 
-// QQQ
+// TODO: break this dependency?
 #import "ZincRepo+Private.h"
 
 @interface ZincDownloadTask()
@@ -39,7 +39,7 @@
         requestOp.outputStream = outputStream;
     }
     
-    if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // QQQ
+    if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // TODO: break this dependency?
         [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     }
     
