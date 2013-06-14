@@ -129,7 +129,7 @@ typedef id ZincBackgroundTaskIdentifier;
     @synchronized(self) {
         // synchronizing on self here because there is a slight race condition. The task is created
         // and queued before it is added to myChildOperations.
-        task = [self.repo queueTaskForDescriptor:taskDescriptor input:input parent:self dependencies:nil];
+        task = [self.repo.taskManager queueTaskForDescriptor:taskDescriptor input:input parent:self dependencies:nil];
         [self addChildOperation:task];
     }
 
@@ -141,7 +141,7 @@ typedef id ZincBackgroundTaskIdentifier;
     if (self.isCancelled) return;
     
     [self addChildOperation:operation];
-    [self.repo addOperation:operation];
+    [self.repo.taskManager addOperation:operation];
 }
 
 - (NSArray*) childOperations

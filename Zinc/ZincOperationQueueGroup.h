@@ -10,6 +10,11 @@
 
 @interface ZincOperationQueueGroup : NSObject
 
+/** @discussion Designated initializer.
+    @note all ZincOperationQueueGroups start suspended.
+ */
+- (id)init;
+
 - (void) setMaxConcurrentOperationCount:(NSInteger)cnt forClass:(Class)theClass;
 - (void) setIsBarrierOperationForClass:(Class)theClass;
 

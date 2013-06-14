@@ -16,7 +16,7 @@
 
 - (id) initWithZincRepo:(ZincRepo*)zincRepo;
 
-@property (nonatomic, assign) ZincRepo* repo;
+@property (nonatomic, weak) ZincRepo* repo;
 
 #pragma mark Internal
 

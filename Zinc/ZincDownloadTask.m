@@ -13,6 +13,9 @@
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
 
+// TODO: break this dependency?
+#import "ZincRepo+Private.h"
+
 @interface ZincDownloadTask()
 @property (nonatomic, strong, readwrite) id context;
 @property (atomic, readwrite) BOOL trackingProgress;
@@ -36,7 +39,7 @@
         requestOp.outputStream = outputStream;
     }
     
-    if (self.repo.executeTasksInBackgroundEnabled) {
+    if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // TODO: break this dependency?
         [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     }
     

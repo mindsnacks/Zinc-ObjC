@@ -77,10 +77,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority;
 
-/**
- @discussion default is YES
- */
-@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
 
 
 #pragma mark -
