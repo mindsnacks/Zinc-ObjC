@@ -47,7 +47,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincSourceUpdateTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincArchiveExtractOperation class]];
 
-
         self.tasks = [NSMutableArray array];
         self.executeTasksInBackgroundEnabled = YES;
     }
@@ -250,6 +249,30 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
+- (ZincCompleteInitializationTask*) getCompleteInitializationTask
+{
+    for (NSOperationQueue* op in [self.internalQueue operations]) {
+        if ([op isKindOfClass:[ZincCompleteInitializationTask class]]) {
+            return (ZincCompleteInitializationTask*)op;
+        }
+    }
+    return nil;
+}
+
+- (ZincTaskRef*) taskRefForInitialization
+{
+    @synchronized(self) {
+
+        ZincCompleteInitializationTask* completeInitializationTask = [self getCompleteInitializationTask];
+        if (completeInitializationTask == nil) {
+        return nil;
+        }
+
+        ZincTaskRef* taskRef = [ZincTaskRef taskRefForTask:completeInitializationTask];
+        [self addOperation:taskRef];
+        return taskRef;
+    }
+}
 
 #pragma mark KVO
 

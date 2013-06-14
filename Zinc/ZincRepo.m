@@ -192,27 +192,16 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return completeInitializationTask != nil;
 }
 
-- (ZincCompleteInitializationTask*) getCompleteInitializationTask
-{
-    @synchronized(self.taskManager.tasks) {
-
-        for (ZincTask* task in self.taskManager.tasks) {
-            if ([task isKindOfClass:[ZincCompleteInitializationTask class]]) {
-                return (ZincCompleteInitializationTask*)task;
-            }
-        }
-    }
-    return nil;
-}
 
 - (ZincTaskRef*) taskRefForInitialization
 {
     @synchronized(self) {
-        ZincCompleteInitializationTask* completeInitializationTask = [self getCompleteInitializationTask];
-        if (self.isInitialized || completeInitializationTask == nil) return nil;
-        ZincTaskRef* taskRef = [ZincTaskRef taskRefForTask:completeInitializationTask];
-        [self.taskManager addOperation:taskRef];
-        return taskRef;
+
+        if (self.isInitialized) {
+            return nil;
+        }
+
+        return [self.taskManager taskRefForInitialization];
     }
 }
 
@@ -274,7 +263,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
     
     _reachability = reachability;
-    
+        
     if (_reachability != nil) {
 
         __weak typeof(self) weakself = self;

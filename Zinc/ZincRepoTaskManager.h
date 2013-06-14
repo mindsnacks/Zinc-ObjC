@@ -11,6 +11,7 @@
 @class ZincRepo;
 @class ZincTask;
 @class ZincTaskDescriptor;
+@class ZincTaskRef;
 
 @interface ZincRepoTaskManager : NSObject
 
@@ -18,12 +19,22 @@
 
 @property (nonatomic, weak) ZincRepo* repo;
 
-@property (atomic, readonly, strong) NSMutableArray* tasks;
+
+#pragma mark Task Control
 
 - (void) suspendAllTasks;
 - (void) suspendAllTasksAndWaitExecutingTasksToComplete;
 - (void) resumeAllTasks;
 - (BOOL) isSuspended;
+
+#pragma mark Tasks
+
+@property (atomic, readonly, strong) NSMutableArray* tasks;
+
+- (NSArray*) tasksForBundleID:(NSString*)bundleID;
+
+
+#pragma mark -
 
 /**
 
@@ -49,5 +60,9 @@
  @discussion default is YES
  */
 @property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+
+#pragma mark Initialization;
+
+- (ZincTaskRef*) taskRefForInitialization;
 
 @end
