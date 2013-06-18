@@ -77,7 +77,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 @property (nonatomic, strong) NSMutableDictionary* sourcesByCatalog;
 @property (nonatomic, strong) NSOperationQueue* networkQueue;
 @property (nonatomic, strong) ZincOperationQueueGroup* taskQueueGroup;
-@property (nonatomic, strong) NSTimer* refreshTimer;
+@property (nonatomic, weak) NSTimer* refreshTimer;
 @property (nonatomic, strong) NSCache* cache;
 @property (nonatomic, strong) NSMutableArray* myTasks;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
@@ -325,11 +325,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self stopRefreshTimer];
 
         if (self.autoRefreshInterval > 0) {
-            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
-                                                                 target:self
-                                                               selector:@selector(refreshTimerFired:)
-                                                               userInfo:nil
-                                                                repeats:YES];
+            self.refreshTimer = [NSTimer timerWithTimeInterval:self.autoRefreshInterval
+                                                        target:self
+                                                      selector:@selector(refreshTimerFired:)
+                                                      userInfo:nil
+                                                       repeats:YES];
+            [[NSRunLoop mainRunLoop] addTimer:self.refreshTimer forMode:NSRunLoopCommonModes];
             [self.refreshTimer fire];
         }
     }
@@ -339,7 +340,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     @synchronized(self)
     {
-        [self.refreshTimer invalidate];
+        [self.refreshTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
         self.refreshTimer = nil;
     }
 }
@@ -1003,6 +1004,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 [taskRef addDependency:task];
                 [self addOperation:taskRef];
             }
+        } else {
+            taskRef.completionBlock();
         }
     }
     
