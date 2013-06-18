@@ -1004,8 +1004,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
                 [taskRef addDependency:task];
                 [self addOperation:taskRef];
             }
-        } else {
-            taskRef.completionBlock();
         }
     }
     
