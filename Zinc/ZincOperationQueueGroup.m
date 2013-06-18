@@ -74,6 +74,7 @@
     if (self) {
         self.infoByClassName = [NSMutableDictionary dictionary];
         self.defaultQueue = [[NSOperationQueue alloc] init];
+        [self setSuspended:YES];
     }
     return self;
 }

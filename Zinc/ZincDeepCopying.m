@@ -72,7 +72,7 @@
 
 @implementation NSSet (ZincDeepCopying)
 
-- (NSArray*) zinc_deepCopy
+- (NSSet*) zinc_deepCopy
 {
     NSMutableSet* set = [NSMutableSet setWithCapacity:[self count]];
     for (id obj in self) {
