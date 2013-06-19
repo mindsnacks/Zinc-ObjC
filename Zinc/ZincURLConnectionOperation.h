@@ -1,4 +1,4 @@
-// AFURLConnectionOperation.h
+// ZincURLConnectionOperation.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -25,17 +25,17 @@
 #import <Availability.h>
 
 /**
- `AFURLConnectionOperation` is a subclass of `NSOperation` that implements `NSURLConnection` delegate methods.
+ `ZincURLConnectionOperation` is a subclass of `NSOperation` that implements `NSURLConnection` delegate methods.
 
  ## Subclassing Notes
 
  This is the base class of all network request operations. You may wish to create your own subclass in order to implement additional `NSURLConnection` delegate methods (see "`NSURLConnection` Delegate Methods" below), or to provide additional properties and/or class constructors.
 
- If you are creating a subclass that communicates over the HTTP or HTTPS protocols, you may want to consider subclassing `AFHTTPRequestOperation` instead, as it supports specifying acceptable content types or status codes.
+ If you are creating a subclass that communicates over the HTTP or HTTPS protocols, you may want to consider subclassing `ZincHTTPRequestOperation` instead, as it supports specifying acceptable content types or status codes.
 
  ## NSURLConnection Delegate Methods
 
- `AFURLConnectionOperation` implements the following `NSURLConnection` delegate methods:
+ `ZincURLConnectionOperation` implements the following `NSURLConnection` delegate methods:
 
  - `connection:didReceiveResponse:`
  - `connection:didReceiveData:`
@@ -46,7 +46,7 @@
  - `connectionShouldUseCredentialStorage:`
  - `connection:needNewBodyStream:`
  
- When _AFNETWORKING_PIN_SSL_CERTIFICATES_ is defined, the following authentication delegate method is implemented:
+ When _ZINCNETWORKING_PIN_SSL_CERTIFICATES_ is defined, the following authentication delegate method is implemented:
  
  - `connection:willSendRequestForAuthenticationChallenge:`
  
@@ -59,13 +59,13 @@
 
  ## Class Constructors
 
- Class constructors, or methods that return an unowned instance, are the preferred way for subclasses to encapsulate any particular logic for handling the setup or parsing of response data. For instance, `AFJSONRequestOperation` provides `JSONRequestOperationWithRequest:success:failure:`, which takes block arguments, whose parameter on for a successful request is the JSON object initialized from the `response data`.
+ Class constructors, or methods that return an unowned instance, are the preferred way for subclasses to encapsulate any particular logic for handling the setup or parsing of response data.
 
  ## Callbacks and Completion Blocks
 
- The built-in `completionBlock` provided by `NSOperation` allows for custom behavior to be executed after the request finishes. It is a common pattern for class constructors in subclasses to take callback block parameters, and execute them conditionally in the body of its `completionBlock`. Make sure to handle cancelled operations appropriately when setting a `completionBlock` (i.e. returning early before parsing response data). See the implementation of any of the `AFHTTPRequestOperation` subclasses for an example of this.
+ The built-in `completionBlock` provided by `NSOperation` allows for custom behavior to be executed after the request finishes. It is a common pattern for class constructors in subclasses to take callback block parameters, and execute them conditionally in the body of its `completionBlock`. Make sure to handle cancelled operations appropriately when setting a `completionBlock` (i.e. returning early before parsing response data). See the implementation of any of the `ZincHTTPRequestOperation` subclasses for an example of this.
 
- Subclasses are strongly discouraged from overriding `setCompletionBlock:`, as `AFURLConnectionOperation`'s implementation includes a workaround to mitigate retain cycles, and what Apple rather ominously refers to as ["The Deallocation Problem"](http://developer.apple.com/library/ios/#technotes/tn2109/).
+ Subclasses are strongly discouraged from overriding `setCompletionBlock:`, as `ZincURLConnectionOperation`'s implementation includes a workaround to mitigate retain cycles, and what Apple rather ominously refers to as ["The Deallocation Problem"](http://developer.apple.com/library/ios/#technotes/tn2109/).
  
  ## SSL Pinning
  
@@ -73,11 +73,11 @@
  
  SSL with certificate pinning is strongly recommended for any application that transmits sensitive information to an external webservice.
 
- When `_AFNETWORKING_PIN_SSL_CERTIFICATES_` is defined and the Security framework is linked, connections will be validated on all matching certificates with a `.cer` extension in the bundle root.
+ When `_ZINCNETWORKING_PIN_SSL_CERTIFICATES_` is defined and the Security framework is linked, connections will be validated on all matching certificates with a `.cer` extension in the bundle root.
 
  ## NSCoding & NSCopying Conformance
 
- `AFURLConnectionOperation` conforms to the `NSCoding` and `NSCopying` protocols, allowing operations to be archived to disk, and copied in memory, respectively. However, because of the intrinsic limitations of capturing the exact state of an operation at a particular moment, there are some important caveats to keep in mind:
+ `ZincURLConnectionOperation` conforms to the `NSCoding` and `NSCopying` protocols, allowing operations to be archived to disk, and copied in memory, respectively. However, because of the intrinsic limitations of capturing the exact state of an operation at a particular moment, there are some important caveats to keep in mind:
 
  ### NSCoding Caveats
 
@@ -91,12 +91,12 @@
  - Operation copies do not include `completionBlock`. `completionBlock` often strongly captures a reference to `self`, which would otherwise have the unintuitive side-effect of pointing to the _original_ operation when copied.
  */
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 typedef enum {
-    AFSSLPinningModeNone,
-    AFSSLPinningModePublicKey,
-    AFSSLPinningModeCertificate,
-} AFURLConnectionOperationSSLPinningMode;
+    ZincSSLPinningModeNone,
+    ZincSSLPinningModePublicKey,
+    ZincSSLPinningModeCertificate,
+} ZincURLConnectionOperationSSLPinningMode;
 #endif
 
 @interface ZincURLConnectionOperation : NSOperation <NSURLConnectionDelegate,
@@ -137,7 +137,7 @@ NSCoding, NSCopying>
 /**
  Whether the connection should accept an invalid SSL certificate.
  
- If `_AFNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_` is set, this property defaults to `YES` for backwards compatibility. Otherwise, this property defaults to `NO`.
+ If `_ZINCNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_` is set, this property defaults to `YES` for backwards compatibility. Otherwise, this property defaults to `NO`.
  */
 @property (nonatomic, assign) BOOL allowsInvalidSSLCertificate;
 
@@ -181,12 +181,12 @@ NSCoding, NSCopying>
 @property (nonatomic, strong) NSURLCredential *credential;
 
 /**
- The pinning mode which will be used for SSL connections. `AFSSLPinningModePublicKey` by default.
+ The pinning mode which will be used for SSL connections. `ZincSSLPinningModePublicKey` by default.
  
- To enable SSL Pinning, `#define _AFNETWORKING_PIN_SSL_CERTIFICATES_` in `Prefix.pch`. Also, make sure that the Security framework is linked with the binary. See the "SSL Pinning" section in the `AFURLConnectionOperation`" header for more information.
+ To enable SSL Pinning, `#define _ZINCNETWORKING_PIN_SSL_CERTIFICATES_` in `Prefix.pch`. Also, make sure that the Security framework is linked with the binary. See the "SSL Pinning" section in the `ZincURLConnectionOperation`" header for more information.
  */
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
-@property (nonatomic, assign) AFURLConnectionOperationSSLPinningMode SSLPinningMode;
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
+@property (nonatomic, assign) ZincURLConnectionOperationSSLPinningMode SSLPinningMode;
 #endif
 
 ///------------------------
@@ -217,7 +217,7 @@ NSCoding, NSCopying>
 @property (nonatomic, strong) NSDictionary *userInfo;
 
 ///------------------------------------------------------
-/// @name Initializing an AFURLConnectionOperation Object
+/// @name Initializing an ZincURLConnectionOperation Object
 ///------------------------------------------------------
 
 /**
@@ -250,7 +250,7 @@ NSCoding, NSCopying>
 /**
  Resumes the execution of the paused request operation.
 
- Pause/Resume behavior varies depending on the underlying implementation for the operation class. In its base implementation, resuming a paused requests restarts the original request. However, since HTTP defines a specification for how to request a specific content range, `AFHTTPRequestOperation` will resume downloading the request from where it left off, instead of restarting the original request.
+ Pause/Resume behavior varies depending on the underlying implementation for the operation class. In its base implementation, resuming a paused requests restarts the original request. However, since HTTP defines a specification for how to request a specific content range, `ZincHTTPRequestOperation` will resume downloading the request from where it left off, instead of restarting the original request.
  */
 - (void)resume;
 
@@ -289,7 +289,7 @@ NSCoding, NSCopying>
 /// @name Setting NSURLConnection Delegate Callbacks
 ///-------------------------------------------------
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 /**
  Sets a block to be executed when the connection will authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequestForAuthenticationChallenge:`.
  
@@ -345,52 +345,52 @@ NSCoding, NSCopying>
 /**
  ## SSL Pinning Options
 
- The following constants are provided by `AFURLConnectionOperation` as possible SSL Pinning options.
+ The following constants are provided by `ZincURLConnectionOperation` as possible SSL Pinning options.
 
  enum {
- AFSSLPinningModeNone,
- AFSSLPinningModePublicKey,
- AFSSLPinningModeCertificate,
+ ZincSSLPinningModeNone,
+ ZincSSLPinningModePublicKey,
+ ZincSSLPinningModeCertificate,
  }
  
- `AFSSLPinningModeNone`
+ `ZincSSLPinningModeNone`
  Do not pin SSL connections
 
- `AFSSLPinningModePublicKey`
+ `ZincSSLPinningModePublicKey`
  Pin SSL connections to certificate public key (SPKI).
 
- `AFSSLPinningModeCertificate`
+ `ZincSSLPinningModeCertificate`
  Pin SSL connections to exact certificate. This may cause problems when your certificate expires and needs re-issuance.
 
  ## User info dictionary keys
 
  These keys may exist in the user info dictionary, in addition to those defined for NSError.
 
- - `NSString * const AFNetworkingOperationFailingURLRequestErrorKey`
- - `NSString * const AFNetworkingOperationFailingURLResponseErrorKey`
+ - `NSString * const ZincNetworkingOperationFailingURLRequestErrorKey`
+ - `NSString * const ZincNetworkingOperationFailingURLResponseErrorKey`
 
  ### Constants
 
- `AFNetworkingOperationFailingURLRequestErrorKey`
- The corresponding value is an `NSURLRequest` containing the request of the operation associated with an error. This key is only present in the `AFNetworkingErrorDomain`.
+ `ZincNetworkingOperationFailingURLRequestErrorKey`
+ The corresponding value is an `NSURLRequest` containing the request of the operation associated with an error. This key is only present in the `ZincNetworkingErrorDomain`.
 
- `AFNetworkingOperationFailingURLResponseErrorKey`
- The corresponding value is an `NSURLResponse` containing the response of the operation associated with an error. This key is only present in the `AFNetworkingErrorDomain`.
+ `ZincNetworkingOperationFailingURLResponseErrorKey`
+ The corresponding value is an `NSURLResponse` containing the response of the operation associated with an error. This key is only present in the `ZincNetworkingErrorDomain`.
 
  ## Error Domains
 
  The following error domain is predefined.
 
- - `NSString * const AFNetworkingErrorDomain`
+ - `NSString * const ZincNetworkingErrorDomain`
 
  ### Constants
 
- `AFNetworkingErrorDomain`
- AFNetworking errors. Error codes for `AFNetworkingErrorDomain` correspond to codes in `NSURLErrorDomain`.
+ `ZincNetworkingErrorDomain`
+ ZincNetworking errors. Error codes for `ZincNetworkingErrorDomain` correspond to codes in `NSURLErrorDomain`.
  */
-extern NSString * const AFNetworkingErrorDomain;
-extern NSString * const AFNetworkingOperationFailingURLRequestErrorKey;
-extern NSString * const AFNetworkingOperationFailingURLResponseErrorKey;
+extern NSString * const ZincNetworkingErrorDomain;
+extern NSString * const ZincNetworkingOperationFailingURLRequestErrorKey;
+extern NSString * const ZincNetworkingOperationFailingURLResponseErrorKey;
 
 ///--------------------
 /// @name Notifications
@@ -399,9 +399,9 @@ extern NSString * const AFNetworkingOperationFailingURLResponseErrorKey;
 /**
  Posted when an operation begins executing.
  */
-extern NSString * const AFNetworkingOperationDidStartNotification;
+extern NSString * const ZincNetworkingOperationDidStartNotification;
 
 /**
  Posted when an operation finishes.
  */
-extern NSString * const AFNetworkingOperationDidFinishNotification;
+extern NSString * const ZincNetworkingOperationDidFinishNotification;

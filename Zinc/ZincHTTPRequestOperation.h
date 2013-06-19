@@ -1,4 +1,4 @@
-// AFHTTPRequestOperation.h
+// ZincHTTPRequestOperation.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -24,7 +24,7 @@
 #import "ZincURLConnectionOperation.h"
 
 /**
- `AFHTTPRequestOperation` is a subclass of `AFURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
+ `ZincHTTPRequestOperation` is a subclass of `ZincURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
  */
 @interface ZincHTTPRequestOperation : ZincURLConnectionOperation
 
@@ -66,7 +66,7 @@
 ///------------------------------------------------------------
 
 /**
- Returns an `NSIndexSet` object containing the ranges of acceptable HTTP status codes. When non-`nil`, the operation will set the `error` property to an error in `AFErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+ Returns an `NSIndexSet` object containing the ranges of acceptable HTTP status codes. When non-`nil`, the operation will set the `error` property to an error in `ZincNetworkingErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
 
  By default, this is the range 200 to 299, inclusive.
  */
@@ -80,7 +80,7 @@
 + (void)addAcceptableStatusCodes:(NSIndexSet *)statusCodes;
 
 /**
- Returns an `NSSet` object containing the acceptable MIME types. When non-`nil`, the operation will set the `error` property to an error in `AFErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17
+ Returns an `NSSet` object containing the acceptable MIME types. When non-`nil`, the operation will set the `error` property to an error in `ZincNetworkingErrorDomain`. See http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html#sec14.17
 
  By default, this is `nil`.
  */
@@ -99,7 +99,7 @@
 ///-----------------------------------------------------
 
 /**
- A Boolean value determining whether or not the class can process the specified request. For example, `AFJSONRequestOperation` may check to make sure the content type was `application/json` or the URL path extension was `.json`.
+ A Boolean value determining whether or not the class can process the specified request.
 
  @param urlRequest The request that is determined to be supported or not supported for this class.
  */
@@ -129,5 +129,5 @@
 /**
  Returns a set of MIME types detected in an HTTP `Accept` or `Content-Type` header.
  */
-extern NSSet * AFContentTypesFromHTTPHeader(NSString *string);
+extern NSSet * ZincContentTypesFromHTTPHeader(NSString *string);
 

@@ -1,4 +1,4 @@
-// AFURLConnectionOperation.m
+// ZincURLConnectionOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -26,89 +26,84 @@
 #import <UIKit/UIKit.h>
 #endif
 
-#if !__has_feature(objc_arc)
-#error AFNetworking must be built with ARC.
-// You can turn on ARC for only AFNetworking files by adding -fobjc-arc to the build phase for each of its files.
-#endif
-
 typedef enum {
-    AFOperationPausedState      = -1,
-    AFOperationReadyState       = 1,
-    AFOperationExecutingState   = 2,
-    AFOperationFinishedState    = 3,
-} _AFOperationState;
+    ZincNetworkingOperationPausedState      = -1,
+    ZincNetworkingOperationReadyState       = 1,
+    ZincNetworkingOperationExecutingState   = 2,
+    ZincNetworkingOperationFinishedState    = 3,
+} _ZincNetworkingOperationState;
 
-typedef signed short AFOperationState;
+typedef signed short ZincNetworkingOperationState;
 
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-typedef UIBackgroundTaskIdentifier AFBackgroundTaskIdentifier;
+typedef UIBackgroundTaskIdentifier ZincNetworkingBackgroundTaskIdentifier;
 #else
-typedef id AFBackgroundTaskIdentifier;
+typedef id ZincNetworkingBackgroundTaskIdentifier;
 #endif
 
-static NSString * const kAFNetworkingLockName = @"com.alamofire.networking.operation.lock";
+static NSString * const kZincNetworkingLockName = @"com.mindsnacks.zinc.networking.operation.lock";
 
-NSString * const AFNetworkingErrorDomain = @"AFNetworkingErrorDomain";
-NSString * const AFNetworkingOperationFailingURLRequestErrorKey = @"AFNetworkingOperationFailingURLRequestErrorKey";
-NSString * const AFNetworkingOperationFailingURLResponseErrorKey = @"AFNetworkingOperationFailingURLResponseErrorKey";
+NSString * const ZincNetworkingErrorDomain = @"com.mindsnacks.zinc.networking";
+NSString * const ZincNetworkingOperationFailingURLRequestErrorKey = @"ZincNetworkingOperationFailingURLRequestErrorKey";
+NSString * const ZincNetworkingOperationFailingURLResponseErrorKey = @"ZincNetworkingOperationFailingURLResponseErrorKey";
 
-NSString * const AFNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
-NSString * const AFNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
+NSString * const ZincNetworkingOperationDidStartNotification = @"com.alamofire.networking.operation.start";
+NSString * const ZincNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
 
-typedef void (^AFURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
-typedef BOOL (^AFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace);
+typedef void (^ZincURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
+#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
+typedef BOOL (^ZincURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace);
 #endif
-typedef void (^AFURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
-typedef NSCachedURLResponse * (^AFURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
-typedef NSURLRequest * (^AFURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
+typedef void (^ZincURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
+typedef NSCachedURLResponse * (^ZincURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
+typedef NSURLRequest * (^ZincURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
 
-static inline NSString * AFKeyPathFromOperationState(AFOperationState state) {
+static inline NSString * KeyPathFromOperationState(ZincNetworkingOperationState state) {
     switch (state) {
-        case AFOperationReadyState:
+        case ZincNetworkingOperationReadyState:
             return @"isReady";
-        case AFOperationExecutingState:
+        case ZincNetworkingOperationExecutingState:
             return @"isExecuting";
-        case AFOperationFinishedState:
+        case ZincNetworkingOperationFinishedState:
             return @"isFinished";
-        case AFOperationPausedState:
+        case ZincNetworkingOperationPausedState:
             return @"isPaused";
         default:
             return @"state";
     }
 }
 
-static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperationState toState, BOOL isCancelled) {
+static inline BOOL StateTransitionIsValid(ZincNetworkingOperationState fromState, ZincNetworkingOperationState toState, BOOL isCancelled) {
     switch (fromState) {
-        case AFOperationReadyState:
+        case ZincNetworkingOperationReadyState:
             switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationExecutingState:
+                case ZincNetworkingOperationPausedState:
+                case ZincNetworkingOperationExecutingState:
                     return YES;
-                case AFOperationFinishedState:
+                case ZincNetworkingOperationFinishedState:
                     return isCancelled;
                 default:
                     return NO;
             }
-        case AFOperationExecutingState:
+        case ZincNetworkingOperationExecutingState:
             switch (toState) {
-                case AFOperationPausedState:
-                case AFOperationFinishedState:
+                case ZincNetworkingOperationPausedState:
+                case ZincNetworkingOperationFinishedState:
                     return YES;
                 default:
                     return NO;
             }
-        case AFOperationFinishedState:
+        case ZincNetworkingOperationFinishedState:
             return NO;
-        case AFOperationPausedState:
-            return toState == AFOperationReadyState;
+        case ZincNetworkingOperationPausedState:
+            return toState == ZincNetworkingOperationReadyState;
         default:
             return YES;
     }
 }
 
 #if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-static NSData *AFSecKeyGetData(SecKeyRef key) {
+static NSData *SecKeyGetData(SecKeyRef key) {
     CFDataRef data = NULL;
     
     OSStatus status = SecItemExport(key, kSecFormatUnknown, kSecItemPemArmour, NULL, &data);
@@ -119,16 +114,16 @@ static NSData *AFSecKeyGetData(SecKeyRef key) {
 }
 #endif
 
-static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
+static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
     return [(__bridge id)key1 isEqual:(__bridge id)key2];
 #else
-    return [AFSecKeyGetData(key1) isEqual:AFSecKeyGetData(key2)];
+    return [SecKeyGetData(key1) isEqual:SecKeyGetData(key2)];
 #endif
 }
 
 @interface ZincURLConnectionOperation ()
-@property (readwrite, nonatomic, assign) AFOperationState state;
+@property (readwrite, nonatomic, assign) ZincNetworkingOperationState state;
 @property (readwrite, nonatomic, assign, getter = isCancelled) BOOL cancelled;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @property (readwrite, nonatomic, strong) NSURLConnection *connection;
@@ -139,15 +134,15 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @property (readwrite, nonatomic, copy) NSString *responseString;
 @property (readwrite, nonatomic, assign) NSStringEncoding responseStringEncoding;
 @property (readwrite, nonatomic, assign) long long totalBytesRead;
-@property (readwrite, nonatomic, assign) AFBackgroundTaskIdentifier backgroundTaskIdentifier;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock uploadProgress;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock downloadProgress;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
+@property (readwrite, nonatomic, assign) ZincNetworkingBackgroundTaskIdentifier backgroundTaskIdentifier;
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock uploadProgress;
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock downloadProgress;
+#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
 #endif
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationCacheResponseBlock cacheResponse;
-@property (readwrite, nonatomic, copy) AFURLConnectionOperationRedirectResponseBlock redirectResponse;
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationCacheResponseBlock cacheResponse;
+@property (readwrite, nonatomic, copy) ZincURLConnectionOperationRedirectResponseBlock redirectResponse;
 
 - (void)operationDidStart;
 - (void)finish;
@@ -170,7 +165,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @dynamic inputStream;
 @synthesize outputStream = _outputStream;
 @synthesize credential = _credential;
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 @synthesize SSLPinningMode = _SSLPinningMode;
 #endif
 @synthesize shouldUseCredentialStorage = _shouldUseCredentialStorage;
@@ -179,7 +174,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @synthesize uploadProgress = _uploadProgress;
 @synthesize downloadProgress = _downloadProgress;
 @synthesize authenticationChallenge = _authenticationChallenge;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 @synthesize authenticationAgainstProtectionSpace = _authenticationAgainstProtectionSpace;
 #endif
 @synthesize cacheResponse = _cacheResponse;
@@ -189,7 +184,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 + (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
     do {
         @autoreleasepool {
-            [[NSThread currentThread] setName:@"AFNetworking"];
+            [[NSThread currentThread] setName:@"ZincNetworking"];
             [[NSRunLoop currentRunLoop] run];
         }
     } while (YES);
@@ -206,7 +201,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     return _networkRequestThread;
 }
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 + (NSArray *)pinnedCertificates {
     static NSArray *_pinnedCertificates = nil;
     static dispatch_once_t onceToken;
@@ -275,7 +270,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     }
     
     self.lock = [[NSRecursiveLock alloc] init];
-    self.lock.name = kAFNetworkingLockName;
+    self.lock.name = kZincNetworkingLockName;
     
     self.runLoopModes = [NSSet setWithObject:NSRunLoopCommonModes];
     
@@ -284,11 +279,11 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.shouldUseCredentialStorage = YES;
 
     // #ifdef included for backwards-compatibility 
-#ifdef _AFNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_ALLOW_INVALID_SSL_CERTIFICATES_
     self.allowsInvalidSSLCertificate = YES;
 #endif
 
-    self.state = AFOperationReadyState;
+    self.state = ZincNetworkingOperationReadyState;
 
     return self;
 }
@@ -308,7 +303,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, state: %@, cancelled: %@ request: %@, response: %@>", NSStringFromClass([self class]), self, AFKeyPathFromOperationState(self.state), ([self isCancelled] ? @"YES" : @"NO"), self.request, self.response];
+    return [NSString stringWithFormat:@"<%@: %p, state: %@, cancelled: %@ request: %@, response: %@>", NSStringFromClass([self class]), self, KeyPathFromOperationState(self.state), ([self isCancelled] ? @"YES" : @"NO"), self.request, self.response];
 }
 
 - (void)setCompletionBlock:(void (^)(void))block {
@@ -393,7 +388,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.downloadProgress = block;
 }
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 
 - (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
     self.authenticationChallenge = block;
@@ -419,14 +414,14 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.redirectResponse = block;
 }
 
-- (void)setState:(AFOperationState)state {
-    if (!AFStateTransitionIsValid(self.state, state, [self isCancelled])) {
+- (void)setState:(ZincNetworkingOperationState)state {
+    if (!StateTransitionIsValid(self.state, state, [self isCancelled])) {
         return;
     }
     
     [self.lock lock];
-    NSString *oldStateKey = AFKeyPathFromOperationState(self.state);
-    NSString *newStateKey = AFKeyPathFromOperationState(state);
+    NSString *oldStateKey = KeyPathFromOperationState(self.state);
+    NSString *newStateKey = KeyPathFromOperationState(state);
     
     [self willChangeValueForKey:newStateKey];
     [self willChangeValueForKey:oldStateKey];
@@ -476,17 +471,17 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
         
         dispatch_async(dispatch_get_main_queue(), ^{
             NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
-            [notificationCenter postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+            [notificationCenter postNotificationName:ZincNetworkingOperationDidFinishNotification object:self];
         });
     }
     
-    self.state = AFOperationPausedState;
+    self.state = ZincNetworkingOperationPausedState;
     
     [self.lock unlock];
 }
 
 - (BOOL)isPaused {
-    return self.state == AFOperationPausedState;
+    return self.state == ZincNetworkingOperationPausedState;
 }
 
 - (void)resume {
@@ -495,7 +490,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     }
     
     [self.lock lock];
-    self.state = AFOperationReadyState;
+    self.state = ZincNetworkingOperationReadyState;
     
     [self start];
     [self.lock unlock];
@@ -504,15 +499,15 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 #pragma mark - NSOperation
 
 - (BOOL)isReady {
-    return self.state == AFOperationReadyState && [super isReady];
+    return self.state == ZincNetworkingOperationReadyState && [super isReady];
 }
 
 - (BOOL)isExecuting {
-    return self.state == AFOperationExecutingState;
+    return self.state == ZincNetworkingOperationExecutingState;
 }
 
 - (BOOL)isFinished {
-    return self.state == AFOperationFinishedState;
+    return self.state == ZincNetworkingOperationFinishedState;
 }
 
 - (BOOL)isConcurrent {
@@ -522,7 +517,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 - (void)start {
     [self.lock lock];
     if ([self isReady]) {
-        self.state = AFOperationExecutingState;
+        self.state = ZincNetworkingOperationExecutingState;
         
         [self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
     }
@@ -545,7 +540,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     [self.lock unlock];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidStartNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:ZincNetworkingOperationDidStartNotification object:self];
     });
     
     if ([self isCancelled]) {
@@ -554,10 +549,10 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 }
 
 - (void)finish {
-    self.state = AFOperationFinishedState;
+    self.state = ZincNetworkingOperationFinishedState;
     
     dispatch_async(dispatch_get_main_queue(), ^{
-        [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
+        [[NSNotificationCenter defaultCenter] postNotificationName:ZincNetworkingOperationDidFinishNotification object:self];
     });
 }
 
@@ -592,7 +587,7 @@ static BOOL AFSecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 #pragma mark - NSURLConnectionDelegate
 
-#ifdef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 
 - (void)connection:(NSURLConnection *)connection
 willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
@@ -612,9 +607,9 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         for (CFIndex i = 0; i < certificateCount; i++) {
             SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
             
-            if (self.SSLPinningMode == AFSSLPinningModeCertificate) {
+            if (self.SSLPinningMode == ZincSSLPinningModeCertificate) {
                 [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
-            } else if (self.SSLPinningMode == AFSSLPinningModePublicKey) {
+            } else if (self.SSLPinningMode == ZincSSLPinningModePublicKey) {
                 SecCertificateRef someCertificates[] = {certificate};
                 CFArrayRef certificates = CFArrayCreate(NULL, (const void **)someCertificates, 1, NULL);
                 
@@ -637,12 +632,12 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         CFRelease(policy);
         
         switch (self.SSLPinningMode) {
-            case AFSSLPinningModePublicKey: {
+            case ZincSSLPinningModePublicKey: {
                 NSArray *pinnedPublicKeys = [self.class pinnedPublicKeys];
                 
                 for (id publicKey in trustChain) {
                     for (id pinnedPublicKey in pinnedPublicKeys) {
-                        if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
+                        if (SecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
                             NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
                             [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
                             return;
@@ -653,7 +648,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                 [[challenge sender] cancelAuthenticationChallenge:challenge];
                 break;
             }
-            case AFSSLPinningModeCertificate: {
+            case ZincSSLPinningModeCertificate: {
                 for (id serverCertificateData in trustChain) {
                     if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
                         NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
@@ -665,7 +660,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                 [[challenge sender] cancelAuthenticationChallenge:challenge];
                 break;
             }
-            case AFSSLPinningModeNone: {
+            case ZincSSLPinningModeNone: {
                 if (self.allowsInvalidSSLCertificate){
                     NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
                     [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
@@ -854,7 +849,7 @@ didReceiveResponse:(NSURLResponse *)response
         return nil;
     }
     
-    self.state = (AFOperationState)[aDecoder decodeIntegerForKey:@"state"];
+    self.state = (ZincNetworkingOperationState)[aDecoder decodeIntegerForKey:@"state"];
     self.cancelled = [aDecoder decodeBoolForKey:@"isCancelled"];
     self.response = [aDecoder decodeObjectForKey:@"response"];
     self.error = [aDecoder decodeObjectForKey:@"error"];
@@ -871,9 +866,9 @@ didReceiveResponse:(NSURLResponse *)response
     [aCoder encodeObject:self.request forKey:@"request"];
     
     switch (self.state) {
-        case AFOperationExecutingState:
-        case AFOperationPausedState:
-            [aCoder encodeInteger:AFOperationReadyState forKey:@"state"];
+        case ZincNetworkingOperationExecutingState:
+        case ZincNetworkingOperationPausedState:
+            [aCoder encodeInteger:ZincNetworkingOperationReadyState forKey:@"state"];
             break;
         default:
             [aCoder encodeInteger:self.state forKey:@"state"];
@@ -895,7 +890,7 @@ didReceiveResponse:(NSURLResponse *)response
     
     operation.uploadProgress = self.uploadProgress;
     operation.downloadProgress = self.downloadProgress;
-#ifndef _AFNETWORKING_PIN_SSL_CERTIFICATES_
+#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
     operation.authenticationAgainstProtectionSpace = self.authenticationAgainstProtectionSpace;
 #endif
     operation.authenticationChallenge = self.authenticationChallenge;
