@@ -75,7 +75,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 #pragma mark -
 #pragma mark Configuration
 
-+ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
++ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
 
 
 
@@ -100,7 +100,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 /**
  @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
  */
-- (void)cleanWithCompletion:(dispatch_block_t)completion;
+- (void) cleanWithCompletion:(dispatch_block_t)completion;
 
 
 #pragma mark -

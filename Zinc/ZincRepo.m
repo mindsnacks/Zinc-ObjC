@@ -326,7 +326,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         
         for (NSURL* bundleRes in available) {
             if (![active containsObject:bundleRes]) {
-                //ZINC_DEBUG_LOG(@"deleting: %@", bundleRes);
                 [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
             }
         }
@@ -373,7 +372,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     // set to nil to unsubscribe from notitifcations
     self.reachability = nil;
     self.downloadPolicy = nil;
-    
 }
 
 #pragma mark Notifications
@@ -1109,32 +1107,30 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     if (extInfo != nil) {
         return extInfo.bundleRootPath;
     }
-    
+
     NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleID, version];
     NSString* bundlePath = [[self bundlesPath] stringByAppendingPathComponent:bundleDirName];
     return bundlePath;
 }
 
 
-     - (ZincBundle*) bundleWithID:(NSString*)bundleID
-    {
-        if (!self.isInitialized) {
-            @throw [NSException
-                    exceptionWithName:NSInternalInconsistencyException
-                    reason:[NSString stringWithFormat:@"repo not initialized"]
-                    userInfo:nil];
-        }
-
-        NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-        ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
-        if (version == ZincVersionInvalid) {
-            return nil;
-        }
-
-        return [self.bundleManager bundleWithID:bundleID version:version];
+- (ZincBundle*) bundleWithID:(NSString*)bundleID
+{
+    if (!self.isInitialized) {
+        @throw [NSException
+                exceptionWithName:NSInternalInconsistencyException
+                reason:[NSString stringWithFormat:@"repo not initialized"]
+                userInfo:nil];
     }
 
+    NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
+    ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
+    if (version == ZincVersionInvalid) {
+        return nil;
+    }
 
+    return [self.bundleManager bundleWithID:bundleID version:version];
+}
 
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID
 {

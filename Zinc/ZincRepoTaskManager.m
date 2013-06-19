@@ -15,6 +15,7 @@
 #import "ZincDownloadPolicy.h"
 #import "ZincOperationQueueGroup.h"
 #import "ZincTasks.h"
+#import "ZincHTTPRequestOperation.h"
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
@@ -78,7 +79,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) addOperation:(NSOperation*)operation
 {
-    if ([operation isKindOfClass:[AFURLConnectionOperation class]]) {
+    if ([operation isKindOfClass:[ZincHTTPRequestOperation class]]) {
         [self.networkQueue addOperation:operation];
     } else if ([operation isKindOfClass:[ZincInitializationTask class]] ||
                [operation isKindOfClass:[ZincRepoIndexUpdateTask class]] ||
