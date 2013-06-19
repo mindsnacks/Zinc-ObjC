@@ -14,20 +14,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B32E313A16C9C4390032E7E8"
-               BuildableName = "libAFNetworking.a"
-               BlueprintName = "AFNetworking"
-               ReferencedContainer = "container:Dependencies/External/AFNetworking/AFNetworking.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "B32E31F416C9DC410032E7E8"
                BuildableName = "libKSReachability.a"
                BlueprintName = "KSReachability"

@@ -12,6 +12,7 @@
 #import "ZincEvent.h"
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
+#import "ZincHTTPRequestOperation.h"
 
 // TODO: break this dependency?
 #import "ZincRepo+Private.h"
@@ -33,7 +34,7 @@
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    AFHTTPRequestOperation* requestOp = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    ZincHTTPRequestOperation* requestOp = [[ZincHTTPRequestOperation alloc] initWithRequest:request];
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
@@ -63,7 +64,7 @@
     __block NSTimeInterval lastTimeEventSentDate = 0;
     __weak typeof(self) weakself = self;
     
-    [self.httpRequestOperation setDownloadProgressBlock:^(NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
+    [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
 
         __weak typeof(weakself) strongself = weakself;
 

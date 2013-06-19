@@ -47,7 +47,7 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    AFHTTPRequestOperation* requestOp = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    ZincHTTPRequestOperation* requestOp = [[ZincHTTPRequestOperation alloc] initWithRequest:request];
     [self queueChildOperation:requestOp];
     
     [requestOp waitUntilFinished];
