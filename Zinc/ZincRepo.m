@@ -67,7 +67,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 // runtime state
 @property (nonatomic, strong) NSMutableDictionary* sourcesByCatalog;
-@property (nonatomic, strong) NSTimer* refreshTimer;
+@property (nonatomic, weak) NSTimer* refreshTimer;
 @property (nonatomic, strong) NSCache* cache;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, strong) KSReachability* reachability;
@@ -291,11 +291,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         [self stopRefreshTimer];
 
         if (self.autoRefreshInterval > 0) {
-            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
-                                                                 target:self
-                                                               selector:@selector(refreshTimerFired:)
-                                                               userInfo:nil
-                                                                repeats:YES];
+            self.refreshTimer = [NSTimer timerWithTimeInterval:self.autoRefreshInterval
+                                                        target:self
+                                                      selector:@selector(refreshTimerFired:)
+                                                      userInfo:nil
+                                                       repeats:YES];
+            [[NSRunLoop mainRunLoop] addTimer:self.refreshTimer forMode:NSRunLoopCommonModes];
             [self.refreshTimer fire];
         }
     }
@@ -305,7 +306,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     @synchronized(self)
     {
-        [self.refreshTimer invalidate];
+        [self.refreshTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
         self.refreshTimer = nil;
     }
 }
