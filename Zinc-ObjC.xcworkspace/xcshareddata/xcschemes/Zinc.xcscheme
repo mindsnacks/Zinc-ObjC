@@ -14,34 +14,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B32E31F416C9DC410032E7E8"
-               BuildableName = "libKSReachability.a"
-               BlueprintName = "KSReachability"
-               ReferencedContainer = "container:Dependencies/External/KSReachability/KSReachability.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "030EF0DB14632FF700B04273"
-               BuildableName = "libOCMock.a"
-               BlueprintName = "OCMockLib"
-               ReferencedContainer = "container:Dependencies/External/OCMock/Source/OCMock.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "B340F96F148D52D800206F86"
                BuildableName = "libZinc.a"
                BlueprintName = "Zinc"

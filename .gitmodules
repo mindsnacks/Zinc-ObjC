@@ -1,6 +1,0 @@
-[submodule "Dependencies/External/KSReachability"]
-	path = Dependencies/External/KSReachability
-	url = git@github.com:mindsnacks/KSReachability.git
-[submodule "Dependencies/External/OCMock"]
-	path = Dependencies/External/OCMock
-	url = git@github.com:mindsnacks/ocmock.git

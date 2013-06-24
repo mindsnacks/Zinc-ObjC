@@ -29,8 +29,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-               BuildableName = "Zinc Functional Tests.app"
-               BlueprintName = "Zinc Functional Tests"
+               BuildableName = "ZincFunctionalTests.app"
+               BlueprintName = "ZincFunctionalTests"
                ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -47,8 +47,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BuildableName = "ZincFunctionalTests.app"
+            BlueprintName = "ZincFunctionalTests"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -66,8 +66,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BuildableName = "ZincFunctionalTests.app"
+            BlueprintName = "ZincFunctionalTests"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -84,8 +84,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BuildableName = "ZincFunctionalTests.app"
+            BlueprintName = "ZincFunctionalTests"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
