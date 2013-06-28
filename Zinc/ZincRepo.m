@@ -923,7 +923,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         
         ZincVersion version = [self catalogVersionForBundleID:bundleID distribution:trackingInfo.distribution];
         if (version == ZincVersionInvalid) {
-            NSError* error = ZincError(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS);
+            NSDictionary* info = @{@"bundleID" : bundleID};
+            NSError* error = ZincErrorWithInfo(ZINC_ERR_BUNDLE_NOT_FOUND_IN_CATALOGS, info);
             [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             if (taskRef != nil) {
                 [taskRef addError:error];
