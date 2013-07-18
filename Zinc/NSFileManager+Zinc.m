@@ -59,7 +59,8 @@
         [myError.domain isEqualToString:NSCocoaErrorDomain] &&
         myError.code == NSFileWriteFileExistsError)
     {
-        return YES;
+        success = YES;
+        myError = nil;
     }
 
     if (error != NULL) {
