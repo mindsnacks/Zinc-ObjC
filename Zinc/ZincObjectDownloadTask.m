@@ -144,14 +144,11 @@
                 continue;
             }
 
-            if (![fm moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
-                if (error.code != NSFileWriteFileExistsError) // ignore error if file already existed
-                {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
-                    continue;
-                }
+            if (![fm zinc_moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                continue;
             }
-            
+
             ZincAddSkipBackupAttributeToFileWithPath(targetPath);
             self.finishedSuccessfully = YES;
         }
