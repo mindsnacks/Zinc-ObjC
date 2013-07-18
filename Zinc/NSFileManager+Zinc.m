@@ -50,5 +50,29 @@
     return YES;
 }
 
+- (BOOL) zinc_moveItemAtPath:(NSString*)srcPath toPath:(NSString*)dstPath failIfExists:(BOOL)failIfExists error:(NSError**)error
+{
+    NSError* myError = nil;
+    BOOL success = [self moveItemAtPath:srcPath toPath:dstPath error:&myError];
+    if (!success &&
+        !failIfExists &&
+        [myError.domain isEqualToString:NSCocoaErrorDomain] &&
+        myError.code == NSFileWriteFileExistsError)
+    {
+        success = YES;
+        myError = nil;
+    }
+
+    if (error != NULL) {
+        *error = myError;
+    }
+
+    return success;
+}
+
+- (BOOL) zinc_moveItemAtPath:(NSString*)srcPath toPath:(NSString*)dstPath error:(NSError**)error
+{
+    return [self zinc_moveItemAtPath:srcPath toPath:dstPath failIfExists:NO error:error];
+}
 
 @end

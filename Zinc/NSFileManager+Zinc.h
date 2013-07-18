@@ -18,4 +18,18 @@
 
 - (BOOL) zinc_removeItemAtPath:(NSString*)path error:(NSError**)outError;
 
+/**
+ Convenience method for moving files.
+ @param srcPath the source path
+ @param dstPath the destination path
+ @param failIfExists If YES, raise an error if the dstPath exists, if NO proceed without an error.
+ @param error output params
+ */
+- (BOOL) zinc_moveItemAtPath:(NSString*)srcPath toPath:(NSString*)dstPath failIfExists:(BOOL)failIfExists error:(NSError**)error;
+
+/**
+ Like zinc_moveItemAtPath:toPath:failIfExists:error but failIfExists is NO
+ */
+- (BOOL) zinc_moveItemAtPath:(NSString*)srcPath toPath:(NSString*)dstPath error:(NSError**)error;
+
 @end
