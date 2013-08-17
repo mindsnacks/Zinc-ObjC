@@ -29,7 +29,6 @@ extern NSString* const ZincRepoTaskFinishedNotification;
 extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @protocol ZincRepoDelegate;
-@class ZincRepoAgent;
 @class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
@@ -42,7 +41,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @interface ZincRepo : NSObject
 
-@property (nonatomic, strong, readonly) ZincRepoAgent *agent;
 @property (nonatomic, weak) id<ZincRepoDelegate> delegate;
 @property (nonatomic, strong, readonly) NSURL* url;
 

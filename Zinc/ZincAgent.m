@@ -6,7 +6,7 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincRepoAgent+Private.h"
+#import "ZincAgent+Private.h"
 
 #import <KSReachability/KSReachability.h>
 
@@ -20,32 +20,96 @@
 #import "ZincDownloadPolicy+Private.h"
 
 
-@interface ZincRepoAgent ()
+@interface ZincAgent ()
 
-@property (nonatomic, weak, readwrite) ZincRepo *repo;
+@property (nonatomic, strong, readwrite) ZincRepo *repo;
 @property (nonatomic, weak) NSTimer* refreshTimer;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 
 @end
 
+static NSMutableDictionary* _AgentsByURL;
 
-@implementation ZincRepoAgent
 
-- (id)initWithRepo:(ZincRepo *)repo
+@implementation ZincAgent
+
++ (void) initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _AgentsByURL = [[NSMutableDictionary alloc] initWithCapacity:2];
+    });
+}
+
++ (instancetype) agentForRepo:(ZincRepo*)repo
+{
+    ZincAgent* agent = nil;
+
+    @synchronized(_AgentsByURL) {
+        agent = [_AgentsByURL[repo.url] pointerValue];
+
+        if (agent == nil) {
+            KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
+            agent = [[ZincAgent alloc] initWithRepo:repo reachability:reachability];
+            _AgentsByURL[repo.url] = [NSValue valueWithPointer:(__bridge const void *)(agent)];
+        }
+    }
+
+    return agent;
+}
+
+- (id)initWithRepo:(ZincRepo *)repo reachability:(KSReachability *)reachability
 {
     self = [super init];
     if (self) {
         self.repo = repo;
-        _autoRefreshInterval = kZincRepoDefaultAutoRefreshInterval;
+        self.reachability = reachability;
+        _autoRefreshInterval = kZincAgentDefaultAutoRefreshInterval;
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
     }
     return self;
-}
+} 
 
 - (void)dealloc
 {
     // set to nil to unsubscribe from notitifcations
+    self.reachability = nil;
     self.downloadPolicy = nil;
+
+    @synchronized(_AgentsByURL) {
+        [_AgentsByURL removeObjectForKey:self.repo.url];
+    }
+}
+
+- (void) setReachability:(KSReachability*)reachability
+{
+    if (_reachability == reachability) return;
+
+    if (_reachability != nil) {
+        _reachability.onReachabilityChanged = nil;
+    }
+
+    _reachability = reachability;
+
+    if (_reachability != nil) {
+
+        __weak typeof(self) weakself = self;
+
+        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
+
+            __strong typeof(weakself) strongself = weakself;
+
+            // TODO: move this inside task manager?
+            @synchronized(strongself.repo.tasks) {
+                NSArray* remoteBundleUpdateTasks = [strongself.repo.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
+                }]];
+                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
+            }
+
+            [strongself refreshWithCompletion:nil];
+        };
+    }
 }
 
 - (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
@@ -284,7 +348,7 @@
 
     ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
 
-    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.repo.reachability WWANOnly]) {
+    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
         return NO;
     }
 

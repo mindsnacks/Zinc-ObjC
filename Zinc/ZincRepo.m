@@ -8,7 +8,6 @@
 
 #import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincRepoAgent+Private.h"
 #import "ZincRepoIndex.h"
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
@@ -37,7 +36,6 @@
 #import "ZincRepoBundleManager.h"
 #import "ZincTasks.h"
 
-#import <KSReachability/KSReachability.h>
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -66,7 +64,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 @property (nonatomic, strong) NSURL* url;
 
 // runtime state
-@property (nonatomic, strong, readwrite) ZincRepoAgent *agent;
 @property (nonatomic, strong) NSMutableDictionary* sourcesByCatalog;
 @property (nonatomic, strong) NSCache* cache;
 @property (nonatomic, strong) NSMutableDictionary* localFilesBySHA;
@@ -90,10 +87,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
         fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
     }
-    
-    KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
-    
-    ZincRepo* repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability];
+
+    ZincRepo* repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue];
     if (![repo createDirectoriesIfNeeded:outError]) {
         return nil;
     }
@@ -136,7 +131,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [[NSFileManager defaultManager] fileExistsAtPath:path];
 }
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
 {
     self = [super init];
     if (self) {
@@ -146,11 +141,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.cache = [[NSCache alloc] init];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
-        self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
         self.bundleManager = [[ZincRepoBundleManager alloc] initWithZincRepo:self];
         self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
-        self.agent = [[ZincRepoAgent alloc] initWithRepo:self];
     }
     return self;
 }
@@ -158,9 +151,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void)dealloc
 {
     [self suspendAllTasksAndWaitExecutingTasksToComplete];
-
-    // set to nil to unsubscribe from notitifcations
-    self.reachability = nil;
 }
 
 /**
@@ -218,35 +208,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     self.isInitialized = YES;
 }
 
-- (void) setReachability:(KSReachability*)reachability
-{
-    if (_reachability == reachability) return;
-    
-    if (_reachability != nil) {
-        _reachability.onReachabilityChanged = nil;
-    }
-    
-    _reachability = reachability;
-        
-    if (_reachability != nil) {
-
-        __weak typeof(self) weakself = self;
-        
-        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-
-            __strong typeof(weakself) strongself = weakself;
-            
-            @synchronized(strongself.taskManager.tasks) {
-                NSArray* remoteBundleUpdateTasks = [strongself.taskManager.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-                }]];
-                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-            }
-            
-            [strongself.agent refreshWithCompletion:nil];
-        };
-    }
-}
 
 #pragma mark Notifications
 

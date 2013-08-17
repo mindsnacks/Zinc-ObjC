@@ -17,7 +17,7 @@
 #import "ZincTasks.h"
 #import "ZincHTTPRequestOperation.h"
 
-#import "ZincRepoAgent.h" // for downloadPolicy
+#import "ZincAgent.h" // for downloadPolicy
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
@@ -141,13 +141,13 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
-{
-    if ([task.resource isZincBundleResource]) {
-        return [self.repo.agent.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
-    }
-    return NSOperationQueuePriorityNormal;
-}
+//- (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
+//{
+//    if ([task.resource isZincBundleResource]) {
+//        return [self.repo.agent.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
+//    }
+//    return NSOperationQueuePriorityNormal;
+//}
 
 
 - (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input parent:(NSOperation*)parent dependencies:(NSArray*)dependencies
@@ -219,7 +219,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (void) queueTask:(ZincTask*)task
 {
-    task.queuePriority = [self initialPriorityForTask:task];
+//    task.queuePriority = [self initialPriorityForTask:task];
     if (self.executeTasksInBackgroundEnabled) {
         [task setShouldExecuteAsBackgroundTask];
     }

@@ -9,11 +9,12 @@
 #import <GHUnitIOS/GHUnit.h>
 
 #import "ZincRepo.h"
-#import "ZincRepoAgent.h"
+#import "ZincAgent.h"
 
 @interface ZincFunctionalTestCase : GHAsyncTestCase <ZincRepoDelegate>
 
 @property (strong) ZincRepo *zincRepo;
+@property (strong) ZincAgent *zincAgent;
 
 
 /**

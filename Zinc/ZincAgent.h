@@ -8,9 +8,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ZincRepo.h"
+@class ZincRepo;
+@class ZincDownloadPolicy;
+@class KSReachability;
 
-@interface ZincRepoAgent : NSObject
+@interface ZincAgent : NSObject
+
+#pragma mark -
+
++ (instancetype) agentForRepo:(ZincRepo*)repo;
+
+@property (nonatomic, strong, readonly) ZincRepo *repo;
+@property (nonatomic, strong, readonly) KSReachability *reachability;
 
 
 #pragma mark -

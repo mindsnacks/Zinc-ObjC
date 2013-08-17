@@ -12,21 +12,18 @@
 
 #define kZincRepoDefaultObjectDownloadCount (5)
 #define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
-#define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
 
 @class ZincRepoIndex;
 @class ZincCatalog;
 @class ZincManifest;
-@class KSReachability;
 
 @interface ZincRepo ()
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(KSReachability*)reachability;
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 @property (nonatomic, strong) ZincRepoIndex* index;
 @property (nonatomic, strong) NSFileManager* fileManager;
 @property (nonatomic, strong) ZincRepoTaskManager* taskManager;
-@property (nonatomic, strong) KSReachability* reachability;
 
 - (NSURL*) indexURL;
 
