@@ -155,6 +155,14 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return self;
 }
 
+- (void)dealloc
+{
+    [self suspendAllTasksAndWaitExecutingTasksToComplete];
+
+    // set to nil to unsubscribe from notitifcations
+    self.reachability = nil;
+}
+
 /**
  @discussion Returns YES if initialization tasks are queued, NO otherwise
  */
@@ -187,7 +195,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     
     return completeInitializationTask != nil;
 }
-
 
 - (ZincTaskRef*) taskRefForInitialization
 {
@@ -239,14 +246,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             [strongself.agent refreshWithCompletion:nil];
         };
     }
-}
-
-- (void)dealloc
-{
-    [self suspendAllTasksAndWaitExecutingTasksToComplete];
-
-    // set to nil to unsubscribe from notitifcations
-    self.reachability = nil;
 }
 
 #pragma mark Notifications
@@ -373,8 +372,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
     return path;
 }
-
-
 
 #pragma mark Sources
 
@@ -896,7 +893,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 }
 
-
 #pragma mark Tasks
 
 - (NSArray*) tasks
@@ -962,8 +958,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
 }
-
-
 
 @end
 

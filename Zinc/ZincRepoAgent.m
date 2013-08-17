@@ -81,7 +81,6 @@
     }
 }
 
-
 - (void) setAutoRefreshInterval:(NSTimeInterval)refreshInterval
 {
     _autoRefreshInterval = refreshInterval;
@@ -106,7 +105,6 @@
     }
 }
 
-
 - (void) stopRefreshTimer
 {
     @synchronized(self)
@@ -115,7 +113,6 @@
         self.refreshTimer = nil;
     }
 }
-
 
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
@@ -137,8 +134,6 @@
         [self.repo.taskManager addOperation:parentOp];
     }
 }
-
-
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
@@ -244,7 +239,6 @@
     [self refresh];
 }
 
-
 - (void) resumeBundleActions
 {
     NSSet* cloningBundles = [self.repo.index cloningBundles];
@@ -254,7 +248,6 @@
         }
     }
 }
-
 
 - (void) checkForBundleDeletion
 {
@@ -284,7 +277,6 @@
     [self.repo.taskManager queueTaskForDescriptor:taskDesc];
 }
 
-
 - (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
 {
     // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
@@ -298,9 +290,5 @@
 
     return [self.downloadPolicy doRulesAllowBundleID:bundleID];
 }
-
-
-
-
 
 @end
