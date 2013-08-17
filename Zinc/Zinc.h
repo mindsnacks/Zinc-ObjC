@@ -12,6 +12,7 @@
 #import <Zinc/ZincGlobals.h>
 #import <Zinc/ZincErrors.h>
 #import <Zinc/ZincRepo.h>
+#import <Zinc/ZincRepoAgent.h>
 #import <Zinc/ZincBundle.h>
 #import <Zinc/ZincEvent.h>
 #import <Zinc/ZincResource.h>

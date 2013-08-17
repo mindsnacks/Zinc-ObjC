@@ -8,6 +8,7 @@
 
 #import "ZincFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
+#import "ZincRepoAgent.h"
 #import "ZincJSONSerialization.h"
 #import "ZincBundle.h"
 #import "ZincUtils.h"
@@ -35,7 +36,7 @@
     
     dispatch_group_enter(dispatchGroup);
     
-    [self.zincRepo refreshSourcesWithCompletion:^{
+    [self.zincRepo.agent refreshSourcesWithCompletion:^{
         dispatch_group_leave(dispatchGroup);
         
     }];
@@ -216,7 +217,7 @@
     [self.zincRepo stopTrackingBundleWithID:bundleID];
 
     [self prepare];
-    [self.zincRepo refreshWithCompletion:^{
+    [self.zincRepo.agent refreshWithCompletion:^{
         [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
@@ -306,7 +307,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -360,7 +361,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -434,7 +435,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -514,7 +515,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -564,7 +565,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
 
     // -- Wait for initialization

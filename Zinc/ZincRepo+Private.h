@@ -26,6 +26,7 @@
 @property (nonatomic, strong) ZincRepoIndex* index;
 @property (nonatomic, strong) NSFileManager* fileManager;
 @property (nonatomic, strong) ZincRepoTaskManager* taskManager;
+@property (nonatomic, strong) KSReachability* reachability;
 
 - (NSURL*) indexURL;
 
@@ -45,7 +46,15 @@
 
 #pragma mark Bundles
 
+/*
+ * TODO: document the difference between this and catalogVersionForBundleID
+ */
 - (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/*
+ * TODO: document the difference between this and versionForBundleID
+ */
+- (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion;

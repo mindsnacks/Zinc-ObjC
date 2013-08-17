@@ -29,6 +29,7 @@ extern NSString* const ZincRepoTaskFinishedNotification;
 extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @protocol ZincRepoDelegate;
+@class ZincRepoAgent;
 @class ZincManifest;
 @class ZincBundle;
 @class ZincEvent;
@@ -41,6 +42,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @interface ZincRepo : NSObject
 
+@property (nonatomic, strong, readonly) ZincRepoAgent *agent;
 @property (nonatomic, weak) id<ZincRepoDelegate> delegate;
 @property (nonatomic, strong, readonly) NSURL* url;
 
@@ -77,28 +79,8 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 + (void) setDefaultThreadPriority:(double)defaultThreadPriority;
 
-
-
-#pragma mark -
-#pragma mark Refresh
-
 /**
- @discussion Manually trigger refresh of sources and bundles.
- */
-- (void) refresh;
-
-/**
- @discussion Manually trigger refresh of sources and bundles, with completion block.
- */
-- (void) refreshWithCompletion:(dispatch_block_t)completion;
-
-/**
- @discussion Interval at which catalogs are updated and automatic clone tasks started.
- */
-@property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
-
-/**
- @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
+ * Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
  */
 - (void) cleanWithCompletion:(dispatch_block_t)completion;
 
@@ -110,7 +92,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) removeSourceURL:(NSURL*)url;
 - (NSSet*) sourceURLs;
 
-- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
 
 #pragma mark -
@@ -135,16 +116,11 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 #pragma mark Updating Bundles
 
 /**
- @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
- of connectivity.
+ * Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
  */
 - (void) updateBundleWithID:(NSString*)bundleID completionBlock:(ZincCompletionBlock)completion;
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
-/**
- @discussion Update all bundles
- */
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
 
 
 #pragma mark -
@@ -156,17 +132,6 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (ZincBundle*) bundleWithID:(NSString*)bundleID;
 
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
-
-
-#pragma mark -
-#pragma mark Download Policy
-
-/**
- */
-@property (nonatomic, strong, readonly) ZincDownloadPolicy* downloadPolicy;
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
-
 
 
 #pragma mark -

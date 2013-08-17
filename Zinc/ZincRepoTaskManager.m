@@ -17,6 +17,8 @@
 #import "ZincTasks.h"
 #import "ZincHTTPRequestOperation.h"
 
+#import "ZincRepoAgent.h" // for downloadPolicy
+
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 
@@ -142,7 +144,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
 {
     if ([task.resource isZincBundleResource]) {
-        return [self.repo.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
+        return [self.repo.agent.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
     }
     return NSOperationQueuePriorityNormal;
 }
@@ -273,6 +275,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self addOperation:taskRef];
         return taskRef;
     }
+}
+
+- (ZincTask*) queueIndexSaveTask
+{
+    ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self.repo indexURL]];
+    return [self queueTaskForDescriptor:taskDesc];
 }
 
 #pragma mark KVO

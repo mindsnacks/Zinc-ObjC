@@ -29,7 +29,7 @@
     GHAssertNil(error, @"error: %@", error);
 
     self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.agent.autoRefreshInterval = 0;
     [self.zincRepo resumeAllTasks];
 
     GHTestLog(@"ZincRepo: %@", [self.zincRepo.url path]);

@@ -192,7 +192,9 @@
 
 - (BOOL) isReady
 {
-    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
+    // QQQ
+//    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
+    return [super isReady];
 }
 
 - (void) main

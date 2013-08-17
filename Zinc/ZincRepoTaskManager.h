@@ -33,6 +33,7 @@
 
 - (NSArray*) tasksForBundleID:(NSString*)bundleID;
 
+- (ZincTask*) queueIndexSaveTask;
 
 #pragma mark -
 
