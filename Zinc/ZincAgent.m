@@ -18,6 +18,7 @@
 #import "ZincTask+Private.h"
 #import "ZincTasks.h"
 #import "ZincDownloadPolicy+Private.h"
+#import "ZincTaskRequest.h"
 
 
 @interface ZincAgent ()
@@ -259,7 +260,11 @@ static NSMutableDictionary* _AgentsByURL;
     // the following should not be done within an @synchronized block because it obtains other locks
 
     for (ZincTaskDescriptor* taskDesc in taskDescriptors) {
-        ZincTask* bundleTask = [self.repo.taskManager queueTaskForDescriptor:taskDesc];
+        NSOperationQueuePriority priority = [self.downloadPolicy priorityForBundleWithID:[taskDesc.resource zincBundleID]];
+        ZincTask* bundleTask = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+            request.taskDescriptor = taskDesc;
+            request.priority = priority;
+        }];
         [parentOp addDependency:bundleTask];
     }
 

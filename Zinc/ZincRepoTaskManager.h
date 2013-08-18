@@ -12,6 +12,7 @@
 @class ZincTask;
 @class ZincTaskDescriptor;
 @class ZincTaskRef;
+@class ZincTaskRequest;
 
 @interface ZincRepoTaskManager : NSObject
 
@@ -47,13 +48,11 @@
  @param dependencies Additional dependencies of the task. i.e., `[task addDependency:dep]`
 
  */
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input parent:(NSOperation*)parent dependencies:(NSArray*)dependencies;
+//- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input priority:(NSOperationQueuePriority)priority parent:(NSOperation*)parent dependencies:(NSArray*)dependencies;
 
-// Convenience methods - omitted parameters are nil
+- (ZincTask*) queueTaskWithRequestBlock:(void (^)(ZincTaskRequest* request))requestBlock;
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies;
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor *)taskDescriptor;
 
 - (void) addOperation:(NSOperation*)operation;
 
