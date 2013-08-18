@@ -765,7 +765,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
         
         NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
-        ZincTask* task = [self queueBundleCloneTaskForBundle:bundleRes priority:NSOperationQueuePriorityVeryHigh];
+        ZincTask* task = [self queueBundleCloneTaskForBundle:bundleRes priority:kZincRepoDefaultBundleUpdatePriority];
 
         if (taskRef != nil) {
             [taskRef addDependency:task];

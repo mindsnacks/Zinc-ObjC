@@ -13,6 +13,7 @@
 #define kZincRepoDefaultObjectDownloadCount (5)
 #define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
 #define kZincRepoDefaultCacheCount (20)
+#define kZincRepoDefaultBundleUpdatePriority (NSOperationQueuePriorityVeryHigh)
 
 @class ZincRepoIndex;
 @class ZincCatalog;
