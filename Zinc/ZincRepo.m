@@ -743,7 +743,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         ZincTask* task = [self queueBundleCloneTaskForBundle:bundleRes priority:kZincRepoDefaultBundleUpdatePriority];
 
         if (taskRef != nil) {
-            [taskRef addDependency:task];
+            if (task != nil) {
+                // task may be nil if bundle is already available
+                [taskRef addDependency:task];
+            }
             [self.taskManager addOperation:taskRef];
         }
     }
