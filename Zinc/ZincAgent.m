@@ -208,7 +208,7 @@ static NSMutableDictionary* _AgentsByURL;
         parentOp.completionBlock = completion;
     }
 
-    NSMutableArray *taskDescriptors = [NSMutableArray array];
+    NSMutableArray *bundlesToUpdate = [NSMutableArray array];
 
     @synchronized(self.repo.index) {
 
@@ -250,22 +250,15 @@ static NSMutableDictionary* _AgentsByURL;
                 continue;
             }
 
-            [self.repo.index setState:ZincBundleStateCloning forBundle:bundleRes];
-
-            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            [taskDescriptors addObject:taskDesc];
+            [bundlesToUpdate addObject:bundleRes];
         }
     }
 
     // the following should not be done within an @synchronized block because it obtains other locks
 
-    for (ZincTaskDescriptor* taskDesc in taskDescriptors) {
-        NSOperationQueuePriority priority = [self.downloadPolicy priorityForBundleWithID:[taskDesc.resource zincBundleID]];
-        ZincTask* bundleTask = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
-            request.taskDescriptor = taskDesc;
-            request.priority = priority;
-        }];
-        [parentOp addDependency:bundleTask];
+    for (NSURL* bundleRes in bundlesToUpdate) {
+        NSOperationQueuePriority priority = [self.downloadPolicy priorityForBundleWithID:[bundleRes zincBundleID]];
+        [self.repo queueBundleCloneTaskForBundle:bundleRes priority:priority];
     }
 
     [self.repo.taskManager queueIndexSaveTask];
@@ -291,9 +284,11 @@ static NSMutableDictionary* _AgentsByURL;
 
             __strong typeof(weakself2) strongself2 = weakself2;
 
-            [strongself2 checkForBundleDeletion];
+            [strongself2.repo cleanWithCompletion:^{
 
-            if (completion != nil) completion();
+                if (completion != nil) completion();
+
+            }];
         }];
     }];
 }
@@ -316,34 +311,6 @@ static NSMutableDictionary* _AgentsByURL;
             [self.repo.taskManager queueTaskForDescriptor:[ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes]];
         }
     }
-}
-
-- (void) checkForBundleDeletion
-{
-    @synchronized(self.repo.index) {
-
-        NSSet* cloningBundles = [self.repo.index cloningBundles];
-        if ([cloningBundles count] > 1) {
-            // don't delete while any clones are in progress
-            return;
-        }
-
-        NSSet* available = [self.repo.index availableBundles];
-        NSSet* active = [self.repo activeBundles];
-
-        for (NSURL* bundleRes in available) {
-            if (![active containsObject:bundleRes]) {
-                [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
-            }
-        }
-    }
-}
-
-- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version
-{
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
-    ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
-    [self.repo.taskManager queueTaskForDescriptor:taskDesc];
 }
 
 - (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID

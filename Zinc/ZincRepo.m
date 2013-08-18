@@ -35,6 +35,7 @@
 #import "ZincExternalBundleInfo.h"
 #import "ZincRepoBundleManager.h"
 #import "ZincTasks.h"
+#import "ZincTaskRequest.h"
 
 
 
@@ -714,6 +715,21 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     [self updateBundleWithID:bundleID taskRef:taskRef];
 }
 
+- (ZincTask*) queueBundleCloneTaskForBundle:(NSURL*)bundleRes priority:(NSOperationQueuePriority)priority
+{
+    ZincTask* task = nil;
+    ZincBundleState state = [self.index stateForBundle:bundleRes];
+    if (state != ZincBundleStateAvailable) {
+        [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
+        ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
+        task = [self.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+            request.taskDescriptor = taskDesc;
+            request.priority = priority;
+        }];
+    }
+    return task;
+}
+
 - (void) updateBundleWithID:(NSString*)bundleID taskRef:(ZincTaskRef*)taskRef
 {
     NSParameterAssert(bundleID);
@@ -749,20 +765,14 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
         
         NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
-        
-        ZincBundleState state = [self.index stateForBundle:bundleRes];
-        if (state != ZincBundleStateAvailable) {
-            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            ZincTask* task = [self.taskManager queueTaskForDescriptor:taskDesc];
-            
-            if (taskRef != nil) {
-                [taskRef addDependency:task];
-                [self.taskManager addOperation:taskRef];
-            }
+        ZincTask* task = [self queueBundleCloneTaskForBundle:bundleRes priority:NSOperationQueuePriorityVeryHigh];
+
+        if (taskRef != nil) {
+            [taskRef addDependency:task];
+            [self.taskManager addOperation:taskRef];
         }
     }
-    
+
     [self queueIndexSaveTask];
 }
 
@@ -881,8 +891,39 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [self.taskManager isSuspended];
 }
 
+- (void) checkForBundleDeletion
+{
+    @synchronized(self.index) {
+
+        NSSet* cloningBundles = [self.index cloningBundles];
+        if ([cloningBundles count] > 1) {
+            // don't delete while any clones are in progress
+            return;
+        }
+
+        NSSet* available = [self.index availableBundles];
+        NSSet* active = [self activeBundles];
+
+        for (NSURL* bundleRes in available) {
+            if (![active containsObject:bundleRes]) {
+                [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
+            }
+        }
+    }
+}
+
+- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version
+{
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
+    ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
+    [self.taskManager queueTaskForDescriptor:taskDesc];
+}
+
+
 - (void)cleanWithCompletion:(dispatch_block_t)completion
 {
+    [self checkForBundleDeletion];
+
     ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
     ZincTask* garbageTask = [self queueGarbageCollectTask];
     [taskRef addDependency:garbageTask];

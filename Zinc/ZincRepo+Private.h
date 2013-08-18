@@ -63,6 +63,8 @@
 // returns NSURLs (ZincBundleDescriptors)
 - (NSSet*) activeBundles;
 
+- (ZincTask*) queueBundleCloneTaskForBundle:(NSURL*)bundleRes priority:(NSOperationQueuePriority)priority;
+
 #pragma mark Files
 
 - (NSString*) pathForFileWithSHA:(NSString*)sha;
