@@ -7,10 +7,10 @@
 //
 
 #import "ZincCleanLegacySymlinksTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincResource.h"
 
 @interface ZincCleanLegacySymlinksTask ()
 @property (assign) long long totalItemsToClean;

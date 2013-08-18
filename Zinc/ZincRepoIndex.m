@@ -7,13 +7,10 @@
 //
 
 #import "ZincRepoIndex.h"
-#import "ZincJSONSerialization.h"
-#import "ZincResource.h"
-#import "ZincDeepCopying.h"
-#import "ZincErrors.h"
-#import "ZincTrackingInfo.h"
+
+#import "ZincInternals.h"
 #import "ZincExternalBundleInfo.h"
-#import "ZincUtils.h"
+
 
 @interface ZincRepoIndex ()
 @property (nonatomic, strong) NSMutableSet* mySourceURLs;

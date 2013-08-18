@@ -12,7 +12,4 @@
 
 @property (readonly) NSString* sha;
 
-@property (readonly) NSInteger bytesRead;
-@property (readonly) NSInteger totalBytesToRead;
-
 @end

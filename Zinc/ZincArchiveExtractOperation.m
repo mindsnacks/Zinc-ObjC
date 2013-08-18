@@ -7,11 +7,10 @@
 //
 
 #import "ZincArchiveExtractOperation.h"
-#import "ZincErrors.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
 #import "NSFileManager+ZincTar.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincUtils.h"
 #import "ZincSHA.h"
 #import "ZincGzip.h"
 

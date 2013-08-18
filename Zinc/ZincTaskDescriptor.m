@@ -7,6 +7,7 @@
 //
 
 #import "ZincTaskDescriptor.h"
+
 #import "ZincResource.h"
 
 @interface ZincTaskDescriptor ()

@@ -6,13 +6,10 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincEvent.h"
-#import "ZincTaskRequest.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>

@@ -7,18 +7,15 @@
 //
 
 #import "ZincRepoTaskManager.h"
-#import "ZincTask+Private.h"
-#import "ZincTaskRef.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincResource.h"
+
+#import "ZincInternals.h"
+
 #import "ZincRepo+Private.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadPolicy.h"
 #import "ZincOperationQueueGroup.h"
-#import "ZincTasks.h"
 #import "ZincHTTPRequestOperation.h"
-#import "ZincTaskRequest.h"
 
-#import "ZincAgent.h" // for downloadPolicy
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 

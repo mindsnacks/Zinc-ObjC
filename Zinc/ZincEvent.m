@@ -6,7 +6,6 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincEvent.h"
 #import "ZincEvent+Private.h"
 
 NSString *const kZincEventAttributesSourceKey = @"source";

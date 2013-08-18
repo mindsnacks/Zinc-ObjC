@@ -10,15 +10,11 @@
 
 #import <KSReachability/KSReachability.h>
 
+#import "ZincInternals.h"
+
 #import "ZincRepo+Private.h"
-#import "ZincResource.h"
-#import "ZincRepoIndex.h"
-#import "ZincTrackingInfo.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincTask+Private.h"
-#import "ZincTasks.h"
 #import "ZincDownloadPolicy+Private.h"
-#import "ZincTaskRequest.h"
+#import "ZincTask+Private.h"
 
 
 @interface ZincAgent ()

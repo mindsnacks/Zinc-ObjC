@@ -6,21 +6,11 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleRemoteCloneTask.h"
-#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincBundle.h"
-#import "ZincManifest.h"
-#import "ZincResource.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincManifestDownloadTask.h"
-#import "ZincEvent.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincObjectDownloadTask.h"
-#import "ZincArchiveDownloadTask.h"
-#import "ZincResource.h"
-#import "ZincErrors.h"
 
 @interface ZincBundleRemoteCloneTask ()
 @property (assign) long long maxProgressValue;

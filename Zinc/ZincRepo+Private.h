@@ -7,7 +7,9 @@
 //
 
 #import "ZincRepo.h"
+
 #import "ZincRepoIndex.h"
+#import "ZincRepoBundleManager.h"
 #import "ZincRepoTaskManager.h"
 
 #define kZincRepoDefaultObjectDownloadCount (5)

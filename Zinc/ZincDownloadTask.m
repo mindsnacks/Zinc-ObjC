@@ -6,10 +6,10 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincDownloadTask.h"
-#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
-#import "ZincEvent.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
 #import "ZincHTTPRequestOperation.h"

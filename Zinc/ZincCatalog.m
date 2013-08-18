@@ -7,6 +7,7 @@
 //
 
 #import "ZincCatalog.h"
+
 #import "ZincJSONSerialization.h"
 
 @interface ZincCatalog ()

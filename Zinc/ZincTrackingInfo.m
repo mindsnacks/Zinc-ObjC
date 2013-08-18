@@ -6,12 +6,14 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
+#import "ZincTrackingInfo.h"
+
+
 #define kCodingKey_Distribution @"distribution"
 #define kCodingKey_Version @"version"
 #define kCodingKey_UpdateAutomatically @"auto_update"
 #define kCodingKey_Flavor @"flavor"
 
-#import "ZincTrackingInfo.h"
 
 @implementation ZincTrackingInfo
 
@@ -62,7 +64,6 @@
     }
     return self;
 }
-
 
 - (NSDictionary*) dictionaryRepresentation
 {

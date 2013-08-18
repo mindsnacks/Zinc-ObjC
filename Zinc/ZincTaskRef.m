@@ -7,6 +7,7 @@
 //
 
 #import "ZincTaskRef.h"
+
 #import "ZincTask.h"
 
 @interface ZincTaskRef ()
