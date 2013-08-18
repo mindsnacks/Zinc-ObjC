@@ -622,17 +622,17 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
 {
     NSParameterAssert(req);
-    [self beginTrackingBundleWithID:req.bundleID distribution:req.distribution flavor:req.flavor automaticallyUpdate:req.updateAutomatically];
+    [self beginTrackingBundleWithID:req.bundleID distribution:req.distribution flavor:req.flavor];
 }
 
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro
 {
     NSParameterAssert(bundleID);
     NSParameterAssert(distro);
-    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
+    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:nil];
 }
 
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor
 {
     NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);
     if (catalogID == nil) {
@@ -661,10 +661,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         }
         
         trackingInfo.distribution = distro;
-        trackingInfo.updateAutomatically = autoUpdate;
-        if (autoUpdate) {
-            trackingInfo.version = [self catalogVersionForBundleID:bundleID distribution:distro];
-        }
+
         [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
     }
     

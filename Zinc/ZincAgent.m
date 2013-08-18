@@ -215,12 +215,8 @@ static NSMutableDictionary* _AgentsByURL;
             ZincTrackingInfo* trackingInfo = [self.repo.index trackingInfoForBundleID:bundleID];
             ZincVersion targetVersion = ZincVersionInvalid;
 
-            /*
-             - if auto updates are enabled, we always want to look in the catalog
-             - if not, BUT the version is invalid, it means that we weren't able to clone any version yet
-             */
             // TODO: this really needs to be testable
-            if (trackingInfo.updateAutomatically || trackingInfo.version == ZincVersionInvalid) {
+            if (trackingInfo.version == ZincVersionInvalid) {
                 targetVersion = [self.repo catalogVersionForBundleID:bundleID distribution:trackingInfo.distribution];
             } else {
                 targetVersion = trackingInfo.version;

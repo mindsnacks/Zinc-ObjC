@@ -14,24 +14,20 @@
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
                                                           flavor:(NSString*)flavor
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate
 {
     ZincBundleTrackingRequest* req = [[ZincBundleTrackingRequest alloc] init];
     req.bundleID = bundleID;
     req.distribution = distribution;
     req.flavor = flavor;
-    req.updateAutomatically = automaticallyUpdate;
     return req;
 }
 
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate
 {
     ZincBundleTrackingRequest* req = [[ZincBundleTrackingRequest alloc] init];
     req.bundleID = bundleID;
     req.distribution = distribution;
-    req.updateAutomatically = automaticallyUpdate;
     return req;
 }
 

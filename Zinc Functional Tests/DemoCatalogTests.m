@@ -55,7 +55,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -86,7 +86,7 @@
     
     // -- Update bundle @ master
 
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -104,7 +104,7 @@
     
     // -- Update bundle @ test
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"test" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"test"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -151,7 +151,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -188,7 +188,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -244,7 +244,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -326,7 +326,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -382,7 +382,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -456,7 +456,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -534,7 +534,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -588,7 +588,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {

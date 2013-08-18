@@ -153,7 +153,6 @@
             trackingInfo = [[ZincTrackingInfo alloc] init];
             trackingInfo.version = ZincVersionInvalid;
             trackingInfo.distribution = trackingInfoObj;
-            trackingInfo.updateAutomatically = YES; // all old tracking infos updated automatically
         } else if ([trackingInfoObj isKindOfClass:[NSDictionary class]]) {
             NSDictionary* trackingInfoDict = (NSDictionary*)trackingInfoObj;
             trackingInfo = [ZincTrackingInfo trackingInfoFromDictionary:trackingInfoDict];

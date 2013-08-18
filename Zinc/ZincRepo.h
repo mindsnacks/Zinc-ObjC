@@ -102,8 +102,8 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 #pragma mark Tracking Remote Bundles
 
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro;
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor;
 
 - (void) stopTrackingBundleWithID:(NSString*)bundleID;
 
