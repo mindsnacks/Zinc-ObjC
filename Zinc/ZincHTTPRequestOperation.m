@@ -114,9 +114,6 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
 @end
 
 @implementation ZincHTTPRequestOperation
-@synthesize HTTPError = _HTTPError;
-@dynamic request;
-@dynamic response;
 
 - (NSError *)error {
     if (!self.HTTPError && self.response) {
