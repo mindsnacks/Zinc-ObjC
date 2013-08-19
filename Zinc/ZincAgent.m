@@ -175,26 +175,6 @@ static NSMutableDictionary* _AgentsByURL;
     }
 }
 
-- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
-{
-    NSSet* sourceURLs = [self.repo.index sourceURLs];
-
-    NSOperation* parentOp = nil;
-    if (completion != nil) {
-        parentOp = [[NSOperation alloc] init];
-        parentOp.completionBlock = completion;
-    }
-
-    for (NSURL* source in sourceURLs) {
-        ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
-        ZincTask* task = (ZincSourceUpdateTask*)[self.repo.taskManager queueTaskForDescriptor:taskDesc];
-        [parentOp addDependency:task];
-    }
-
-    if (completion != nil) {
-        [self.repo.taskManager addOperation:parentOp];
-    }
-}
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
@@ -264,7 +244,7 @@ static NSMutableDictionary* _AgentsByURL;
 {
     __weak typeof(self) weakself = self;
 
-    [self refreshSourcesWithCompletion:^{
+    [self.repo refreshSourcesWithCompletion:^{
 
         __strong typeof(weakself) strongself = weakself;
 

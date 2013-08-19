@@ -361,6 +361,27 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 }
 
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
+{
+    NSSet* sourceURLs = [self.index sourceURLs];
+
+    NSOperation* parentOp = nil;
+    if (completion != nil) {
+        parentOp = [[NSOperation alloc] init];
+        parentOp.completionBlock = completion;
+    }
+
+    for (NSURL* source in sourceURLs) {
+        ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
+        ZincTask* task = (ZincSourceUpdateTask*)[self.taskManager queueTaskForDescriptor:taskDesc];
+        [parentOp addDependency:task];
+    }
+
+    if (completion != nil) {
+        [self.taskManager addOperation:parentOp];
+    }
+}
+
 - (NSArray*) sourcesForCatalogID:(NSString*)catalogID
 {
     return (self.sourcesByCatalog)[catalogID];

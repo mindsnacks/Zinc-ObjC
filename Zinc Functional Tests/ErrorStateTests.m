@@ -6,13 +6,13 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 
 
 #define DEFAULT_TIMEOUT_SECONDS 60
 
 
-@interface ErrorStateTests : ZincFunctionalTestCase
+@interface ErrorStateTests : ZincRepoFunctionalTestCase
 
 @end
 

@@ -41,9 +41,6 @@
 @property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
 
 
-- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
-
-
 /**
  @discussion Update all bundles
  */

@@ -90,6 +90,7 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) removeSourceURL:(NSURL*)url;
 - (NSSet*) sourceURLs;
 
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
 
 #pragma mark -

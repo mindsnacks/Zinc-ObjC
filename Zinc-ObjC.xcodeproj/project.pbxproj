@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3961E34F1649E4700008A65B /* Default-568h@2x.png */; };
+		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
 		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */; };
@@ -78,7 +79,7 @@
 		B33A362B1698FB4D007F0A57 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B33A362C1698FB5B007F0A57 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B33A362F16990BA5007F0A57 /* ExternalBundleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B33A362E16990BA5007F0A57 /* ExternalBundleTests.m */; };
-		B33A363216990DE5007F0A57 /* ZincFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B33A363116990DE4007F0A57 /* ZincFunctionalTestCase.m */; };
+		B33A363216990DE5007F0A57 /* ZincRepoFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B33A363116990DE4007F0A57 /* ZincRepoFunctionalTestCase.m */; };
 		B33A363716991121007F0A57 /* cats.json in Resources */ = {isa = PBXBuildFile; fileRef = B33A363416991121007F0A57 /* cats.json */; };
 		B33A363816991121007F0A57 /* kucing.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B33A363516991121007F0A57 /* kucing.jpeg */; };
 		B33A363916991121007F0A57 /* lime-cat.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B33A363616991121007F0A57 /* lime-cat.jpeg */; };
@@ -189,6 +190,8 @@
 
 /* Begin PBXFileReference section */
 		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
+		B30716BF17C1BCAE007705F3 /* ZincAgentFunctionalTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincAgentFunctionalTestCase.h; sourceTree = "<group>"; };
+		B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgentFunctionalTestCase.m; sourceTree = "<group>"; };
 		B308D67616CA221F008A1237 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorStateTests.m; sourceTree = "<group>"; };
@@ -266,8 +269,8 @@
 		B33A36151698F3A5007F0A57 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B33A36251698F6BF007F0A57 /* DemoCatalogTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DemoCatalogTests.m; sourceTree = "<group>"; };
 		B33A362E16990BA5007F0A57 /* ExternalBundleTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExternalBundleTests.m; sourceTree = "<group>"; };
-		B33A363016990DE4007F0A57 /* ZincFunctionalTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincFunctionalTestCase.h; sourceTree = "<group>"; };
-		B33A363116990DE4007F0A57 /* ZincFunctionalTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincFunctionalTestCase.m; sourceTree = "<group>"; };
+		B33A363016990DE4007F0A57 /* ZincRepoFunctionalTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoFunctionalTestCase.h; sourceTree = "<group>"; };
+		B33A363116990DE4007F0A57 /* ZincRepoFunctionalTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoFunctionalTestCase.m; sourceTree = "<group>"; };
 		B33A363416991121007F0A57 /* cats.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = cats.json; path = Resources/com.mindsnacks.demo1.cats/cats.json; sourceTree = SOURCE_ROOT; };
 		B33A363516991121007F0A57 /* kucing.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = kucing.jpeg; path = Resources/com.mindsnacks.demo1.cats/kucing.jpeg; sourceTree = SOURCE_ROOT; };
 		B33A363616991121007F0A57 /* lime-cat.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = "lime-cat.jpeg"; path = "Resources/com.mindsnacks.demo1.cats/lime-cat.jpeg"; sourceTree = SOURCE_ROOT; };
@@ -523,8 +526,10 @@
 		B33A36051698F3A5007F0A57 /* Zinc Functional Tests */ = {
 			isa = PBXGroup;
 			children = (
-				B33A363016990DE4007F0A57 /* ZincFunctionalTestCase.h */,
-				B33A363116990DE4007F0A57 /* ZincFunctionalTestCase.m */,
+				B33A363016990DE4007F0A57 /* ZincRepoFunctionalTestCase.h */,
+				B33A363116990DE4007F0A57 /* ZincRepoFunctionalTestCase.m */,
+				B30716BF17C1BCAE007705F3 /* ZincAgentFunctionalTestCase.h */,
+				B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */,
 				B33A36251698F6BF007F0A57 /* DemoCatalogTests.m */,
 				B33A362E16990BA5007F0A57 /* ExternalBundleTests.m */,
 				B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */,
@@ -1175,8 +1180,9 @@
 				B33A360C1698F3A5007F0A57 /* main.m in Sources */,
 				B33A36261698F6BF007F0A57 /* DemoCatalogTests.m in Sources */,
 				B33A362F16990BA5007F0A57 /* ExternalBundleTests.m in Sources */,
-				B33A363216990DE5007F0A57 /* ZincFunctionalTestCase.m in Sources */,
+				B33A363216990DE5007F0A57 /* ZincRepoFunctionalTestCase.m in Sources */,
 				B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */,
+				B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
