@@ -9,7 +9,7 @@
 #import "ZincTaskMonitor.h"
 
 #import "ZincTaskRef.h"
-#import "ZincTask.h" // TODO: remove dependency?
+
 
 @interface ZincTaskMonitor ()
 @property (nonatomic, strong, readwrite) ZincTaskRef* taskRef;
