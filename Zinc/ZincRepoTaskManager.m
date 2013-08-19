@@ -125,8 +125,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSArray*) tasksForBundleID:(NSString*)bundleID
 {
-    @synchronized(self.tasks)
-    {
+    @synchronized(self.tasks) {
+
         NSMutableArray* tasks = [NSMutableArray array];
         for (ZincTask* task in self.tasks) {
             if ([task.resource isZincBundleResource]) {
