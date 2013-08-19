@@ -45,11 +45,7 @@
  - `connection:willCacheResponse:`
  - `connectionShouldUseCredentialStorage:`
  - `connection:needNewBodyStream:`
-
- The following authentication delegate methods are implemented:
- 
- - `connection:canAuthenticateAgainstProtectionSpace:`
- - `connection:didReceiveAuthenticationChallenge:`
+ - `connection:willSendRequestForAuthenticationChallenge:`
 
  If any of these methods are overridden in a subclass, they _must_ call the `super` implementation first.
 
@@ -169,7 +165,7 @@ NSCoding, NSCopying>
 
  By default, data is accumulated into a buffer that is stored into `responseData` upon completion of the request. When `outputStream` is set, the data will not be accumulated into an internal buffer, and as a result, the `responseData` property of the completed request will be `nil`. The output stream will be scheduled in the network thread runloop upon being set.
  */
-@property (nonatomic, strong) NSOutputStream *outputStream;
+@property (readwrite, nonatomic, strong) NSOutputStream *outputStream;
 
 ///---------------------------------------------
 /// @name Managing Request Operation Information
@@ -180,9 +176,9 @@ NSCoding, NSCopying>
  */
 @property (nonatomic, strong) NSDictionary *userInfo;
 
-///------------------------------------------------------
+///--------------------------------------------------------
 /// @name Initializing an ZincURLConnectionOperation Object
-///------------------------------------------------------
+///--------------------------------------------------------
 
 /**
  Initializes and returns a newly allocated operation object with a url connection configured with the specified url request.
@@ -247,22 +243,13 @@ NSCoding, NSCopying>
 ///-------------------------------------------------
 
 /**
- Sets a block to be executed to determine whether the connection should be able to respond to a protection space's form of authentication, as handled by the `NSURLConnectionDelegate` method `connection:canAuthenticateAgainstProtectionSpace:`.
+ Sets a block to be executed when the connection will authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequestForAuthenticationChallenge:`.
  
- If `allowsInvalidSSLCertificate` is set to YES, `connection:canAuthenticateAgainstProtectionSpace:` will accept invalid SSL certificates, returning `YES` if the protection space authentication method is `NSURLAuthenticationMethodServerTrust`.
-
- @param block A block object to be executed to determine whether the connection should be able to respond to a protection space's form of authentication. The block has a `BOOL` return type and takes two arguments: the URL connection object, and the protection space to authenticate against.  
+ @param block A block object to be executed when the connection will authenticate a challenge in order to download its request. The block has no return type and takes two arguments: the URL connection object, and the challenge that must be authenticated. This block must invoke one of the challenge-responder methods (NSURLAuthenticationChallengeSender protocol).
+ 
+ If `allowsInvalidSSLCertificate` is set to YES, `connection:willSendRequestForAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
  */
-- (void)setAuthenticationAgainstProtectionSpaceBlock:(BOOL (^)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace))block;
-
-/**
- Sets a block to be executed when the connection must authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:didReceiveAuthenticationChallenge:`.
-
- @param block A block object to be executed when the connection must authenticate a challenge in order to download its request. The block has no return type and takes two arguments: the URL connection object, and the challenge that must be authenticated.
-
-  If `allowsInvalidSSLCertificate` is set to YES, `connection:didReceiveAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
- */
-- (void)setAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
+- (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
 
 /**
  Sets a block to be executed when the server redirects the request from one URL to another URL, or when the request URL changed by the `NSURLProtocol` subclass handling the request in order to standardize its format, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequest:redirectResponse:`.

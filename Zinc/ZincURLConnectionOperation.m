@@ -1,4 +1,4 @@
-// ZincURLConnectionOperation.m
+// AFURLConnectionOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -147,13 +147,14 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @implementation ZincURLConnectionOperation
 @synthesize outputStream = _outputStream;
 
-+ (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
-    do {
-        @autoreleasepool {
-            [[NSThread currentThread] setName:@"ZincNetworking"];
-            [[NSRunLoop currentRunLoop] run];
-        }
-    } while (YES);
++ (void)networkRequestThreadEntryPoint:(id __unused)object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@"AFNetworking"];
+
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop run];
+    }
 }
 
 + (NSThread *)networkRequestThread {
@@ -278,11 +279,7 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.downloadProgress = block;
 }
 
-- (void)setAuthenticationAgainstProtectionSpaceBlock:(BOOL (^)(NSURLConnection *, NSURLProtectionSpace *))block {
-    self.authenticationAgainstProtectionSpace = block;
-}
-
-- (void)setAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
+- (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
     self.authenticationChallenge = block;
 }
 
@@ -424,6 +421,11 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     });
     
     if ([self isCancelled]) {
+        NSDictionary *userInfo = nil;
+        if ([self.request URL]) {
+            userInfo = [NSDictionary dictionaryWithObject:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
+        }
+        self.error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:userInfo];
         [self finish];
     }
 }
@@ -467,36 +469,99 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 #pragma mark - NSURLConnectionDelegate
 
-
-- (BOOL)connection:(NSURLConnection *)connection
-canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
-    if (self.allowsInvalidSSLCertificate &&
-       [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            return YES;
-    }
-    
-    if (self.authenticationAgainstProtectionSpace) {
-        return self.authenticationAgainstProtectionSpace(connection, protectionSpace);
-    } else if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] || [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
 - (void)connection:(NSURLConnection *)connection
-didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
-
-    if (self.allowsInvalidSSLCertificate
-       && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
-        return;
-    }
-
     if (self.authenticationChallenge) {
         self.authenticationChallenge(connection, challenge);
+        return;
+    }
+    
+    if ([challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+        SecTrustRef serverTrust = challenge.protectionSpace.serverTrust;
+        
+        SecPolicyRef policy = SecPolicyCreateBasicX509();
+        CFIndex certificateCount = SecTrustGetCertificateCount(serverTrust);
+        NSMutableArray *trustChain = [NSMutableArray arrayWithCapacity:certificateCount];
+        
+        for (CFIndex i = 0; i < certificateCount; i++) {
+            SecCertificateRef certificate = SecTrustGetCertificateAtIndex(serverTrust, i);
+            
+            if (self.SSLPinningMode == AFSSLPinningModeCertificate) {
+                [trustChain addObject:(__bridge_transfer NSData *)SecCertificateCopyData(certificate)];
+            } else if (self.SSLPinningMode == AFSSLPinningModePublicKey) {
+                SecCertificateRef someCertificates[] = {certificate};
+                CFArrayRef certificates = CFArrayCreate(NULL, (const void **)someCertificates, 1, NULL);
+                
+                SecTrustRef trust = NULL;
+                
+                OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &trust);
+                NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
+                if (status == errSecSuccess && trust) {
+                    SecTrustResultType result;
+                    status = SecTrustEvaluate(trust, &result);
+                    NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+                    if (status == errSecSuccess) {
+                        [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
+                    }
+
+                    CFRelease(trust);
+                }
+              
+                CFRelease(certificates);
+            }
+        }
+        
+        CFRelease(policy);
+        
+        switch (self.SSLPinningMode) {
+            case AFSSLPinningModePublicKey: {
+                NSArray *pinnedPublicKeys = [self.class pinnedPublicKeys];
+                
+                for (id publicKey in trustChain) {
+                    for (id pinnedPublicKey in pinnedPublicKeys) {
+                        if (AFSecKeyIsEqualToKey((__bridge SecKeyRef)publicKey, (__bridge SecKeyRef)pinnedPublicKey)) {
+                            NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                            [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                            return;
+                        }
+                    }
+                }
+                
+                [[challenge sender] cancelAuthenticationChallenge:challenge];
+                break;
+            }
+            case AFSSLPinningModeCertificate: {
+                for (id serverCertificateData in trustChain) {
+                    if ([[self.class pinnedCertificates] containsObject:serverCertificateData]) {
+                        NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                        return;
+                    }
+                }
+                
+                [[challenge sender] cancelAuthenticationChallenge:challenge];
+                break;
+            }
+            case AFSSLPinningModeNone: {
+                if (self.allowsInvalidSSLCertificate){
+                    NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                    [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                } else {
+                    SecTrustResultType result = 0;
+                    OSStatus status = SecTrustEvaluate(serverTrust, &result);
+                    NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+                    
+                    if (status == errSecSuccess && (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed)) {
+                        NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+                        [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
+                    } else {
+                        [[challenge sender] cancelAuthenticationChallenge:challenge];
+                    }
+                }
+                break;
+            }
+        }
     } else {
         if ([challenge previousFailureCount] == 0) {
             if (self.credential) {
@@ -649,7 +714,6 @@ didReceiveResponse:(NSURLResponse *)response
     ZincURLConnectionOperation *operation = [(ZincURLConnectionOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request];
     
     operation.downloadProgress = self.downloadProgress;
-    operation.authenticationAgainstProtectionSpace = self.authenticationAgainstProtectionSpace;
     operation.authenticationChallenge = self.authenticationChallenge;
     operation.cacheResponse = self.cacheResponse;
     operation.redirectResponse = self.redirectResponse;
