@@ -925,10 +925,10 @@
 		B3F201E917722C9700F4A01E /* Networking */ = {
 			isa = PBXGroup;
 			children = (
-				B3F201E117722C4600F4A01E /* ZincHTTPRequestOperation.h */,
-				B3F201E217722C4600F4A01E /* ZincHTTPRequestOperation.m */,
 				B3F201E517722C8E00F4A01E /* ZincURLConnectionOperation.h */,
 				B3F201E617722C8E00F4A01E /* ZincURLConnectionOperation.m */,
+				B3F201E117722C4600F4A01E /* ZincHTTPRequestOperation.h */,
+				B3F201E217722C4600F4A01E /* ZincHTTPRequestOperation.m */,
 			);
 			name = Networking;
 			sourceTree = "<group>";

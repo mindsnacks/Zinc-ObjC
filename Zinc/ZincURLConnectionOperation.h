@@ -45,12 +45,8 @@
  - `connection:willCacheResponse:`
  - `connectionShouldUseCredentialStorage:`
  - `connection:needNewBodyStream:`
- 
- When _ZINCNETWORKING_PIN_SSL_CERTIFICATES_ is defined, the following authentication delegate method is implemented:
- 
- - `connection:willSendRequestForAuthenticationChallenge:`
- 
- Otherwise, the following authentication delegate methods are implemented:
+
+ The following authentication delegate methods are implemented:
  
  - `connection:canAuthenticateAgainstProtectionSpace:`
  - `connection:didReceiveAuthenticationChallenge:`
@@ -66,14 +62,6 @@
  The built-in `completionBlock` provided by `NSOperation` allows for custom behavior to be executed after the request finishes. It is a common pattern for class constructors in subclasses to take callback block parameters, and execute them conditionally in the body of its `completionBlock`. Make sure to handle cancelled operations appropriately when setting a `completionBlock` (i.e. returning early before parsing response data). See the implementation of any of the `ZincHTTPRequestOperation` subclasses for an example of this.
 
  Subclasses are strongly discouraged from overriding `setCompletionBlock:`, as `ZincURLConnectionOperation`'s implementation includes a workaround to mitigate retain cycles, and what Apple rather ominously refers to as ["The Deallocation Problem"](http://developer.apple.com/library/ios/#technotes/tn2109/).
- 
- ## SSL Pinning
- 
- Relying on the CA trust model to validate SSL certificates exposes your app to security vulnerabilities, such as man-in-the-middle attacks. For applications that connect to known servers, SSL certificate pinning provides an increased level of security, by checking server certificate validity against those specified in the app bundle.
- 
- SSL with certificate pinning is strongly recommended for any application that transmits sensitive information to an external webservice.
-
- When `_ZINCNETWORKING_PIN_SSL_CERTIFICATES_` is defined and the Security framework is linked, connections will be validated on all matching certificates with a `.cer` extension in the bundle root.
 
  ## NSCoding & NSCopying Conformance
 
@@ -90,14 +78,6 @@
  - A copy of an operation will not include the `outputStream` of the original.
  - Operation copies do not include `completionBlock`. `completionBlock` often strongly captures a reference to `self`, which would otherwise have the unintuitive side-effect of pointing to the _original_ operation when copied.
  */
-
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-typedef enum {
-    ZincSSLPinningModeNone,
-    ZincSSLPinningModePublicKey,
-    ZincSSLPinningModeCertificate,
-} ZincURLConnectionOperationSSLPinningMode;
-#endif
 
 @interface ZincURLConnectionOperation : NSOperation <NSURLConnectionDelegate,
 #if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= 50000) || \
@@ -180,25 +160,9 @@ NSCoding, NSCopying>
  */
 @property (nonatomic, strong) NSURLCredential *credential;
 
-/**
- The pinning mode which will be used for SSL connections. `ZincSSLPinningModePublicKey` by default.
- 
- To enable SSL Pinning, `#define _ZINCNETWORKING_PIN_SSL_CERTIFICATES_` in `Prefix.pch`. Also, make sure that the Security framework is linked with the binary. See the "SSL Pinning" section in the `ZincURLConnectionOperation`" header for more information.
- */
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-@property (nonatomic, assign) ZincURLConnectionOperationSSLPinningMode SSLPinningMode;
-#endif
-
 ///------------------------
 /// @name Accessing Streams
 ///------------------------
-
-/**
- The input stream used to read data to be sent during the request.
-
- This property acts as a proxy to the `HTTPBodyStream` property of `request`.
- */
-@property (nonatomic, strong) NSInputStream *inputStream;
 
 /**
  The output stream that is used to write data received until the request is finished.
@@ -272,13 +236,6 @@ NSCoding, NSCopying>
 ///---------------------------------
 
 /**
- Sets a callback to be called when an undetermined number of bytes have been uploaded to the server.
-
- @param block A block object to be called when an undetermined number of bytes have been uploaded to the server. This block has no return value and takes three arguments: the number of bytes written since the last time the upload progress block was called, the total bytes written, and the total bytes expected to be written during the request, as initially determined by the length of the HTTP body. This block may be called multiple times, and will execute on the main thread.
- */
-- (void)setUploadProgressBlock:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))block;
-
-/**
  Sets a callback to be called when an undetermined number of bytes have been downloaded from the server.
 
  @param block A block object to be called when an undetermined number of bytes have been downloaded from the server. This block has no return value and takes three arguments: the number of bytes read since the last time the download progress block was called, the total bytes read, and the total bytes expected to be read during the request, as initially determined by the expected content size of the `NSHTTPURLResponse` object. This block may be called multiple times, and will execute on the main thread.
@@ -288,18 +245,6 @@ NSCoding, NSCopying>
 ///-------------------------------------------------
 /// @name Setting NSURLConnection Delegate Callbacks
 ///-------------------------------------------------
-
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-/**
- Sets a block to be executed when the connection will authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequestForAuthenticationChallenge:`.
- 
- @param block A block object to be executed when the connection will authenticate a challenge in order to download its request. The block has no return type and takes two arguments: the URL connection object, and the challenge that must be authenticated. This block must invoke one of the challenge-responder methods (NSURLAuthenticationChallengeSender protocol).
- 
- If `allowsInvalidSSLCertificate` is set to YES, `connection:willSendRequestForAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
- */
-- (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
-
-#else
 
 /**
  Sets a block to be executed to determine whether the connection should be able to respond to a protection space's form of authentication, as handled by the `NSURLConnectionDelegate` method `connection:canAuthenticateAgainstProtectionSpace:`.
@@ -318,8 +263,6 @@ NSCoding, NSCopying>
   If `allowsInvalidSSLCertificate` is set to YES, `connection:didReceiveAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
  */
 - (void)setAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
-
-#endif
 
 /**
  Sets a block to be executed when the server redirects the request from one URL to another URL, or when the request URL changed by the `NSURLProtocol` subclass handling the request in order to standardize its format, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequest:redirectResponse:`.

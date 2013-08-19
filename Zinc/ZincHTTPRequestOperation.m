@@ -115,26 +115,8 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
 
 @implementation ZincHTTPRequestOperation
 @synthesize HTTPError = _HTTPError;
-@synthesize successCallbackQueue = _successCallbackQueue;
-@synthesize failureCallbackQueue = _failureCallbackQueue;
 @dynamic request;
 @dynamic response;
-
-- (void)dealloc {
-    if (_successCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-        dispatch_release(_successCallbackQueue);
-#endif
-        _successCallbackQueue = NULL;
-    }
-
-    if (_failureCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-        dispatch_release(_failureCallbackQueue);
-#endif
-        _failureCallbackQueue = NULL;
-    }
-}
 
 - (NSError *)error {
     if (!self.HTTPError && self.response) {
@@ -223,42 +205,6 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
     return ![[self class] acceptableContentTypes] || [[[self class] acceptableContentTypes] containsObject:contentType];
 }
 
-- (void)setSuccessCallbackQueue:(dispatch_queue_t)successCallbackQueue {
-    if (successCallbackQueue != _successCallbackQueue) {
-        if (_successCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-            dispatch_release(_successCallbackQueue);
-#endif
-            _successCallbackQueue = NULL;
-        }
-
-        if (successCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-            dispatch_retain(successCallbackQueue);
-#endif
-            _successCallbackQueue = successCallbackQueue;
-        }
-    }
-}
-
-- (void)setFailureCallbackQueue:(dispatch_queue_t)failureCallbackQueue {
-    if (failureCallbackQueue != _failureCallbackQueue) {
-        if (_failureCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-            dispatch_release(_failureCallbackQueue);
-#endif
-            _failureCallbackQueue = NULL;
-        }
-
-        if (failureCallbackQueue) {
-#if !OS_OBJECT_USE_OBJC
-            dispatch_retain(failureCallbackQueue);
-#endif
-            _failureCallbackQueue = failureCallbackQueue;
-        }
-    }
-}
-
 - (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPRequestOperation *operation, id responseObject))success
                               failure:(void (^)(ZincHTTPRequestOperation *operation, NSError *error))failure
 {
@@ -269,13 +215,13 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
     self.completionBlock = ^{
         if (self.error) {
             if (failure) {
-                dispatch_async(self.failureCallbackQueue ?: dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
                     failure(self, self.error);
                 });
             }
         } else {
             if (success) {
-                dispatch_async(self.successCallbackQueue ?: dispatch_get_main_queue(), ^{
+                dispatch_async(dispatch_get_main_queue(), ^{
                     success(self, self.responseData);
                 });
             }
