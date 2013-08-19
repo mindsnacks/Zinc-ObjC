@@ -97,7 +97,7 @@ static NSMutableDictionary* _AgentsByURL;
             __strong typeof(weakself) strongself = weakself;
 
             // TODO: move this inside task manager?
-            @synchronized(strongself.repo.tasks) {
+            @synchronized(strongself.repo.taskManager.tasks) {
                 NSArray* remoteBundleUpdateTasks = [strongself.repo.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
                     return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
                 }]];
