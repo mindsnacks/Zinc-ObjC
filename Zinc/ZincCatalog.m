@@ -52,12 +52,6 @@
     return d;
 }
 
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
 - (NSString*) description
 {
     return [NSString stringWithFormat:@"<%@ 0x%x\n%@>",

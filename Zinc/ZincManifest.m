@@ -165,11 +165,4 @@
     return d;
 }
 
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
-
 @end

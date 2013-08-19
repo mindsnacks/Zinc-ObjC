@@ -454,11 +454,4 @@
             userInfo:nil];
 }
 
-
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
-
 @end

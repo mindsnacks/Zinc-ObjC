@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3961E34F1649E4700008A65B /* Default-568h@2x.png */; };
 		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
+		B30716C517C1C0C8007705F3 /* ZincModelObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B30716C317C1C0C8007705F3 /* ZincModelObject.h */; };
+		B30716C617C1C0C8007705F3 /* ZincModelObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C417C1C0C8007705F3 /* ZincModelObject.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
 		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */; };
@@ -192,6 +194,8 @@
 		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		B30716BF17C1BCAE007705F3 /* ZincAgentFunctionalTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincAgentFunctionalTestCase.h; sourceTree = "<group>"; };
 		B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgentFunctionalTestCase.m; sourceTree = "<group>"; };
+		B30716C317C1C0C8007705F3 /* ZincModelObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincModelObject.h; sourceTree = "<group>"; };
+		B30716C417C1C0C8007705F3 /* ZincModelObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincModelObject.m; sourceTree = "<group>"; };
 		B308D67616CA221F008A1237 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorStateTests.m; sourceTree = "<group>"; };
@@ -912,6 +916,8 @@
 				B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */,
 				B3A960E517A889A20031466A /* ZincAgent+Private.h */,
 				B3A960E217A8892E0031466A /* ZincAgent.m */,
+				B30716C317C1C0C8007705F3 /* ZincModelObject.h */,
+				B30716C417C1C0C8007705F3 /* ZincModelObject.m */,
 				B3215E3014BF7C6000FC7FA7 /* ZincRepoIndex.h */,
 				B3215E3114BF7C6100FC7FA7 /* ZincRepoIndex.m */,
 				B3443A361742A964000920B8 /* ZincRepoBundleManager.h */,
@@ -991,6 +997,7 @@
 				B3C512B2175E57FB00E5A93B /* ZincRepoTaskManager.h in Headers */,
 				B3F201E317722C4600F4A01E /* ZincHTTPRequestOperation.h in Headers */,
 				B3C5E20C17C04B0000B1EA19 /* ZincTaskRequest.h in Headers */,
+				B30716C517C1C0C8007705F3 /* ZincModelObject.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1248,6 +1255,7 @@
 				B3C512B3175E57FB00E5A93B /* ZincRepoTaskManager.m in Sources */,
 				B3A960E417A8892E0031466A /* ZincAgent.m in Sources */,
 				B3C5E20D17C04B0000B1EA19 /* ZincTaskRequest.m in Sources */,
+				B30716C617C1C0C8007705F3 /* ZincModelObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

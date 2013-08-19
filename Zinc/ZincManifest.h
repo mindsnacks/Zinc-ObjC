@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincModelObject.h"
 
-@interface ZincManifest : NSObject
+@interface ZincManifest : ZincModelObject
 
 + (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError;
 
@@ -36,8 +37,5 @@
 - (NSUInteger) fileCount;
 
 - (NSURL*) bundleResource;
-
-- (NSDictionary*) dictionaryRepresentation;
-- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end
