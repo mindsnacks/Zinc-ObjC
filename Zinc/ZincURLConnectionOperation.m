@@ -146,31 +146,7 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @end
 
 @implementation ZincURLConnectionOperation
-@synthesize state = _state;
-@synthesize cancelled = _cancelled;
-@synthesize connection = _connection;
-@synthesize runLoopModes = _runLoopModes;
-@synthesize request = _request;
-@synthesize response = _response;
-@synthesize error = _error;
-@synthesize allowsInvalidSSLCertificate = _allowsInvalidSSLCertificate;
-@synthesize responseData = _responseData;
-@synthesize responseString = _responseString;
-@synthesize responseStringEncoding = _responseStringEncoding;
-@synthesize totalBytesRead = _totalBytesRead;
-@dynamic inputStream;
 @synthesize outputStream = _outputStream;
-@synthesize credential = _credential;
-@synthesize shouldUseCredentialStorage = _shouldUseCredentialStorage;
-@synthesize userInfo = _userInfo;
-@synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
-@synthesize uploadProgress = _uploadProgress;
-@synthesize downloadProgress = _downloadProgress;
-@synthesize authenticationChallenge = _authenticationChallenge;
-@synthesize authenticationAgainstProtectionSpace = _authenticationAgainstProtectionSpace;
-@synthesize cacheResponse = _cacheResponse;
-@synthesize redirectResponse = _redirectResponse;
-@synthesize lock = _lock;
 
 + (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
     do {
