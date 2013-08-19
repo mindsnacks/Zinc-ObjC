@@ -165,13 +165,6 @@ NSCoding, NSCopying>
 ///------------------------
 
 /**
- The input stream used to read data to be sent during the request.
-
- This property acts as a proxy to the `HTTPBodyStream` property of `request`.
- */
-@property (nonatomic, strong) NSInputStream *inputStream;
-
-/**
  The output stream that is used to write data received until the request is finished.
 
  By default, data is accumulated into a buffer that is stored into `responseData` upon completion of the request. When `outputStream` is set, the data will not be accumulated into an internal buffer, and as a result, the `responseData` property of the completed request will be `nil`. The output stream will be scheduled in the network thread runloop upon being set.

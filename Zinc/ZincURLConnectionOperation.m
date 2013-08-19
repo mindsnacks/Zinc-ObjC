@@ -167,7 +167,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     return _networkRequestThread;
 }
 
-
 - (id)initWithRequest:(NSURLRequest *)urlRequest {
     NSParameterAssert(urlRequest);
 
@@ -227,18 +226,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
         }];
     }
     [self.lock unlock];
-}
-
-- (NSInputStream *)inputStream {
-    return self.request.HTTPBodyStream;
-}
-
-- (void)setInputStream:(NSInputStream *)inputStream {
-    [self willChangeValueForKey:@"inputStream"];
-    NSMutableURLRequest *mutableRequest = [self.request mutableCopy];
-    mutableRequest.HTTPBodyStream = inputStream;
-    self.request = mutableRequest;
-    [self didChangeValueForKey:@"inputStream"];
 }
 
 - (NSOutputStream *)outputStream {
