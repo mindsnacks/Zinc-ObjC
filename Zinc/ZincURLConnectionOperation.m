@@ -133,7 +133,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @property (readwrite, nonatomic, assign) NSStringEncoding responseStringEncoding;
 @property (readwrite, nonatomic, assign) long long totalBytesRead;
 @property (readwrite, nonatomic, assign) ZincNetworkingBackgroundTaskIdentifier backgroundTaskIdentifier;
-@property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock uploadProgress;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock downloadProgress;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
@@ -287,10 +286,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     [self.lock unlock];
 }
 #endif
-
-- (void)setUploadProgressBlock:(void (^)(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite))block {
-    self.uploadProgress = block;
-}
 
 - (void)setDownloadProgressBlock:(void (^)(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead))block {
     self.downloadProgress = block;
@@ -556,18 +551,6 @@ didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 }
 
 - (void)connection:(NSURLConnection __unused *)connection
-   didSendBodyData:(NSInteger)bytesWritten
- totalBytesWritten:(NSInteger)totalBytesWritten
-totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite
-{
-    if (self.uploadProgress) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.uploadProgress((NSUInteger)bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-        });
-    }
-}
-
-- (void)connection:(NSURLConnection __unused *)connection
 didReceiveResponse:(NSURLResponse *)response
 {
     self.response = response;
@@ -678,7 +661,6 @@ didReceiveResponse:(NSURLResponse *)response
 - (id)copyWithZone:(NSZone *)zone {
     ZincURLConnectionOperation *operation = [(ZincURLConnectionOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request];
     
-    operation.uploadProgress = self.uploadProgress;
     operation.downloadProgress = self.downloadProgress;
     operation.authenticationAgainstProtectionSpace = self.authenticationAgainstProtectionSpace;
     operation.authenticationChallenge = self.authenticationChallenge;
