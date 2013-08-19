@@ -45,15 +45,7 @@
  - `connection:willCacheResponse:`
  - `connectionShouldUseCredentialStorage:`
  - `connection:needNewBodyStream:`
- 
- When _ZINCNETWORKING_PIN_SSL_CERTIFICATES_ is defined, the following authentication delegate method is implemented:
- 
  - `connection:willSendRequestForAuthenticationChallenge:`
- 
- Otherwise, the following authentication delegate methods are implemented:
- 
- - `connection:canAuthenticateAgainstProtectionSpace:`
- - `connection:didReceiveAuthenticationChallenge:`
 
  If any of these methods are overridden in a subclass, they _must_ call the `super` implementation first.
 
@@ -73,8 +65,6 @@
  
  SSL with certificate pinning is strongly recommended for any application that transmits sensitive information to an external webservice.
 
- When `_ZINCNETWORKING_PIN_SSL_CERTIFICATES_` is defined and the Security framework is linked, connections will be validated on all matching certificates with a `.cer` extension in the bundle root.
-
  ## NSCoding & NSCopying Conformance
 
  `ZincURLConnectionOperation` conforms to the `NSCoding` and `NSCopying` protocols, allowing operations to be archived to disk, and copied in memory, respectively. However, because of the intrinsic limitations of capturing the exact state of an operation at a particular moment, there are some important caveats to keep in mind:
@@ -91,13 +81,11 @@
  - Operation copies do not include `completionBlock`. `completionBlock` often strongly captures a reference to `self`, which would otherwise have the unintuitive side-effect of pointing to the _original_ operation when copied.
  */
 
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 typedef enum {
     ZincSSLPinningModeNone,
     ZincSSLPinningModePublicKey,
     ZincSSLPinningModeCertificate,
-} ZincURLConnectionOperationSSLPinningMode;
-#endif
+} ZincNetworkingConnectionOperationSSLPinningMode;
 
 @interface ZincURLConnectionOperation : NSOperation <NSURLConnectionDelegate,
 #if (defined(__IPHONE_OS_VERSION_MIN_REQUIRED) && __IPHONE_OS_VERSION_MIN_REQUIRED >= 50000) || \
@@ -183,11 +171,9 @@ NSCoding, NSCopying>
 /**
  The pinning mode which will be used for SSL connections. `ZincSSLPinningModePublicKey` by default.
  
- To enable SSL Pinning, `#define _ZINCNETWORKING_PIN_SSL_CERTIFICATES_` in `Prefix.pch`. Also, make sure that the Security framework is linked with the binary. See the "SSL Pinning" section in the `ZincURLConnectionOperation`" header for more information.
+ SSL Pinning requires that the Security framework is linked with the binary. See the "SSL Pinning" section in the `ZincNetworkingConnectionOperation`" header for more information.
  */
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-@property (nonatomic, assign) ZincURLConnectionOperationSSLPinningMode SSLPinningMode;
-#endif
+@property (nonatomic, assign) ZincNetworkingConnectionOperationSSLPinningMode SSLPinningMode;
 
 ///------------------------
 /// @name Accessing Streams
@@ -216,9 +202,9 @@ NSCoding, NSCopying>
  */
 @property (nonatomic, strong) NSDictionary *userInfo;
 
-///------------------------------------------------------
+///--------------------------------------------------------
 /// @name Initializing an ZincURLConnectionOperation Object
-///------------------------------------------------------
+///--------------------------------------------------------
 
 /**
  Initializes and returns a newly allocated operation object with a url connection configured with the specified url request.
@@ -289,7 +275,6 @@ NSCoding, NSCopying>
 /// @name Setting NSURLConnection Delegate Callbacks
 ///-------------------------------------------------
 
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 /**
  Sets a block to be executed when the connection will authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequestForAuthenticationChallenge:`.
  
@@ -298,28 +283,6 @@ NSCoding, NSCopying>
  If `allowsInvalidSSLCertificate` is set to YES, `connection:willSendRequestForAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
  */
 - (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
-
-#else
-
-/**
- Sets a block to be executed to determine whether the connection should be able to respond to a protection space's form of authentication, as handled by the `NSURLConnectionDelegate` method `connection:canAuthenticateAgainstProtectionSpace:`.
- 
- If `allowsInvalidSSLCertificate` is set to YES, `connection:canAuthenticateAgainstProtectionSpace:` will accept invalid SSL certificates, returning `YES` if the protection space authentication method is `NSURLAuthenticationMethodServerTrust`.
-
- @param block A block object to be executed to determine whether the connection should be able to respond to a protection space's form of authentication. The block has a `BOOL` return type and takes two arguments: the URL connection object, and the protection space to authenticate against.  
- */
-- (void)setAuthenticationAgainstProtectionSpaceBlock:(BOOL (^)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace))block;
-
-/**
- Sets a block to be executed when the connection must authenticate a challenge in order to download its request, as handled by the `NSURLConnectionDelegate` method `connection:didReceiveAuthenticationChallenge:`.
-
- @param block A block object to be executed when the connection must authenticate a challenge in order to download its request. The block has no return type and takes two arguments: the URL connection object, and the challenge that must be authenticated.
-
-  If `allowsInvalidSSLCertificate` is set to YES, `connection:didReceiveAuthenticationChallenge:` will attempt to have the challenge sender use credentials with invalid SSL certificates.
- */
-- (void)setAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block;
-
-#endif
 
 /**
  Sets a block to be executed when the server redirects the request from one URL to another URL, or when the request URL changed by the `NSURLProtocol` subclass handling the request in order to standardize its format, as handled by the `NSURLConnectionDelegate` method `connection:willSendRequest:redirectResponse:`.
