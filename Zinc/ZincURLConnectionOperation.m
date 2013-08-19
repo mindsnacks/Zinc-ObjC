@@ -51,9 +51,6 @@ NSString * const ZincNetworkingOperationDidStartNotification = @"com.alamofire.n
 NSString * const ZincNetworkingOperationDidFinishNotification = @"com.alamofire.networking.operation.finish";
 
 typedef void (^ZincURLConnectionOperationProgressBlock)(NSUInteger bytes, long long totalBytes, long long totalBytesExpected);
-#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-typedef BOOL (^ZincURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock)(NSURLConnection *connection, NSURLProtectionSpace *protectionSpace);
-#endif
 typedef void (^ZincURLConnectionOperationAuthenticationChallengeBlock)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge);
 typedef NSCachedURLResponse * (^ZincURLConnectionOperationCacheResponseBlock)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse);
 typedef NSURLRequest * (^ZincURLConnectionOperationRedirectResponseBlock)(NSURLConnection *connection, NSURLRequest *request, NSURLResponse *redirectResponse);
@@ -137,9 +134,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @property (readwrite, nonatomic, assign) ZincNetworkingBackgroundTaskIdentifier backgroundTaskIdentifier;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock uploadProgress;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationProgressBlock downloadProgress;
-#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-@property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationAgainstProtectionSpaceBlock authenticationAgainstProtectionSpace;
-#endif
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationAuthenticationChallengeBlock authenticationChallenge;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationCacheResponseBlock cacheResponse;
 @property (readwrite, nonatomic, copy) ZincURLConnectionOperationRedirectResponseBlock redirectResponse;
@@ -165,29 +159,25 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 @dynamic inputStream;
 @synthesize outputStream = _outputStream;
 @synthesize credential = _credential;
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 @synthesize SSLPinningMode = _SSLPinningMode;
-#endif
 @synthesize shouldUseCredentialStorage = _shouldUseCredentialStorage;
 @synthesize userInfo = _userInfo;
 @synthesize backgroundTaskIdentifier = _backgroundTaskIdentifier;
 @synthesize uploadProgress = _uploadProgress;
 @synthesize downloadProgress = _downloadProgress;
 @synthesize authenticationChallenge = _authenticationChallenge;
-#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-@synthesize authenticationAgainstProtectionSpace = _authenticationAgainstProtectionSpace;
-#endif
 @synthesize cacheResponse = _cacheResponse;
 @synthesize redirectResponse = _redirectResponse;
 @synthesize lock = _lock;
 
-+ (void) __attribute__((noreturn)) networkRequestThreadEntryPoint:(id)__unused object {
-    do {
-        @autoreleasepool {
-            [[NSThread currentThread] setName:@"ZincNetworking"];
-            [[NSRunLoop currentRunLoop] run];
-        }
-    } while (YES);
++ (void)networkRequestThreadEntryPoint:(id __unused)object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@"ZincNetworking"];
+
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
+        [runLoop run];
+    }
 }
 
 + (NSThread *)networkRequestThread {
@@ -201,7 +191,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     return _networkRequestThread;
 }
 
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
 + (NSArray *)pinnedCertificates {
     static NSArray *_pinnedCertificates = nil;
     static dispatch_once_t onceToken;
@@ -239,16 +228,21 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
             SecTrustRef allowedTrust = NULL;
             OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &allowedTrust);
             NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
+            if (status == errSecSuccess && allowedTrust) {
+                SecTrustResultType result = 0;
+                status = SecTrustEvaluate(allowedTrust, &result);
+                NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+                if (status == errSecSuccess) {
+                    SecKeyRef allowedPublicKey = SecTrustCopyPublicKey(allowedTrust);
+                    NSParameterAssert(allowedPublicKey);
+                    if (allowedPublicKey) {
+                        [publicKeys addObject:(__bridge_transfer id)allowedPublicKey];
+                    }
+                }
+                
+                CFRelease(allowedTrust);
+            }          
             
-            SecTrustResultType result = 0;
-            status = SecTrustEvaluate(allowedTrust, &result);
-            NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
-            
-            SecKeyRef allowedPublicKey = SecTrustCopyPublicKey(allowedTrust);            
-            NSParameterAssert(allowedPublicKey);
-            [publicKeys addObject:(__bridge_transfer id)allowedPublicKey];
-            
-            CFRelease(allowedTrust);
             CFRelease(policy);
             CFRelease(certificates);
             CFRelease(allowedCertificate);
@@ -259,7 +253,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     
     return _pinnedPublicKeys;
 }
-#endif
 
 - (id)initWithRequest:(NSURLRequest *)urlRequest {
     NSParameterAssert(urlRequest);
@@ -388,23 +381,9 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     self.downloadProgress = block;
 }
 
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-
 - (void)setWillSendRequestForAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
     self.authenticationChallenge = block;
 }
-
-#else
-
-- (void)setAuthenticationAgainstProtectionSpaceBlock:(BOOL (^)(NSURLConnection *, NSURLProtectionSpace *))block {
-    self.authenticationAgainstProtectionSpace = block;
-}
-
-- (void)setAuthenticationChallengeBlock:(void (^)(NSURLConnection *connection, NSURLAuthenticationChallenge *challenge))block {
-    self.authenticationChallenge = block;
-}
-
-#endif
 
 - (void)setCacheResponseBlock:(NSCachedURLResponse * (^)(NSURLConnection *connection, NSCachedURLResponse *cachedResponse))block {
     self.cacheResponse = block;
@@ -544,6 +523,11 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
     });
     
     if ([self isCancelled]) {
+        NSDictionary *userInfo = nil;
+        if ([self.request URL]) {
+            userInfo = [NSDictionary dictionaryWithObject:[self.request URL] forKey:NSURLErrorFailingURLErrorKey];
+        }
+        self.error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorCancelled userInfo:userInfo];
         [self finish];
     }
 }
@@ -587,8 +571,6 @@ static BOOL SecKeyIsEqualToKey(SecKeyRef key1, SecKeyRef key2) {
 
 #pragma mark - NSURLConnectionDelegate
 
-#ifdef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-
 - (void)connection:(NSURLConnection *)connection
 willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
@@ -617,14 +599,17 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                 
                 OSStatus status = SecTrustCreateWithCertificates(certificates, policy, &trust);
                 NSAssert(status == errSecSuccess, @"SecTrustCreateWithCertificates error: %ld", (long int)status);
-                
-                SecTrustResultType result;
-                status = SecTrustEvaluate(trust, &result);
-                NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
-                
-                [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
-                
-                CFRelease(trust);
+                if (status == errSecSuccess && trust) {
+                    SecTrustResultType result;
+                    status = SecTrustEvaluate(trust, &result);
+                    NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
+                    if (status == errSecSuccess) {
+                        [trustChain addObject:(__bridge_transfer id)SecTrustCopyPublicKey(trust)];
+                    }
+
+                    CFRelease(trust);
+                }
+              
                 CFRelease(certificates);
             }
         }
@@ -669,7 +654,7 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
                     OSStatus status = SecTrustEvaluate(serverTrust, &result);
                     NSAssert(status == errSecSuccess, @"SecTrustEvaluate error: %ld", (long int)status);
                     
-                    if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
+                    if (status == errSecSuccess && (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed)) {
                         NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
                         [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
                     } else {
@@ -691,52 +676,6 @@ willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challe
         }
     }
 }
-
-#else
-
-- (BOOL)connection:(NSURLConnection *)connection
-canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
-    if (self.allowsInvalidSSLCertificate &&
-       [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-            return YES;
-    }
-    
-    if (self.authenticationAgainstProtectionSpace) {
-        return self.authenticationAgainstProtectionSpace(connection, protectionSpace);
-    } else if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust] || [protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
-- (void)connection:(NSURLConnection *)connection
-didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
-{
-
-    if (self.allowsInvalidSSLCertificate
-       && [challenge.protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        [challenge.sender useCredential:[NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust] forAuthenticationChallenge:challenge];
-        return;
-    }
-
-    if (self.authenticationChallenge) {
-        self.authenticationChallenge(connection, challenge);
-    } else {
-        if ([challenge previousFailureCount] == 0) {
-            if (self.credential) {
-                [[challenge sender] useCredential:self.credential forAuthenticationChallenge:challenge];
-            } else {
-                [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
-            }
-        } else {
-            [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
-        }
-    }
-}
-
-#endif
 
 - (BOOL)connectionShouldUseCredentialStorage:(NSURLConnection __unused *)connection {
     return self.shouldUseCredentialStorage;
@@ -890,9 +829,6 @@ didReceiveResponse:(NSURLResponse *)response
     
     operation.uploadProgress = self.uploadProgress;
     operation.downloadProgress = self.downloadProgress;
-#ifndef _ZINCNETWORKING_PIN_SSL_CERTIFICATES_
-    operation.authenticationAgainstProtectionSpace = self.authenticationAgainstProtectionSpace;
-#endif
     operation.authenticationChallenge = self.authenticationChallenge;
     operation.cacheResponse = self.cacheResponse;
     operation.redirectResponse = self.redirectResponse;

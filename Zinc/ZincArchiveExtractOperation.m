@@ -107,7 +107,7 @@
 
         } else {
         
-            if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
+            if (![fm zinc_moveItemAtPath:fullPath toPath:targetPath error:&error]) {
                 self.error = error;
                 cleanup();
                 return;
