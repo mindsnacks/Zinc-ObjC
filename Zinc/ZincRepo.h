@@ -7,26 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+
 #import "ZincGlobals.h"
 
-
-
-// -- Bundle Notifications
-extern NSString* const ZincRepoBundleStatusChangeNotification;
-extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
-extern NSString* const ZincRepoBundleWillStopTrackingNotification;
-extern NSString* const ZincRepoBundleWillDeleteNotification;
-
-// -- Bundle Notification UserInfo Keys
-extern NSString* const ZincRepoBundleChangeNotificationBundleIDKey;
-extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
-
-// -- Task Notifications
-extern NSString* const ZincRepoTaskAddedNotification;
-extern NSString* const ZincRepoTaskFinishedNotification;
-
-// -- Task Notification UserInfo Keys
-extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 @protocol ZincRepoDelegate;
 @class ZincManifest;
@@ -37,19 +20,34 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 @class ZincTaskRef;
 
 
-#pragma mark -
-
+/**
+ `ZincRepo`
+ 
+ ## Usage Notes
+ 
+ - All `ZincRepo` objects start suspended. After obtaining a `ZincRepo` object, you must call `-resumeAllTasks`
+ */
 @interface ZincRepo : NSObject
 
 @property (nonatomic, weak) id<ZincRepoDelegate> delegate;
+
+/**
+ The local file URL of the `ZincRepo`
+ */
 @property (nonatomic, strong, readonly) NSURL* url;
 
-// !!!: Note all repos start suspended. After obtaining a repo object,
-// you must all [repo resumeAllTasks]
-
+/**
+ Create a new `ZincRepo` object with the given fileURL. This is the standard way to obtain a `ZincRepo` object.
+ @param fileURL a local file URL
+ @param outError error output param
+ */
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
 
+/**
+ Whether their is a valid Zinc repo at the given URL.
+ @param fileURL a local file URL
+ */
 + (BOOL) repoExistsAtURL:(NSURL*)fileURL;
 
 
@@ -153,3 +151,27 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
 
 @end
+
+
+
+
+// -- Bundle Notifications
+extern NSString* const ZincRepoBundleStatusChangeNotification;
+extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
+extern NSString* const ZincRepoBundleWillStopTrackingNotification;
+extern NSString* const ZincRepoBundleWillDeleteNotification;
+
+// -- Bundle Notification UserInfo Keys
+extern NSString* const ZincRepoBundleChangeNotificationBundleIDKey;
+extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
+
+// -- Task Notifications
+extern NSString* const ZincRepoTaskAddedNotification;
+extern NSString* const ZincRepoTaskFinishedNotification;
+
+// -- Task Notification UserInfo Keys
+extern NSString* const ZincRepoTaskNotificationTaskKey;
+
+
+
+
