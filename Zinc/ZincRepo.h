@@ -1,6 +1,6 @@
 //
-//  ZCBundleManager.h
-//  Zinc-iOS
+//  ZincRepo.h
+//  Zinc-ObjC
 //
 //  Created by Andy Mroczkowski on 12/6/11.
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
@@ -19,6 +19,8 @@
 /**
  `ZincRepo`
  
+ This class is part of the *Zinc Public API*.
+ 
  ## Usage Notes
  
  - All `ZincRepo` objects start suspended. After obtaining a `ZincRepo` object, you must call `-resumeAllTasks`
@@ -34,10 +36,10 @@
  @param fileURL a local file URL
  @param outError error output param
  */
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
++ (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 
 
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
++ (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
 
 /**
  The Zinc repo may need to perform some initialization tasks. This property be `NO` until these initialization tasks are performed, and `YES` aferwards.
@@ -121,88 +123,177 @@
  */
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
+///---------------------------
+/// @name Working with Bundles
+///---------------------------
 
-#pragma mark -
-#pragma mark External Bundles
-
-- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
-
-
-#pragma mark -
-#pragma mark Tracking Remote Bundles
-
+/**
+ Begin tracking a bundle.
+ 
+ @param req The bundle tracking request
+ */
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
+
+/**
+ Convenience method for tracking a bundle. Assumes flavor is nil.
+ 
+ @param bundleID The ID of the bundle
+ @param distro The distro to track
+ */
 - (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/**
+ Convenience method for tracking a bundle
+
+ @param bundleID The ID of the bundle
+ @param distro The distro to track
+ @param flavor The flavor to track
+ */
 - (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor;
 
+/**
+ Stop tracking a bundle.
+ */
 - (void) stopTrackingBundleWithID:(NSString*)bundleID;
 
+/**
+ Get all currently tracking bundles.
+ */
 - (NSSet*) trackedBundleIDs;
 
-
-#pragma mark -
-#pragma mark Updating Bundles
-
 /**
- * Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
+ Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
+ 
+ @param bundleID The ID of the bundle to update.
+ @param completion A block to be called once the update attempt completes.
  */
 - (void) updateBundleWithID:(NSString*)bundleID completionBlock:(ZincCompletionBlock)completion;
-- (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
-
-
-
-#pragma mark -
-#pragma mark Loading Bundles
 
 /**
- @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
+ Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
+ 
+ This is similar to `updateBundleWithID:completionBlock:` except it returns a `ZincTaskRef` instead of the completion block.
+ */
+- (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
+
+/**
+ Obtain a Zinc bundle. This will raise an exception if the repo is not initialized
+ 
+ @param bundleID The ID of the bundle.
  */
 - (ZincBundle*) bundleWithID:(NSString*)bundleID;
 
+/**
+ Get the state of a bundle.
+ 
+ @param bundleID The ID of the bundle
+ */
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
 
+/**
+ Register an external bundle.
+ 
+ TODO: document this feature with more detail
+ 
+ @param manifestPath The path to the manifest for the bundle
+ @param bundleRootPath The path of the bundles files
+ @param outError Error output parameter
+ */
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)bundleRootPath error:(NSError**)outError;
 
-#pragma mark -
-#pragma mark Tasks
+///----------------------
+/// @name Task Management
+///----------------------
 
+/**
+ Returns a copy of all active tasks within this repo.
+ */
 @property (readonly) NSArray* tasks;
 
+/**
+ Suspend (or pause) all *pending* tasks in this repo. Tasks in process will run to completion.
+ */
 - (void) suspendAllTasks;
+
+/**
+ Suspend all *pending* tasks, and block until all *executing tasks are completed.
+ */
 - (void) suspendAllTasksAndWaitExecutingTasksToComplete;
+
+/**
+ Resume all tasks if the repo is suspended.
+ */
 - (void) resumeAllTasks;
+
+/**
+ Returns `YES` if the repo is suspended, `NO` otherwise.
+ */
 - (BOOL) isSuspended;
        
 @end
 
 
-#pragma mark -
+///-------------------
+/// @name Notifcations
+///-------------------
 
-@protocol ZincRepoEventListener <NSObject>
-
-- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
-
-@end
-
-
-
-
-// -- Bundle Notifications
+/**
+ Posted when a bundle's status changes
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
 extern NSString* const ZincRepoBundleStatusChangeNotification;
+
+/**
+ Posted when a bundle begins tracking.
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
 extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
+
+/**
+ Posted when a bundle is no longer being tracked.
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
 extern NSString* const ZincRepoBundleWillStopTrackingNotification;
+
+/**
+ Posted when a bundle will be deleted.
+ */
 extern NSString* const ZincRepoBundleWillDeleteNotification;
 
-// -- Bundle Notification UserInfo Keys
 extern NSString* const ZincRepoBundleChangeNotificationBundleIDKey;
 extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
 
-// -- Task Notifications
+/**
+ Posted when a task is added in this repo.
+ 
+ The `userInfo` dict will contain the `ZincRepoTaskNotificationTaskKey` whose value will be the task.
+ */
 extern NSString* const ZincRepoTaskAddedNotification;
+
+/**
+ Posted when a task finishes in this repo.
+ 
+ The `userInfo` dict will contain the `ZincRepoTaskNotificationTaskKey` whose value will be the task.
+ */
 extern NSString* const ZincRepoTaskFinishedNotification;
 
-// -- Task Notification UserInfo Keys
 extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 
+/**
+ `ZincRepoEventListener`
+ */
+@protocol ZincRepoEventListener <NSObject>
 
+/**
+ Called whenever an event occurs in the ZincRepo
+ 
+ @param repo The repo
+ @param event The event
+ */
+- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
 
+@end

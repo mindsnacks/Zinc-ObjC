@@ -11,7 +11,7 @@
 @implementation ZincBundleTrackingRequest
 
 
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
++ (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
                                                           flavor:(NSString*)flavor
 {
@@ -22,7 +22,7 @@
     return req;
 }
 
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
++ (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
 {
     ZincBundleTrackingRequest* req = [[ZincBundleTrackingRequest alloc] init];

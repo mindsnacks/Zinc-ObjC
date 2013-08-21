@@ -54,14 +54,14 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 @implementation ZincRepo
 
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
++ (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
     NSOperationQueue* operationQueue = [[NSOperationQueue alloc] init];
     [operationQueue setMaxConcurrentOperationCount:kZincRepoDefaultNetworkOperationCount];
     return [self repoWithURL:fileURL networkOperationQueue:operationQueue error:outError];
 }
 
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
++ (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
 {
     if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
         fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
@@ -961,6 +961,3 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 @end
-
-
-
