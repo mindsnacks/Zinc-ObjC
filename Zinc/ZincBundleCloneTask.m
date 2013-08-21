@@ -6,14 +6,11 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "ZincBundleCloneTask.h"
-#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincResource.h"
-#import "ZincEvent.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincManifest.h"
 #import "ZincTaskActions.h"
 
 @implementation ZincBundleCloneTask

@@ -7,17 +7,11 @@
 //
 
 #import "ZincObjectDownloadTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
-#import "ZincSource.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincResource.h"
-#import "NSFileManager+Zinc.h"
-#import "NSData+Zinc.h"
-#import "ZincErrors.h"
-#import "ZincUtils.h"
 #import "ZincSHA.h"
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"
 

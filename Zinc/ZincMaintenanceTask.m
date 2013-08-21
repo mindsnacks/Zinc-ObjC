@@ -7,9 +7,9 @@
 //
 
 #import "ZincMaintenanceTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincEvent.h"
-#import "ZincTaskDescriptor.h"
 
 
 @implementation ZincMaintenanceTask

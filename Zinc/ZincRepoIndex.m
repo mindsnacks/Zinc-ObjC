@@ -7,13 +7,10 @@
 //
 
 #import "ZincRepoIndex.h"
-#import "ZincJSONSerialization.h"
-#import "ZincResource.h"
-#import "ZincDeepCopying.h"
-#import "ZincErrors.h"
-#import "ZincTrackingInfo.h"
+
+#import "ZincInternals.h"
 #import "ZincExternalBundleInfo.h"
-#import "ZincUtils.h"
+
 
 @interface ZincRepoIndex ()
 @property (nonatomic, strong) NSMutableSet* mySourceURLs;
@@ -156,7 +153,6 @@
             trackingInfo = [[ZincTrackingInfo alloc] init];
             trackingInfo.version = ZincVersionInvalid;
             trackingInfo.distribution = trackingInfoObj;
-            trackingInfo.updateAutomatically = YES; // all old tracking infos updated automatically
         } else if ([trackingInfoObj isKindOfClass:[NSDictionary class]]) {
             NSDictionary* trackingInfoDict = (NSDictionary*)trackingInfoObj;
             trackingInfo = [ZincTrackingInfo trackingInfoFromDictionary:trackingInfoDict];
@@ -457,12 +453,5 @@
             reason:[NSString stringWithFormat:@"Invalid format version"]
             userInfo:nil];
 }
-
-
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [NSJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
 
 @end

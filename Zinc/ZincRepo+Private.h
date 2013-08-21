@@ -7,22 +7,23 @@
 //
 
 #import "ZincRepo.h"
+
 #import "ZincRepoIndex.h"
+#import "ZincRepoBundleManager.h"
 #import "ZincRepoTaskManager.h"
 
 #define kZincRepoDefaultObjectDownloadCount (5)
 #define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
-#define kZincRepoDefaultAutoRefreshInterval (120)
 #define kZincRepoDefaultCacheCount (20)
+#define kZincRepoDefaultBundleUpdatePriority (NSOperationQueuePriorityVeryHigh)
 
 @class ZincRepoIndex;
 @class ZincCatalog;
 @class ZincManifest;
-@class KSReachability;
 
 @interface ZincRepo ()
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(KSReachability*)reachability;
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue;
 @property (nonatomic, strong) ZincRepoIndex* index;
 @property (nonatomic, strong) NSFileManager* fileManager;
 @property (nonatomic, strong) ZincRepoTaskManager* taskManager;
@@ -45,7 +46,15 @@
 
 #pragma mark Bundles
 
+/*
+ * TODO: document the difference between this and catalogVersionForBundleID
+ */
 - (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/*
+ * TODO: document the difference between this and versionForBundleID
+ */
+- (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion;
@@ -56,6 +65,8 @@
 // includes all currently tracked and open bundles
 // returns NSURLs (ZincBundleDescriptors)
 - (NSSet*) activeBundles;
+
+- (ZincTask*) queueBundleCloneTaskForBundle:(NSURL*)bundleRes priority:(NSOperationQueuePriority)priority;
 
 #pragma mark Files
 

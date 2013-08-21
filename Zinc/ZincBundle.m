@@ -6,11 +6,9 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundle.h"
 #import "ZincBundle+Private.h"
-#import "ZincResource.h"
-#import "ZincRepo+Private.h"
-#import "ZincUtils.h"
+
+#import "ZincInternals.h"
 #import "ZincRepoBundleManager.h"
 
 @interface ZincBundle ()

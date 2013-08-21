@@ -9,13 +9,14 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 #import "ZincRepo.h"
+#import "ZincModelObject.h"
 
 #define kZincRepoIndexCurrentFormat (2)
 
 @class ZincTrackingInfo;
 @class ZincExternalBundleInfo;
 
-@interface ZincRepoIndex : NSObject
+@interface ZincRepoIndex : ZincModelObject
 
 /**
  @discussion Inits with current format kZincRepoIndexCurrentFormat
@@ -62,7 +63,5 @@
 #pragma mark Encoding
 
 + (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;
-- (NSDictionary*) dictionaryRepresentation;
-- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end

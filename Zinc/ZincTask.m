@@ -6,12 +6,10 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincEvent.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>
@@ -129,7 +127,11 @@ typedef id ZincBackgroundTaskIdentifier;
     @synchronized(self) {
         // synchronizing on self here because there is a slight race condition. The task is created
         // and queued before it is added to myChildOperations.
-        task = [self.repo.taskManager queueTaskForDescriptor:taskDescriptor input:input parent:self dependencies:nil];
+        task = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+            request.taskDescriptor = taskDescriptor;
+            request.input = input;
+            request.parent = self;
+        }];
         [self addChildOperation:task];
     }
 
