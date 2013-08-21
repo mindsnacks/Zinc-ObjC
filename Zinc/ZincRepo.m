@@ -81,6 +81,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 @implementation ZincRepo
 
+objection_register(ZincRepo);
+objection_requires(@"bundleManager", @"taskManager");
+
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
     NSOperationQueue* operationQueue = [[NSOperationQueue alloc] init];
