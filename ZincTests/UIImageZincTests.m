@@ -8,6 +8,7 @@
 
 #import "UIImageZincTests.h"
 #import "UIImage+Zinc.h"
+#import "UIImage+ZincHelpers.h"
 
 @implementation UIImageZincTests
 

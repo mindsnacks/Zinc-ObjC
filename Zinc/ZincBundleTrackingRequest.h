@@ -8,6 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ `ZincBundleTrackingRequest`
+
+ This class is part of the *Zinc Public API*.
+ */
 @interface ZincBundleTrackingRequest : NSObject
 
 /**
