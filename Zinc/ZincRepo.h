@@ -10,15 +10,11 @@
 
 #import "ZincGlobals.h"
 
-
 @protocol ZincRepoDelegate;
-@class ZincManifest;
 @class ZincBundle;
-@class ZincEvent;
 @class ZincBundleTrackingRequest;
-@class ZincDownloadPolicy;
+@class ZincEvent;
 @class ZincTaskRef;
-
 
 /**
  `ZincRepo`
@@ -29,12 +25,9 @@
  */
 @interface ZincRepo : NSObject
 
-@property (nonatomic, weak) id<ZincRepoDelegate> delegate;
-
-/**
- The local file URL of the `ZincRepo`
- */
-@property (nonatomic, strong, readonly) NSURL* url;
+///---------------------
+/// @name Initialization
+//----------------------
 
 /**
  Create a new `ZincRepo` object with the given fileURL. This is the standard way to obtain a `ZincRepo` object.
@@ -42,7 +35,34 @@
  @param outError error output param
  */
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
+
+
 + (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
+
+/**
+ The Zinc repo may need to perform some initialization tasks. This property be `NO` until these initialization tasks are performed, and `YES` aferwards.
+ */
+@property (nonatomic, assign, readonly) BOOL isInitialized;
+
+/**
+ Block until initialization is complete.
+ */
+- (void) waitForInitialization;
+
+/**
+ Returns an task reference (`ZincTaskRef`) for any initialization tasks that need to be done. Returns nil if no initialization is required. See the `ZincTaskRef` documentation for usage.
+ */
+- (ZincTaskRef*) taskRefForInitialization;
+
+///--------------------------------
+/// @name Getting basic information
+///--------------------------------
+
+/**
+ The local file URL of the `ZincRepo`
+ */
+@property (nonatomic, strong, readonly) NSURL* url;
+
 
 /**
  Whether their is a valid Zinc repo at the given URL.
@@ -51,43 +71,54 @@
 + (BOOL) repoExistsAtURL:(NSURL*)fileURL;
 
 
-#pragma mark -
-#pragma mark Initialization
+///--------------------
+/// @name Configuration
+///--------------------
 
 /**
- @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed.
+ Set the delegate. See documentation for `ZincRepoDelegate`.
  */
-@property (nonatomic, assign, readonly) BOOL isInitialized;
+@property (nonatomic, weak) id<ZincRepoDelegate> delegate;
 
 /**
- @discussion Block until initialization is complete.
+ Set the default thread priority for all Zinc operations. It is initially set to `0.5`, which is the same as the default thread priority for `NSOperation`.
+ @param defaultThreadPriority New default thread priorty, between 0.0 and 1.0
  */
-- (void) waitForInitialization;
-
-/**
- @discussion Returns an task reference for any initialization tasks that need to be done. Returns nil if no initialization is required.
- */
-- (ZincTaskRef*) taskRefForInitialization;
-
-
-#pragma mark -
-#pragma mark Configuration
-
 + (void) setDefaultThreadPriority:(double)defaultThreadPriority;
+
+///------------------
+/// @name Maintenance
+///------------------
 
 /**
  * Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
  */
 - (void) cleanWithCompletion:(dispatch_block_t)completion;
 
+///-----------------------
+/// @name Managing Sources
+///-----------------------
 
-#pragma mark -
-#pragma mark Sources
-
+/**
+ Add a new source URL, if it does not already exist.
+ */
 - (void) addSourceURL:(NSURL*)url;
+
+/**
+ Remove a source URL.
+ @param url The URL to remove. If the source URL is not registered, this does nothing.
+ */
 - (void) removeSourceURL:(NSURL*)url;
+
+/**
+ Return a copy of all registered source URLs.
+ */
 - (NSSet*) sourceURLs;
 
+/**
+ Refresh local copies of Zinc catalogs from all registered source URLs. This will attempt to refresh each source only once, and may fail due to connectivity issues. To refresh sources more automatically, see `ZincAgent`.
+ @param completion A block to call once all sources have been attempted to be refreshed. May be nil.
+ */
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
 
