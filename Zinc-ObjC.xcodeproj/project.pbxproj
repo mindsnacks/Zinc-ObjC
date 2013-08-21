@@ -396,6 +396,7 @@
 		B3DB05CC14DA0DB600438665 /* BundleDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BundleDetailViewController.m; sourceTree = "<group>"; };
 		B3DB05CD14DA0DB600438665 /* BundleDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = BundleDetailViewController.xib; sourceTree = "<group>"; };
 		B3DD9D5C17C2D050003D6A21 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		B3DD9D9D17C58071003D6A21 /* ZincTaskRef+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincTaskRef+Private.h"; sourceTree = "<group>"; };
 		B3E46AB414C0DEDA00030349 /* UIImageZincTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageZincTests.h; sourceTree = "<group>"; };
 		B3E46AB514C0DEDA00030349 /* UIImageZincTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageZincTests.m; sourceTree = "<group>"; };
 		B3E46B5414C3DF7800030349 /* ZincUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincUtils.h; sourceTree = "<group>"; };
@@ -830,6 +831,7 @@
 				B38E8CA716AA5468009C03BC /* ZincCleanLegacySymlinksTask.h */,
 				B38E8CA816AA5468009C03BC /* ZincCleanLegacySymlinksTask.m */,
 				B3BFF9DF15C62363005A879E /* ZincTaskRef.m */,
+				B3DD9D9D17C58071003D6A21 /* ZincTaskRef+Private.h */,
 				B32FC6FD16AE055300E3A2C2 /* ZincInitializationTask.h */,
 				B32FC6FE16AE055300E3A2C2 /* ZincInitializationTask.m */,
 				B32FC70216AE0A2000E3A2C2 /* ZincCompleteInitializationTask.h */,

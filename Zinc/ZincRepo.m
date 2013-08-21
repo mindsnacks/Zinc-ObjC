@@ -13,6 +13,7 @@
 #import "ZincBundle+Private.h"
 #import "ZincEvent+Private.h"
 #import "ZincTask+Private.h"
+#import "ZincTaskRef+Private.h"
 #import "ZincBundleTrackingRequest.h"
 #import "ZincExternalBundleInfo.h"
 
