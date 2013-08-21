@@ -7,12 +7,10 @@
 //
 
 #import "ZincGarbageCollectTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincResource.h"
-#import "ZincManifest.h"
-#import "ZincEvent.h"
 
 @implementation ZincGarbageCollectTask
 

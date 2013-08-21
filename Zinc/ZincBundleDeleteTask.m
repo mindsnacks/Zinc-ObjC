@@ -7,15 +7,11 @@
 //
 
 #import "ZincBundleDeleteTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincManifest.h"
-#import "ZincResource.h"
 #import "ZincTaskActions.h"
-#import "NSError+Zinc.h"
-#import "NSFileManager+Zinc.h"
 
 @implementation ZincBundleDeleteTask
 

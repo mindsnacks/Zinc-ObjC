@@ -6,8 +6,9 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
+#import "ZincAgent.h"
 #import "ZincJSONSerialization.h"
 #import "ZincBundle.h"
 #import "ZincUtils.h"
@@ -16,7 +17,7 @@
 #define DEMO_CATALOG_ID @"com.mindsnacks.demo1"
 #define DEFAULT_TIMEOUT_SECONDS 60
 
-@interface DemoCatalogTests : ZincFunctionalTestCase
+@interface DemoCatalogTests : ZincRepoFunctionalTestCase
 
 @end
 
@@ -54,7 +55,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -85,7 +86,7 @@
     
     // -- Update bundle @ master
 
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -103,7 +104,7 @@
     
     // -- Update bundle @ test
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"test" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"test"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -150,7 +151,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -187,7 +188,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -215,12 +216,14 @@
     
     [self.zincRepo stopTrackingBundleWithID:bundleID];
 
+    // -- Clean to remove old bundle
+
     [self prepare];
-    [self.zincRepo refreshWithCompletion:^{
+    [self.zincRepo cleanWithCompletion:^{
         [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
-    
+
     // -- Wait for the bundle delete task to run
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
 
@@ -243,7 +246,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -305,8 +308,7 @@
         
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -325,7 +327,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -359,10 +361,9 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
-    
+
     // -- Wait for initialization
 
     [self.zincRepo waitForInitialization];
@@ -381,7 +382,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -433,8 +434,7 @@
 
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -455,7 +455,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -513,8 +513,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -533,7 +532,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -563,8 +562,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     // -- Wait for initialization
@@ -587,7 +585,7 @@
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {

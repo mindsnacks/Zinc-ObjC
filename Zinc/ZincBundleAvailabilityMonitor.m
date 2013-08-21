@@ -7,11 +7,10 @@
 //
 
 #import "ZincBundleAvailabilityMonitor.h"
+
+#import "ZincInternals.h"
 #import "ZincActivityMonitor+Private.h"
 #import "ZincRepo.h"
-#import "ZincTask.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincResource.h"
 #import "ZincTaskActions.h"
 
 @interface ZincBundleAvailabilityMonitor ()

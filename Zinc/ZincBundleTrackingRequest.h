@@ -25,24 +25,18 @@
  */
 @property (nonatomic, copy) NSString* flavor;
 
-/**
- * @discussion Enable or disable automatic updates.
- */
-@property (nonatomic, assign) BOOL updateAutomatically;
 
 /**
  * @discussion Convenience constructor that includes all options.
  */
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
                                                     distribution:(NSString*)distribution
-                                                          flavor:(NSString*)flavor
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate;
+                                                          flavor:(NSString*)flavor;
 
 /**
  * @discussion Convenience constructor for tracking requests with no flavor.
  */
 + (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                    distribution:(NSString*)distribution
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate;
+                                                    distribution:(NSString*)distribution;
 
 @end

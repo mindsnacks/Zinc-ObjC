@@ -8,8 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincModelObject.h"
 
-@interface ZincCatalog : NSObject
+@interface ZincCatalog : ZincModelObject
 
 - (id) init;
 
@@ -22,8 +23,6 @@
 
 #pragma mark Encoding
 - (id) initWithDictionary:(NSDictionary*)dict;
-- (NSDictionary*) dictionaryRepresentation;
-- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end
 

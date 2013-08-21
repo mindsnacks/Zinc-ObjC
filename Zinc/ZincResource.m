@@ -7,6 +7,7 @@
 //
 
 #import "ZincResource.h"
+
 #import "ZincUtils.h"
 
 #define ZINC_RESOURCE_SCHEME @"zincresource"

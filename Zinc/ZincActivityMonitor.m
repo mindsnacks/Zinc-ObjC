@@ -7,6 +7,7 @@
 //
 
 #import "ZincActivityMonitor.h"
+
 #import "ZincActivityMonitor+Private.h"
 #import "ZincTask.h"
 

@@ -7,6 +7,7 @@
 //
 
 #import "ZincCatalog.h"
+
 #import "ZincJSONSerialization.h"
 
 @interface ZincCatalog ()
@@ -49,12 +50,6 @@
     d[@"format"] = @(self.format);
     d[@"bundles"] = self.bundleInfoById;
     return d;
-}
-
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 - (NSString*) description

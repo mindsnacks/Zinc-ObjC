@@ -6,18 +6,18 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 
 #import "ZincUtils.h"
 
-@implementation ZincFunctionalTestCase
+@implementation ZincRepoFunctionalTestCase
 
 - (void)tearDown
 {
     self.zincRepo = nil;
 }
 
-- (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
+- (void)zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {
     NSLog(@"%@", event);
 }
@@ -28,8 +28,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
     GHAssertNil(error, @"error: %@", error);
 
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     GHTestLog(@"ZincRepo: %@", [self.zincRepo.url path]);

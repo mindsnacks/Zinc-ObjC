@@ -14,11 +14,9 @@
 
 @property (nonatomic, copy) NSString* distribution;
 @property (nonatomic, assign) ZincVersion version;
-@property (nonatomic, assign) BOOL updateAutomatically;
 @property (nonatomic, copy) NSString* flavor;
 
-+ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
-                               updateAutomatically:(BOOL)updateAutomatically;
++ (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution;
 
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                                            version:(ZincVersion)version;

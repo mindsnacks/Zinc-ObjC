@@ -8,6 +8,7 @@
 
 
 #import "ZincManifest.h"
+
 #import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 
@@ -163,12 +164,5 @@
     if (self.flavors != nil) d[@"flavors"] = self.flavors;
     return d;
 }
-
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
 
 @end
