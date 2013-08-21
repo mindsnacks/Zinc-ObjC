@@ -308,7 +308,7 @@
         
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -361,7 +361,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     // -- Wait for initialization
@@ -434,7 +434,7 @@
 
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -513,7 +513,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -562,7 +562,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     // -- Wait for initialization

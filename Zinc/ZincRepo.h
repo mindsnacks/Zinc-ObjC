@@ -10,7 +10,7 @@
 
 #import "ZincGlobals.h"
 
-@protocol ZincRepoDelegate;
+@protocol ZincRepoEventListener;
 @class ZincBundle;
 @class ZincBundleTrackingRequest;
 @class ZincEvent;
@@ -76,9 +76,9 @@
 ///--------------------
 
 /**
- Set the delegate. See documentation for `ZincRepoDelegate`.
+ Set the event listender. See documentation for `ZincRepoEventListener`.
  */
-@property (nonatomic, weak) id<ZincRepoDelegate> delegate;
+@property (nonatomic, weak) id<ZincRepoEventListener> eventListener;
 
 /**
  Set the default thread priority for all Zinc operations. It is initially set to `0.5`, which is the same as the default thread priority for `NSOperation`.
@@ -177,7 +177,7 @@
 
 #pragma mark -
 
-@protocol ZincRepoDelegate <NSObject>
+@protocol ZincRepoEventListener <NSObject>
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
 

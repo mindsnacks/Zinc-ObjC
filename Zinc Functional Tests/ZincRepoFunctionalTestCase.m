@@ -28,7 +28,7 @@
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:repoDir] error:&error];
     GHAssertNil(error, @"error: %@", error);
 
-    self.zincRepo.delegate = self;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     GHTestLog(@"ZincRepo: %@", [self.zincRepo.url path]);

@@ -947,8 +947,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     __weak typeof(self) weakself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         __strong typeof(weakself) strongself = weakself;
-        if ([strongself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
-            [strongself.delegate zincRepo:strongself didReceiveEvent:event];
+        if ([strongself.eventListener respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
+            [strongself.eventListener zincRepo:strongself didReceiveEvent:event];
         
         NSMutableDictionary* userInfo = [event.attributes mutableCopy];
         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];
