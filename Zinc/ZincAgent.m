@@ -175,6 +175,10 @@ static NSMutableDictionary* _AgentsByURL;
     }
 }
 
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
+{
+    [self.repo refreshSourcesWithCompletion:completion];
+}
 
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
 {
@@ -244,7 +248,7 @@ static NSMutableDictionary* _AgentsByURL;
 {
     __weak typeof(self) weakself = self;
 
-    [self.repo refreshSourcesWithCompletion:^{
+    [self refreshSourcesWithCompletion:^{
 
         __strong typeof(weakself) strongself = weakself;
 

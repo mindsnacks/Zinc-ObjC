@@ -40,6 +40,10 @@
  */
 @property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
 
+/**
+ Refresh all sources. This is the same as calling directly on the Zinc repo.
+ */
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
 /**
  @discussion Update all bundles
