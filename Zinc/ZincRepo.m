@@ -26,6 +26,9 @@
 #define REPO_INDEX_FILE @"repo.json"
 
 
+static NSMutableDictionary* _ReposByURL;
+
+
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
 NSString* const ZincRepoBundleDidBeginTrackingNotification = @"ZincRepoBundleDidBeginTrackingNotification";
@@ -55,6 +58,14 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 @implementation ZincRepo
 
++ (void) initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _ReposByURL = [[NSMutableDictionary alloc] initWithCapacity:2];
+    });
+}
+
 + (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
     NSOperationQueue* operationQueue = [[NSOperationQueue alloc] init];
@@ -64,41 +75,52 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 + (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
 {
-    if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
-        fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
+    ZincRepo* repo = nil;
+
+    @synchronized(_ReposByURL) {
+        repo = [_ReposByURL[repo.url] pointerValue];
+
+        if (repo == nil) {
+
+            if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
+                fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
+            }
+
+            repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue];
+            if (![repo createDirectoriesIfNeeded:outError]) {
+                return nil;
+            }
+
+            NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
+            if ([repo.fileManager fileExistsAtPath:indexPath]) {
+
+                NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError];
+                if (jsonData == nil) {
+                    return nil;
+                }
+
+                NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
+                if (jsonDict == nil) {
+                    return nil;
+                }
+
+                ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
+                if (index == nil) {
+                    return nil;
+                }
+                repo.index = index;
+            }
+
+            _ReposByURL[repo.url] = [NSValue valueWithPointer:(__bridge const void *)(repo)];
+            
+            if (![repo queueInitializationTasks]) {
+                repo.isInitialized = YES;
+            }
+            
+            [repo queueGarbageCollectTask];
+        }
     }
 
-    ZincRepo* repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue];
-    if (![repo createDirectoriesIfNeeded:outError]) {
-        return nil;
-    }
-    
-    NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
-    if ([repo.fileManager fileExistsAtPath:indexPath]) {
-        
-        NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError];
-        if (jsonData == nil) {
-            return nil;
-        }
-        
-        NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
-        if (jsonDict == nil) {
-            return nil;
-        }
-        
-        ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
-        if (index == nil) {
-            return nil;
-        }
-        repo.index = index;
-    }
-
-    if (![repo queueInitializationTasks]) {
-        repo.isInitialized = YES;
-    }
-    
-    [repo queueGarbageCollectTask];
-    
     return repo;
 }
 
@@ -131,6 +153,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void)dealloc
 {
     [self suspendAllTasksAndWaitExecutingTasksToComplete];
+
+    @synchronized(_ReposByURL) {
+        [_ReposByURL removeObjectForKey:self.url];
+    }
 }
 
 /**
