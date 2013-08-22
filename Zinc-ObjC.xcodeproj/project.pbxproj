@@ -292,7 +292,7 @@
 		B33AF01116A641700000B6C5 /* ZincBundleTrackingRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleTrackingRequest.m; sourceTree = "<group>"; };
 		B340F94A148D514600206F86 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B340F970148D52D800206F86 /* libZinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZinc.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B340F974148D52D800206F86 /* Zinc-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc-Prefix.pch"; sourceTree = "<group>"; };
+		B340F974148D52D800206F86 /* Zinc-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Zinc-Prefix.pch"; path = "Private/Zinc-Prefix.pch"; sourceTree = "<group>"; };
 		B340F975148D52D800206F86 /* ZincGlobals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZincGlobals.h; sourceTree = "<group>"; };
 		B340F97D148D52D800206F86 /* ZincTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZincTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B340F986148D52D800206F86 /* ZincTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZincTests-Info.plist"; sourceTree = "<group>"; };
@@ -819,6 +819,7 @@
 				B347EBDE15C3593500FA0649 /* ZincOperation.h */,
 			);
 			name = "Public Headers";
+			path = Public;
 			sourceTree = "<group>";
 		};
 		B3E46B5314C3DE2D00030349 /* Internal */ = {
@@ -829,6 +830,7 @@
 				B3E46B5A14C3E14B00030349 /* Categories */,
 			);
 			name = Internal;
+			path = Private;
 			sourceTree = "<group>";
 		};
 		B3E46B5A14C3E14B00030349 /* Categories */ = {
@@ -1474,7 +1476,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
-				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_PREFIX_HEADER = "Zinc/Private/Zinc-Prefix.pch";
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
@@ -1493,7 +1495,7 @@
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
-				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_PREFIX_HEADER = "Zinc/Private/Zinc-Prefix.pch";
 				GCC_WARN_SHADOW = YES;
 				GCC_WARN_SIGN_COMPARE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
