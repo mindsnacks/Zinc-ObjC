@@ -5,11 +5,13 @@ Pod::Spec.new do |s|
   s.homepage     = "http://mindsnacks.github.io/Zinc/"
   s.license      = { :type => 'BSD', :file => 'LICENSE' }
   s.author       = { "Andy Mroczkowski" => "andy@mrox.net" }
-  s.source       = { :git => "https://github.com/mindsnacks/Zinc-ObjC.git", :commit => "1bdd4d38eb3ce783e53a938a3eb548cb2bfab88b" }
+  s.source       = { :git => "https://github.com/mindsnacks/Zinc-ObjC.git", :commit => "2c845cd0e8d6a15c1a839cf153691e7b96f06bd8" }
   s.platform     = :ios, '6.0'
   s.source_files = '{Zinc,Dependencies}/**/*.{h,m}'
-  s.prefix_header_file = 'Zinc/Zinc-Prefix.pch'
-  s.public_header_files = 'Zinc/Zinc.h', 'Zinc/ZincGlobals.h', 'Zinc/ZincErrors.h', 'Zinc/ZincRepo.h', 'Zinc/ZincAgent.h', 'Zinc/ZincBundle.h', 'Zinc/ZincResource.h', 'Zinc/ZincBundleTrackingRequest.h', 'Zinc/ZincEvent.h', 'Zinc/ZincTaskRef.h', 'Zinc/ZincDownloadPolicy.h', 'Zinc/ZincProgress.h', 'Zinc/ZincActivityMonitor.h', 'Zinc/ZincTaskMonitor.h', 'Zinc/ZincRepoMonitor.h', 'Zinc/ZincBundleAvailabilityMonitor.h', 'Zinc/UIImage+Zinc.h', 'Zinc/ZincUtils.h', 'Zinc/ZincOperation.h'
+  s.prefix_header_file = 'Zinc/Private/Zinc-Prefix.pch'
+  #s.public_header_files = 'Zinc/Zinc.h', 'Zinc/ZincGlobals.h', 'Zinc/ZincErrors.h', 'Zinc/ZincRepo.h', 'Zinc/ZincAgent.h', 'Zinc/ZincBundle.h', 'Zinc/ZincResource.h', 'Zinc/ZincBundleTrackingRequest.h', 'Zinc/ZincEvent.h', 'Zinc/ZincTaskRef.h', 'Zinc/ZincDownloadPolicy.h', 'Zinc/ZincProgress.h', 'Zinc/ZincActivityMonitor.h', 'Zinc/ZincTaskMonitor.h', 'Zinc/ZincRepoMonitor.h', 'Zinc/ZincBundleAvailabilityMonitor.h', 'Zinc/UIImage+Zinc.h', 'Zinc/ZincUtils.h', 'Zinc/ZincOperation.h'
+  s.public_header_files = 'Zinc/Public/*.h'
+  s.header_mappings_dir = 'Zinc'
   s.frameworks = 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CFNetwork'
   s.libraries = 'z'
   s.requires_arc = true
