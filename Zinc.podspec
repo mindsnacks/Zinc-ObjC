@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.platform     = :ios, '6.0'
   s.source_files = '{Zinc,Dependencies}/**/*.{h,m}'
   s.prefix_header_file = 'Zinc/Zinc-Prefix.pch'
-  s.public_header_files = 'Zinc/Zinc.h', 'Zinc/ZincGlobals.h', 'Zinc/ZincErrors.h', 'Zinc/ZincRepo.h', 'Zinc/ZincAgent.h', 'Zinc/ZincBundle.h', 'Zinc/ZincResource.h', 'Zinc/ZincBundleTrackingRequest.h', 'Zinc/ZincEvent.h', 'Zinc/ZincTaskRef.h', 'Zinc/ZincDownloadPolicy.h', 'Zinc/ZincProgress.h', 'Zinc/ZincActivityMonitor.h', 'Zinc/ZincTaskMonitor.h', 'Zinc/ZincRepoMonitor.h', 'Zinc/ZincBundleAvailabilityMonitor.h', 'Zinc/UIImage+Zinc.h', 'Zinc/ZincUtils.h', 'Zinc/ZincOperations.h'
+  s.public_header_files = 'Zinc/Zinc.h', 'Zinc/ZincGlobals.h', 'Zinc/ZincErrors.h', 'Zinc/ZincRepo.h', 'Zinc/ZincAgent.h', 'Zinc/ZincBundle.h', 'Zinc/ZincResource.h', 'Zinc/ZincBundleTrackingRequest.h', 'Zinc/ZincEvent.h', 'Zinc/ZincTaskRef.h', 'Zinc/ZincDownloadPolicy.h', 'Zinc/ZincProgress.h', 'Zinc/ZincActivityMonitor.h', 'Zinc/ZincTaskMonitor.h', 'Zinc/ZincRepoMonitor.h', 'Zinc/ZincBundleAvailabilityMonitor.h', 'Zinc/UIImage+Zinc.h', 'Zinc/ZincUtils.h', 'Zinc/ZincOperation.h'
   s.frameworks = 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CFNetwork'
   s.libraries = 'z'
   s.requires_arc = true
