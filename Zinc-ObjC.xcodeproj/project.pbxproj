@@ -348,8 +348,6 @@
 		B398DE8D16ADDAC7003F7D3F /* ZincDownloadPolicyTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadPolicyTest.m; sourceTree = "<group>"; };
 		B3998F671731EF21001AB4C8 /* ZincOperationTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincOperationTest.h; sourceTree = "<group>"; };
 		B3998F681731EF21001AB4C8 /* ZincOperationTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincOperationTest.m; sourceTree = "<group>"; };
-		B3A395FB16CEB5B4000C4F83 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = libZinc.xcconfig; sourceTree = "<group>"; };
 		B3A960E117A8892E0031466A /* ZincAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincAgent.h; sourceTree = "<group>"; };
 		B3A960E217A8892E0031466A /* ZincAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgent.m; sourceTree = "<group>"; };
 		B3A960E517A889A20031466A /* ZincAgent+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincAgent+Private.h"; sourceTree = "<group>"; };
@@ -728,11 +726,9 @@
 		B3A395FA16CEB58D000C4F83 /* Build Settings */ = {
 			isa = PBXGroup;
 			children = (
-				861CA52840F041FF8B48216A /* Pods-ZincFunctionalTests.xcconfig */,
 				0A350AF5186A44918C077CE3 /* Pods.xcconfig */,
 				FEAA69C99EDB4A1C800BC11B /* Pods-ZincTests.xcconfig */,
-				B3A395FB16CEB5B4000C4F83 /* Base.xcconfig */,
-				B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */,
+				861CA52840F041FF8B48216A /* Pods-ZincFunctionalTests.xcconfig */,
 			);
 			name = "Build Settings";
 			sourceTree = "<group>";
