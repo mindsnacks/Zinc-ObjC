@@ -594,7 +594,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         
         if (catalogVersion == ZincVersionInvalid) {
             NSDictionary* info = @{@"bundleID" : bundleID, @"distro": distro};
-            NSError* error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
+            error = ZincErrorWithInfo(ZINC_ERR_DISTRO_NOT_FOUND_IN_CATALOG, info);
             [self logEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }
         
