@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   s.homepage            = "http://mindsnacks.github.io/Zinc/"
   s.license             = { :type => 'BSD', :file => 'LICENSE' }
   s.author              = { "Andy Mroczkowski" => "andy@mrox.net" }
-  s.source              = { :git => "https://github.com/mindsnacks/Zinc-ObjC.git", :commit => "2c845cd0e8d6a15c1a839cf153691e7b96f06bd8" }
+  s.source              = { :git => "https://github.com/mindsnacks/Zinc-ObjC.git", :commit => "fc9de46183a3b272c2bde5d00f0699c6d5bfcbdf" }
   s.platform            = :ios, '6.0'
   s.source_files        = '{Zinc,Dependencies}/**/*.{h,m}'
   s.prefix_header_file  = 'Zinc/Private/Zinc-Prefix.pch'
