@@ -1,5 +1,5 @@
 Pod::Spec.new do |s|
-  s.name         = "Zinc-ObjC"
+  s.name         = "Zinc"
   s.version      = "0.0.1"
   s.summary      = "Objective-C client for Zinc file distribution system."
   s.homepage     = "http://mindsnacks.github.io/Zinc/"
