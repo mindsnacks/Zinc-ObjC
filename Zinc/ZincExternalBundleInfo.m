@@ -29,5 +29,4 @@
             [self class], self, self.bundleResource, self.manifestPath, self.bundleRootPath];
 }
 
-
 @end

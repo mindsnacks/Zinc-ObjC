@@ -45,7 +45,7 @@
 - (void) testAddTrackedBundle
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod" updateAutomatically:YES];
+    ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod"];
     [i1 setTrackingInfo:ref forBundleID:@"com.foo.bundle"];
     STAssertTrue([[i1 trackedDistributionForBundleID:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
     

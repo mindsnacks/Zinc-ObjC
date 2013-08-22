@@ -1,8 +1,12 @@
 PODS:
   - GHUnitIOS (0.5.6)
-  - Kiwi (2.2)
+  - Kiwi (2.2.1):
+    - Kiwi/ARC
+    - Kiwi/NonARC
+  - Kiwi/ARC (2.2.1)
+  - Kiwi/NonARC (2.2.1)
   - KSReachability (1.3)
-  - OCMock (2.1.1)
+  - OCMock (2.2.1)
 
 DEPENDENCIES:
   - GHUnitIOS
@@ -12,8 +16,8 @@ DEPENDENCIES:
 
 SPEC CHECKSUMS:
   GHUnitIOS: bf149b2c44084eee2785ce4ac3675c3a699e509d
-  Kiwi: db174bba4ee8068b15d7122f1b22fb64b7c1d378
+  Kiwi: e6524ba0eaa1b28af7af146bdee5314b32aa3edb
   KSReachability: 6883b291ce3bf8e0c95c86b4cced07d7169f9fc4
-  OCMock: 79212e5e328378af5cfd6edb5feacfd6c49cd8a3
+  OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
 
 COCOAPODS: 0.23.0

@@ -10,5 +10,6 @@
     #import <Foundation/Foundation.h>
     #import <SenTestingKit/SenTestingKit.h>
     #import <OCMock/OCMock.h>
+    #import <Kiwi/Kiwi.h>
     #import "TestUtility-Zinc.h"
 #endif

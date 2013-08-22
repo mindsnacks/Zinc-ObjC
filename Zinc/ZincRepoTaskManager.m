@@ -7,15 +7,15 @@
 //
 
 #import "ZincRepoTaskManager.h"
-#import "ZincTask+Private.h"
-#import "ZincTaskRef.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincResource.h"
+
+#import "ZincInternals.h"
+
 #import "ZincRepo+Private.h"
+#import "ZincTask+Private.h"
 #import "ZincDownloadPolicy.h"
 #import "ZincOperationQueueGroup.h"
-#import "ZincTasks.h"
 #import "ZincHTTPRequestOperation.h"
+
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
@@ -125,8 +125,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 - (NSArray*) tasksForBundleID:(NSString*)bundleID
 {
-    @synchronized(self.tasks)
-    {
+    @synchronized(self.tasks) {
+
         NSMutableArray* tasks = [NSMutableArray array];
         for (ZincTask* task in self.tasks) {
             if ([task.resource isZincBundleResource]) {
@@ -139,16 +139,30 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     }
 }
 
-- (NSOperationQueuePriority) initialPriorityForTask:(ZincTask*)task
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor *)taskDescriptor
 {
-    if ([task.resource isZincBundleResource]) {
-        return [self.repo.downloadPolicy priorityForBundleWithID:[task.resource zincBundleID]];
-    }
-    return NSOperationQueuePriorityNormal;
+    return [self queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+        request.taskDescriptor = taskDescriptor;
+    }];
 }
 
+- (ZincTask*) queueTaskForRequest:(ZincTaskRequest*)taskRequest
+{
+    return [self queueTaskForDescriptor:taskRequest.taskDescriptor
+                                  input:taskRequest.input
+                               priority:taskRequest.priority
+                                 parent:taskRequest.parent
+                           dependencies:taskRequest.dependencies];
+}
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input parent:(NSOperation*)parent dependencies:(NSArray*)dependencies
+- (ZincTask*) queueTaskWithRequestBlock:(void (^)(ZincTaskRequest* ))requestBlock
+{
+    ZincTaskRequest* request = [[ZincTaskRequest alloc] init];
+    requestBlock(request);
+    return [self queueTaskForRequest:request];
+}
+
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input priority:(NSOperationQueuePriority)priority parent:(NSOperation*)parent dependencies:(NSArray*)dependencies
 {
     ZincTask* task = nil;
 
@@ -191,6 +205,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
             [task addDependency:dep];
         }
 
+        // update priority
+        task.queuePriority = priority;
+
         // finally queue task if it was not pre-existing
         if (existingTask == nil) {
             [self queueTask:task];
@@ -200,24 +217,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return task;
 }
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies
-{
-    return [self queueTaskForDescriptor:taskDescriptor input:input parent:nil dependencies:dependencies];
-}
-
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input
-{
-    return [self queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
-}
-
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
-{
-    return [self queueTaskForDescriptor:taskDescriptor input:nil];
-}
-
 - (void) queueTask:(ZincTask*)task
 {
-    task.queuePriority = [self initialPriorityForTask:task];
     if (self.executeTasksInBackgroundEnabled) {
         [task setShouldExecuteAsBackgroundTask];
     }
@@ -273,6 +274,12 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         [self addOperation:taskRef];
         return taskRef;
     }
+}
+
+- (ZincTask*) queueIndexSaveTask
+{
+    ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self.repo indexURL]];
+    return [self queueTaskForDescriptor:taskDesc];
 }
 
 #pragma mark KVO

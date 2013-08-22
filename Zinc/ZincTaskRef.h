@@ -20,8 +20,4 @@
 
 - (NSArray*) allErrors;
 
-#pragma mark Private
-
-- (void) addError:(NSError*)error;
-
 @end

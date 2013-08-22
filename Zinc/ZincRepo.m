@@ -6,38 +6,16 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincRepoIndex.h"
-#import "ZincBundle.h"
-#import "ZincBundle+Private.h"
-#import "ZincManifest.h"
-#import "ZincSource.h"
-#import "ZincCatalog.h"
-#import "ZincEvent.h"
-#import "ZincEvent+Private.h"
-#import "ZincResource.h"
-#import "ZincTask+Private.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincRepoIndexUpdateTask.h"
-#import "ZincArchiveExtractOperation.h"
-#import "ZincOperationQueueGroup.h"
-#import "ZincUtils.h"
-#import "NSFileManager+Zinc.h"
-#import "NSData+Zinc.h"
-#import "ZincJSONSerialization.h"
-#import "ZincErrors.h"
-#import "ZincTrackingInfo.h"
-#import "ZincTaskRef.h"
-#import "ZincBundleTrackingRequest.h"
-#import "ZincDownloadPolicy+Private.h"
-#import "NSError+Zinc.h"
-#import "ZincTaskActions.h"
-#import "ZincExternalBundleInfo.h"
-#import "ZincRepoBundleManager.h"
-#import "ZincTasks.h"
 
-#import <KSReachability/KSReachability.h>
+#import "ZincInternals.h"
+
+#import "ZincBundle+Private.h"
+#import "ZincEvent+Private.h"
+#import "ZincTask+Private.h"
+#import "ZincTaskRef+Private.h"
+#import "ZincBundleTrackingRequest.h"
+#import "ZincExternalBundleInfo.h"
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -46,6 +24,9 @@
 #define BUNDLES_DIR @"bundles"
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
+
+
+static NSMutableDictionary* _ReposByURL;
 
 
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
@@ -67,12 +48,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 // runtime state
 @property (nonatomic, strong) NSMutableDictionary* sourcesByCatalog;
-@property (nonatomic, weak) NSTimer* refreshTimer;
 @property (nonatomic, strong) NSCache* cache;
-@property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
-@property (nonatomic, strong) KSReachability* reachability;
 @property (nonatomic, strong) NSMutableDictionary* localFilesBySHA;
-//@property (nonatomic, strong) ZincCompleteInitializationTask* completeInitializationTask;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 
@@ -81,52 +58,69 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 @implementation ZincRepo
 
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
++ (void) initialize
+{
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        _ReposByURL = [[NSMutableDictionary alloc] initWithCapacity:2];
+    });
+}
+
++ (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError
 {
     NSOperationQueue* operationQueue = [[NSOperationQueue alloc] init];
     [operationQueue setMaxConcurrentOperationCount:kZincRepoDefaultNetworkOperationCount];
     return [self repoWithURL:fileURL networkOperationQueue:operationQueue error:outError];
 }
 
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
++ (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError
 {
-    if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
-        fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
-    }
-    
-    KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
-    
-    ZincRepo* repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability];
-    if (![repo createDirectoriesIfNeeded:outError]) {
-        return nil;
-    }
-    
-    NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
-    if ([repo.fileManager fileExistsAtPath:indexPath]) {
-        
-        NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError];
-        if (jsonData == nil) {
-            return nil;
+    ZincRepo* repo = nil;
+
+    @synchronized(_ReposByURL) {
+        repo = [_ReposByURL[repo.url] pointerValue];
+
+        if (repo == nil) {
+
+            if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
+                fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
+            }
+
+            repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue];
+            if (![repo createDirectoriesIfNeeded:outError]) {
+                return nil;
+            }
+
+            NSString* indexPath = [[fileURL path] stringByAppendingPathComponent:REPO_INDEX_FILE];
+            if ([repo.fileManager fileExistsAtPath:indexPath]) {
+
+                NSData* jsonData = [[NSData alloc] initWithContentsOfFile:indexPath options:0 error:outError];
+                if (jsonData == nil) {
+                    return nil;
+                }
+
+                NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
+                if (jsonDict == nil) {
+                    return nil;
+                }
+
+                ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
+                if (index == nil) {
+                    return nil;
+                }
+                repo.index = index;
+            }
+
+            _ReposByURL[repo.url] = [NSValue valueWithPointer:(__bridge const void *)(repo)];
+            
+            if (![repo queueInitializationTasks]) {
+                repo.isInitialized = YES;
+            }
+            
+            [repo queueGarbageCollectTask];
         }
-        
-        NSDictionary* jsonDict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:outError];
-        if (jsonDict == nil) {
-            return nil;
-        }
-        
-        ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
-        if (index == nil) {
-            return nil;
-        }
-        repo.index = index;
     }
 
-    if (![repo queueInitializationTasks]) {
-        repo.isInitialized = YES;
-    }
-    
-    [repo queueGarbageCollectTask];
-    
     return repo;
 }
 
@@ -139,7 +133,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [[NSFileManager defaultManager] fileExistsAtPath:path];
 }
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
 {
     self = [super init];
     if (self) {
@@ -148,15 +142,21 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.fileManager = [[NSFileManager alloc] init];
         self.cache = [[NSCache alloc] init];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
-        _autoRefreshInterval = kZincRepoDefaultAutoRefreshInterval;
         self.sourcesByCatalog = [NSMutableDictionary dictionary];
-        self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
-        self.reachability = reachability;
         self.localFilesBySHA = [NSMutableDictionary dictionary];
         self.bundleManager = [[ZincRepoBundleManager alloc] initWithZincRepo:self];
         self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self suspendAllTasksAndWaitExecutingTasksToComplete];
+
+    @synchronized(_ReposByURL) {
+        [_ReposByURL removeObjectForKey:self.url];
+    }
 }
 
 /**
@@ -192,7 +192,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return completeInitializationTask != nil;
 }
 
-
 - (ZincTaskRef*) taskRefForInitialization
 {
     @synchronized(self) {
@@ -215,164 +214,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     self.isInitialized = YES;
 }
 
-- (void) setAutoRefreshInterval:(NSTimeInterval)refreshInterval
-{
-    _autoRefreshInterval = refreshInterval;
-    [self restartRefreshTimer];
-}
-
-- (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
-{
-    if (_downloadPolicy == downloadPolicy) return;
-    
-    if (_downloadPolicy != nil) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:ZincDownloadPolicyPriorityChangeNotification
-                                                      object:_downloadPolicy];
-    }
-    
-    _downloadPolicy = downloadPolicy;
-    
-    if (_downloadPolicy != nil) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(downloadPolicyPriorityChangeNotification:)
-                                                     name:ZincDownloadPolicyPriorityChangeNotification
-                                                   object:_downloadPolicy];
-    }
-}
-
-- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
-{
-    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
-    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
-    
-    @synchronized(self.taskManager.tasks) {
-        NSArray* tasks = [self.taskManager tasksForBundleID:bundleID];
-        for (ZincTask* task in tasks) {
-            [task setQueuePriority:priority];
-        }
-    }
-}
-
-- (void) setReachability:(KSReachability*)reachability
-{
-    if (_reachability == reachability) return;
-    
-    if (_reachability != nil) {
-        _reachability.onReachabilityChanged = nil;
-    }
-    
-    _reachability = reachability;
-        
-    if (_reachability != nil) {
-
-        __weak typeof(self) weakself = self;
-        
-        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
-
-            __strong typeof(weakself) strongself = weakself;
-            
-            @synchronized(strongself.taskManager.tasks) {
-                NSArray* remoteBundleUpdateTasks = [strongself.taskManager.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-                }]];
-                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-            }
-            
-            [strongself refreshWithCompletion:nil];
-        };
-    }
-}
-
-- (void) restartRefreshTimer
-{
-    @synchronized(self)
-    {
-        [self stopRefreshTimer];
-
-        if (self.autoRefreshInterval > 0) {
-            self.refreshTimer = [NSTimer timerWithTimeInterval:self.autoRefreshInterval
-                                                        target:self
-                                                      selector:@selector(refreshTimerFired:)
-                                                      userInfo:nil
-                                                       repeats:YES];
-            [[NSRunLoop mainRunLoop] addTimer:self.refreshTimer forMode:NSRunLoopCommonModes];
-            [self.refreshTimer fire];
-        }
-    }
-}
-
-- (void) stopRefreshTimer
-{
-    @synchronized(self)
-    {
-        [self.refreshTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
-        self.refreshTimer = nil;
-    }
-}
-
-- (void) checkForBundleDeletion
-{
-    @synchronized(self.index) {
-        
-        NSSet* cloningBundles = [self.index cloningBundles];
-        if ([cloningBundles count] > 1) {
-            // don't delete while any clones are in progress
-            return;
-        }
-        
-        NSSet* available = [self.index availableBundles];
-        NSSet* active = [self activeBundles];
-        
-        for (NSURL* bundleRes in available) {
-            if (![active containsObject:bundleRes]) {
-                [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
-            }
-        }
-    }
-}
-
-- (void) refreshWithCompletion:(dispatch_block_t)completion
-{
-    __weak typeof(self) weakself = self;
-
-    [self refreshSourcesWithCompletion:^{
-
-        __strong typeof(weakself) strongself = weakself;
-
-        [strongself resumeBundleActions];
-
-        __weak typeof(strongself) weakself2 = strongself;
-
-        [strongself refreshBundlesWithCompletion:^{
-
-            __strong typeof(weakself2) strongself2 = weakself2;
-
-            [strongself2 checkForBundleDeletion];
-
-            if (completion != nil) completion();
-        }];
-    }];    
-}
-
-- (void) refresh
-{
-    [self refreshWithCompletion:nil];
-}
-
-- (void) refreshTimerFired:(NSTimer*)timer
-{
-    [self refresh];
-}
-
-- (void)dealloc
-{
-    [self suspendAllTasksAndWaitExecutingTasksToComplete];
-
-    // set to nil to unsubscribe from notitifcations
-    self.reachability = nil;
-    self.downloadPolicy = nil;
-}
 
 #pragma mark Notifications
 
@@ -499,8 +340,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return path;
 }
 
-
-
 #pragma mark Sources
 
 - (void) addSourceURL:(NSURL*)source
@@ -552,19 +391,19 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion
 {
     NSSet* sourceURLs = [self.index sourceURLs];
-    
+
     NSOperation* parentOp = nil;
     if (completion != nil) {
         parentOp = [[NSOperation alloc] init];
         parentOp.completionBlock = completion;
     }
-    
+
     for (NSURL* source in sourceURLs) {
         ZincTaskDescriptor* taskDesc = [ZincSourceUpdateTask taskDescriptorForResource:source];
         ZincTask* task = (ZincSourceUpdateTask*)[self.taskManager queueTaskForDescriptor:taskDesc];
         [parentOp addDependency:task];
     }
-    
+
     if (completion != nil) {
         [self.taskManager addOperation:parentOp];
     }
@@ -831,17 +670,17 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req
 {
     NSParameterAssert(req);
-    [self beginTrackingBundleWithID:req.bundleID distribution:req.distribution flavor:req.flavor automaticallyUpdate:req.updateAutomatically];
+    [self beginTrackingBundleWithID:req.bundleID distribution:req.distribution flavor:req.flavor];
 }
 
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro
 {
     NSParameterAssert(bundleID);
     NSParameterAssert(distro);
-    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:nil automaticallyUpdate:autoUpdate];
+    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:nil];
 }
 
-- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor
 {
     NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);
     if (catalogID == nil) {
@@ -870,10 +709,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         }
         
         trackingInfo.distribution = distro;
-        trackingInfo.updateAutomatically = autoUpdate;
-        if (autoUpdate) {
-            trackingInfo.version = [self catalogVersionForBundleID:bundleID distribution:distro];
-        }
+
         [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
     }
     
@@ -900,6 +736,21 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         };
     }
     [self updateBundleWithID:bundleID taskRef:taskRef];
+}
+
+- (ZincTask*) queueBundleCloneTaskForBundle:(NSURL*)bundleRes priority:(NSOperationQueuePriority)priority
+{
+    ZincTask* task = nil;
+    ZincBundleState state = [self.index stateForBundle:bundleRes];
+    if (state != ZincBundleStateAvailable) {
+        [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
+        ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
+        task = [self.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+            request.taskDescriptor = taskDesc;
+            request.priority = priority;
+        }];
+    }
+    return task;
 }
 
 - (void) updateBundleWithID:(NSString*)bundleID taskRef:(ZincTaskRef*)taskRef
@@ -937,20 +788,17 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         [self.index setTrackingInfo:trackingInfo forBundleID:bundleID];
         
         NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
-        
-        ZincBundleState state = [self.index stateForBundle:bundleRes];
-        if (state != ZincBundleStateAvailable) {
-            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            ZincTask* task = [self.taskManager queueTaskForDescriptor:taskDesc];
-            
-            if (taskRef != nil) {
+        ZincTask* task = [self queueBundleCloneTaskForBundle:bundleRes priority:kZincRepoDefaultBundleUpdatePriority];
+
+        if (taskRef != nil) {
+            if (task != nil) {
+                // task may be nil if bundle is already available
                 [taskRef addDependency:task];
-                [self.taskManager addOperation:taskRef];
             }
+            [self.taskManager addOperation:taskRef];
         }
     }
-    
+
     [self queueIndexSaveTask];
 }
 
@@ -966,108 +814,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (NSSet*) trackedBundleIDs
 {
     return [self.index trackedBundleIDs];
-}
-
-- (void) resumeBundleActions
-{
-    NSSet* cloningBundles = [self.index cloningBundles];
-    for (NSURL* bundleRes in cloningBundles) {
-        if ([bundleRes zincBundleVersion] > 0) {
-            [self.taskManager queueTaskForDescriptor:[ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes]];
-        }
-    }
-}
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
-{
-    // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
-    // I also hestitate to add reachability support to it directly.
-
-    ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
-    
-    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
-        return NO;
-    }
-
-    return [self.downloadPolicy doRulesAllowBundleID:bundleID];
-}
-
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion
-{
-    NSOperation* parentOp = nil;
-    if (completion != nil) {
-        parentOp = [[NSOperation alloc] init];
-        parentOp.completionBlock = completion;
-    }
-    
-    NSMutableArray *taskDescriptors = [NSMutableArray array];
-    
-    @synchronized(self.index) {
-        
-        NSSet* trackBundles = [self.index trackedBundleIDs];
-        
-        for (NSString* bundleID in trackBundles) {
-            
-            ZincTrackingInfo* trackingInfo = [self.index trackingInfoForBundleID:bundleID];
-            ZincVersion targetVersion = ZincVersionInvalid;
-            
-            /*
-             - if auto updates are enabled, we always want to look in the catalog
-             - if not, BUT the version is invalid, it means that we weren't able to clone any version yet
-             */
-            // TODO: this really needs to be testable
-            if (trackingInfo.updateAutomatically || trackingInfo.version == ZincVersionInvalid) {
-                targetVersion = [self catalogVersionForBundleID:bundleID distribution:trackingInfo.distribution];
-            } else {
-                targetVersion = trackingInfo.version;
-            }
-            
-            if (targetVersion == ZincVersionInvalid) {
-                continue;
-            }
-            
-            /*
-             small optimization to prevent tasks tasks aren't allowed by policy to be enqueued
-             task will still respect isReady as well
-             */
-            if (![self doesPolicyAllowDownloadForBundleID:bundleID]) {
-                continue;
-            }
-            
-            NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:targetVersion];
-            ZincBundleState state = [self.index stateForBundle:bundleRes];
-            
-            if (state == ZincBundleStateCloning || state == ZincBundleStateAvailable) {
-                // already downloading/downloaded
-                continue;
-            }
-            
-            [self.index setState:ZincBundleStateCloning forBundle:bundleRes];
-            
-            ZincTaskDescriptor* taskDesc = [ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes];
-            [taskDescriptors addObject:taskDesc];
-        }
-    }
-    
-     // the following should not be done within an @synchronized block because it obtains other locks
-    
-    for (ZincTaskDescriptor* taskDesc in taskDescriptors) {
-        ZincTask* bundleTask = [self.taskManager queueTaskForDescriptor:taskDesc];
-        [parentOp addDependency:bundleTask];
-    }
-    
-    [self queueIndexSaveTask];
-    
-    if (completion != nil) {
-        [self.taskManager addOperation:parentOp];
-    }
-}
-
-- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version
-{
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
-    ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
-    [self.taskManager queueTaskForDescriptor:taskDesc];
 }
 
 #pragma mark Bundles
@@ -1144,7 +890,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 }
 
-
 #pragma mark Tasks
 
 - (NSArray*) tasks
@@ -1169,11 +914,42 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (BOOL) isSuspended
 {
-    return self.refreshTimer == nil;
+    return [self.taskManager isSuspended];
 }
+
+- (void) checkForBundleDeletion
+{
+    @synchronized(self.index) {
+
+        NSSet* cloningBundles = [self.index cloningBundles];
+        if ([cloningBundles count] > 1) {
+            // don't delete while any clones are in progress
+            return;
+        }
+
+        NSSet* available = [self.index availableBundles];
+        NSSet* active = [self activeBundles];
+
+        for (NSURL* bundleRes in available) {
+            if (![active containsObject:bundleRes]) {
+                [self deleteBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
+            }
+        }
+    }
+}
+
+- (void) deleteBundleWithID:(NSString*)bundleID version:(ZincVersion)version
+{
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
+    ZincTaskDescriptor* taskDesc = [ZincBundleDeleteTask taskDescriptorForResource:bundleRes];
+    [self.taskManager queueTaskForDescriptor:taskDesc];
+}
+
 
 - (void)cleanWithCompletion:(dispatch_block_t)completion
 {
+    [self checkForBundleDeletion];
+
     ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
     ZincTask* garbageTask = [self queueGarbageCollectTask];
     [taskRef addDependency:garbageTask];
@@ -1198,8 +974,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     __weak typeof(self) weakself = self;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         __strong typeof(weakself) strongself = weakself;
-        if ([strongself.delegate respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
-            [strongself.delegate zincRepo:strongself didReceiveEvent:event];
+        if ([strongself.eventListener respondsToSelector:@selector(zincRepo:didReceiveEvent:)])
+            [strongself.eventListener zincRepo:strongself didReceiveEvent:event];
         
         NSMutableDictionary* userInfo = [event.attributes mutableCopy];
         [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];
@@ -1211,9 +987,4 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
 }
 
-
-
 @end
-
-
-

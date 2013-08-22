@@ -7,6 +7,6 @@ target :ZincTests, :exclusive => true do
 	pod 'Kiwi'
 end
 
-target :ZincFunctionalTests, :exclusive => false do
+target :ZincFunctionalTests, :exclusive => true do
 	pod 'GHUnitIOS'
 end

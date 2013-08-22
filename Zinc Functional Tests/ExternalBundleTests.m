@@ -6,14 +6,14 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
 #import "ZincUtils.h"
 #import "ZincResource.h"
 #import "ZincBundle.h"
 
-@interface ExternalBundleTests : ZincFunctionalTestCase
+@interface ExternalBundleTests : ZincRepoFunctionalTestCase
 
 @end
 

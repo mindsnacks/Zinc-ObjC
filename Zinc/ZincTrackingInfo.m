@@ -6,27 +6,25 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
+#import "ZincTrackingInfo.h"
+
+
 #define kCodingKey_Distribution @"distribution"
 #define kCodingKey_Version @"version"
-#define kCodingKey_UpdateAutomatically @"auto_update"
 #define kCodingKey_Flavor @"flavor"
 
-#import "ZincTrackingInfo.h"
 
 @implementation ZincTrackingInfo
 
 @synthesize distribution = _distribution;
 @synthesize version = _version;
-@synthesize updateAutomatically = _updateAutomatically;
 @synthesize flavor = _flavor;
 
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
-                             updateAutomatically:(BOOL)updateAutomatically
 {
     ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = ZincVersionInvalid;
-    info.updateAutomatically = updateAutomatically;
     return info;
 }
 
@@ -36,7 +34,6 @@
     ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = version;
-    info.updateAutomatically = NO;
     return info;
 }
 
@@ -47,7 +44,6 @@
     ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = dict[kCodingKey_Distribution];
     info.version = [dict[kCodingKey_Version] integerValue];
-    info.updateAutomatically = [dict[kCodingKey_UpdateAutomatically] boolValue];
     info.flavor = dict[kCodingKey_Flavor];
     return info;
 }
@@ -58,11 +54,9 @@
     if (self) {
         _distribution = nil;
         _version = ZincVersionInvalid;
-        _updateAutomatically = NO;
     }
     return self;
 }
-
 
 - (NSDictionary*) dictionaryRepresentation
 {
@@ -70,7 +64,6 @@
     if (self.distribution != nil)
         dict[kCodingKey_Distribution] = self.distribution;
     dict[kCodingKey_Version] = @(self.version);
-    dict[kCodingKey_UpdateAutomatically] = @(self.updateAutomatically);
     if (self.flavor != nil)
         dict[kCodingKey_Flavor] = self.flavor;
     return dict;
@@ -91,9 +84,6 @@
     if (self.version != other.version) {
         return NO;
     }
-    if (self.updateAutomatically != other.updateAutomatically) {
-        return NO;
-    }
     if (self.flavor != nil || other.flavor != nil) {
         if (![self.flavor isEqual:other.flavor]) {
             return NO;
@@ -105,8 +95,8 @@
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@ updateAutomatically=%d>",
-            [self class], self, self.distribution, self.version, self.flavor, self.updateAutomatically];
+    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@>",
+            [self class], self, self.distribution, self.version, self.flavor];
 }
 
 

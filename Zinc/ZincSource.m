@@ -7,6 +7,7 @@
 //
 
 #import "ZincSource.h"
+
 #import "ZincCatalog.h"
 
 @implementation NSURL (ZincSource)

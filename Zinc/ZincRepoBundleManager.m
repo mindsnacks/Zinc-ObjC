@@ -7,8 +7,9 @@
 //
 
 #import "ZincRepoBundleManager.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
-#import "ZincResource.h"
 #import "ZincBundle+Private.h"
 
 @interface ZincRepoBundleManager ()

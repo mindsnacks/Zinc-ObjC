@@ -6,7 +6,8 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTaskRef.h"
+#import "ZincTaskRef+Private.h"
+
 #import "ZincTask.h"
 
 @interface ZincTaskRef ()
