@@ -213,7 +213,7 @@
             NSFileHandle *destinationFile = [[NSFileHandle alloc] initWithFileDescriptor:fd];
             [object seekToFileOffset:range.location];
             
-            int maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
+            unsigned long maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
             while(range.length > maxSize) {
                 [destinationFile writeData:[object readDataOfLength:maxSize]];
                 range = NSMakeRange(range.location+maxSize,range.length-maxSize);
