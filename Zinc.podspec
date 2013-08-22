@@ -13,5 +13,6 @@ Pod::Spec.new do |s|
   s.frameworks          = 'Security', 'MobileCoreServices', 'SystemConfiguration', 'CFNetwork'
   s.libraries           = 'z'
   s.requires_arc        = true
+  s.ios.resource_bundle = { 'Zinc' => 'Zinc/Scripts/*' }
   s.dependency 'KSReachability', '~> 1.3'
 end
