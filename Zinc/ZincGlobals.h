@@ -28,6 +28,7 @@ typedef enum {
     ZincBundleStateCloning   = 1,
     ZincBundleStateAvailable = 2,
     ZincBundleStateDeleting  = 3,
+    ZincBundleStateInvalid   = -1,
 } ZincBundleState;
 
 extern NSString* const ZincBundleStateName[];

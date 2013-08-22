@@ -100,9 +100,9 @@
     return NO;
 }
 
--(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)object size:(unsigned long long)size error:(NSError **)error
+-(BOOL)zinc_createFilesAndDirectoriesAtPath:(NSString *)path withTarObject:(id)tarObject size:(unsigned long long)tarSize error:(NSError **)error
 {
-    if (size % TAR_BLOCK_SIZE != 0) {
+    if (tarSize % TAR_BLOCK_SIZE != 0) {
         NSDictionary *userInfo = @{
                                    NSLocalizedDescriptionKey: @"Invalid tar file",
                                    TAR_ERROR_FILE_PATH_ERROR_KEY: path
@@ -116,20 +116,20 @@
         return NO;
     }
         
-    long location = 0; // Position in the file
-    while (location<size) {       
+    unsigned long location = 0; // Position in the file
+    while (location < tarSize) {
         long blockCount = 1; // 1 block for the header
         
-        switch ([ZincNSFileManagerTarHelper typeForObject:object atOffset:location]) {
+        switch ([ZincNSFileManagerTarHelper typeForObject:tarObject atOffset:location]) {
             case '0': // It's a File
             {                
-                NSString* name = [ZincNSFileManagerTarHelper nameForObject:object atOffset:location];
+                NSString* name = [ZincNSFileManagerTarHelper nameForObject:tarObject atOffset:location];
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - file - %@",name);  
 #endif
                 NSString *filePath = [path stringByAppendingPathComponent:name]; // Create a full path from the name
                 
-                long size = [ZincNSFileManagerTarHelper sizeForObject:object atOffset:location];
+                long size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
                 
                 if (size == 0){
 #ifdef TAR_VERBOSE_LOG_MODE
@@ -143,14 +143,14 @@
 
                 blockCount += (size-1)/TAR_BLOCK_SIZE+1; // size/TAR_BLOCK_SIZE rounded up
                 
-                if (![self zinc_writeFileDataForObject:object inRange:NSMakeRange(location+TAR_BLOCK_SIZE, size) atPath:filePath error:error]) {
+                if (![self zinc_writeFileDataForObject:tarObject inRange:NSMakeRange(location+TAR_BLOCK_SIZE, size) atPath:filePath error:error]) {
                     return NO;
                 }
                 break;
             }
             case '5': // It's a directory
             {
-                NSString* name = [ZincNSFileManagerTarHelper nameForObject:object atOffset:location];
+                NSString* name = [ZincNSFileManagerTarHelper nameForObject:tarObject atOffset:location];
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - directory - %@",name); 
 #endif
@@ -179,7 +179,7 @@
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - unsupported block"); 
 #endif
-                long size = [ZincNSFileManagerTarHelper sizeForObject:object atOffset:location];
+                long size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
                 blockCount += (size-1)/TAR_BLOCK_SIZE+1; // size/TAR_BLOCK_SIZE rounded up
                 break;
             }          
@@ -213,7 +213,7 @@
             NSFileHandle *destinationFile = [[NSFileHandle alloc] initWithFileDescriptor:fd];
             [object seekToFileOffset:range.location];
             
-            int maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
+            unsigned long maxSize = TAR_MAX_BLOCK_LOAD_IN_MEMORY*TAR_BLOCK_SIZE;
             while(range.length > maxSize) {
                 [destinationFile writeData:[object readDataOfLength:maxSize]];
                 range = NSMakeRange(range.location+maxSize,range.length-maxSize);

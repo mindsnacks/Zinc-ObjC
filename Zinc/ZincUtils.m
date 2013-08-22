@@ -22,7 +22,7 @@ ZincBundleState ZincBundleStateFromName(NSString* name)
     }
 
     NSCAssert(NO, @"unknown bundle state name: %@", name);
-    return -1;
+    return ZincBundleStateInvalid;
 }
 
 int ZincAddSkipBackupAttributeToFileWithPath(NSString * path)

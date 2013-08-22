@@ -92,7 +92,7 @@ static NSMutableDictionary* _AgentsByURL;
 
         __weak typeof(self) weakself = self;
 
-        _reachability.onReachabilityChanged = ^(KSReachability *reachability) {
+        _reachability.onReachabilityChanged = ^(KSReachability *r) {
 
             __strong typeof(weakself) strongself = weakself;
 

@@ -44,7 +44,7 @@
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
                                 includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                    options:0
-                                              errorHandler:^(NSURL* url, NSError* error){
+                                              errorHandler:^(NSURL* url, NSError* e){
                                                   return YES;
                                               }];
     
@@ -52,7 +52,7 @@
     NSDirectoryEnumerator* bundlesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:bundlesPath]
                                   includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                      options:0
-                                                errorHandler:^(NSURL* url, NSError* error){
+                                                errorHandler:^(NSURL* url, NSError* e){
                                                     return YES;
                                                 }];
     

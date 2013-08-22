@@ -26,7 +26,7 @@
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
                                 includingPropertiesForKeys:@[NSURLIsRegularFileKey, NSURLLinkCountKey]
                                                    options:0
-                                              errorHandler:^(NSURL* url, NSError* error){
+                                              errorHandler:^(NSURL* url, NSError* e){
                                                   return YES;
                                               }];
     for (NSURL *theURL in filesEnum) {

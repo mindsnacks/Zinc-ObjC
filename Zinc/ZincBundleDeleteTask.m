@@ -150,8 +150,8 @@
         return;
     } else {
         // kinda odd to ask for the path after deleting, but thats how the API works ATM
-        NSString* bundlePath = [self.repo pathForManifestWithBundleID:self.bundleID version:self.version];
-        [self addEvent:[ZincDeleteEvent deleteEventForPath:bundlePath source:ZINC_EVENT_SRC()]];
+        NSString* manifestPath = [self.repo pathForManifestWithBundleID:self.bundleID version:self.version];
+        [self addEvent:[ZincDeleteEvent deleteEventForPath:manifestPath source:ZINC_EVENT_SRC()]];
     }
     
     [self.repo deregisterBundle:self.resource];

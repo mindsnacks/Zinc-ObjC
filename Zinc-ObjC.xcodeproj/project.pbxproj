@@ -1479,6 +1479,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1496,6 +1498,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Zinc-Prefix.pch";
+				GCC_WARN_SHADOW = YES;
+				GCC_WARN_SIGN_COMPARE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
