@@ -42,14 +42,7 @@
 //    }
 //}
 
-- (void) testBundleIdentifierParsing
-{
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleID:@"mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIDFromBundleID:@"mindsnacks.assets"], @"mindsnacks", @"should be 'mindsnacks'");
-    
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleID:@"com.mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIDFromBundleID:@"com.mindsnacks.assets"], @"com.mindsnacks", @"should be 'com.mindsnacks'");
-}
+
 
 
 @end

@@ -142,7 +142,7 @@
             
         } else { // INVIDIDUAL FILE MODE
             
-            NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
+            NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
             NSArray* files = [manifest allFiles];
             NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
             

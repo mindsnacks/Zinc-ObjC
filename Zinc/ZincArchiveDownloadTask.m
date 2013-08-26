@@ -34,8 +34,8 @@
     NSError* error = nil;
     NSFileManager* fm = [[NSFileManager alloc] init];
 
-    NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
+    NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
+    NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
     
     NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {

@@ -586,10 +586,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     
     NSError* error = nil;
     
-    NSString* catalogID = [ZincBundle catalogIDFromBundleID:bundleID];
+    NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogID error:&error];
     if (catalog != nil) {
-        NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+        NSString* bundleName = ZincBundleNameFromBundleID(bundleID);
         ZincVersion catalogVersion = [catalog versionForBundleID:bundleName distribution:distro];
         
         if (catalogVersion == ZincVersionInvalid) {
@@ -624,8 +624,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (BOOL) hasManifestForBundleID:(NSString *)bundleID distribution:(NSString*)distro
 {
-    NSString* catalogID = [ZincBundle catalogIDFromBundleID:bundleID];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+    NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);
+    NSString* bundleName = ZincBundleNameFromBundleID(bundleID);
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogID error:NULL];
     if (catalog == nil) {
         return NO;

@@ -73,16 +73,6 @@
 
 #pragma mark -
 
-+ (NSString*) catalogIDFromBundleID:(NSString*)bundleID
-{
-    return ZincCatalogIDFromBundleID(bundleID);
-}
-
-+ (NSString*) bundleNameFromBundleID:(NSString*)bundleID
-{
-    return ZincBundleNameFromBundleID(bundleID);
-}
-
 + (NSString*) descriptorForBundleID:(NSString*)bundleID version:(ZincVersion)version
 {
     return [NSString stringWithFormat:@"%@-%d", bundleID, version];
