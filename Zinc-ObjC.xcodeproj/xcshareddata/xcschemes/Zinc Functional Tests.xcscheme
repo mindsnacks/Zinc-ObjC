@@ -14,20 +14,6 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B32E31F416C9DC410032E7E8"
-               BuildableName = "libKSReachability.a"
-               BlueprintName = "KSReachability"
-               ReferencedContainer = "container:Dependencies/External/KSReachability/KSReachability.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
                BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
                BuildableName = "ZincFunctionalTests.app"
                BlueprintName = "ZincFunctionalTests"
