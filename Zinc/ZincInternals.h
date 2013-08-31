@@ -30,7 +30,7 @@
 #import "ZincTaskRequest.h"
 #import "ZincTrackingInfo.h"
 #import "ZincResource.h"
-#import "ZincEvent.h"
+#import "ZincEvent+Private.h"
 
 // Tasks
 #import "ZincArchiveDownloadTask.h"
