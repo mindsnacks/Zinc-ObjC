@@ -14,8 +14,6 @@
 
 @interface ZincAgent : NSObject
 
-#pragma mark -
-
 + (instancetype) agentForRepo:(ZincRepo*)repo;
 
 @property (nonatomic, strong, readonly) ZincRepo *repo;
