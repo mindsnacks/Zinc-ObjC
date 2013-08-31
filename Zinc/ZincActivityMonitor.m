@@ -10,6 +10,7 @@
 
 #import "ZincActivityMonitor+Private.h"
 #import "ZincTask.h"
+#import "ZincInternals.h"
 
 NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitorRefreshedNotification";
 
