@@ -20,12 +20,8 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 @property (nonatomic, readwrite, assign) BOOL isMonitoring;
 @end
 
-@implementation ZincActivityMonitor
 
-@synthesize refreshInterval = _refreshInterval;
-@synthesize refreshTimer = _refreshTimer;
-@synthesize isMonitoring = _isMonitoring;
-@synthesize progressBlock = _progressBlock;
+@implementation ZincActivityMonitor
 
 - (id)init
 {
