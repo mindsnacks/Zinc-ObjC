@@ -12,6 +12,8 @@
 /**
  `ZincOperation`
  
+ This class is part of the *Zinc Public API*.
+
  Base `NSOperation` class for all internal Zinc operations
  */
 @interface ZincOperation : NSOperation <ZincProgress>
