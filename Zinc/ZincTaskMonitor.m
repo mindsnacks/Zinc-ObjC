@@ -37,7 +37,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return self;
 }
 
-+ (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef
++ (instancetype) taskMonitorForTaskRef:(ZincTaskRef*)taskRef
 {
     return [[[self class] alloc] initWithTaskRef:taskRef];
 }
