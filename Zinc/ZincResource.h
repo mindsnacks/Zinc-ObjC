@@ -9,6 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
+
+/**
+ NSUSL extensions for working with Zinc resources.
+ 
+ These extenstions are part of the *Zinc Public API*.
+ */
 @interface NSURL (ZincResource)
 
 ///------------------------
