@@ -292,7 +292,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @end
 
-@implementation ZincAchiveExtractBeginEvent
+@implementation ZincArchiveExtractBeginEvent
 
 + (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource
 {
@@ -318,7 +318,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @end
 
-@implementation ZincAchiveExtractCompleteEvent
+@implementation ZincArchiveExtractCompleteEvent
 
 + (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context
 {

@@ -111,14 +111,14 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 @end
 
 
-@interface ZincAchiveExtractBeginEvent : ZincEvent 
+@interface ZincArchiveExtractBeginEvent : ZincEvent 
 
 @property (readonly) NSURL* archiveResource;
 
 @end
 
 
-@interface ZincAchiveExtractCompleteEvent : ZincEvent 
+@interface ZincArchiveExtractCompleteEvent : ZincEvent 
 
 @property (readonly) NSURL* archiveResource;
 @property (readonly) id context;

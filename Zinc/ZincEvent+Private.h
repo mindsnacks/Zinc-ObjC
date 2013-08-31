@@ -66,14 +66,14 @@
 @end
 
 
-@interface ZincAchiveExtractBeginEvent ()
+@interface ZincArchiveExtractBeginEvent ()
 
 + (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource;
 
 @end
 
 
-@interface ZincAchiveExtractCompleteEvent ()
+@interface ZincArchiveExtractCompleteEvent ()
 
 + (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context;
 

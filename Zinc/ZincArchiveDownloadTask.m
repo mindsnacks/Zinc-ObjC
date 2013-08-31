@@ -68,7 +68,7 @@
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
-        [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
+        [self addEvent:[ZincArchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
         ZincArchiveExtractOperation* extractOp = [[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath];
         [self queueChildOperation:extractOp];
@@ -81,7 +81,7 @@
             continue;
         }
         
-        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleID]];
+        [self addEvent:[ZincArchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleID]];
         
         self.finishedSuccessfully = YES;
     }
