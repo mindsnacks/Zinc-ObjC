@@ -102,7 +102,7 @@
     }
     
     NSString* bundleID = [self.bundleIDs objectAtIndex:[indexPath row]];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleID:bundleID];
+    NSString* bundleName = ZincBundleNameFromBundleID(bundleID);
     ZincBundleState state = [self.repo stateForBundleWithID:bundleID];
     NSString *stateName = ZincBundleStateName[state];
     

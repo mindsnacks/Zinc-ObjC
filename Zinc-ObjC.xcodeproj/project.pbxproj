@@ -12,6 +12,7 @@
 		B30716C517C1C0C8007705F3 /* ZincModelObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B30716C317C1C0C8007705F3 /* ZincModelObject.h */; };
 		B30716C617C1C0C8007705F3 /* ZincModelObject.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C417C1C0C8007705F3 /* ZincModelObject.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
+		B30B052717D7BF4F0036F9BD /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37716CAFF15004F88ED /* libKSReachability.a */; };
 		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */; };
 		B317E4F215C9F8AF00DE9D73 /* ZincJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */; };
@@ -487,6 +488,7 @@
 				B387430B1489B830004B227B /* Foundation.framework in Frameworks */,
 				B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */,
 				B3DD9DA317C58232003D6A21 /* Security.framework in Frameworks */,
+				B30B052717D7BF4F0036F9BD /* libKSReachability.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -735,8 +737,6 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B3DD9D5C17C2D050003D6A21 /* Security.framework */,
-				B31DE3FC16CD822A004F88ED /* libOCMock.a */,
 				B30B763B14B75750004E6587 /* libz.dylib */,
 				B329B05C14E3152D0091019F /* libcommonCrypto.dylib */,
 				B308D67616CA221F008A1237 /* MobileCoreServices.framework */,
@@ -746,7 +746,9 @@
 				B387430A1489B830004B227B /* Foundation.framework */,
 				B387430C1489B830004B227B /* CoreGraphics.framework */,
 				B340F94A148D514600206F86 /* SenTestingKit.framework */,
+				B3DD9D5C17C2D050003D6A21 /* Security.framework */,
 				B31DE37716CAFF15004F88ED /* libKSReachability.a */,
+				B31DE3FC16CD822A004F88ED /* libOCMock.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1120,10 +1122,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B33A35FF1698F3A5007F0A57 /* Zinc Functional Tests */,
-				B38743031489B830004B227B /* Zinc Demo */,
 				B340F96F148D52D800206F86 /* Zinc */,
 				B340F97C148D52D800206F86 /* ZincTests */,
+				B33A35FF1698F3A5007F0A57 /* Zinc Functional Tests */,
+				B38743031489B830004B227B /* Zinc Demo */,
 			);
 		};
 /* End PBXProject section */
@@ -1197,7 +1199,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "./Zinc/Scripts/generate_manifest_from_local_files.py -x";
+			shellScript = "echo \"Warning: local manifest generation disabled\"\n#./Zinc/Scripts/generate_manifest_from_local_files.py -x";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1545,6 +1547,7 @@
 				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
 				INFOPLIST_FILE = "ZincDemo/Zinc-Demo-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Zinc-iOS";
 				WRAPPER_EXTENSION = app;

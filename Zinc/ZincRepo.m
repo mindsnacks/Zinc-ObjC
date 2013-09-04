@@ -8,6 +8,8 @@
 
 #import "ZincRepo+Private.h"
 
+#import <KSReachability/KSReachability.h>
+
 #import "ZincInternals.h"
 
 #import "ZincBundle+Private.h"
@@ -16,6 +18,7 @@
 #import "ZincTaskRef+Private.h"
 #import "ZincBundleTrackingRequest.h"
 #import "ZincExternalBundleInfo.h"
+#import "ZincDownloadPolicy+Private.h"
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -28,6 +31,8 @@
 
 static NSMutableDictionary* _ReposByURL;
 
+
+NSString* const ZincRepoReachabilityChangedNotification = @"ZincRepoReachabilityChangedNotification";
 
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
 NSString* const ZincRepoBundleWillDeleteNotification = @"ZincRepoBundleWillDeleteNotification";
@@ -52,6 +57,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 @property (nonatomic, strong) NSMutableDictionary* localFilesBySHA;
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
+@property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 
 @end
 
@@ -82,11 +88,13 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
         if (repo == nil) {
 
+            KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
+
             if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
                 fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
             }
 
-            repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue];
+            repo = [[ZincRepo alloc] initWithURL:fileURL networkOperationQueue:networkQueue reachability:reachability];
             if (![repo createDirectoriesIfNeeded:outError]) {
                 return nil;
             }
@@ -133,7 +141,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [[NSFileManager defaultManager] fileExistsAtPath:path];
 }
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability
 {
     self = [super init];
     if (self) {
@@ -146,12 +154,19 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.localFilesBySHA = [NSMutableDictionary dictionary];
         self.bundleManager = [[ZincRepoBundleManager alloc] initWithZincRepo:self];
         self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
+        self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
+        self.reachability = reachability;
+        self.reachability.notificationName = ZincRepoReachabilityChangedNotification;
     }
     return self;
 }
 
 - (void)dealloc
 {
+    // set to nil to unsubscribe from notitifcations
+    self.reachability = nil;
+    self.downloadPolicy = nil;
+
     [self suspendAllTasksAndWaitExecutingTasksToComplete];
 
     @synchronized(_ReposByURL) {
@@ -967,6 +982,82 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     ZincTaskDescriptor* taskDesc = [ZincCleanLegacySymlinksTask taskDescriptorForResource:self.url];
     return [self.taskManager queueTaskForDescriptor:taskDesc];
+}
+
+- (void) setReachability:(KSReachability*)reachability
+{
+    if (_reachability == reachability) return;
+
+    if (_reachability != nil) {
+        _reachability.onReachabilityChanged = nil;
+    }
+
+    _reachability = reachability;
+
+    if (_reachability != nil) {
+
+        __weak typeof(self) weakself = self;
+
+        _reachability.onReachabilityChanged = ^(KSReachability *r) {
+
+            __strong typeof(weakself) strongself = weakself;
+
+            // TODO: move this inside task manager?
+            @synchronized(strongself.taskManager.tasks) {
+                NSArray* remoteBundleUpdateTasks = [strongself.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
+                }]];
+                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
+            }
+        };
+    }
+}
+
+- (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
+{
+    if (_downloadPolicy == downloadPolicy) return;
+
+    if (_downloadPolicy != nil) {
+        [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                        name:ZincDownloadPolicyPriorityChangeNotification
+                                                      object:_downloadPolicy];
+    }
+
+    _downloadPolicy = downloadPolicy;
+
+    if (_downloadPolicy != nil) {
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(downloadPolicyPriorityChangeNotification:)
+                                                     name:ZincDownloadPolicyPriorityChangeNotification
+                                                   object:_downloadPolicy];
+    }
+}
+
+- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
+{
+    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
+    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
+
+    @synchronized(self.taskManager.tasks) {
+        NSArray* tasks = [self.taskManager tasksForBundleID:bundleID];
+        for (ZincTask* task in tasks) {
+            [task setQueuePriority:priority];
+        }
+    }
+}
+
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
+{
+    // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
+    // I also hestitate to add reachability support to it directly.
+
+    ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
+
+    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
+        return NO;
+    }
+
+    return [self.downloadPolicy doRulesAllowBundleID:bundleID];
 }
 
 - (void) logEvent:(ZincEvent*)event

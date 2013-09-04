@@ -10,14 +10,12 @@
 
 @class ZincRepo;
 @class ZincDownloadPolicy;
-@class KSReachability;
 
 @interface ZincAgent : NSObject
 
 + (instancetype) agentForRepo:(ZincRepo*)repo;
 
 @property (nonatomic, strong, readonly) ZincRepo *repo;
-@property (nonatomic, strong, readonly) KSReachability *reachability;
 
 
 #pragma mark -
@@ -47,16 +45,5 @@
  @discussion Update all bundles
  */
 - (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
-
-
-
-#pragma mark -
-#pragma mark Download Policy
-
-/**
- */
-@property (nonatomic, strong, readonly) ZincDownloadPolicy* downloadPolicy;
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
 
 @end
