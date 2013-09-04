@@ -11,14 +11,12 @@
 #define kZincAgentDefaultAutoRefreshInterval (120)
 
 @class ZincRepo;
-@class KSReachability;
 
 @interface ZincAgent (Private)
 
-- (id)initWithRepo:(ZincRepo *)repo reachability:(KSReachability*)reachability;
+- (id)initWithRepo:(ZincRepo *)repo;
 
 @property (nonatomic, strong, readwrite) ZincRepo *repo;
-@property (nonatomic, strong, readwrite) KSReachability *reachability;
 
 
 @end

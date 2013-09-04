@@ -16,7 +16,7 @@
 @interface ZincBundleTrackingRequest : NSObject
 
 /**
-Bundle ID to track.
+ Bundle ID to track.
  */
 @property (nonatomic, copy) NSString* bundleID;
 
@@ -38,16 +38,16 @@ Bundle ID to track.
  @param flavor The bundle flavor.
  */
 + (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                    distribution:(NSString*)distribution
-                                                          flavor:(NSString*)flavor;
+                                      distribution:(NSString*)distribution
+                                            flavor:(NSString*)flavor;
 
 /**
  Convenience constructor for tracking requests with no flavor.
- 
+
  @param bundleID The bundle ID
  @param distribution The distribution name to track.
  */
 + (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                    distribution:(NSString*)distribution;
+                                      distribution:(NSString*)distribution;
 
 @end

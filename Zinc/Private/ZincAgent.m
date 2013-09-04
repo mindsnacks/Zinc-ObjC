@@ -8,20 +8,17 @@
 
 #import "ZincAgent+Private.h"
 
-#import <KSReachability/KSReachability.h>
-
 #import "ZincInternals.h"
 
 #import "ZincRepo+Private.h"
-#import "ZincDownloadPolicy+Private.h"
 #import "ZincTask+Private.h"
+#import "ZincDownloadPolicy.h"
 
 
 @interface ZincAgent ()
 
 @property (nonatomic, strong, readwrite) ZincRepo *repo;
 @property (nonatomic, weak) NSTimer* refreshTimer;
-@property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 
 @end
 
@@ -46,8 +43,7 @@ static NSMutableDictionary* _AgentsByURL;
         agent = [_AgentsByURL[repo.url] pointerValue];
 
         if (agent == nil) {
-            KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
-            agent = [[ZincAgent alloc] initWithRepo:repo reachability:reachability];
+            agent = [[ZincAgent alloc] initWithRepo:repo];
             _AgentsByURL[repo.url] = [NSValue valueWithPointer:(__bridge const void *)(agent)];
         }
     }
@@ -55,91 +51,33 @@ static NSMutableDictionary* _AgentsByURL;
     return agent;
 }
 
-- (id)initWithRepo:(ZincRepo *)repo reachability:(KSReachability *)reachability
+- (id)initWithRepo:(ZincRepo *)repo
 {
     self = [super init];
     if (self) {
         self.repo = repo;
-        self.reachability = reachability;
         _autoRefreshInterval = kZincAgentDefaultAutoRefreshInterval;
-        self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
+
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reachabilityChanged:)
+                                                     name:ZincRepoReachabilityChangedNotification
+                                                   object:self.repo.reachability];
     }
     return self;
 } 
 
 - (void)dealloc
 {
-    // set to nil to unsubscribe from notitifcations
-    self.reachability = nil;
-    self.downloadPolicy = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     @synchronized(_AgentsByURL) {
         [_AgentsByURL removeObjectForKey:self.repo.url];
     }
 }
 
-- (void) setReachability:(KSReachability*)reachability
+- (void) reachabilityChanged:(NSNotification*)note
 {
-    if (_reachability == reachability) return;
-
-    if (_reachability != nil) {
-        _reachability.onReachabilityChanged = nil;
-    }
-
-    _reachability = reachability;
-
-    if (_reachability != nil) {
-
-        __weak typeof(self) weakself = self;
-
-        _reachability.onReachabilityChanged = ^(KSReachability *r) {
-
-            __strong typeof(weakself) strongself = weakself;
-
-            // TODO: move this inside task manager?
-            @synchronized(strongself.repo.taskManager.tasks) {
-                NSArray* remoteBundleUpdateTasks = [strongself.repo.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-                }]];
-                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-            }
-
-            [strongself refreshWithCompletion:nil];
-        };
-    }
-}
-
-- (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
-{
-    if (_downloadPolicy == downloadPolicy) return;
-
-    if (_downloadPolicy != nil) {
-        [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                        name:ZincDownloadPolicyPriorityChangeNotification
-                                                      object:_downloadPolicy];
-    }
-
-    _downloadPolicy = downloadPolicy;
-
-    if (_downloadPolicy != nil) {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(downloadPolicyPriorityChangeNotification:)
-                                                     name:ZincDownloadPolicyPriorityChangeNotification
-                                                   object:_downloadPolicy];
-    }
-}
-
-- (void) downloadPolicyPriorityChangeNotification:(NSNotification*)note
-{
-    NSString* bundleID = [note userInfo][ZincDownloadPolicyPriorityChangeBundleIDKey];
-    NSOperationQueuePriority priority = [[note userInfo][ZincDownloadPolicyPriorityChangePriorityKey] integerValue];
-
-    @synchronized(self.repo.taskManager.tasks) {
-        NSArray* tasks = [self.repo.taskManager tasksForBundleID:bundleID];
-        for (ZincTask* task in tasks) {
-            [task setQueuePriority:priority];
-        }
-    }
+    [self refresh];
 }
 
 - (void) setAutoRefreshInterval:(NSTimeInterval)refreshInterval
@@ -214,7 +152,7 @@ static NSMutableDictionary* _AgentsByURL;
              small optimization to prevent tasks tasks aren't allowed by policy to be enqueued
              task will still respect isReady as well
              */
-            if (![self doesPolicyAllowDownloadForBundleID:bundleID]) {
+            if (![self.repo doesPolicyAllowDownloadForBundleID:bundleID]) {
                 continue;
             }
 
@@ -233,7 +171,7 @@ static NSMutableDictionary* _AgentsByURL;
     // the following should not be done within an @synchronized block because it obtains other locks
 
     for (NSURL* bundleRes in bundlesToUpdate) {
-        NSOperationQueuePriority priority = [self.downloadPolicy priorityForBundleWithID:[bundleRes zincBundleID]];
+        NSOperationQueuePriority priority = [self.repo.downloadPolicy priorityForBundleWithID:[bundleRes zincBundleID]];
         [self.repo queueBundleCloneTaskForBundle:bundleRes priority:priority];
     }
 
@@ -287,20 +225,6 @@ static NSMutableDictionary* _AgentsByURL;
             [self.repo.taskManager queueTaskForDescriptor:[ZincBundleRemoteCloneTask taskDescriptorForResource:bundleRes]];
         }
     }
-}
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID
-{
-    // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
-    // I also hestitate to add reachability support to it directly.
-
-    ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
-
-    if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
-        return NO;
-    }
-
-    return [self.downloadPolicy doRulesAllowBundleID:bundleID];
 }
 
 @end

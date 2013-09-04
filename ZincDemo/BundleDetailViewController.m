@@ -49,7 +49,7 @@
     [super viewDidLoad];
     
     
-    self.title = [NSString stringWithFormat:@"%@-%d", [ZincBundle bundleNameFromBundleID:self.bundle.bundleID], self.bundle.version];
+    self.title = [NSString stringWithFormat:@"%@-%d", ZincBundleNameFromBundleID(self.bundle.bundleID), self.bundle.version];
 
     [self.bundle.repo bundleWithID:self.bundle.bundleID];
     

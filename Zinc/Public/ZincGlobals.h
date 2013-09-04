@@ -38,11 +38,4 @@ extern NSString* const ZincFileFormatGZ;
 
 typedef void (^ZincCompletionBlock)(NSArray* errors);
 
-
-#ifdef ZINC_DEBUG
-    #define ZINC_DEBUG_LOG(fmt, ...) (NSLog(fmt, ##__VA_ARGS__));
-#else
-	#define ZINC_DEBUG_LOG(...)
-#endif
-
 #endif

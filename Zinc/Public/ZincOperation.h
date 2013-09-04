@@ -9,12 +9,32 @@
 #import <Foundation/Foundation.h>
 #import "ZincProgress.h"
 
-// 0.5 - the same as NSOperation default
-extern double const kZincOperationInitialDefaultThreadPriority;
+/**
+ `ZincOperation`
+ 
+ This class is part of the *Zinc Public API*.
 
+ Base `NSOperation` class for all internal Zinc operations
+ */
 @interface ZincOperation : NSOperation <ZincProgress>
 
-+ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
-+ (double) defaultThreadPriority;
+/**
+ Set the initial thread priority for all Zinc operations. Defaults to `kZincOperationInitialDefaultThreadPriority`
+ */
++ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
+
+/**
+ Get the initial thread priority
+ */
++ (double)defaultThreadPriority;
 
 @end
+
+
+#pragma mark -
+
+/**
+ 0.5 - the same as NSOperation default
+ */
+extern double const kZincOperationInitialDefaultThreadPriority;
+

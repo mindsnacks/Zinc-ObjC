@@ -12,15 +12,26 @@
 @class ZincTaskRef;
 
 /**
- @discussion A ZincTaskMonitor monitors a single task for progress and completion. This is part of the Zinc-ObjC public API, and is encouraged to be used in client code.
+ A ZincTaskMonitor monitors a single task for progress and completion. This is part of the Zinc-ObjC public API, and is encouraged to be used in client code.
  */
 @interface ZincTaskMonitor : ZincActivityMonitor <ZincObservableProgress>
 
+/**
+ Create a `ZincTaskMonitor`.
+ 
+ Designated initializer.
+ */
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
-+ (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
 
 /**
- @discussion taskRef the monitor was initialized with
+ Create a `ZincTaskMonitor.
+ 
+ Convenience method.
+ */
++ (instancetype) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
+
+/**
+ The taskRef the monitor was initialized with
  */
 @property (nonatomic, strong, readonly) ZincTaskRef* taskRef;
 

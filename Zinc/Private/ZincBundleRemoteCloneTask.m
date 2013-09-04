@@ -142,7 +142,7 @@
             
         } else { // INVIDIDUAL FILE MODE
             
-            NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
+            NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
             NSArray* files = [manifest allFiles];
             NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
             
@@ -182,9 +182,7 @@
 
 - (BOOL) isReady
 {
-    // QQQ
-//    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
-    return [super isReady];
+    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
 }
 
 - (void) main

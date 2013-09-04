@@ -37,12 +37,6 @@
 
 - (NSBundle*) NSBundle;
 
-#pragma mark Utility
-
-// Deprecated, use functions in ZincUtils
-+ (NSString*) catalogIDFromBundleID:(NSString*)bundleID;
-+ (NSString*) bundleNameFromBundleID:(NSString*)bundleID;
-
 @end
 
 

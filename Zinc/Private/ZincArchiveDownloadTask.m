@@ -34,8 +34,8 @@
     NSError* error = nil;
     NSFileManager* fm = [[NSFileManager alloc] init];
 
-    NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
-    NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
+    NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
+    NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
     
     NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
@@ -68,7 +68,7 @@
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
         }
         
-        [self addEvent:[ZincAchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
+        [self addEvent:[ZincArchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
         ZincArchiveExtractOperation* extractOp = [[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath];
         [self queueChildOperation:extractOp];
@@ -81,7 +81,7 @@
             continue;
         }
         
-        [self addEvent:[ZincAchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleID]];
+        [self addEvent:[ZincArchiveExtractCompleteEvent archiveExtractCompleteEventForResource:self.resource context:self.bundleID]];
         
         self.finishedSuccessfully = YES;
     }

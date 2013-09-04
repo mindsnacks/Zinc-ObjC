@@ -7,14 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "ZincGlobals.h"
 
 @protocol ZincRepoEventListener;
 @class ZincBundle;
 @class ZincBundleTrackingRequest;
+@class ZincDownloadPolicy;
 @class ZincEvent;
 @class ZincTaskRef;
+@class KSReachability;
 
 /**
  `ZincRepo`
@@ -33,13 +34,22 @@
 
 /**
  Create a new `ZincRepo` object with the given fileURL. This is the standard way to obtain a `ZincRepo` object.
+
  @param fileURL a local file URL
  @param outError error output param
  */
 + (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
 
+/**
+ Create a new `ZincRepo` object with the given fileURL. This allows for a custom networkQueue
 
+ @param fileURL a local file URL
+ @param networkQueue the `NSOperationQueue` to use for network operations
+ @param outError error output param
+ */
 + (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
+
+@property (nonatomic, strong, readonly) KSReachability *reachability;
 
 /**
  The Zinc repo may need to perform some initialization tasks. This property be `NO` until these initialization tasks are performed, and `YES` aferwards.
@@ -229,6 +239,14 @@
  Returns `YES` if the repo is suspended, `NO` otherwise.
  */
 - (BOOL) isSuspended;
+
+///----------------------
+/// @name Download Policy
+///----------------------
+
+@property (nonatomic, strong, readonly) ZincDownloadPolicy* downloadPolicy;
+
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
        
 @end
 
@@ -236,6 +254,8 @@
 ///-------------------
 /// @name Notifcations
 ///-------------------
+
+extern NSString* const ZincRepoReachabilityChangedNotification;
 
 /**
  Posted when a bundle's status changes

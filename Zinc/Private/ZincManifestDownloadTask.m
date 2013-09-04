@@ -42,7 +42,7 @@
     NSError* error = nil;
     NSFileManager* fm = [[NSFileManager alloc] init];
     
-    NSString* catalogID = [ZincBundle catalogIDFromBundleID:self.bundleID];
+    NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
     
     NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
@@ -54,7 +54,7 @@
     
     for (NSURL* source in sources) {
         
-        NSString* bundleName = [ZincBundle bundleNameFromBundleID:self.bundleID];
+        NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
         [self queueOperationForRequest:request outputStream:nil context:nil];
         
