@@ -54,6 +54,9 @@ typedef void (^ZincProgressBlock)(id context, long long currentProgress, long lo
 
 
 /**
- @discussion Helper function to calculate floating-point progress. Basically just avoids divide by zero.
+ Helper function to calculate floating-point progress. Basically just avoids divide by zero.
+ 
+ @param progress Progress object
+ @return Current progress as a floating point value betetween 0.0f and 1.0f.
  */
-extern float ZincProgressCalculate(id<ZincProgress>);
+extern float ZincProgressCalculate(id<ZincProgress> progress);
