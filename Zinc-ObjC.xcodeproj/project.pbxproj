@@ -203,7 +203,6 @@
 /* Begin PBXFileReference section */
 		0A350AF5186A44918C077CE3 /* Pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.xcconfig; path = Pods/Pods.xcconfig; sourceTree = SOURCE_ROOT; };
 		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
-		743889DA299D427B9E44EB84 /* libPods-ZincTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZincTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		861CA52840F041FF8B48216A /* Pods-ZincFunctionalTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZincFunctionalTests.xcconfig"; path = "Pods/Pods-ZincFunctionalTests.xcconfig"; sourceTree = SOURCE_ROOT; };
 		91375763CCB340FA90DFC96E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B30716BF17C1BCAE007705F3 /* ZincAgentFunctionalTestCase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincAgentFunctionalTestCase.h; sourceTree = "<group>"; };
@@ -643,7 +642,6 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				B3DD9D5E17C2D659003D6A21 /* libPods-ZincTests.a */,
 				B3DD9D5C17C2D050003D6A21 /* Security.framework */,
 				B30B763B14B75750004E6587 /* libz.dylib */,
 				B329B05C14E3152D0091019F /* libcommonCrypto.dylib */,
@@ -655,8 +653,8 @@
 				B387430C1489B830004B227B /* CoreGraphics.framework */,
 				B340F94A148D514600206F86 /* SenTestingKit.framework */,
 				91375763CCB340FA90DFC96E /* libPods.a */,
-				743889DA299D427B9E44EB84 /* libPods-ZincTests.a */,
 				F3EE35B1AB2A49B99B98D88B /* libPods-ZincFunctionalTests.a */,
+				B3DD9D5E17C2D659003D6A21 /* libPods-ZincTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

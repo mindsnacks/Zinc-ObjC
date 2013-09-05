@@ -15,5 +15,5 @@ Pod::Spec.new do |s|
   s.requires_arc        = true
   s.preserve_paths      = 'Zinc/Scripts/*'
   s.dependency 'KSReachability', '~> 1.3'
-  s.dependency 'AMFoundation', '~> 0.1.3'
+  s.dependency 'AMFoundation', '~> 0.1.4'
 end
