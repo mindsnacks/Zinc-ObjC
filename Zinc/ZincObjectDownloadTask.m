@@ -23,10 +23,6 @@
 
 @implementation ZincObjectDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-
 - (NSString*) sha
 {
     return [self.resource zincObjectSHA];
@@ -160,6 +156,5 @@
         break; // make sure to break out of the loop when we finish successfully 
     }
 }
-
 
 @end

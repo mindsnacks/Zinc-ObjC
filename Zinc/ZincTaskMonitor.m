@@ -23,11 +23,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @implementation ZincTaskMonitor
 
-@synthesize completionBlock = _completionBlock;
-@synthesize currentProgressValue = _currentProgressValue;
-@synthesize maxProgressValue = _maxProgressValue;
-@synthesize progress = _progress;
-
 - (id) initWithTaskRef:(ZincTaskRef*)taskRef;
 {
     self = [super init];

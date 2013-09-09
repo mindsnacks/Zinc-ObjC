@@ -17,10 +17,6 @@
 
 @implementation ZincCatalog
 
-@synthesize identifier = _identifier;
-@synthesize format = _format;
-@synthesize bundleInfoById = _bundleInfoById;
-
 - (id)init
 {
     self = [super init];

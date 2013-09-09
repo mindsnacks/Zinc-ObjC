@@ -18,12 +18,6 @@
 
 @implementation ZincManifest
 
-@synthesize bundleName = _bundleName;
-@synthesize catalogID = _catalogID;
-@synthesize version = _version;
-@synthesize files = _files;
-@synthesize flavors = _flavors;
-
 - (id) initWithDictionary:(NSDictionary*)dict;
 {
     self = [super init];

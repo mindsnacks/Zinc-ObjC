@@ -26,10 +26,6 @@
 
 @implementation ZincRepoMonitor
 
-@synthesize repo = _repo;
-@synthesize taskPredicate = _taskPredicate;
-@synthesize myItems = _myItems;
-
 - (id)initWithRepo:(ZincRepo*)repo taskPredicate:(NSPredicate*)taskPredicate
 {
     self = [super init];

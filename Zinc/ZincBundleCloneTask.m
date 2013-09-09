@@ -15,8 +15,6 @@
 
 @implementation ZincBundleCloneTask
 
-@synthesize fileManager = _fileManager;
-
 + (NSString *)action
 {
     return ZincTaskActionUpdate;

@@ -13,21 +13,20 @@
 #import "ZincRepo.h"
 #import "ZincTaskActions.h"
 
+
 @interface ZincBundleAvailabilityMonitor ()
 @property (nonatomic, readwrite, copy) NSArray* bundleIDs;
 @property (nonatomic, strong) NSMutableDictionary* myItems;
 @property (nonatomic, readwrite, assign) float totalProgress;
 @end
 
+
 @interface ZincBundleAvailabilityMonitorItem ()
 - (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID;
 @end
 
-@implementation ZincBundleAvailabilityMonitor
 
-@synthesize repo = _repo;
-@synthesize bundleIDs = _bundleIDs;
-@synthesize myItems = _myItems;
+@implementation ZincBundleAvailabilityMonitor
 
 - (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
 {
@@ -38,7 +37,6 @@
     }
     return self;
 }
-
 
 - (NSArray*) items
 {
@@ -139,8 +137,6 @@
 
 @implementation ZincBundleAvailabilityMonitorItem
 
-@synthesize bundleID = _bundleID;
-
 - (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID
 {
     self = [super initWithActivityMonitor:monitor];
@@ -149,7 +145,6 @@
     }
     return self;
 }
-
 
 - (void) update
 {

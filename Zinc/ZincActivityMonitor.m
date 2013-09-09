@@ -111,12 +111,6 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 @implementation ZincActivityItem : NSObject
 
-@synthesize monitor = _monitor;
-@synthesize currentProgressValue = _currentProgressValue;
-@synthesize maxProgressValue = _maxProgressValue;
-@synthesize progress = _progress;
-@synthesize task = _task;
-
 - (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor
 {
     self = [super init];
