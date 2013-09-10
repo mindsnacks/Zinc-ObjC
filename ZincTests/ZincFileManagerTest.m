@@ -6,9 +6,13 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincFileManagerTest.h"
 #import "ZincSHA.h"
 #import "NSFileManager+Zinc.h"
+
+
+@interface ZincFileManagerTest : SenTestCase
+@end
+
 
 @implementation ZincFileManagerTest
 

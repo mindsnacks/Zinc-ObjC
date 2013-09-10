@@ -6,8 +6,12 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincUtilsTests.h"
 #import "ZincUtils.h"
+
+
+@interface ZincUtilsTests : SenTestCase
+@end
+
 
 @implementation ZincUtilsTests
 

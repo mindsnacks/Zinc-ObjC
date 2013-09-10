@@ -4,18 +4,7 @@
    <FileRef
       location = "group:Zinc-ObjC.xcodeproj">
    </FileRef>
-   <Group
-      location = "container:"
-      name = "Dependencies">
-      <FileRef
-         location = "group:Dependencies/External/KSReachability/KSReachability.xcodeproj">
-      </FileRef>
-   </Group>
-   <Group
-      location = "container:"
-      name = "Test Dependencies">
-      <FileRef
-         location = "group:Dependencies/External/OCMock/Source/OCMock.xcodeproj">
-      </FileRef>
-   </Group>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
 </Workspace>

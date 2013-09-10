@@ -37,7 +37,6 @@
     return self;
 }
 
-
 + (ZincRepoMonitor*) repoMonitorForBundleCloneTasksInRepo:(ZincRepo*)repo
 {
     NSPredicate* pred = [NSPredicate predicateWithBlock:
@@ -67,7 +66,7 @@
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(taskAdded:)
                                                  name:ZincRepoTaskAddedNotification
-                                               object:_repo];
+                                               object:self.repo];
         
     @synchronized(self.myItems) {
 
@@ -75,7 +74,7 @@
         for (ZincTask* task in tasks) {
             if ([self.taskPredicate evaluateWithObject:task]) {
                 ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self];
-                item.task = task;
+                item.operation = task;
                 [self.myItems addObject:item];
             }
         }
@@ -84,33 +83,45 @@
 
 - (void) monitoringDidStop
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:ZincRepoTaskAddedNotification
+                                                  object:self.repo];
 }
+//
+//- (void) update
+//{
+//    [[self items] makeObjectsPerformSelector:@selector(update)];
+//   
+//    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
+//                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+//        return [evaluatedObject isFinished];
+//    }]];
+//    
+//    @synchronized(self.myItems) {
+//
+//        for (ZincActivityItem* item in finishedItems) {
+//            [self.myItems removeObject:item];
+//        }
+//    }
+//    
+//    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
+//}
 
-- (void) update
+- (void) itemsDidUpdate
 {
-    [[self items] makeObjectsPerformSelector:@selector(update)];
-   
-    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
-                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        return [evaluatedObject isFinished];
-    }]];
-    
     @synchronized(self.myItems) {
-
+        NSArray* finishedItems = [self finishedItems];
         for (ZincActivityItem* item in finishedItems) {
             [self.myItems removeObject:item];
         }
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
 }
 
 - (void) addTask:(ZincTask*)task
 {
     @synchronized(self.myItems) {
         ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self];
-        item.task = task;
+        item.operation = task;
         [self.myItems addObject:item];
     }
 }

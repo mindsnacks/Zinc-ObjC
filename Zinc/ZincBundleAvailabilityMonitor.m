@@ -10,14 +10,14 @@
 
 #import "ZincInternals.h"
 #import "ZincActivityMonitor+Private.h"
-#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
+#import "ZincProgress+Private.h"
 #import "ZincTaskActions.h"
 
 
 @interface ZincBundleAvailabilityMonitor ()
 @property (nonatomic, readwrite, copy) NSArray* bundleIDs;
 @property (nonatomic, strong) NSMutableDictionary* myItems;
-@property (nonatomic, readwrite, assign) float totalProgress;
 @end
 
 
@@ -38,50 +38,27 @@
     return self;
 }
 
+- (void)dealloc
+{
+    [self stopMonitoring];
+}
+
 - (NSArray*) items
 {
     return [self.myItems allValues];
 }
 
+- (BOOL)hasDesiredVersionForBundleID:(NSString*)bundleID
+{
+    if (self.requireCatalogVersion) {
+        return [self.repo hasCurrentDistroVersionForBundleID:bundleID];
+    }
+    return [self.repo stateForBundleWithID:bundleID] == ZincBundleStateAvailable;
+}
+
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID
 {
     return (self.myItems)[bundleID];
-}
-
-- (void) update
-{
-    if ([self isFinished]) return;
-    
-    [[self items] makeObjectsPerformSelector:@selector(update)];
-    
-    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
-                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        return [evaluatedObject isFinished];
-    }]];
-       
-    if ([finishedItems count] == [self.myItems count]) {
-        [self finish];
-    } else {
-        self.totalProgress = [[[self.myItems allValues]  valueForKeyPath:@"@avg.progress"] floatValue];
-        
-        ZINC_DEBUG_LOG(@"total %f", self.totalProgress);
-    }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
-}
-
-- (void) finish
-{
-    self.totalProgress = 1.0f;
-    if (self.completionBlock != nil) {
-        self.completionBlock(nil); // TODO: add errors?
-    }
-    [self stopMonitoring];
-}
-
-- (BOOL) isFinished
-{
-    return self.totalProgress == 1.0f;
 }
 
 - (void) monitoringDidStart
@@ -114,16 +91,24 @@
 
 - (void) associateTaskWithActivityItem:(ZincTask*)task
 {
+    // Check if it's a bundle update task
     if (![task.taskDescriptor.resource isZincBundleResource]) return;
     if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) return;
-    
+
+    // Check if it's one of the bundles were interested in
     NSString* taskBundleID = [task.resource zincBundleID];
-    
     if (![self.bundleIDs containsObject:taskBundleID]) return;
-    if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
-    
+
+    // Check if its going to be updating the right version
+    if (self.requireCatalogVersion) {
+        if ([self.repo hasCurrentDistroVersionForBundleID:taskBundleID]) return;
+        if ([task.taskDescriptor.resource zincBundleVersion] != [self.repo currentDistroVersionForBundleID:taskBundleID]) return;
+    } else {
+        if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
+    }
+
     ZincBundleAvailabilityMonitorItem* item = (self.myItems)[taskBundleID];
-    item.task = task;
+    item.operation = task;
 }
 
 - (void) taskAdded:(NSNotification*)note
@@ -142,8 +127,14 @@
     self = [super initWithActivityMonitor:monitor];
     if (self) {
         _bundleID = bundleID;
+        [self initializeProgress];
     }
     return self;
+}
+
+- (void) initializeProgress
+{
+    [self updateCurrentProgressValue:0 maxProgressValue:LONG_LONG_MAX];
 }
 
 - (void) update
@@ -151,10 +142,26 @@
     if ([self isFinished]) return;
 
     ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
-    ZincBundleState state = [bundleMon.repo stateForBundleWithID:self.bundleID];
+    const BOOL hasDesiredVersion = [bundleMon hasDesiredVersionForBundleID:self.bundleID];
 
-    if (state == ZincBundleStateAvailable) {
+    if (hasDesiredVersion) {
+        
         [self finish];
+
+    } else if (self.operation != nil) {
+
+        if ([self.operation isFinished]) {
+
+            // the task finished, but the desired version is still not
+            // available. nil out the task and wait for another one
+            self.operation = nil;
+            [self initializeProgress];
+
+        } else {
+
+            // the operation is valid, use it's progress
+            [self updateFromProgress:self.operation];
+        }
     }
 }
 

@@ -6,15 +6,72 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincProgress.h"
+#import "ZincProgress+Private.h"
 
+#define NO_VALUE (-LONG_LONG_MAX)
 
-float ZincProgressCalculate(id<ZincProgress> progress)
+float ZincProgressPercentageCalculate(id<ZincProgress> progress)
 {
     long long max = [progress maxProgressValue];
-    if (max > 0) {
-        long long cur = [progress currentProgressValue];
+    long long cur = [progress currentProgressValue];
+    if (max > 0 && cur > 0) {
         return (float)cur / max;
     }
     return 0.0f;
 }
+
+
+@implementation ZincProgressItem
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _currentProgressValue = NO_VALUE;
+        _maxProgressValue = NO_VALUE;
+    }
+    return self;
+}
+
+- (void) finish
+{
+    self.maxProgressValue = self.maxProgressValue == NO_VALUE ?: 0;
+    self.currentProgressValue = self.maxProgressValue;
+    self.progressPercentage = 1.0f;
+}
+
+- (BOOL) isFinished
+{
+    if (self.currentProgressValue == NO_VALUE || self.maxProgressValue == NO_VALUE) {
+        return NO;
+    }
+    return self.progressPercentage == 1.0f;
+}
+
+- (BOOL) updateCurrentProgressValue:(long long)currentProgressValue maxProgressValue:(long long)maxProgressValue
+{
+    BOOL progressValuesChanged = NO;
+
+    if (self.currentProgressValue != currentProgressValue) {
+        self.currentProgressValue = currentProgressValue;
+        progressValuesChanged = YES;
+    }
+
+    if (self.maxProgressValue != maxProgressValue) {
+        self.maxProgressValue = maxProgressValue;
+        progressValuesChanged = YES;
+    }
+
+    if (progressValuesChanged) {
+        self.progressPercentage = ZincProgressPercentageCalculate(self);
+    }
+
+    return progressValuesChanged;
+}
+
+- (BOOL) updateFromProgress:(id<ZincProgress>)progress
+{
+    return [self updateCurrentProgressValue:[progress currentProgressValue] maxProgressValue:[progress maxProgressValue]];
+}
+
+@end

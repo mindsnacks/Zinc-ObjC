@@ -637,6 +637,24 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [[availableVersions lastObject] integerValue];
 }
 
+- (ZincVersion) versionForBundleID:(NSString *)bundleID
+{
+    return [self versionForBundleID:bundleID distribution:[self.index trackedDistributionForBundleID:bundleID]];
+}
+
+- (ZincVersion) currentDistroVersionForBundleID:(NSString*)bundleID
+{
+    NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
+    return [self catalogVersionForBundleID:bundleID distribution:distro];
+}
+
+- (BOOL)hasCurrentDistroVersionForBundleID:(NSString*)bundleID
+{
+    ZincVersion distroVersion = [self currentDistroVersionForBundleID:bundleID];
+    ZincVersion localVersion = [self versionForBundleID:bundleID];
+    return distroVersion == localVersion;
+}
+
 - (BOOL) hasManifestForBundleID:(NSString *)bundleID distribution:(NSString*)distro
 {
     NSString* catalogID = ZincCatalogIDFromBundleID(bundleID);

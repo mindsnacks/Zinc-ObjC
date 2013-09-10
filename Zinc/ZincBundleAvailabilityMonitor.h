@@ -6,13 +6,12 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincActivityMonitor.h"
-#import "ZincProgress.h"
+#import "ZincCompletableActivityMonitor.h"
 
 @class ZincRepo;
 @class ZincBundleAvailabilityMonitorItem;
 
-@interface ZincBundleAvailabilityMonitor : ZincActivityMonitor
+@interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
 - (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
 
@@ -21,22 +20,24 @@
 
 #pragma mark -
 
-@property (nonatomic, copy) ZincProgressBlock progressBlock;
-@property (nonatomic, copy) ZincCompletionBlock completionBlock;
+@property (nonatomic, assign) BOOL requireCatalogVersion;
+
+//#pragma mark -
+//
+//@property (nonatomic, copy) ZincProgressBlock progressBlock;
 
 #pragma mark -
 
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
 
-/**
- @discussion Is Key-Value Observable
- */
-@property (nonatomic, readonly, assign) float totalProgress;
+///**
+// @discussion Is Key-Value Observable
+// */
+//@property (nonatomic, readonly, assign) float totalProgress;
 
-- (BOOL) isFinished;
+//- (BOOL) isFinished;
 
 @end
-
 
 
 @interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
