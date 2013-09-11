@@ -10,6 +10,6 @@
 
 @interface ZincBundleAvailabilityMonitorItem ()
 
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID;
+- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID requireCatalogVersion:(BOOL)requireCatalogVersion;
 
 @end

@@ -20,14 +20,25 @@ describe(@"ZincBundleAvailabilityMonitorItem", ^{
 
     __block ZincBundleAvailabilityMonitorItem* item;
     __block id monitor;
+    __block id repo;
     NSString* const bundleID = @"com.mindsnacks.bundle1";
 
     beforeEach(^{
-        monitor = [ZincBundleAvailabilityMonitor nullMock];
-        item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID];
+        repo = [ZincRepo mock];
+        monitor = [ZincBundleAvailabilityMonitor mock];
+        [monitor stub:@selector(repo) andReturn:repo];
+        [monitor stub:@selector(progressBlock) andReturn:nil];
+    });
+
+    afterEach(^{
+        item = nil;
     });
 
     context(@"newly created", ^{
+
+        beforeEach(^{
+            item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:NO];
+        });
 
         it(@"should have zero progress", ^{
             [[theValue(item.currentProgressValue) should] equal:theValue(0)];
@@ -35,15 +46,15 @@ describe(@"ZincBundleAvailabilityMonitorItem", ^{
         });
 
         it(@"should not be finished", ^{
-            [item update];
-            [[theValue([monitor isFinished]) should] equal:theValue(NO)];
+            [[theValue([item isFinished]) should] equal:theValue(NO)];
         });
     });
 
-    context(@"monitor does not have desired version", ^{
+    context(@"repo does not have desired version", ^{
 
         beforeEach(^{
-            [monitor stub:@selector(hasDesiredVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateNone) withArguments:bundleID];
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
         });
 
         context(@"has an operation", ^{
@@ -51,11 +62,12 @@ describe(@"ZincBundleAvailabilityMonitorItem", ^{
             __block id operation;
 
             beforeEach(^{
+                item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:NO];
                 operation = [ZincOperation mock];
                 item.operation = operation;
             });
 
-            context(@"the operation in finished", ^{
+            context(@"the operation is finished", ^{
 
                 const long long operationProgressValue = 100;
 
@@ -72,9 +84,12 @@ describe(@"ZincBundleAvailabilityMonitorItem", ^{
 
                 it(@"should reset progress", ^{
                     [[theValue(item.currentProgressValue) should] equal:theValue(0)];
-                    [[theValue(item.maxProgressValue) should] beGreaterThan:theValue(0)];
+                    [[theValue(item.maxProgressValue) should] equal:theValue(operationProgressValue)];
                 });
 
+                specify(^{
+                    [[theValue([item isFinished]) should] beFalse];
+                });
             });
 
             context(@"the operation is not finished", ^{
@@ -94,22 +109,74 @@ describe(@"ZincBundleAvailabilityMonitorItem", ^{
                     [[theValue(item.maxProgressValue) should] equal:theValue(maxProgressValue)];
                 });
 
-                it(@"should not be finished when updated", ^{
+                specify(^{
                     [[theValue([item isFinished]) should] beFalse];
                 });
             });
         });
     });
 
-    context(@"monitor has desired version", ^{
+    context(@"repo has the catalog version", ^{
 
         beforeEach(^{
-            [monitor stub:@selector(hasDesiredVersionForBundleID:) andReturn:theValue(YES) withArguments:bundleID];
-            [item update];
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(YES) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
         });
 
-        it(@"should finish when updated", ^{
-            [[theValue([item isFinished]) should] beTrue];
+        context(@"catalog version is not required", ^{
+
+            beforeEach(^{
+                item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:NO];
+                [item update];
+            });
+
+            specify(^{
+                [[theValue([item isFinished]) should] beTrue];
+            });
+        });
+
+        context(@"catalog version is  required", ^{
+
+            beforeEach(^{
+                item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:YES];
+                [item update];
+            });
+
+            specify(^{
+                [[theValue([item isFinished]) should] beTrue];
+            });
+        });
+    });
+
+    context(@"repo has an old version", ^{
+
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
+        });
+
+        context(@"catalog version is not required", ^{
+
+            beforeEach(^{
+                item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:NO];
+                [item update];
+            });
+
+            specify(^{
+                [[theValue([item isFinished]) should] beTrue];
+            });
+        });
+
+        context(@"catalog version is  required", ^{
+
+            beforeEach(^{
+                item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:monitor bundleID:bundleID requireCatalogVersion:YES];
+                [item update];
+            });
+
+            specify(^{
+                [[theValue([item isFinished]) should] beFalse];
+            });
         });
     });
 });
@@ -120,20 +187,21 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
     __block ZincBundleAvailabilityMonitor* monitor;
     __block id repo;
     __block ZincMockFactory* mockFactory;
+    
+    NSString* const bundleID = @"com.mindsnacks.bundle1";
+    ZincVersion const previousVersion = 1;
+    ZincVersion const currentVersion = 2;
 
     beforeEach(^{
         mockFactory = [[ZincMockFactory alloc] init];
         repo = [ZincRepo mock];
+        monitor = [[ZincBundleAvailabilityMonitor alloc] initWithRepo:repo];
     });
 
-    context(@"monitoring single bundle", ^{
-
-        NSString* const bundleID = @"com.mindsnacks.bundle1";
-        ZincVersion const previousVersion = 1;
-        ZincVersion const currentVersion = 2;
+    context(@"monitoring a single bundle", ^{
 
         beforeEach(^{
-            monitor = [[ZincBundleAvailabilityMonitor alloc] initWithRepo:repo bundleIDs:@[bundleID]];
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
         });
 
         it(@"should have one activity item", ^{
@@ -141,134 +209,139 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
             [[[item bundleID] should] equal:bundleID];
         });
+    });
 
-        context(@"repo does not have the bundle", ^{
+    context(@"repo does not have the bundle", ^{
 
-            beforeEach(^{
-                [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
-                [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateNone) withArguments:bundleID];
-                [repo stub:@selector(tasks) andReturn:@[]];
-            });
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateNone) withArguments:bundleID];
+            [repo stub:@selector(tasks) andReturn:@[]];
 
-            it(@"should not be finished when updated", ^{
-                [monitor update];
-                [[theValue([monitor.progress isFinished]) should] equal:theValue(NO)];
-            });
-
-            it(@"should associate an operation when added after started", ^{
-                [monitor startMonitoring];
-
-                id task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:currentVersion];
-                [repo stub:@selector(tasks) andReturn:@[task]];
-                [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoTaskAddedNotification object:repo userInfo:@{ZincRepoTaskNotificationTaskKey: task}];
-
-                [monitor update];
-                ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
-                [[[item operation] should] beIdenticalTo:task];
-            });
-            
-            context(@"repo has a task for a different bundle", ^{
-
-                beforeEach(^{
-                    id task = [mockFactory mockBundleCloneTaskForBundleID:@"com.mindsnacks.purple" version:2];
-                    [repo stub:@selector(tasks) andReturn:@[task]];
-                });
-
-                it(@"should not associate the task when started", ^{
-                    [monitor startMonitoring];
-                    ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
-                    [[[item operation] should] beNil];
-                });
-            });
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
         });
 
-        context(@"repo has the catalog version", ^{
-
-            beforeEach(^{
-                [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(YES) withArguments:bundleID];
-                [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
-            });
-
-            it(@"should finish if the catalog version is not required", ^{
-                monitor.requireCatalogVersion = NO;
-                [monitor update];
-                [[theValue([monitor.progress isFinished]) should] beTrue];
-            });
-
-            it(@"should finish if the catalog version is required", ^{
-                monitor.requireCatalogVersion = YES;
-                [monitor update];
-                [[theValue([monitor.progress isFinished]) should] beTrue];
-            });
+        it(@"should not be finished when updated", ^{
+            [monitor update];
+            [[theValue([monitor.progress isFinished]) should] equal:theValue(NO)];
         });
 
-        context(@"repo has a version, but not the catalog version", ^{
+        it(@"should associate an operation when added after started", ^{
+            [monitor startMonitoring];
 
-            beforeEach(^{
-                [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
-                [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
-            });
+            id task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:currentVersion];
+            [repo stub:@selector(tasks) andReturn:@[task]];
+            [[NSNotificationCenter defaultCenter] postNotificationName:ZincRepoTaskAddedNotification object:repo userInfo:@{ZincRepoTaskNotificationTaskKey: task}];
 
-            it(@"should finish if the catalog version is not required", ^{
-                monitor.requireCatalogVersion = NO;
-                [monitor update];
-                [[theValue([monitor.progress isFinished]) should] beTrue];
-            });
-
-            it(@"should not finish if the catalog version is required", ^{
-                monitor.requireCatalogVersion = YES;
-                [monitor update];
-                [[theValue([monitor.progress isFinished]) should] beFalse];
-            });
+            [monitor update];
+            ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
+            [[[item operation] should] beIdenticalTo:task];
         });
 
-        context(@"repo has a task for the desired bundleVersion", ^{
-
-            __block id task;
+        context(@"repo has a task for a different bundle", ^{
 
             beforeEach(^{
-                [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
-                [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateCloning) withArguments:bundleID];
-
-                 task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:currentVersion];
+                id task = [mockFactory mockBundleCloneTaskForBundleID:@"com.mindsnacks.purple" version:2];
                 [repo stub:@selector(tasks) andReturn:@[task]];
             });
 
-            it(@"should associate the task when started", ^{
-                [monitor startMonitoring];
-                ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
-                [[[item operation] should] beIdenticalTo:task];
-            });
-        });
-
-        context(@"repo has a task for the desired bundle but old version", ^{
-
-            __block id task;
-
-            beforeEach(^{
-                [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
-                [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateCloning) withArguments:bundleID];
-                [repo stub:@selector(currentDistroVersionForBundleID:) andReturn:theValue(currentVersion) withArguments:bundleID];
-
-                task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:previousVersion];
-                [repo stub:@selector(tasks) andReturn:@[task]];
-            });
-
-            it(@"should associate the task when started if it doesn't require current version", ^{
-                monitor.requireCatalogVersion = NO;
-                [monitor startMonitoring];
-                ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
-                [[[item operation] should] beIdenticalTo:task];
-            });
-
-            it(@"should not associate the task when started if it requires current version", ^{
-                monitor.requireCatalogVersion = YES;
+            it(@"should not associate the task when started", ^{
                 [monitor startMonitoring];
                 ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
                 [[[item operation] should] beNil];
             });
         });
     });
+
+    context(@"repo has the catalog version", ^{
+
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(YES) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
+        });
+
+        it(@"should finish if the catalog version is not required", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
+            [monitor update];
+            [[theValue([monitor.progress isFinished]) should] beTrue];
+        });
+
+        it(@"should finish if the catalog version is required", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:YES];
+            [monitor update];
+            [[theValue([monitor.progress isFinished]) should] beTrue];
+        });
+    });
+
+    context(@"repo has a version, but not the catalog version", ^{
+
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:bundleID];
+        });
+
+        it(@"should finish if the catalog version is not required", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
+            [monitor update];
+            [[theValue([monitor.progress isFinished]) should] beTrue];
+        });
+
+        it(@"should not finish if the catalog version is required", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:YES];
+            [monitor update];
+            [[theValue([monitor.progress isFinished]) should] beFalse];
+        });
+    });
+
+    context(@"repo has a task for the desired bundleVersion", ^{
+
+        __block id task;
+
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateCloning) withArguments:bundleID];
+
+            task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:currentVersion];
+            [repo stub:@selector(tasks) andReturn:@[task]];
+
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
+        });
+
+        it(@"should associate the task when started", ^{
+            [monitor startMonitoring];
+            ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
+            [[[item operation] should] beIdenticalTo:task];
+        });
+    });
+
+    context(@"repo has a task for the desired bundle but old version", ^{
+
+        __block id task;
+
+        beforeEach(^{
+            [repo stub:@selector(hasCurrentDistroVersionForBundleID:) andReturn:theValue(NO) withArguments:bundleID];
+            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateCloning) withArguments:bundleID];
+            [repo stub:@selector(currentDistroVersionForBundleID:) andReturn:theValue(currentVersion) withArguments:bundleID];
+
+            task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:previousVersion];
+            [repo stub:@selector(tasks) andReturn:@[task]];
+        });
+
+        it(@"should associate the task when started if it doesn't require current version", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:NO];
+            [monitor startMonitoring];
+            ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
+            [[[item operation] should] beIdenticalTo:task];
+        });
+
+        it(@"should not associate the task when started if it requires current version", ^{
+            [monitor addMonitoredBundleID:bundleID requireCatalogVersion:YES];
+            [monitor startMonitoring];
+            ZincBundleAvailabilityMonitorItem* item = (ZincBundleAvailabilityMonitorItem*)[[monitor items] objectAtIndex:0];
+            [[[item operation] should] beNil];
+        });
+    });
 });
+
 
 SPEC_END

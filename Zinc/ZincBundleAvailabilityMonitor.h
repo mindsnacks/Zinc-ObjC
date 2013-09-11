@@ -13,16 +13,14 @@
 
 @interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
+- (id)initWithRepo:(ZincRepo*)repo;
 
 @property (nonatomic, readonly, strong) ZincRepo* repo;
-@property (nonatomic, readonly, copy) NSArray* bundleIDs;
+@property (nonatomic, readonly) NSArray* bundleIDs;
 
 #pragma mark -
 
-@property (nonatomic, assign) BOOL requireCatalogVersion;
-
-#pragma mark -
+- (void) addMonitoredBundleID:(NSString*)bundleID requireCatalogVersion:(BOOL)requireCatalogVersion;
 
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
 
@@ -32,5 +30,6 @@
 @interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
 
 @property (nonatomic, readonly, copy) NSString* bundleID;
+@property (nonatomic, readonly, assign) BOOL requireCatalogVersion;
 
 @end
