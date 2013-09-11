@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		2939822A3D044EB8813EF059 /* libPods-ZincTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E37BD859F2DD40CB95A5AE2B /* libPods-ZincTests.a */; };
 		3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3961E34F1649E4700008A65B /* Default-568h@2x.png */; };
 		562AC6AC6C194A1B9F16D2F8 /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 91375763CCB340FA90DFC96E /* libPods.a */; };
 		569F1B4AA09A4D8F9D5F177F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 91375763CCB340FA90DFC96E /* libPods.a */; };
@@ -276,10 +275,10 @@
 		B338E4DF14CCC33200BC0915 /* ZincDeepCopying.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDeepCopying.m; sourceTree = "<group>"; };
 		B338E50814CE0FBB00BC0915 /* ZincGlobals.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincGlobals.m; sourceTree = "<group>"; };
 		B33A36001698F3A5007F0A57 /* ZincFunctionalTests.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ZincFunctionalTests.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		B33A36071698F3A5007F0A57 /* Zinc Functional Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Zinc Functional Tests-Info.plist"; sourceTree = "<group>"; };
+		B33A36071698F3A5007F0A57 /* ZincFunctionalTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "ZincFunctionalTests-Info.plist"; sourceTree = "<group>"; };
 		B33A36091698F3A5007F0A57 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B33A360B1698F3A5007F0A57 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B33A360D1698F3A5007F0A57 /* Zinc Functional Tests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Zinc Functional Tests-Prefix.pch"; sourceTree = "<group>"; };
+		B33A360D1698F3A5007F0A57 /* ZincFunctionalTests-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincFunctionalTests-Prefix.pch"; sourceTree = "<group>"; };
 		B33A36111698F3A5007F0A57 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B33A36131698F3A5007F0A57 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		B33A36151698F3A5007F0A57 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -353,8 +352,6 @@
 		B3A10A4617DE9BE60054D8C2 /* ZincCompletableActivityMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincCompletableActivityMonitor.h; sourceTree = "<group>"; };
 		B3A10A4717DE9BE60054D8C2 /* ZincCompletableActivityMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincCompletableActivityMonitor.m; sourceTree = "<group>"; };
 		B3A10A4E17DEA0600054D8C2 /* ZincProgress+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincProgress+Private.h"; sourceTree = "<group>"; };
-		B3A395FB16CEB5B4000C4F83 /* Base.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Base.xcconfig; sourceTree = "<group>"; };
-		B3A395FC16CEB5C3000C4F83 /* libZinc.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = libZinc.xcconfig; sourceTree = "<group>"; };
 		B3A960E117A8892E0031466A /* ZincAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincAgent.h; sourceTree = "<group>"; };
 		B3A960E217A8892E0031466A /* ZincAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgent.m; sourceTree = "<group>"; };
 		B3A960E517A889A20031466A /* ZincAgent+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincAgent+Private.h"; sourceTree = "<group>"; };
@@ -433,8 +430,6 @@
 		B3F201E617722C8E00F4A01E /* ZincURLConnectionOperation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZincURLConnectionOperation.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B3F8AF74148EFCDF00CB92B5 /* ZincRepo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepo.h; sourceTree = "<group>"; };
 		B3F8AF75148EFCDF00CB92B5 /* ZincRepo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZincRepo.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		BCB17DBF24924E6BA437BBCA /* Pods-Zinc Functional Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc Functional Tests.xcconfig"; path = "Pods/Pods-Zinc Functional Tests.xcconfig"; sourceTree = "<group>"; };
-		CDE2751EEC0A4D0D9FA40043 /* Pods-ZincTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZincTests.xcconfig"; path = "Pods/Pods-ZincTests.xcconfig"; sourceTree = "<group>"; };
 		D00356D8153760220021627E /* ZincEvent+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincEvent+Private.h"; sourceTree = "<group>"; };
 		F3EE35B1AB2A49B99B98D88B /* libPods-ZincFunctionalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZincFunctionalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FEAA69C99EDB4A1C800BC11B /* Pods-ZincTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZincTests.xcconfig"; path = "Pods/Pods-ZincTests.xcconfig"; sourceTree = SOURCE_ROOT; };
@@ -506,7 +501,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		B33A36051698F3A5007F0A57 /* Zinc Functional Tests */ = {
+		B33A36051698F3A5007F0A57 /* ZincFunctionalTests */ = {
 			isa = PBXGroup;
 			children = (
 				B33A363016990DE4007F0A57 /* ZincRepoFunctionalTestCase.h */,
@@ -518,16 +513,16 @@
 				B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */,
 				B33A36061698F3A5007F0A57 /* Supporting Files */,
 			);
-			path = "Zinc Functional Tests";
+			path = ZincFunctionalTests;
 			sourceTree = "<group>";
 		};
 		B33A36061698F3A5007F0A57 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B33A36071698F3A5007F0A57 /* Zinc Functional Tests-Info.plist */,
+				B33A36071698F3A5007F0A57 /* ZincFunctionalTests-Info.plist */,
 				B33A36081698F3A5007F0A57 /* InfoPlist.strings */,
 				B33A360B1698F3A5007F0A57 /* main.m */,
-				B33A360D1698F3A5007F0A57 /* Zinc Functional Tests-Prefix.pch */,
+				B33A360D1698F3A5007F0A57 /* ZincFunctionalTests-Prefix.pch */,
 				B33A36111698F3A5007F0A57 /* Default.png */,
 				B33A36131698F3A5007F0A57 /* Default@2x.png */,
 				B33A36151698F3A5007F0A57 /* Default-568h@2x.png */,
@@ -634,7 +629,7 @@
 				B340F972148D52D800206F86 /* Zinc */,
 				B387430E1489B830004B227B /* Demo */,
 				B340F984148D52D800206F86 /* ZincTests */,
-				B33A36051698F3A5007F0A57 /* Zinc Functional Tests */,
+				B33A36051698F3A5007F0A57 /* ZincFunctionalTests */,
 				B33A363316991112007F0A57 /* Resources */,
 				B38743071489B830004B227B /* Frameworks */,
 				B38743051489B830004B227B /* Products */,
@@ -1254,21 +1249,6 @@
 			shellPath = /bin/sh;
 			shellScript = "echo \"Warning: local manifest generation disabled\"\n#./Zinc/Scripts/generate_manifest_from_local_files.py -x";
 		};
-		CD9A84805DCE4A0EB8D7149C /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-Zinc Functional Tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -1451,9 +1431,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Zinc Functional Tests/Zinc Functional Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "ZincFunctionalTests/ZincFunctionalTests-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "Zinc Functional Tests/Zinc Functional Tests-Info.plist";
+				INFOPLIST_FILE = "ZincFunctionalTests/ZincFunctionalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1473,9 +1453,9 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "Zinc Functional Tests/Zinc Functional Tests-Prefix.pch";
+				GCC_PREFIX_HEADER = "ZincFunctionalTests/ZincFunctionalTests-Prefix.pch";
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				INFOPLIST_FILE = "Zinc Functional Tests/Zinc Functional Tests-Info.plist";
+				INFOPLIST_FILE = "ZincFunctionalTests/ZincFunctionalTests-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
