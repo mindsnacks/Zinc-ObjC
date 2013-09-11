@@ -13,6 +13,9 @@
 
 #pragma mark Subclasses
 
+- (void) addItem:(ZincActivityItem*)item;
+- (void) removeItem:(ZincActivityItem*)item;
+
 - (void) monitoringDidStart;
 - (void) monitoringDidStop;
 

@@ -27,7 +27,7 @@ describe(@"ZincCompletableActivityMonitor", ^{
 
         beforeEach(^{
             item = [[ZincActivityItem alloc] initWithActivityMonitor:monitor];
-            [monitor stub:@selector(items) andReturn:@[item]];
+            [monitor addItem:item];
         });
 
         context(@"the item is complete", ^{
@@ -62,7 +62,8 @@ describe(@"ZincCompletableActivityMonitor", ^{
         beforeEach(^{
             item1 = [[ZincActivityItem alloc] initWithActivityMonitor:monitor];
             item2 = [[ZincActivityItem alloc] initWithActivityMonitor:monitor];
-            [monitor stub:@selector(items) andReturn:@[item1, item2]];
+            [monitor addItem:item1];
+            [monitor addItem:item2];
         });
 
         context(@"items have progress but not finished", ^{

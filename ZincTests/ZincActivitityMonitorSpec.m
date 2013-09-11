@@ -130,7 +130,7 @@ describe(@"ZincActivitityMonitor", ^{
 
         beforeEach(^{
             item = [[ZincActivityItem alloc] initWithActivityMonitor:monitor];
-            [monitor stub:@selector(items) andReturn:@[item]];
+            [monitor addItem:item];
         });
 
         it(@"has the correct items", ^{

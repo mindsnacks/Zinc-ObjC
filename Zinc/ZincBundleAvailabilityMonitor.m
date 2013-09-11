@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleAvailabilityMonitor.h"
+#import "ZincBundleAvailabilityMonitor+Private.h"
 
 #import "ZincInternals.h"
 #import "ZincActivityMonitor+Private.h"
@@ -16,8 +16,8 @@
 
 
 @interface ZincBundleAvailabilityMonitor ()
+@property (nonatomic, retain) NSMutableDictionary* itemsByBundleID;
 @property (nonatomic, readwrite, copy) NSArray* bundleIDs;
-@property (nonatomic, strong) NSMutableDictionary* myItems;
 @end
 
 
@@ -43,11 +43,6 @@
     [self stopMonitoring];
 }
 
-- (NSArray*) items
-{
-    return [self.myItems allValues];
-}
-
 - (BOOL)hasDesiredVersionForBundleID:(NSString*)bundleID
 {
     if (self.requireCatalogVersion) {
@@ -58,7 +53,7 @@
 
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID
 {
-    return (self.myItems)[bundleID];
+    return self.itemsByBundleID[bundleID];
 }
 
 - (void) monitoringDidStart
@@ -68,13 +63,14 @@
                                                  name:ZincRepoTaskAddedNotification
                                                object:self.repo];
     
-    NSMutableDictionary* items = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
+    NSMutableDictionary* itemsByBundleID = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
     for (NSString* bundleID in self.bundleIDs) {
         ZincBundleAvailabilityMonitorItem* item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID];
-        items[bundleID] = item;
+        [self addItem:item];
+        itemsByBundleID[bundleID] = item;
     }
     
-    self.myItems = items;
+    self.itemsByBundleID = itemsByBundleID;
 
     NSArray* existingTasks = [self.repo tasks];
     for (ZincTask* task in existingTasks) {
@@ -107,7 +103,7 @@
         if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
     }
 
-    ZincBundleAvailabilityMonitorItem* item = (self.myItems)[taskBundleID];
+    ZincBundleAvailabilityMonitorItem* item = self.itemsByBundleID[taskBundleID];
     item.operation = task;
 }
 

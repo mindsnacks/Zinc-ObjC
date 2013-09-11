@@ -369,6 +369,7 @@
 		B3AE827A17DFD89B003AA609 /* ZincTestDummies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTestDummies.h; sourceTree = "<group>"; };
 		B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTestDummies.m; sourceTree = "<group>"; };
 		B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleAvailabilityMonitorSpec.m; sourceTree = "<group>"; };
+		B3AE827F17DFE086003AA609 /* ZincBundleAvailabilityMonitor+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincBundleAvailabilityMonitor+Private.h"; sourceTree = "<group>"; };
 		B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadTask.h; sourceTree = "<group>"; };
 		B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadTask.m; sourceTree = "<group>"; };
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
@@ -739,12 +740,13 @@
 		B3CAB5F515FC3644008502AC /* Activity */ = {
 			isa = PBXGroup;
 			children = (
-				B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */,
-				B3CAB5F115FC228F008502AC /* ZincTaskMonitor.m */,
-				B3CAB5F715FC3673008502AC /* ZincRepoMonitor.m */,
 				B3CAB5FE15FC523E008502AC /* ZincActivityMonitor+Private.h */,
 				B3CAB5FB15FC5082008502AC /* ZincActivityMonitor.m */,
 				B3A10A4717DE9BE60054D8C2 /* ZincCompletableActivityMonitor.m */,
+				B3CAB5F115FC228F008502AC /* ZincTaskMonitor.m */,
+				B3AE827F17DFE086003AA609 /* ZincBundleAvailabilityMonitor+Private.h */,
+				B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */,
+				B3CAB5F715FC3673008502AC /* ZincRepoMonitor.m */,
 			);
 			name = Activity;
 			sourceTree = "<group>";

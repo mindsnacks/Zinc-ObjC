@@ -18,6 +18,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 
 @interface ZincActivityMonitor ()
+@property (nonatomic, strong) NSMutableArray* myItems;
 @property (nonatomic, strong) NSTimer* refreshTimer;
 @property (nonatomic, readwrite, assign) BOOL isMonitoring;
 @end
@@ -29,6 +30,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 {
     self = [super init];
     if (self) {
+        _myItems = [NSMutableArray array];
         _refreshInterval = kZincActivityMonitorDefaultRefreshInterval;
     }
     return self;
@@ -90,8 +92,22 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (NSArray*) items
 {
-    [self doesNotRecognizeSelector:_cmd];
-    return nil;
+    return [NSArray arrayWithArray:self.myItems];
+}
+
+- (void) addItem:(ZincActivityItem *)item
+{
+    NSAssert(item.monitor == self, @"monitor should be self");
+    @synchronized(self.myItems) {
+        [self.myItems addObject:item];
+    }
+}
+
+- (void) removeItem:(ZincActivityItem *)item
+{
+    @synchronized(self.myItems) {
+        [self.myItems removeObject:item];
+    }
 }
 
 - (NSArray*) finishedItems

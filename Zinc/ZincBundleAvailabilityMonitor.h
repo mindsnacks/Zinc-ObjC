@@ -22,20 +22,9 @@
 
 @property (nonatomic, assign) BOOL requireCatalogVersion;
 
-//#pragma mark -
-//
-//@property (nonatomic, copy) ZincProgressBlock progressBlock;
-
 #pragma mark -
 
 - (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
-
-///**
-// @discussion Is Key-Value Observable
-// */
-//@property (nonatomic, readonly, assign) float totalProgress;
-
-//- (BOOL) isFinished;
 
 @end
 

@@ -74,4 +74,9 @@ float ZincProgressPercentageCalculate(id<ZincProgress> progress)
     return [self updateCurrentProgressValue:[progress currentProgressValue] maxProgressValue:[progress maxProgressValue]];
 }
 
+- (NSString*) description
+{
+    return [NSString stringWithFormat:@"<%@: %p currentProgressValue=%lld maxProgressValue=%lld progressPercetange=%f>", NSStringFromClass([self class]), self, self.currentProgressValue, self.maxProgressValue, self.progressPercentage];
+}
+
 @end

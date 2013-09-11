@@ -12,7 +12,6 @@
 
 
 @interface ZincTaskMonitor ()
-@property (nonatomic, strong, readwrite) NSMutableArray* myItems;
 @property (nonatomic, strong, readwrite) NSArray* taskRefs;
 @property (nonatomic, assign) BOOL observingIsFinished;
 @end
@@ -30,10 +29,9 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     if (self) {
         _taskRefs = taskRefs;
 
-        _myItems = [NSMutableArray arrayWithCapacity:[taskRefs count]];
         for (ZincTaskRef* taskRef in taskRefs) {
             ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self operation:taskRef];
-            [_myItems addObject:item];
+            [self addItem:item];
         }
     }
     return self;
@@ -47,11 +45,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 - (void)dealloc
 {
     [self stopMonitoring];
-}
-
-- (NSArray*) items
-{
-    return self.myItems;
 }
 
 - (void) monitoringDidStart
