@@ -138,6 +138,7 @@
 		B3AE827617DFCD9E003AA609 /* ZincCompletableActivityMonitorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE827517DFCD9E003AA609 /* ZincCompletableActivityMonitorSpec.m */; };
 		B3AE827C17DFD89B003AA609 /* ZincTestDummies.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */; };
 		B3AE827E17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */; };
+		B3AE828217DFFCDF003AA609 /* ZincMockFactory.m in Sources */ = {isa = PBXBuildFile; fileRef = B3AE828117DFFCDF003AA609 /* ZincMockFactory.m */; };
 		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BFF9E115C62363005A879E /* ZincTaskRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BFF9DF15C62363005A879E /* ZincTaskRef.m */; };
@@ -370,6 +371,8 @@
 		B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTestDummies.m; sourceTree = "<group>"; };
 		B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleAvailabilityMonitorSpec.m; sourceTree = "<group>"; };
 		B3AE827F17DFE086003AA609 /* ZincBundleAvailabilityMonitor+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincBundleAvailabilityMonitor+Private.h"; sourceTree = "<group>"; };
+		B3AE828017DFFCDF003AA609 /* ZincMockFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincMockFactory.h; sourceTree = "<group>"; };
+		B3AE828117DFFCDF003AA609 /* ZincMockFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincMockFactory.m; sourceTree = "<group>"; };
 		B3BE1CD714D79EC600C61515 /* ZincDownloadTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincDownloadTask.h; sourceTree = "<group>"; };
 		B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincDownloadTask.m; sourceTree = "<group>"; };
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
@@ -613,6 +616,8 @@
 			children = (
 				B3AE827A17DFD89B003AA609 /* ZincTestDummies.h */,
 				B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */,
+				B3AE828017DFFCDF003AA609 /* ZincMockFactory.h */,
+				B3AE828117DFFCDF003AA609 /* ZincMockFactory.m */,
 				B340FA0A148D67C400206F86 /* SenTestCase+MethodSwizzling.h */,
 				B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */,
 				B340F9BB148D5C6200206F86 /* ZincBundleTests.m */,
@@ -1322,6 +1327,7 @@
 				B3AE827617DFCD9E003AA609 /* ZincCompletableActivityMonitorSpec.m in Sources */,
 				B3AE827C17DFD89B003AA609 /* ZincTestDummies.m in Sources */,
 				B3AE827E17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m in Sources */,
+				B3AE828217DFFCDF003AA609 /* ZincMockFactory.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
