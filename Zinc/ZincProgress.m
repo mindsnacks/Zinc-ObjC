@@ -8,7 +8,6 @@
 
 #import "ZincProgress+Private.h"
 
-#define NO_VALUE (-LONG_LONG_MAX)
 
 float ZincProgressPercentageCalculate(id<ZincProgress> progress)
 {
@@ -23,28 +22,14 @@ float ZincProgressPercentageCalculate(id<ZincProgress> progress)
 
 @implementation ZincProgressItem
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        _currentProgressValue = NO_VALUE;
-        _maxProgressValue = NO_VALUE;
-    }
-    return self;
-}
-
 - (void) finish
 {
-    self.maxProgressValue = self.maxProgressValue == NO_VALUE ?: 0;
     self.currentProgressValue = self.maxProgressValue;
     self.progressPercentage = 1.0f;
 }
 
 - (BOOL) isFinished
 {
-    if (self.currentProgressValue == NO_VALUE || self.maxProgressValue == NO_VALUE) {
-        return NO;
-    }
     return self.progressPercentage == 1.0f;
 }
 
@@ -76,7 +61,7 @@ float ZincProgressPercentageCalculate(id<ZincProgress> progress)
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<%@: %p currentProgressValue=%lld maxProgressValue=%lld progressPercetange=%f>", NSStringFromClass([self class]), self, self.currentProgressValue, self.maxProgressValue, self.progressPercentage];
+    return [NSString stringWithFormat:@"<%@: %p currentProgressValue=%lld maxProgressValue=%lld progressPercentage=%f>", NSStringFromClass([self class]), self, self.currentProgressValue, self.maxProgressValue, self.progressPercentage];
 }
 
 @end

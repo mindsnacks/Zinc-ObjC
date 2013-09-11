@@ -34,16 +34,23 @@
     if (self) {
         _repo = repo;
         self.bundleIDs = bundleIDs;
+
+        self.itemsByBundleID = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
+        for (NSString* bundleID in self.bundleIDs) {
+            ZincBundleAvailabilityMonitorItem* item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID];
+            [self addItem:item];
+            self.itemsByBundleID[bundleID] = item;
+        }
     }
     return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
     [self stopMonitoring];
 }
 
-- (BOOL)hasDesiredVersionForBundleID:(NSString*)bundleID
+- (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
 {
     if (self.requireCatalogVersion) {
         return [self.repo hasCurrentDistroVersionForBundleID:bundleID];
@@ -63,15 +70,6 @@
                                                  name:ZincRepoTaskAddedNotification
                                                object:self.repo];
     
-    NSMutableDictionary* itemsByBundleID = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
-    for (NSString* bundleID in self.bundleIDs) {
-        ZincBundleAvailabilityMonitorItem* item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID];
-        [self addItem:item];
-        itemsByBundleID[bundleID] = item;
-    }
-    
-    self.itemsByBundleID = itemsByBundleID;
-
     NSArray* existingTasks = [self.repo tasks];
     for (ZincTask* task in existingTasks) {
         [self associateTaskWithActivityItem:task];
@@ -123,14 +121,8 @@
     self = [super initWithActivityMonitor:monitor];
     if (self) {
         _bundleID = bundleID;
-        [self initializeProgress];
     }
     return self;
-}
-
-- (void) initializeProgress
-{
-    [self updateCurrentProgressValue:0 maxProgressValue:LONG_LONG_MAX];
 }
 
 - (void) update
@@ -150,8 +142,9 @@
 
             // the task finished, but the desired version is still not
             // available. nil out the task and wait for another one
+            [self updateCurrentProgressValue:0 maxProgressValue:self.operation.maxProgressValue];
             self.operation = nil;
-            [self initializeProgress];
+            self.currentProgressValue = 0;
 
         } else {
 
