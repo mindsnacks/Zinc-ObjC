@@ -6,10 +6,14 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleTests.h"
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
+
+
+@interface ZincBundleTests : SenTestCase
+@end
+
 
 @implementation ZincBundleTests
 

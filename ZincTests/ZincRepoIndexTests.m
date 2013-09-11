@@ -6,10 +6,14 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincRepoIndexTests.h"
 #import "ZincRepoIndex.h"
 #import "ZincResource.h"
 #import "ZincTrackingInfo.h"
+
+
+@interface ZincRepoIndexTests : SenTestCase
+@end
+
 
 @implementation ZincRepoIndexTests
 

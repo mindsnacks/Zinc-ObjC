@@ -15,7 +15,6 @@
  * OS X.
  */
 
-+ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method;
 - (id) initWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method;
 
 @property (nonatomic, strong, readonly) NSURL* resource;

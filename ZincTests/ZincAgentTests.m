@@ -6,11 +6,13 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincAgentTests.h"
-
 #import "ZincAgent.h"
 #import "ZincRepo.h"
-#import <KSReachability/KSReachability.h>
+
+
+@interface ZincAgentTests : SenTestCase
+@end
+
 
 @implementation ZincAgentTests
 
