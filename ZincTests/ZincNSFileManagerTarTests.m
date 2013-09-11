@@ -6,8 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincNSFileManagerTarTests.h"
 #import "NSFileManager+ZincTar.h"
+
+
+@interface ZincNSFileManagerTarTests : SenTestCase
+@property (nonatomic, retain) NSString* myDir;
+@end
+
 
 @implementation ZincNSFileManagerTarTests
 

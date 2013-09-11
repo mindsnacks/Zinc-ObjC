@@ -29,12 +29,6 @@
     return self;
 }
 
-+ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
-{
-    return [[self alloc] initWithResource:resource action:action method:method];
-}
-
-
 - (NSString*) stringValue
 {
     return [NSString stringWithFormat:@"Resource=%@;Action=%@;Method=%@", 

@@ -6,9 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincManifestTests.h"
 #import "ZincManifest.h"
 #import "ZincJSONSerialization.h"
+
+
+@interface ZincManifestTests : SenTestCase
+@end
+
 
 @implementation ZincManifestTests
 
