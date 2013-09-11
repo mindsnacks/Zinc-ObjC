@@ -89,8 +89,6 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @implementation ZincErrorEvent
 
-@synthesize error = _error;
-
 - (id) initWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes
 {
     self = [super initWithType:ZincEventTypeError source:source attributes:attributes];

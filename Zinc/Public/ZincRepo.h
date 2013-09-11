@@ -201,6 +201,12 @@
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
 
 /**
+ @param bundleID the bundleID
+ @return `YES` if the current version of the bundle is avaible, `NO` otherwise
+ */
+- (BOOL) hasCurrentDistroVersionForBundleID:(NSString*)bundleID;
+
+/**
  Register an external bundle.
  
  TODO: document this feature with more detail

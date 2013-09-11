@@ -65,9 +65,6 @@
 
 @implementation ZincOperationQueueGroup
 
-@synthesize infoByClassName = _queuesByClass;
-@synthesize mySuspended = _mySuspended;
-
 - (id)init
 {
     self = [super init];

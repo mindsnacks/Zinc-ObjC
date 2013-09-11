@@ -16,8 +16,6 @@
 
 @implementation ZincTaskRef
 
-@synthesize errors = _errors;
-
 - (id)init
 {
     self = [super init];

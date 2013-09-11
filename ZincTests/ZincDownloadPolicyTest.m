@@ -6,8 +6,12 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincDownloadPolicyTest.h"
 #import "ZincDownloadPolicy.h"
+
+
+@interface ZincDownloadPolicyTest : SenTestCase
+@end
+
 
 @implementation ZincDownloadPolicyTest
 

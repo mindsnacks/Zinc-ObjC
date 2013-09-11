@@ -19,8 +19,6 @@
 
 @implementation ZincBundleRemoteCloneTask
 
-@synthesize httpOverheadConstant = _httpOverheadConstant;
-
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
     self = [super initWithRepo:repo resourceDescriptor:resource input:input];

@@ -35,13 +35,15 @@ def main():
         src_dirs = args.src_dirs
         dest = args.dest
 
-    catalog_id = args.catalog_id
+    default_catalog_id = args.catalog_id
 
     for src_dir in src_dirs:
         src_dir = os.path.realpath(src_dir)
         bundle_catalog_id = os.path.split(src_dir)[-1]
         bundle_id = bundle_catalog_id.split('.')[-1]
-        if catalog_id is None:
+        if default_catalog_id is not None:
+            catalog_id = default_catalog_id
+        else:
             catalog_id = bundle_catalog_id[:-len(bundle_id)-1]
         print catalog_id, bundle_id
         manifest = ZincManifest(catalog_id, bundle_id, 0)

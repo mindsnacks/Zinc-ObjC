@@ -6,8 +6,12 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincResourceTests.h"
 #import "ZincResource.h"
+
+
+@interface ZincResourceTests : SenTestCase
+@end
+
 
 @implementation ZincResourceTests
 

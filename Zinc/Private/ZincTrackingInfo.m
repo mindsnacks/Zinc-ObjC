@@ -16,10 +16,6 @@
 
 @implementation ZincTrackingInfo
 
-@synthesize distribution = _distribution;
-@synthesize version = _version;
-@synthesize flavor = _flavor;
-
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
 {
     ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
@@ -98,6 +94,5 @@
     return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@>",
             [self class], self, self.distribution, self.version, self.flavor];
 }
-
 
 @end

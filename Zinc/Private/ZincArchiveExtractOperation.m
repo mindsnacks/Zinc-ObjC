@@ -22,10 +22,6 @@
 
 @implementation ZincArchiveExtractOperation
 
-@synthesize repo = _repo;
-@synthesize archivePath = _archivePath;
-@synthesize error = _error;
-
 - (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath;                
 {
     self = [super init];

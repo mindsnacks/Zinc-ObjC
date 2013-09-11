@@ -11,5 +11,8 @@
     #import <SenTestingKit/SenTestingKit.h>
     #import <OCMock/OCMock.h>
     #import <Kiwi/Kiwi.h>
+    #import "SenTestCase+MethodSwizzling.h"
     #import "TestUtility-Zinc.h"
+    #import "ZincTestDummies.h"
+    #import "ZincMockFactory.h"
 #endif

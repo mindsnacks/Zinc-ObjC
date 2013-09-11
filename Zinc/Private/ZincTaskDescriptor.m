@@ -18,10 +18,6 @@
 
 @implementation ZincTaskDescriptor
 
-@synthesize resource = _resource;
-@synthesize action = _action;
-@synthesize method = _method;
-
 - (id) initWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
 {
     self = [super init];
@@ -32,12 +28,6 @@
     }
     return self;
 }
-
-+ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
-{
-    return [[self alloc] initWithResource:resource action:action method:method];
-}
-
 
 - (NSString*) stringValue
 {

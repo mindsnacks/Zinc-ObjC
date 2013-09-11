@@ -7,81 +7,68 @@
 //
 
 #import "ZincTaskMonitor.h"
-
+#import "ZincActivityMonitor+Private.h"
 #import "ZincTaskRef.h"
 
 
 @interface ZincTaskMonitor ()
-@property (nonatomic, strong, readwrite) ZincTaskRef* taskRef;
-@property (nonatomic, assign, readwrite) long long currentProgressValue;
-@property (nonatomic, assign, readwrite) long long maxProgressValue;
-@property (nonatomic, assign, readwrite) float progress;
+@property (nonatomic, strong, readwrite) NSArray* taskRefs;
+@property (nonatomic, assign) BOOL observingIsFinished;
 @end
 
 
 static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
+
 @implementation ZincTaskMonitor
 
-@synthesize completionBlock = _completionBlock;
-@synthesize currentProgressValue = _currentProgressValue;
-@synthesize maxProgressValue = _maxProgressValue;
-@synthesize progress = _progress;
-
-- (id) initWithTaskRef:(ZincTaskRef*)taskRef;
+- (id) initWithTaskRefs:(NSArray*)taskRefs
 {
+    NSParameterAssert(taskRefs);
     self = [super init];
     if (self) {
-        _taskRef = taskRef;
+        _taskRefs = taskRefs;
+
+        for (ZincTaskRef* taskRef in taskRefs) {
+            ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self operation:taskRef];
+            [self addItem:item];
+        }
     }
     return self;
 }
 
 + (instancetype) taskMonitorForTaskRef:(ZincTaskRef*)taskRef
 {
-    return [[[self class] alloc] initWithTaskRef:taskRef];
-}
-
-- (void)dealloc
-{
-    [self stopMonitoring];
-    
+    return [[[self class] alloc] initWithTaskRefs:@[taskRef]];
 }
 
 - (void) monitoringDidStart
 {
-    [self.taskRef addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
+    if (!self.observingIsFinished) {
+        for (ZincTaskRef* taskRef in self.taskRefs) {
+            [taskRef addObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew context:&kvo_taskIsFinished];
+        }
+        self.observingIsFinished = YES;
+    }
 }
 
 - (void) monitoringDidStop
 {
-    [self.taskRef removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_taskIsFinished];
-}
-
-- (void) callProgressBlock
-{
-    if (self.progressBlock != nil) {
-        self.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progress);
+    if (self.observingIsFinished) {
+        for (ZincTaskRef* taskRef in self.taskRefs) {
+            [taskRef removeObserver:self forKeyPath:NSStringFromSelector(@selector(isFinished)) context:&kvo_taskIsFinished];
+        }
+        self.observingIsFinished = NO;
     }
 }
 
-- (void) callCompletionBlock
+- (NSArray*) allErrors
 {
-    if (self.completionBlock != nil) {
-        self.completionBlock([self.taskRef allErrors]);
-        self.completionBlock = nil;
+    NSMutableArray* errors = [NSMutableArray array];
+    for (ZincTaskRef* taskRef in self.taskRefs) {
+        [errors addObjectsFromArray:[taskRef allErrors]];
     }
-}
-
-- (void) update
-{
-    self.maxProgressValue = [self.taskRef maxProgressValue];
-    self.currentProgressValue = [self.taskRef isFinished] ? self.maxProgressValue : self.taskRef.currentProgressValue;
-    self.progress = ZincProgressCalculate(self);
-    
-    [self callProgressBlock];
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
+    return errors;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
@@ -90,7 +77,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         BOOL finished = [change[NSKeyValueChangeNewKey] boolValue];
         if (finished) {
             [self update];
-            [self callCompletionBlock];
         }
     } else {
         [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];

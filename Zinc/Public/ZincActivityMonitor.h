@@ -11,11 +11,11 @@
 #import "ZincProgress.h"
 
 
-@class ZincTask;
-@class ZincActivityMonitor;
+@class ZincOperation;
 
 
 static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 0.5;
+
 extern NSString* const ZincActivityMonitorRefreshedNotification;
 
 
@@ -34,18 +34,10 @@ extern NSString* const ZincActivityMonitorRefreshedNotification;
 @end
 
 
-@interface ZincActivityItem : NSObject <ZincObservableProgress>
+@interface ZincActivityItem : ZincProgressItem
 
 @property (nonatomic, readonly, weak) ZincActivityMonitor* monitor;
 
-@property (nonatomic, readonly, strong) ZincTask* task;
-
-- (BOOL) isFinished;
-
-#pragma mark ZincObservableProgress
-
-@property (nonatomic, assign, readonly) float progress;
-@property (nonatomic, assign, readonly) long long currentProgressValue;
-@property (nonatomic, assign, readonly) long long maxProgressValue;
+@property (nonatomic, readonly, strong) ZincOperation* operation;
 
 @end

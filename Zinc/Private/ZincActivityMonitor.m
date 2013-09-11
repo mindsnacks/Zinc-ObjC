@@ -9,13 +9,16 @@
 #import "ZincActivityMonitor.h"
 
 #import "ZincActivityMonitor+Private.h"
+#import "ZincProgress+Private.h"
 #import "ZincTask.h"
 #import "ZincInternals.h"
+
 
 NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitorRefreshedNotification";
 
 
 @interface ZincActivityMonitor ()
+@property (nonatomic, strong) NSMutableArray* myItems;
 @property (nonatomic, strong) NSTimer* refreshTimer;
 @property (nonatomic, readwrite, assign) BOOL isMonitoring;
 @end
@@ -27,6 +30,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 {
     self = [super init];
     if (self) {
+        _myItems = [NSMutableArray array];
         _refreshInterval = kZincActivityMonitorDefaultRefreshInterval;
     }
     return self;
@@ -35,7 +39,6 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 - (void)dealloc
 {
     [self stopMonitoring];
-    
 }
 
 - (void)restartRefreshTimer
@@ -43,14 +46,16 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
     [self stopRefreshTimer];
     
     if (!self.isMonitoring) return;
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-        self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
-                                                             target:self
-                                                           selector:@selector(update)
-                                                           userInfo:nil
-                                                            repeats:YES];
-    });
+
+    if (self.refreshInterval > 0) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
+                                                                 target:self
+                                                               selector:@selector(update)
+                                                               userInfo:nil
+                                                                repeats:YES];
+        });
+    }
 }
 
 - (void)stopRefreshTimer
@@ -87,15 +92,43 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (NSArray*) items
 {
-    return nil;
+    return [NSArray arrayWithArray:self.myItems];
+}
+
+- (void) addItem:(ZincActivityItem *)item
+{
+    NSAssert(item.monitor == self, @"monitor should be self");
+    @synchronized(self.myItems) {
+        [self.myItems addObject:item];
+    }
+}
+
+- (void) removeItem:(ZincActivityItem *)item
+{
+    @synchronized(self.myItems) {
+        [self.myItems removeObject:item];
+    }
+}
+
+- (NSArray*) finishedItems
+{
+    return [[self items] filteredArrayUsingPredicate:
+            [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject isFinished];
+    }]];
 }
 
 - (void) update
 {
-    @throw [NSException
-            exceptionWithName:NSGenericException
-            reason:[NSString stringWithFormat:@"method not implemented"]
-            userInfo:nil];
+    [[self items] makeObjectsPerformSelector:@selector(update)];
+
+    [self itemsDidUpdate];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
+}
+
+- (void) itemsDidUpdate
+{
 }
 
 - (void) monitoringDidStart
@@ -109,75 +142,46 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 @end
 
 
-@implementation ZincActivityItem : NSObject
+@implementation ZincActivityItem
 
-@synthesize monitor = _monitor;
-@synthesize currentProgressValue = _currentProgressValue;
-@synthesize maxProgressValue = _maxProgressValue;
-@synthesize progress = _progress;
-@synthesize task = _task;
-
-- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor operation:(ZincOperation*)operation
 {
+    NSParameterAssert(monitor);
     self = [super init];
     if (self) {
         _monitor = monitor;
+        _operation = operation;
     }
     return self;
 }
 
-
-
-- (void) finish
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor
 {
-    self.currentProgressValue = self.maxProgressValue;
-    self.progress = 1.0f;
+    return [self initWithActivityMonitor:monitor operation:nil];
 }
 
-- (void) setProgress:(float)progress
+- (void) setProgressPercentage:(float)progressPercentage
 {
-    _progress = progress;
-    
+    [super setProgressPercentage:progressPercentage];
+
     if (self.monitor.progressBlock != nil) {
-        ZINC_DEBUG_LOG(@"%lld %lld %f", self.currentProgressValue, self.maxProgressValue, self.progress);
-        self.monitor.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progress);
+        ZINC_DEBUG_LOG(@"%lld %lld %f", self.currentProgressValue, self.maxProgressValue, self.progressPercentage);
+        self.monitor.progressBlock(self, self.currentProgressValue, self.maxProgressValue, self.progressPercentage);
     }
-}
-
-- (BOOL) isFinished
-{
-    return self.progress == 1.0f;
 }
 
 - (void) update
 {
     if ([self isFinished]) return;
-    if (self.task == nil) return;
+    if (self.operation == nil) return;
     
-    if ([self.task isFinished]) {
+    if ([self.operation isFinished]) {
         
         [self finish];
         
     } else {
         
-        BOOL progressValuesChanged = NO;
-        
-        long long taskCurrentProgressValue = [self.task currentProgressValue];
-        long long taskMaxProgressValue = [self.task maxProgressValue];
-        
-        if (self.currentProgressValue != taskCurrentProgressValue) {
-            self.currentProgressValue = taskCurrentProgressValue;
-            progressValuesChanged = YES;
-        }
-        
-        if (self.maxProgressValue != taskMaxProgressValue) {
-            self.maxProgressValue = taskMaxProgressValue;
-            progressValuesChanged = YES;
-        }
-        
-        if (progressValuesChanged) {
-            self.progress = ZincProgressCalculate(self);
-        }
+        [self updateFromProgress:self.operation];
     }
 }
 
