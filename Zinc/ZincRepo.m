@@ -156,12 +156,11 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
-        self.reachability.notificationName = ZincRepoReachabilityChangedNotification;
     }
     return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
     // set to nil to unsubscribe from notitifcations
     self.reachability = nil;
@@ -1006,29 +1005,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     if (_reachability == reachability) return;
 
-    if (_reachability != nil) {
-        _reachability.onReachabilityChanged = nil;
-    }
-
     _reachability = reachability;
 
-    if (_reachability != nil) {
-
-        __weak typeof(self) weakself = self;
-
-        _reachability.onReachabilityChanged = ^(KSReachability *r) {
-
-            __strong typeof(weakself) strongself = weakself;
-
-            // TODO: move this inside task manager?
-            @synchronized(strongself.taskManager.tasks) {
-                NSArray* remoteBundleUpdateTasks = [strongself.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-                    return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-                }]];
-                [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-            }
-        };
-    }
+    _reachability.notificationName = ZincRepoReachabilityChangedNotification;
 }
 
 - (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
