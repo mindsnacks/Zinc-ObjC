@@ -7,7 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ZincGlobals.h"
 
 @interface ZincMockFactory : NSObject
+
+- (id) mockBundleCloneTaskForBundleID:(NSString*)bundleID version:(ZincVersion)version;
 
 @end

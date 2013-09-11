@@ -14,4 +14,5 @@
     #import "SenTestCase+MethodSwizzling.h"
     #import "TestUtility-Zinc.h"
     #import "ZincTestDummies.h"
+    #import "ZincMockFactory.h"
 #endif
