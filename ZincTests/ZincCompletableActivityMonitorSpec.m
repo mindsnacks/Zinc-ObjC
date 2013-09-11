@@ -43,7 +43,7 @@ describe(@"ZincCompletableActivityMonitor", ^{
 
             it(@"calls completion block", ^{
                 __block BOOL blockCalled = NO;
-                monitor.completionBlock = ^(NSArray* errors) {
+                monitor.completionBlock = ^{
                     blockCalled = YES;
                 };
 

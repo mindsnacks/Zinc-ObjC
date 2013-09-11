@@ -38,6 +38,10 @@
  */
 @property (nonatomic, strong, readonly) NSArray* taskRefs;
 
-
+/**
+ Return all errors encountered so far.
+ @return An array of errors
+ */
+- (NSArray*) allErrors;
 
 @end

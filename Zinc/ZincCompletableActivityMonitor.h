@@ -17,10 +17,6 @@
  Similar to NSOperation, the exact execution context for your completion block 
  is not guaranteed but is typically a secondary thread.
  */
-@property (nonatomic, copy) ZincCompletionBlock completionBlock;
-
-#pragma mark Subclasses
-
-- (NSArray*) allErrors;
+@property (nonatomic, copy) dispatch_block_t completionBlock;
 
 @end

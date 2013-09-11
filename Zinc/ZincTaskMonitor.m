@@ -42,11 +42,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [[[self class] alloc] initWithTaskRefs:@[taskRef]];
 }
 
-- (void)dealloc
-{
-    [self stopMonitoring];
-}
-
 - (void) monitoringDidStart
 {
     if (!self.observingIsFinished) {

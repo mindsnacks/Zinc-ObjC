@@ -22,11 +22,6 @@
     return self;
 }
 
-- (NSArray*) allErrors
-{
-    return nil;
-}
-
 - (void) callProgressBlock
 {
     if (self.progressBlock != nil) {
@@ -37,7 +32,7 @@
 - (void) callCompletionBlock
 {
     if (self.completionBlock != nil) {
-        self.completionBlock([self allErrors]);
+        self.completionBlock();
         self.completionBlock = nil;
     }
 }
