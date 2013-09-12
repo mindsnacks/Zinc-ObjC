@@ -214,9 +214,9 @@ typedef id ZincBackgroundTaskIdentifier;
     [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
 }
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTask
 {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
     if (!self.backgroundTaskIdentifier) {
         
         UIApplication *application = [UIApplication sharedApplication];
@@ -232,8 +232,8 @@ typedef id ZincBackgroundTaskIdentifier;
             [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }
-}
 #endif
+}
 
 - (void) cancel
 {

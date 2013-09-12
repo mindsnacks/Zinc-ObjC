@@ -56,7 +56,7 @@
 
 + (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%ld", bundleID, (long)version];
     return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"manifest" path:path];
 }
 
@@ -67,7 +67,7 @@
 
 + (NSURL*) zincResourceForBundleWithID:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%ld", bundleID, (long)version];
     return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"bundle" path:path];
 }
 
@@ -85,7 +85,7 @@
 
 + (NSURL*) zincResourceForArchiveWithId:(NSString*)bundleID version:(ZincVersion)version
 {
-    NSString* path = [NSString stringWithFormat:@"/%@/%d", bundleID, version];
+    NSString* path = [NSString stringWithFormat:@"/%@/%ld", bundleID, (long)version];
     return [[NSURL alloc] initWithScheme:ZINC_RESOURCE_SCHEME host:@"archive" path:path];
 }
 

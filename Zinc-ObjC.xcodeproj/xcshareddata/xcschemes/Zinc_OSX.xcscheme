@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B340F96F148D52D800206F86"
-               BuildableName = "libZinc.a"
-               BlueprintName = "Zinc"
+               BlueprintIdentifier = "B36388B117E1863400F2BBE4"
+               BuildableName = "libZinc_OSX.a"
+               BlueprintName = "Zinc_OSX"
                ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

@@ -19,8 +19,12 @@
 #import <Zinc/ZincTask.h>
 #import <Zinc/ZincTaskRef.h>
 #import <Zinc/ZincUtils.h>
-#import <Zinc/UIImage+Zinc.h>
 #import <Zinc/ZincActivityMonitor.h>
 #import <Zinc/ZincTaskMonitor.h>
 #import <Zinc/ZincRepoMonitor.h>
 #import <Zinc/ZincBundleAvailabilityMonitor.h>
+
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+    #import <Zinc/UIImage+Zinc.h>
+#endif
+

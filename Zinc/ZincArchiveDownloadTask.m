@@ -48,7 +48,7 @@
     NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogID];
 
     NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
-                              [NSString stringWithFormat:@"%@-%d.tar", bundleName, self.version]];
+                              [NSString stringWithFormat:@"%@-%ld.tar", bundleName, (long)self.version]];
     
     [fm createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
     

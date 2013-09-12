@@ -75,7 +75,7 @@
 
 + (NSString*) descriptorForBundleID:(NSString*)bundleID version:(ZincVersion)version
 {
-    return [NSString stringWithFormat:@"%@-%d", bundleID, version];
+    return [NSString stringWithFormat:@"%@-%ld", bundleID, (long)version];
 }
 
 - (NSURL *)URLForResource:(NSString *)name

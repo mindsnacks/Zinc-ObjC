@@ -5,6 +5,9 @@
       location = "group:Zinc-ObjC.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:Dependencies/External/KSReachability/KSReachability.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
 </Workspace>

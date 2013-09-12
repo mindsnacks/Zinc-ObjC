@@ -34,9 +34,7 @@
 + (NSString*) taskMethod;
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource;
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
 - (void)setShouldExecuteAsBackgroundTask;
-#endif
 
 
 /**
