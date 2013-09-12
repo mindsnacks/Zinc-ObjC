@@ -14,14 +14,17 @@ extern NSString* const kZincPackageName;
 typedef NSInteger ZincFormat;
 typedef NSInteger ZincVersion;
 
+
 enum  {
     ZincFormatInvalid = -1,
 };
+
 
 enum  {
     ZincVersionInvalid = -1,
     ZincVersionUnknown = 0,
 };
+
 
 typedef enum {
     ZincBundleStateNone      = 0,
@@ -30,6 +33,27 @@ typedef enum {
     ZincBundleStateDeleting  = 3,
     ZincBundleStateInvalid   = -1,
 } ZincBundleState;
+
+
+typedef NS_ENUM(NSInteger, ZincBundleVersionSpecifier) {
+    /**
+     Any version, including bootstrapped "unversioned" bundles will be accepted.
+     */
+    ZincBundleVersionSpecifierAny,
+
+    /**
+     Allow any version but an `ZincVersionUnknown`, which occurs with generated
+     bootstrapped manifests.
+     */
+    ZincBundleVersionSpecifierNotUnknown,
+
+    /**
+     Require that the version is up to date with the tracked distro version
+     in the catalog.
+     */
+    ZincBundleVersionSpecifierCatalogOnly,
+};
+
 
 extern NSString* const ZincBundleStateName[];
 

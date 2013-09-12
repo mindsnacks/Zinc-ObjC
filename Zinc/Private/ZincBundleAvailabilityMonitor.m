@@ -21,28 +21,42 @@
 @end
 
 
-@interface ZincBundleAvailabilityMonitorItem ()
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID;
-@end
-
-
 @implementation ZincBundleAvailabilityMonitor
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
+@dynamic bundleIDs;
+
+- (id)initWithRepo:(ZincRepo*)repo requirements:(NSArray*)items
 {
+    NSParameterAssert(repo);
+    NSParameterAssert(items);
     self = [super init];
     if (self) {
         _repo = repo;
-        self.bundleIDs = bundleIDs;
-
-        self.itemsByBundleID = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
-        for (NSString* bundleID in self.bundleIDs) {
-            ZincBundleAvailabilityMonitorItem* item = [[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID];
-            [self addItem:item];
-            self.itemsByBundleID[bundleID] = item;
+        _itemsByBundleID = [[NSMutableDictionary alloc] init];
+        for (ZincBundleAvailabilityRequirement* req in items) {
+            [self addBundleAvailabilityMonitorItemForRequest:req];
         }
     }
     return self;
+}
+
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
+{
+    NSMutableArray* requests = [[NSMutableArray alloc] initWithCapacity:[bundleIDs count]];
+    for (NSString* bundleID in bundleIDs) {
+        [requests addObject:[ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:versionSpecifier]];
+    }
+    return [self initWithRepo:repo requirements:requests];
+}
+
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
+{
+    return [self initWithRepo:repo bundleIDs:bundleIDs versionSpecifier:NO];
+}
+
+- (id)init
+{
+    return [self initWithRepo:nil requirements:nil];
 }
 
 - (void) dealloc
@@ -50,15 +64,19 @@
     [self stopMonitoring];
 }
 
-- (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
+- (void) addBundleAvailabilityMonitorItemForRequest:(ZincBundleAvailabilityRequirement*)request;
 {
-    if (self.requireCatalogVersion) {
-        return [self.repo hasCurrentDistroVersionForBundleID:bundleID];
-    }
-    return [self.repo stateForBundleWithID:bundleID] == ZincBundleStateAvailable;
+    ZincBundleAvailabilityMonitorActivityItem* item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:self request:request];
+    [super addItem:item];
+    self.itemsByBundleID[request.bundleID] = item;
 }
 
-- (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID
+- (NSArray*) bundleIDs
+{
+    return [self.itemsByBundleID allKeys];
+}
+
+- (ZincBundleAvailabilityMonitorActivityItem*) activityItemForBundleID:(NSString*)bundleID
 {
     return self.itemsByBundleID[bundleID];
 }
@@ -91,17 +109,12 @@
 
     // Check if it's one of the bundles were interested in
     NSString* taskBundleID = [task.resource zincBundleID];
-    if (![self.bundleIDs containsObject:taskBundleID]) return;
+    ZincBundleAvailabilityMonitorActivityItem* item = self.itemsByBundleID[taskBundleID];
+    if (item == nil) return;
 
     // Check if its going to be updating the right version
-    if (self.requireCatalogVersion) {
-        if ([self.repo hasCurrentDistroVersionForBundleID:taskBundleID]) return;
-        if ([task.taskDescriptor.resource zincBundleVersion] != [self.repo currentDistroVersionForBundleID:taskBundleID]) return;
-    } else {
-        if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
-    }
+    if (![self.repo bundleResource:task.taskDescriptor.resource satisfiesVersionSpecifier:item.requirement.versionSpecifier]) return;
 
-    ZincBundleAvailabilityMonitorItem* item = self.itemsByBundleID[taskBundleID];
     item.operation = task;
 }
 
@@ -114,25 +127,63 @@
 @end
 
 
-@implementation ZincBundleAvailabilityMonitorItem
+@implementation ZincBundleAvailabilityRequirement
 
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
+{
+    self = [super init];
+    if (self) {
+        _bundleID = bundleID;
+        _versionSpecifier = versionSpecifier;
+    }
+    return self;
+}
+
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)requireCatalogVersion
+{
+    return [[self alloc] initWithBundleID:bundleID versionSpecifier:requireCatalogVersion];
+}
+
++ (instancetype) requirementForBundleID:(NSString*)bundleID
+{
+    return [self requirementForBundleID:bundleID versionSpecifier:NO];
+}
+
+@end
+
+
+@implementation ZincBundleAvailabilityMonitorActivityItem
+
+- (id)initWithMonitor:(ZincBundleAvailabilityMonitor *)monitor request:(ZincBundleAvailabilityRequirement *)requirement
 {
     self = [super initWithActivityMonitor:monitor];
     if (self) {
-        _bundleID = bundleID;
+        _requirement = requirement;
     }
     return self;
+}
+
+- (ZincRepo*) repo
+{
+    ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
+    return bundleMon.repo;
+}
+
+- (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
+{
+    return [[self repo] hasSpecifiedVersion:self.requirement.versionSpecifier forBundleID:bundleID];
+}
+
+- (BOOL) hasDesiredBundleVersion
+{
+    return [self hasDesiredVersionForBundleID:self.requirement.bundleID];
 }
 
 - (void) update
 {
     if ([self isFinished]) return;
 
-    ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
-    const BOOL hasDesiredVersion = [bundleMon hasDesiredVersionForBundleID:self.bundleID];
-
-    if (hasDesiredVersion) {
+    if ([self hasDesiredBundleVersion]) {
         
         [self finish];
 

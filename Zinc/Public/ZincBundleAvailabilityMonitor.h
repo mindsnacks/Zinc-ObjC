@@ -9,28 +9,52 @@
 #import "ZincCompletableActivityMonitor.h"
 
 @class ZincRepo;
-@class ZincBundleAvailabilityMonitorItem;
+@class ZincBundleAvailabilityMonitorActivityItem;
 
-@interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
+@interface ZincBundleAvailabilityRequirement : NSObject
 
-@property (nonatomic, readonly, strong) ZincRepo* repo;
-@property (nonatomic, readonly, copy) NSArray* bundleIDs;
+@property (nonatomic, readonly, copy) NSString* bundleID;
+@property (nonatomic, readonly, assign) ZincBundleVersionSpecifier versionSpecifier;
 
-#pragma mark -
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
-@property (nonatomic, assign) BOOL requireCatalogVersion;
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
-#pragma mark -
-
-- (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
++ (instancetype) requirementForBundleID:(NSString*)bundleID;
 
 @end
 
 
-@interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
+@interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
-@property (nonatomic, readonly, copy) NSString* bundleID;
+/**
+ Designated Initializer
+ */
+- (id)initWithRepo:(ZincRepo*)repo requirements:(NSArray*)requirements;
+
+/**
+ @param requireCatalogVersion this is used for all bundleIDs
+ */
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
+
+/**
+ Defaults `versionSpecifier` to `ZincBundleVersionSpecifierAny`
+ */
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
+
+@property (nonatomic, readonly, strong) ZincRepo* repo;
+@property (nonatomic, readonly) NSArray* bundleIDs;
+
+#pragma mark -
+
+- (ZincBundleAvailabilityMonitorActivityItem*) activityItemForBundleID:(NSString*)bundleID;
+
+@end
+
+
+@interface ZincBundleAvailabilityMonitorActivityItem : ZincActivityItem
+
+@property (nonatomic, retain, readonly) ZincBundleAvailabilityRequirement* requirement;
 
 @end

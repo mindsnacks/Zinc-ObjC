@@ -202,9 +202,10 @@
 
 /**
  @param bundleID the bundleID
- @return `YES` if the current version of the bundle is avaible, `NO` otherwise
+ @param versionSpec the versionSpec
+ @return `YES` if the current version of the bundle satisfies the version spec, `NO` otherwise
  */
-- (BOOL) hasCurrentDistroVersionForBundleID:(NSString*)bundleID;
+- (BOOL) hasSpecifiedVersion:(ZincBundleVersionSpecifier)versionSpec forBundleID:(NSString*)bundleID;
 
 /**
  Register an external bundle.

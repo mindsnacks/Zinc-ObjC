@@ -367,7 +367,7 @@
 		B3AE827517DFCD9E003AA609 /* ZincCompletableActivityMonitorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincCompletableActivityMonitorSpec.m; sourceTree = "<group>"; };
 		B3AE827A17DFD89B003AA609 /* ZincTestDummies.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTestDummies.h; sourceTree = "<group>"; };
 		B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTestDummies.m; sourceTree = "<group>"; };
-		B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleAvailabilityMonitorSpec.m; sourceTree = "<group>"; };
+		B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZincBundleAvailabilityMonitorSpec.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B3AE827F17DFE086003AA609 /* ZincBundleAvailabilityMonitor+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincBundleAvailabilityMonitor+Private.h"; sourceTree = "<group>"; };
 		B3AE828017DFFCDF003AA609 /* ZincMockFactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincMockFactory.h; sourceTree = "<group>"; };
 		B3AE828117DFFCDF003AA609 /* ZincMockFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincMockFactory.m; sourceTree = "<group>"; };
@@ -390,8 +390,8 @@
 		B3CAB5FA15FC5081008502AC /* ZincActivityMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.h; path = ZincActivityMonitor.h; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B3CAB5FB15FC5082008502AC /* ZincActivityMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = ZincActivityMonitor.m; sourceTree = "<group>"; tabWidth = 4; usesTabs = 0; wrapsLines = 0; };
 		B3CAB5FE15FC523E008502AC /* ZincActivityMonitor+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincActivityMonitor+Private.h"; sourceTree = "<group>"; };
-		B3CAB5FF15FC6D0B008502AC /* ZincBundleAvailabilityMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleAvailabilityMonitor.h; sourceTree = "<group>"; };
-		B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleAvailabilityMonitor.m; sourceTree = "<group>"; };
+		B3CAB5FF15FC6D0B008502AC /* ZincBundleAvailabilityMonitor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ZincBundleAvailabilityMonitor.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = ZincBundleAvailabilityMonitor.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		B3CAB60315FD1D07008502AC /* ZincTask+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincTask+Private.h"; sourceTree = "<group>"; };
 		B3CAB60415FD2452008502AC /* ZincProgress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZincProgress.h; sourceTree = "<group>"; };
 		B3CAB60515FD2613008502AC /* ZincProgress.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincProgress.m; sourceTree = "<group>"; };

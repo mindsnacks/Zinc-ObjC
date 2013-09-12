@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-typedef void (^ZincProgressBlock)(id context, long long currentProgress, long long totalProgress, float percent);
+typedef void (^ZincProgressBlock)(id source, long long currentProgress, long long totalProgress, float percent);
 
 
 @protocol ZincProgress <NSObject>
