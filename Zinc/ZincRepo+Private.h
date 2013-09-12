@@ -56,7 +56,7 @@
  */
 - (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
 
-- (ZincVersion) currentDistroVersionForBundleID:(NSString*)bundleID;
+- (BOOL) bundleResource:(NSURL*)bundleResource satisfiesVersionSpecifier:(ZincBundleVersionSpecifier)versionSpec;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
 - (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion;

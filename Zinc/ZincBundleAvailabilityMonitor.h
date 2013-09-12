@@ -12,28 +12,14 @@
 @class ZincBundleAvailabilityMonitorActivityItem;
 
 
-typedef NS_ENUM(NSInteger, ZincBundleAvailabilityRequirementVersionSpecifier) {
-    /**
-     Any version, including bootstrapped "unversioned" bundles will be accepted.
-     */
-    ZincBundleAvailabilityRequirementVersionSpecifierAny,
-
-    /**
-     Require that the version is up to date with the tracked distro version
-     in the catalog.
-     */
-    ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly,
-};
-
-
 @interface ZincBundleAvailabilityRequirement : NSObject
 
 @property (nonatomic, readonly, copy) NSString* bundleID;
-@property (nonatomic, readonly, assign) ZincBundleAvailabilityRequirementVersionSpecifier versionSpecifier;
+@property (nonatomic, readonly, assign) ZincBundleVersionSpecifier versionSpecifier;
 
-- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)versionSpecifier;
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
-+ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)versionSpecifier;
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
 + (instancetype) requirementForBundleID:(NSString*)bundleID;
 

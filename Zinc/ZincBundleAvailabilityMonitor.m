@@ -107,19 +107,13 @@
     if (![task.taskDescriptor.resource isZincBundleResource]) return;
     if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) return;
 
-
     // Check if it's one of the bundles were interested in
     NSString* taskBundleID = [task.resource zincBundleID];
     ZincBundleAvailabilityMonitorActivityItem* item = self.itemsByBundleID[taskBundleID];
     if (item == nil) return;
 
     // Check if its going to be updating the right version
-    if (item.requirement.versionSpecifier) {
-        if ([self.repo hasCurrentDistroVersionForBundleID:taskBundleID]) return;
-        if ([task.taskDescriptor.resource zincBundleVersion] != [self.repo currentDistroVersionForBundleID:taskBundleID]) return;
-    } else {
-        if ([self.repo stateForBundleWithID:taskBundleID] == ZincBundleStateAvailable) return;
-    }
+    if (![self.repo bundleResource:task.taskDescriptor.resource satisfiesVersionSpecifier:item.requirement.versionSpecifier]) return;
 
     item.operation = task;
 }
@@ -135,7 +129,7 @@
 
 @implementation ZincBundleAvailabilityRequirement
 
-- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)versionSpecifier
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
     self = [super init];
     if (self) {
@@ -145,7 +139,7 @@
     return self;
 }
 
-+ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)requireCatalogVersion
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)requireCatalogVersion
 {
     return [[self alloc] initWithBundleID:bundleID versionSpecifier:requireCatalogVersion];
 }
@@ -177,10 +171,11 @@
 
 - (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
 {
-    if (self.requirement.versionSpecifier) {
-        return [[self repo] hasCurrentDistroVersionForBundleID:bundleID];
-    }
-    return [[self repo] stateForBundleWithID:bundleID] == ZincBundleStateAvailable;
+//    if (self.requirement.versionSpecifier) {
+//        return [[self repo] hasCurrentDistroVersionForBundleID:bundleID];
+//    }
+//    return [[self repo] stateForBundleWithID:bundleID] == ZincBundleStateAvailable;
+    return [[self repo] hasSpecifiedVersion:self.requirement.versionSpecifier forBundleID:bundleID];
 }
 
 - (BOOL) hasDesiredBundleVersion
