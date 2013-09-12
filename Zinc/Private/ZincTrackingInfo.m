@@ -91,8 +91,8 @@
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@>",
-            [self class], self, self.distribution, self.version, self.flavor];
+    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%ld flavor=%@>",
+            [self class], self, self.distribution, (long)self.version, self.flavor];
 }
 
 @end

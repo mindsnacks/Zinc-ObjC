@@ -41,7 +41,9 @@
     }
     
     if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // TODO: break this dependency?
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
         [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+#endif
     }
     
     self.context = context;

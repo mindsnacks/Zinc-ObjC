@@ -8,7 +8,9 @@
 
 #import "ZincRepo+Private.h"
 
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
 #import <KSReachability/KSReachability.h>
+#endif
 
 #import "ZincInternals.h"
 
@@ -88,7 +90,11 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
         if (repo == nil) {
 
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
             KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
+#else
+            KSReachability* reachability = nil;
+#endif
 
             if ([[[fileURL path] lastPathComponent] isEqualToString:REPO_INDEX_FILE]) {
                 fileURL = [NSURL fileURLWithPath:[[fileURL path] stringByDeletingLastPathComponent]];
@@ -330,7 +336,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         return extInfo.manifestPath;
     }
     
-    NSString* manifestFilename = [NSString stringWithFormat:@"%@-%d.json", identifier, version];
+    NSString* manifestFilename = [NSString stringWithFormat:@"%@-%ld.json", identifier, (long)version];
     NSString* manifestPath = [[self manifestsPath] stringByAppendingPathComponent:manifestFilename];
     return manifestPath;
 }
@@ -437,12 +443,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (NSString*) cacheKeyManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version
 {
-    return [[@"Manifest:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
+    return [[@"Manifest:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%ld", (long)version];
 }
 
 - (NSString*) cacheKeyForBundleID:(NSString*)identifier version:(ZincVersion)version
 {
-    return [[@"Bundle:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%d", version];
+    return [[@"Bundle:" stringByAppendingString:identifier] stringByAppendingFormat:@"-%ld", (long)version];
 }
 
 #pragma mark Repo Index
@@ -667,7 +673,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             break;
 
         default:
-            NSAssert(NO, @"unhandled case: %d", versionSpec);
+            NSAssert(NO, @"unhandled case: %ld", (long)versionSpec);
             break;
     }
     return hasVersion;
@@ -913,7 +919,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         return extInfo.bundleRootPath;
     }
 
-    NSString* bundleDirName = [NSString stringWithFormat:@"%@-%d", bundleID, version];
+    NSString* bundleDirName = [NSString stringWithFormat:@"%@-%ld", bundleID, (long)version];
     NSString* bundlePath = [[self bundlesPath] stringByAppendingPathComponent:bundleDirName];
     return bundlePath;
 }
@@ -1033,7 +1039,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
     _reachability = reachability;
 
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
     _reachability.notificationName = ZincRepoReachabilityChangedNotification;
+#endif
 }
 
 - (void) setDownloadPolicy:(ZincDownloadPolicy *)downloadPolicy
@@ -1074,11 +1082,13 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
     // I also hestitate to add reachability support to it directly.
 
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
     ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
 
     if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
         return NO;
     }
+#endif
 
     return [self.downloadPolicy doRulesAllowBundleID:bundleID];
 }

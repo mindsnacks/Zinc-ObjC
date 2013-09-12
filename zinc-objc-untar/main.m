@@ -9,14 +9,13 @@
 #import <Foundation/Foundation.h>
 #import "NSFileManager+ZincTar.h"
 
-void usage()
+static void usage(void)
 {
     NSLog(@"zinc-objc-untar <src tar> <dst path>");
 }
 
 int main(int argc, const char * argv[])
 {
-
     @autoreleasepool {
 
         if (argc < 3) {

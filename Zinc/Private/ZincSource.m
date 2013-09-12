@@ -40,7 +40,7 @@
 
 - (NSURL*) urlForBundleName:(NSString*)name version:(NSInteger)version
 {
-    NSString* manifest = [NSString stringWithFormat:@"%@-%d.json.gz", name, version];
+    NSString* manifest = [NSString stringWithFormat:@"%@-%ld.json.gz", name, (long)version];
     NSString* manifestPath = [NSString stringWithFormat:@"manifests/%@", manifest];
     NSURL* manifestURL = [NSURL URLWithString:manifestPath relativeToURL:self];
     return [manifestURL absoluteURL];
@@ -103,9 +103,9 @@
 {
     NSString* filename = nil;
     if( flavor == nil) {
-        filename = [NSString stringWithFormat:@"%@-%d.tar", name, version];
+        filename = [NSString stringWithFormat:@"%@-%ld.tar", name, (long)version];
     } else {
-        filename = [NSString stringWithFormat:@"%@-%d~%@.tar", name, version, flavor];
+        filename = [NSString stringWithFormat:@"%@-%ld~%@.tar", name, (long)version, flavor];
     }
     NSString* relativePath = [@"archives" stringByAppendingPathComponent:filename];
     
