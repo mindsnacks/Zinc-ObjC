@@ -40,18 +40,18 @@
     return self;
 }
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs requireCatalogVersion:(BOOL)requireCatalogVersion
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
     NSMutableArray* requests = [[NSMutableArray alloc] initWithCapacity:[bundleIDs count]];
     for (NSString* bundleID in bundleIDs) {
-        [requests addObject:[ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:requireCatalogVersion]];
+        [requests addObject:[ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:versionSpecifier]];
     }
     return [self initWithRepo:repo requirements:requests];
 }
 
 - (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
 {
-    return [self initWithRepo:repo bundleIDs:bundleIDs requireCatalogVersion:NO];
+    return [self initWithRepo:repo bundleIDs:bundleIDs versionSpecifier:NO];
 }
 
 - (id)init
@@ -171,10 +171,6 @@
 
 - (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
 {
-//    if (self.requirement.versionSpecifier) {
-//        return [[self repo] hasCurrentDistroVersionForBundleID:bundleID];
-//    }
-//    return [[self repo] stateForBundleWithID:bundleID] == ZincBundleStateAvailable;
     return [[self repo] hasSpecifiedVersion:self.requirement.versionSpecifier forBundleID:bundleID];
 }
 
