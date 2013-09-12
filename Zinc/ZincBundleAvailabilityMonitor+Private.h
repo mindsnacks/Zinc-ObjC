@@ -8,8 +8,12 @@
 
 #import "ZincBundleAvailabilityMonitor.h"
 
-@interface ZincBundleAvailabilityMonitorItem ()
 
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID requireCatalogVersion:(BOOL)requireCatalogVersion;
+@interface ZincBundleAvailabilityMonitorActivityItem ()
+
+/**
+ Designated initializer
+ */
+- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor request:(ZincBundleAvailabilityMonitorRequest*)request;
 
 @end
