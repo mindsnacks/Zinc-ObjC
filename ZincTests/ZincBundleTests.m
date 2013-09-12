@@ -6,10 +6,14 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleTests.h"
 #import "ZincBundle.h"
 #import "ZincBundle+Private.h"
 #import "NSFileManager+Zinc.h"
+
+
+@interface ZincBundleTests : SenTestCase
+@end
+
 
 @implementation ZincBundleTests
 
@@ -42,14 +46,7 @@
 //    }
 //}
 
-- (void) testBundleIdentifierParsing
-{
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleId:@"mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIdFromBundleId:@"mindsnacks.assets"], @"mindsnacks", @"should be 'mindsnacks'");
-    
-    STAssertEqualObjects([ZincBundle bundleNameFromBundleId:@"com.mindsnacks.assets"], @"assets", @"should be 'assets'");
-    STAssertEqualObjects([ZincBundle catalogIdFromBundleId:@"com.mindsnacks.assets"], @"com.mindsnacks", @"should be 'com.mindsnacks'");
-}
+
 
 
 @end

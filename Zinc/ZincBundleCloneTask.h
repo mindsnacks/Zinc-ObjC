@@ -11,7 +11,7 @@
 
 @interface ZincBundleCloneTask : ZincTask
 
-@property (readonly) NSString* bundleId;
+@property (readonly) NSString* bundleID;
 @property (readonly) ZincVersion version;
 
 @end

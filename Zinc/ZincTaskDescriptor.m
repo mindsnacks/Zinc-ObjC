@@ -7,19 +7,16 @@
 //
 
 #import "ZincTaskDescriptor.h"
+
 #import "ZincResource.h"
 
 @interface ZincTaskDescriptor ()
-@property (nonatomic, retain, readwrite) NSURL* resource;
-@property (nonatomic, retain, readwrite) NSString* action;
-@property (nonatomic, retain, readwrite) NSString* method;
+@property (nonatomic, strong, readwrite) NSURL* resource;
+@property (nonatomic, copy, readwrite) NSString* action;
+@property (nonatomic, copy, readwrite) NSString* method;
 @end
 
 @implementation ZincTaskDescriptor
-
-@synthesize resource = _resource;
-@synthesize action = _action;
-@synthesize method = _method;
 
 - (id) initWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
 {
@@ -32,19 +29,6 @@
     return self;
 }
 
-+ (id) taskDescriptorWithResource:(NSURL*)resource action:(NSString*)action method:(NSString*)method
-{
-    return [[[self alloc] initWithResource:resource action:action method:method] autorelease];
-}
-
-- (void)dealloc 
-{
-    [_resource release];
-    [_action release];
-    [_method release];
-    [super dealloc];
-}
-
 - (NSString*) stringValue
 {
     return [NSString stringWithFormat:@"Resource=%@;Action=%@;Method=%@", 
@@ -54,9 +38,9 @@
 - (id)copyWithZone:(NSZone *)zone
 {
     ZincTaskDescriptor* newdesc = [[ZincTaskDescriptor allocWithZone:zone] init];
-    newdesc.resource = [[self.resource copyWithZone:zone] autorelease];
-    newdesc.action = [[self.action copyWithZone:zone] autorelease];
-    newdesc.method = [[self.method copyWithZone:zone] autorelease];
+    newdesc.resource = [self.resource copyWithZone:zone];
+    newdesc.action = [self.action copyWithZone:zone];
+    newdesc.method = [self.method copyWithZone:zone];
     return newdesc;
 }
 

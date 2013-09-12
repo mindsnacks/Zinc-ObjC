@@ -6,16 +6,15 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTaskRef.h"
+#import "ZincTaskRef+Private.h"
+
 #import "ZincTask.h"
 
 @interface ZincTaskRef ()
-@property (nonatomic, retain) NSMutableArray* errors;
+@property (nonatomic, strong) NSMutableArray* errors;
 @end
 
 @implementation ZincTaskRef
-
-@synthesize errors = _errors;
 
 - (id)init
 {
@@ -28,16 +27,11 @@
 
 + (ZincTaskRef*) taskRefForTask:(ZincTask*)task
 {
-    ZincTaskRef* ref = [[[ZincTaskRef alloc] init] autorelease];
+    ZincTaskRef* ref = [[ZincTaskRef alloc] init];
     [ref addDependency:task];
     return ref;
 }
 
-- (void)dealloc
-{
-    [_errors release];
-    [super dealloc];
-}
 
 - (void)addError:(NSError *)error
 {
@@ -47,7 +41,7 @@
 - (ZincTask*) getTask
 {
     if ([self.dependencies count] > 0) {
-        return [self.dependencies objectAtIndex:0];
+        return (self.dependencies)[0];
     }
     return nil;
 }

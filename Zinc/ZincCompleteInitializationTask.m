@@ -7,6 +7,7 @@
 //
 
 #import "ZincCompleteInitializationTask.h"
+
 #import "ZincRepo+Private.h"
 
 @implementation ZincCompleteInitializationTask

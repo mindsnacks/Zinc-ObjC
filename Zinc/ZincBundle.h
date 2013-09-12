@@ -18,28 +18,25 @@
 
 @end
 
+
+@interface NSBundle (ZincBundle) <ZincBundle>
+
+- (NSURL *)URLForResource:(NSString *)name;
+- (NSString *)pathForResource:(NSString *)name;
+
+@end
+
+
 @interface ZincBundle : NSProxy <ZincBundle>
 
-@property (nonatomic, retain, readonly) ZincRepo* repo;
-@property (nonatomic, retain, readonly) NSString* bundleId;
+@property (nonatomic, strong, readonly) ZincRepo* repo;
+@property (nonatomic, copy, readonly) NSString* bundleID;
 @property (nonatomic, assign, readonly) ZincVersion version;
 
 - (NSURL*) resource;
 
 - (NSBundle*) NSBundle;
 
-#pragma mark Utility
-
-// Deprecated, use functions in ZincUtils
-+ (NSString*) catalogIdFromBundleId:(NSString*)bundleId;
-+ (NSString*) bundleNameFromBundleId:(NSString*)bundleId;
-
 @end
 
 
-@interface NSBundle (ZincBundle) <ZincBundle>  
-
-- (NSURL *)URLForResource:(NSString *)name;
-- (NSString *)pathForResource:(NSString *)name;
-
-@end

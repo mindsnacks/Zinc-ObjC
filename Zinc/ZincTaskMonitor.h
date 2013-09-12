@@ -6,27 +6,42 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincActivityMonitor.h"
-#import "ZincProgress.h"
+#import "ZincCompletableActivityMonitor.h"
 
 @class ZincTaskRef;
 
 /**
- @discussion A ZincTaskMonitor monitors a single task for progress and completion. This is part of the Zinc-ObjC public API, and is encouraged to be used in client code.
+ A ZincTaskMonitor monitors a single task for progress and completion. This is part of the Zinc-ObjC public API, and is encouraged to be used in client code.
  */
-@interface ZincTaskMonitor : ZincActivityMonitor <ZincObservableProgress>
-
-- (id) initWithTaskRef:(ZincTaskRef*)taskRef;
-+ (ZincTaskMonitor*) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
+@interface ZincTaskMonitor : ZincCompletableActivityMonitor
 
 /**
- @discussion taskRef the monitor was initialized with
+ Create a `ZincTaskMonitor`.
+
+ Designated initializer.
+ 
+ @param taskRefs an `NSArray` containing `ZincTaskRef`s
  */
-@property (nonatomic, retain, readonly) ZincTaskRef* taskRef;
+- (id) initWithTaskRefs:(NSArray*)taskRefs;
 
 /**
- @discussion Similar to NSOperation, the exact execution context for your completion block is not guaranteed but is typically a secondary thread.
+ Create a `ZincTaskMonitor.
+ 
+ Convenience method.
+ 
+ @param taskRef a `ZincTaskRef`
  */
-@property (nonatomic, copy) ZincCompletionBlock completionBlock;
++ (instancetype) taskMonitorForTaskRef:(ZincTaskRef*)taskRef;
+
+/**
+ The taskRef the monitor was initialized with
+ */
+@property (nonatomic, strong, readonly) NSArray* taskRefs;
+
+/**
+ Return all errors encountered so far.
+ @return An array of errors
+ */
+- (NSArray*) allErrors;
 
 @end

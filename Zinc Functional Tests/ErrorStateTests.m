@@ -6,13 +6,13 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 
 
 #define DEFAULT_TIMEOUT_SECONDS 60
 
 
-@interface ErrorStateTests : ZincFunctionalTestCase
+@interface ErrorStateTests : ZincRepoFunctionalTestCase
 
 @end
 
@@ -27,7 +27,7 @@
     
     NSString *bundleID = @"com.mindsnacks.demo.cats";
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {

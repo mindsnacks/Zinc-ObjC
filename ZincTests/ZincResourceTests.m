@@ -6,8 +6,12 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincResourceTests.h"
 #import "ZincResource.h"
+
+
+@interface ZincResourceTests : SenTestCase
+@end
+
 
 @implementation ZincResourceTests
 
@@ -16,16 +20,16 @@
 {
     NSURL* catalogResource = [NSURL zincResourceForCatalogWithId:@"com.mindsnacks"];
   
-    STAssertTrue([[catalogResource zincCatalogId] isEqualToString:@"com.mindsnacks"],
-                 @"catalogId wrong");
+    STAssertTrue([[catalogResource zincCatalogID] isEqualToString:@"com.mindsnacks"],
+                 @"catalogID wrong");
 }
 
 - (void) testBundleResource
 {
-    NSURL* bundleResource = [NSURL zincResourceForBundleWithId:@"com.mindsnacks.demo" version:1];
+    NSURL* bundleResource = [NSURL zincResourceForBundleWithID:@"com.mindsnacks.demo" version:1];
     
-    NSString* catalogId = [bundleResource zincCatalogId];
-    STAssertTrue([catalogId isEqual:@"com.mindsnacks"], @"catalog wrong");
+    NSString* catalogID = [bundleResource zincCatalogID];
+    STAssertTrue([catalogID isEqual:@"com.mindsnacks"], @"catalog wrong");
 }
 
 @end

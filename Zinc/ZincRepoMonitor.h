@@ -14,8 +14,8 @@
 
 - (id)initWithRepo:(ZincRepo*)repo taskPredicate:(NSPredicate*)taskPredicate;
 
-@property (nonatomic, readonly, retain) ZincRepo* repo;
-@property (nonatomic, readonly, retain) NSPredicate* taskPredicate;
+@property (nonatomic, readonly, strong) ZincRepo* repo;
+@property (nonatomic, readonly, strong) NSPredicate* taskPredicate;
 
 #pragma mark Convenience Constructors
 

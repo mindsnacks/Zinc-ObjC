@@ -7,13 +7,10 @@
 //
 
 #import "ZincRepoIndexUpdateTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincResource.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincRepoIndex.h"
-#import "ZincEvent.h"
-#import "NSData+Zinc.h"
 #import "ZincTaskActions.h"
 
 @implementation ZincRepoIndexUpdateTask
@@ -32,10 +29,6 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [super dealloc];
-}
 
 - (void) main
 {

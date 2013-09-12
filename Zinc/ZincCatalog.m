@@ -7,13 +7,15 @@
 //
 
 #import "ZincCatalog.h"
+
 #import "ZincJSONSerialization.h"
 
-@implementation ZincCatalog
+@interface ZincCatalog ()
+@property (nonatomic, strong, readwrite) NSString* identifier;
+@property (nonatomic, strong, readwrite) NSDictionary* bundleInfoById;
+@end
 
-@synthesize identifier = _identifier;
-@synthesize format = _format;
-@synthesize bundleInfoById = _bundleInfoById;
+@implementation ZincCatalog
 
 - (id)init
 {
@@ -23,12 +25,6 @@
     return self;
 }
 
-- (void)dealloc
-{
-    [_identifier release];
-    [_bundleInfoById release];
-    [super dealloc];
-}
 
 #pragma mark Encoding
 
@@ -36,9 +32,9 @@
 {
     self = [super init];
     if (self) {
-        self.identifier = [dict objectForKey:@"id"]; 
-        self.format = [[dict objectForKey:@"format"] integerValue];
-        self.bundleInfoById = [dict objectForKey:@"bundles"];
+        self.identifier = dict[@"id"]; 
+        self.format = [dict[@"format"] integerValue];
+        self.bundleInfoById = dict[@"bundles"];
     }
     return self;
 }
@@ -46,16 +42,10 @@
 - (NSDictionary*) dictionaryRepresentation
 {
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:4];
-    [d setObject:self.identifier forKey:@"id"];
-    [d setObject:[NSNumber numberWithInteger:self.format] forKey:@"format"];
-    [d setObject:self.bundleInfoById forKey:@"bundles"];
+    d[@"id"] = self.identifier;
+    d[@"format"] = @(self.format);
+    d[@"bundles"] = self.bundleInfoById;
     return d;
-}
-
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
 }
 
 - (NSString*) description
@@ -68,12 +58,11 @@
 
 #pragma mark -
 
-- (NSInteger) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro
+- (NSInteger) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
 {
-    NSDictionary* bundleInfo = [self.bundleInfoById objectForKey:bundleId];
+    NSDictionary* bundleInfo = (self.bundleInfoById)[bundleID];
     
-    NSNumber* version = [[bundleInfo objectForKey:@"distributions"]
-                         objectForKey:distro];
+    NSNumber* version = bundleInfo[@"distributions"][distro];
     if (version != nil) {
         return [version integerValue];
     }
@@ -91,7 +80,7 @@
     if (json == nil) {
         return nil;
     }
-    ZincCatalog* catalog = [[[ZincCatalog alloc] initWithDictionary:json] autorelease];
+    ZincCatalog* catalog = [[ZincCatalog alloc] initWithDictionary:json];
     return catalog;
 }
 

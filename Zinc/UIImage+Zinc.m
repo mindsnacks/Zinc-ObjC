@@ -9,46 +9,9 @@
 #import "UIImage+Zinc.h"
 #import "ZincBundle.h"
 #import "ZincUtils.h"
+#import "UIImage+ZincHelpers.h"
 
 @implementation UIImage (Zinc)
-
-+ (NSString*) zinc2xPathForImagePath:(NSString*)path
-{
-    NSString* file = [path lastPathComponent];
-    NSString* fileName = [file stringByDeletingPathExtension];
-    
-    if ([fileName hasSuffix:@"@2x"]) {
-        return path;
-    } 
-    
-    NSString* dir = [path stringByDeletingLastPathComponent];
-    NSString* ext = [path pathExtension];
-    
-    fileName = [fileName stringByAppendingString:@"@2x"];
-    file = [fileName stringByAppendingPathExtension:ext];
-    path = [dir stringByAppendingPathComponent:file];
-    
-    return path;
-}
-
-+ (NSString*) zinc1xPathForImagePath:(NSString*)path
-{
-    NSString* file = [path lastPathComponent];
-    NSString* fileName = [file stringByDeletingPathExtension];
-    
-    if (![fileName hasSuffix:@"@2x"]) {
-        return path;
-    } 
-    
-    NSString* dir = [path stringByDeletingLastPathComponent];
-    NSString* ext = [path pathExtension];
-    
-    fileName = [fileName substringToIndex:[fileName length] - [@"@2x" length]];
-    file = [fileName stringByAppendingPathExtension:ext];
-    path = [dir stringByAppendingPathComponent:file];
-    
-    return path;
-}
 
 + (UIImage *)zinc_imageNamed:(NSString *)name inBundle:(id)bundle
 {
@@ -67,7 +30,7 @@
     
     NSString* bundlePath = [bundle bundlePath];
     NSString* relParentDir = nil;
-    NSArray* searchDirs = [NSArray arrayWithObjects:ZincGetApplicationDocumentsDirectory(), ZincGetApplicationCacheDirectory(), nil];
+    NSArray* searchDirs = @[ZincGetApplicationDocumentsDirectory(), ZincGetApplicationCacheDirectory()];
     
     for (NSString* pathPrefix in searchDirs) {
         if ([bundlePath hasPrefix:pathPrefix]) {

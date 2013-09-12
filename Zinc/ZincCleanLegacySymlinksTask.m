@@ -7,10 +7,10 @@
 //
 
 #import "ZincCleanLegacySymlinksTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincResource.h"
 
 @interface ZincCleanLegacySymlinksTask ()
 @property (assign) long long totalItemsToClean;
@@ -37,22 +37,22 @@
 - (void) doMaintenance
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     
     // -- Create both enumerators
     
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                                includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsSymbolicLinkKey, nil]
+                                includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                    options:0
-                                              errorHandler:^(NSURL* url, NSError* error){
+                                              errorHandler:^(NSURL* url, NSError* e){
                                                   return YES;
                                               }];
     
     NSString* bundlesPath = [self.repo bundlesPath];
     NSDirectoryEnumerator* bundlesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:bundlesPath]
-                                  includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsSymbolicLinkKey, nil]
+                                  includingPropertiesForKeys:@[NSURLIsSymbolicLinkKey]
                                                      options:0
-                                                errorHandler:^(NSURL* url, NSError* error){
+                                                errorHandler:^(NSURL* url, NSError* e){
                                                     return YES;
                                                 }];
     
@@ -94,7 +94,7 @@
             
             NSUInteger endIndexOfBundleDir = NSMaxRange([[theURL path] rangeOfString:bundlesPath]);
             NSString* relPath = [[theURL path] substringFromIndex:endIndexOfBundleDir + 1];
-            NSString* bundleDesc = [[relPath pathComponents] objectAtIndex:0];
+            NSString* bundleDesc = [relPath pathComponents][0];
             NSURL* bundleRes = [NSURL zincResourceForBundleDescriptor:bundleDesc];
             [bundlesToDelete addObject:bundleRes];
 
@@ -106,7 +106,7 @@
         self.itemsCleaned++;
     }
     for (NSURL* bundleRes in bundlesToDelete) {
-        NSString* path = [self.repo pathForBundleWithId:[bundleRes zincBundleId] version:[bundleRes zincBundleVersion]];
+        NSString* path = [self.repo pathForBundleWithID:[bundleRes zincBundleID] version:[bundleRes zincBundleVersion]];
         if (![fm removeItemAtPath:path error:&error]) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         }

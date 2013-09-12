@@ -17,6 +17,20 @@ extern NSString* const ZincDownloadPolicyPriorityChangeNotification;
 extern NSString* const ZincDownloadPolicyPriorityChangeBundleIDKey;
 extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
+
+#pragma mark -
+
+
+@protocol ZincDownloadPolicyRule <NSObject>
+
+- (BOOL) allowBundleWithID:(NSString*)bundleID priority:(NSOperationQueuePriority)priority;
+
+@end
+
+
+#pragma mark -
+
+
 @interface ZincDownloadPolicy : NSObject
 
 /**
@@ -25,11 +39,13 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
  */
 - (id) init;
 
+
 #pragma mark Bundle Prioritization
 
-- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleId;
+- (NSOperationQueuePriority) priorityForBundleWithID:(NSString*)bundleID;
 
-- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithId:(NSString*)bundleId;
+- (void) setPriority:(NSOperationQueuePriority)priority forBundleWithID:(NSString*)bundleID;
+
 
 #pragma mark Connectivity Rules
 
@@ -41,9 +57,21 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 - (void)removePriorityForConnectionType:(ZincConnectionType)connectionType;
 
-#pragma mark Convenience
 
-- (ZincConnectionType) requiredConnectionTypeForBundleID:(NSString*)bundleID;
+#pragma mark Custom Rules
+
+/**
+ @discussion Add a custom rule.
+ */
+- (void)addRule:(id<ZincDownloadPolicyRule>)rule;
+
+/**
+ @discussion Remove a custom rule.
+ */
+- (void)removeRule:(id<ZincDownloadPolicyRule>)rule;
+
+
+#pragma mark Convenience
 
 /**
  @discussion Resets the policy to defaults, and if it was just created using init
@@ -51,3 +79,18 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 - (void) reset;
 
 @end
+
+
+#pragma mark -
+
+
+typedef BOOL (^ZincDownloadPolicyBlockRuleHandler)(NSString* bundleID, NSOperationQueuePriority priority);
+
+@interface ZincDownloadPolicyBlockRule : NSObject <ZincDownloadPolicyRule>
+
++ (instancetype)ruleWithBlock:(ZincDownloadPolicyBlockRuleHandler)block;
+
+@end
+
+
+

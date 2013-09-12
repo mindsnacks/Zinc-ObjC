@@ -6,12 +6,10 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTask.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincEvent.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>
@@ -21,11 +19,11 @@ typedef id ZincBackgroundTaskIdentifier;
 #endif
 
 @interface ZincTask ()
-@property (nonatomic, assign, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSURL* resource;
-@property (nonatomic, retain, readwrite) id input;
-@property (atomic, retain) NSMutableArray* myChildOperations;
-@property (atomic, retain) NSMutableArray* myEvents;
+@property (nonatomic, weak, readwrite) ZincRepo* repo;
+@property (nonatomic, strong, readwrite) NSURL* resource;
+@property (nonatomic, strong, readwrite) id input;
+@property (atomic, strong) NSMutableArray* myChildOperations;
+@property (atomic, strong) NSMutableArray* myEvents;
 @property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
 
@@ -52,7 +50,7 @@ typedef id ZincBackgroundTaskIdentifier;
 + (id) taskWithDescriptor:(ZincTaskDescriptor*)taskDesc repo:(ZincRepo*)repo input:(id)input
 {
     Class taskClass = NSClassFromString([taskDesc method]);
-    ZincTask* task = [[[taskClass alloc] initWithRepo:repo resourceDescriptor:taskDesc.resource input:input] autorelease];
+    ZincTask* task = [[taskClass alloc] initWithRepo:repo resourceDescriptor:taskDesc.resource input:input];
     return task;
 }
 
@@ -70,11 +68,6 @@ typedef id ZincBackgroundTaskIdentifier;
     }
 #endif
     
-    [_myEvents release];
-    [_myChildOperations release];
-    [_resource release];
-    [_input release];
-    [super dealloc];
 }
 
 + (NSString *)action
@@ -90,7 +83,7 @@ typedef id ZincBackgroundTaskIdentifier;
 
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
-    return [ZincTaskDescriptor taskDescriptorWithResource:resource action:[self action] method:[self taskMethod]];
+    return [[ZincTaskDescriptor alloc ] initWithResource:resource action:[self action] method:[self taskMethod]];
 }
 
 - (ZincTaskDescriptor*) taskDescriptor
@@ -117,6 +110,7 @@ typedef id ZincBackgroundTaskIdentifier;
     }
     childOp.queuePriority = self.queuePriority;
     [self addDependency:childOp];
+    // childOp may already be added as a dependency if created via queueTaskForDescriptor, but it's not a problem
 }
 
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
@@ -133,7 +127,11 @@ typedef id ZincBackgroundTaskIdentifier;
     @synchronized(self) {
         // synchronizing on self here because there is a slight race condition. The task is created
         // and queued before it is added to myChildOperations.
-        task = [self.repo queueTaskForDescriptor:taskDescriptor input:input dependencies:nil];
+        task = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+            request.taskDescriptor = taskDescriptor;
+            request.input = input;
+            request.parent = self;
+        }];
         [self addChildOperation:task];
     }
 
@@ -145,7 +143,7 @@ typedef id ZincBackgroundTaskIdentifier;
     if (self.isCancelled) return;
     
     [self addChildOperation:operation];
-    [self.repo addOperation:operation];
+    [self.repo.taskManager addOperation:operation];
 }
 
 - (NSArray*) childOperations
@@ -188,7 +186,7 @@ typedef id ZincBackgroundTaskIdentifier;
     [allEvents addObjectsFromArray:self.myEvents];
     
     NSSortDescriptor* timestampSort = [NSSortDescriptor sortDescriptorWithKey:@"timestamp" ascending:YES];
-    return [allEvents sortedArrayUsingDescriptors:[NSArray arrayWithObject:timestampSort]];
+    return [allEvents sortedArrayUsingDescriptors:@[timestampSort]];
 }
 
 - (NSArray*) allErrors
@@ -197,7 +195,10 @@ typedef id ZincBackgroundTaskIdentifier;
     NSMutableArray* allErrors = [NSMutableArray arrayWithCapacity:[allEvents count]];
     for (ZincEvent* event in allEvents) {
         if([event isKindOfClass:[ZincErrorEvent class]]) {
-            [allErrors addObject:[(ZincErrorEvent*)event error]];
+            NSError* error = [(ZincErrorEvent*)event error];
+            if (error) {
+                [allErrors addObject:error];
+            }
         }
     }
     // TODO: write a test for this
@@ -219,14 +220,15 @@ typedef id ZincBackgroundTaskIdentifier;
     if (!self.backgroundTaskIdentifier) {
         
         UIApplication *application = [UIApplication sharedApplication];
-        __block typeof(self) blockSelf = self;
+        __weak typeof(self) weakself = self;
         self.backgroundTaskIdentifier = [application beginBackgroundTaskWithExpirationHandler:^{
+            __strong typeof(weakself) strongself = weakself;
+
+            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  strongself.backgroundTaskIdentifier;
+            strongself.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
             
-            UIBackgroundTaskIdentifier backgroundTaskIdentifier =  blockSelf.backgroundTaskIdentifier;
-            blockSelf.backgroundTaskIdentifier = UIBackgroundTaskInvalid;
-            
-            [blockSelf cancel];
-            
+            [strongself cancel];
+
             [application endBackgroundTask:backgroundTaskIdentifier];
         }];
     }

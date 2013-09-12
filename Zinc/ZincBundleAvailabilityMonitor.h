@@ -6,41 +6,55 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincActivityMonitor.h"
-#import "ZincProgress.h"
+#import "ZincCompletableActivityMonitor.h"
 
 @class ZincRepo;
-@class ZincBundleAvailabilityMonitorItem;
+@class ZincBundleAvailabilityMonitorActivityItem;
 
-@interface ZincBundleAvailabilityMonitor : ZincActivityMonitor
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
+@interface ZincBundleAvailabilityRequirement : NSObject
 
-@property (nonatomic, readonly, retain) ZincRepo* repo;
-@property (nonatomic, readonly, retain) NSArray* bundleIDs;
+@property (nonatomic, readonly, copy) NSString* bundleID;
+@property (nonatomic, readonly, assign) ZincBundleVersionSpecifier versionSpecifier;
 
-#pragma mark -
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
-@property (nonatomic, copy) ZincProgressBlock progressBlock;
-@property (nonatomic, copy) ZincCompletionBlock completionBlock;
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
-#pragma mark -
-
-- (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID;
-
-/**
- @discussion Is Key-Value Observable
- */
-@property (nonatomic, readonly, assign) float totalProgress;
-
-- (BOOL) isFinished;
++ (instancetype) requirementForBundleID:(NSString*)bundleID;
 
 @end
 
 
+@interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
-@interface ZincBundleAvailabilityMonitorItem : ZincActivityItem
+/**
+ Designated Initializer
+ */
+- (id)initWithRepo:(ZincRepo*)repo requirements:(NSArray*)requirements;
 
-@property (nonatomic, readonly, retain) NSString* bundleID;
+/**
+ @param requireCatalogVersion this is used for all bundleIDs
+ */
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
+
+/**
+ Defaults `versionSpecifier` to `ZincBundleVersionSpecifierAny`
+ */
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs;
+
+@property (nonatomic, readonly, strong) ZincRepo* repo;
+@property (nonatomic, readonly) NSArray* bundleIDs;
+
+#pragma mark -
+
+- (ZincBundleAvailabilityMonitorActivityItem*) activityItemForBundleID:(NSString*)bundleID;
+
+@end
+
+
+@interface ZincBundleAvailabilityMonitorActivityItem : ZincActivityItem
+
+@property (nonatomic, retain, readonly) ZincBundleAvailabilityRequirement* requirement;
 
 @end

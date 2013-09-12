@@ -8,20 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincModelObject.h"
 
-@interface ZincManifest : NSObject
+@interface ZincManifest : ZincModelObject
 
 + (ZincManifest*) manifestWithPath:(NSString*)path error:(NSError**)outError;
 
 - (id) init;
 - (id) initWithDictionary:(NSDictionary*)dict;
 
-@property (nonatomic, retain) NSString* bundleName;
-@property (nonatomic, retain) NSString* catalogId;
+@property (nonatomic, copy) NSString* bundleName;
+@property (nonatomic, copy) NSString* catalogID;
 @property (nonatomic, assign) ZincVersion version;
-@property (nonatomic, retain) NSArray* flavors;
+@property (nonatomic, copy) NSArray* flavors;
 
-@property (nonatomic, readonly) NSString* bundleId;
+@property (nonatomic, readonly) NSString* bundleID;
 
 - (NSString*) shaForFile:(NSString*)path;
 - (NSArray*) formatsForFile:(NSString*)path;
@@ -36,8 +37,5 @@
 - (NSUInteger) fileCount;
 
 - (NSURL*) bundleResource;
-
-- (NSDictionary*) dictionaryRepresentation;
-- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end

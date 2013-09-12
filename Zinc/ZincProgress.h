@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-typedef void (^ZincProgressBlock)(id context, long long currentProgress, long long totalProgress, float percent);
+typedef void (^ZincProgressBlock)(id source, long long currentProgress, long long totalProgress, float percent);
 
 
 @protocol ZincProgress <NSObject>
@@ -27,10 +27,9 @@ typedef void (^ZincProgressBlock)(id context, long long currentProgress, long lo
 /**
  @discussion NOT Key-Value Observable
  */
-- (float) progress;
+- (float) progressPercentage;
 
 @end
-
 
 
 @protocol ZincObservableProgress <ZincProgress>
@@ -38,7 +37,7 @@ typedef void (^ZincProgressBlock)(id context, long long currentProgress, long lo
 /**
  @discussion Is Key-Value Observable
  */
-@property (nonatomic, assign, readonly) float progress;
+@property (nonatomic, assign, readonly) float progressPercentage;
 
 /**
  @discussion Is Key-Value Observable
@@ -53,7 +52,17 @@ typedef void (^ZincProgressBlock)(id context, long long currentProgress, long lo
 @end
 
 
+@interface ZincProgressItem : NSObject <ZincObservableProgress>
+
+- (BOOL) isFinished;
+
+@end
+
+
 /**
- @discussion Helper function to calculate floating-point progress. Basically just avoids divide by zero.
+ Helper function to calculate floating-point progress. Basically just avoids divide by zero.
+ 
+ @param progress Progress object
+ @return Current progress as a floating point value betetween 0.0f and 1.0f.
  */
-extern float ZincProgressCalculate(id<ZincProgress>);
+extern float ZincProgressPercentageCalculate(id<ZincProgress> progress);

@@ -6,37 +6,30 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
+#import "ZincTrackingInfo.h"
+
+
 #define kCodingKey_Distribution @"distribution"
 #define kCodingKey_Version @"version"
-#define kCodingKey_UpdateAutomatically @"auto_update"
 #define kCodingKey_Flavor @"flavor"
 
-#import "ZincTrackingInfo.h"
 
 @implementation ZincTrackingInfo
 
-@synthesize distribution = _distribution;
-@synthesize version = _version;
-@synthesize updateAutomatically = _updateAutomatically;
-@synthesize flavor = _flavor;
-
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
-                             updateAutomatically:(BOOL)updateAutomatically
 {
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = ZincVersionInvalid;
-    info.updateAutomatically = updateAutomatically;
     return info;
 }
 
 + (ZincTrackingInfo*) trackingInfoWithDistribution:(NSString*)distribution
                                          version:(ZincVersion)version
 {
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
     info.distribution = distribution;
     info.version = version;
-    info.updateAutomatically = NO;
     return info;
 }
 
@@ -44,11 +37,10 @@
 {
     if (dict == nil) return nil;
     
-    ZincTrackingInfo* info = [[[ZincTrackingInfo alloc] init] autorelease];
-    info.distribution = [dict objectForKey:kCodingKey_Distribution];
-    info.version = [[dict objectForKey:kCodingKey_Version] integerValue];
-    info.updateAutomatically = [[dict objectForKey:kCodingKey_UpdateAutomatically] boolValue];
-    info.flavor = [dict objectForKey:kCodingKey_Flavor];
+    ZincTrackingInfo* info = [[ZincTrackingInfo alloc] init];
+    info.distribution = dict[kCodingKey_Distribution];
+    info.version = [dict[kCodingKey_Version] integerValue];
+    info.flavor = dict[kCodingKey_Flavor];
     return info;
 }
 
@@ -58,27 +50,18 @@
     if (self) {
         _distribution = nil;
         _version = ZincVersionInvalid;
-        _updateAutomatically = NO;
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_distribution release];
-    [_flavor release];
-    [super dealloc];
 }
 
 - (NSDictionary*) dictionaryRepresentation
 {
     NSMutableDictionary* dict = [NSMutableDictionary dictionaryWithCapacity:3];
     if (self.distribution != nil)
-        [dict setObject:self.distribution forKey:kCodingKey_Distribution];
-    [dict setObject:[NSNumber numberWithInteger:self.version] forKey:kCodingKey_Version];
-    [dict setObject:[NSNumber numberWithBool:self.updateAutomatically] forKey:kCodingKey_UpdateAutomatically];
+        dict[kCodingKey_Distribution] = self.distribution;
+    dict[kCodingKey_Version] = @(self.version);
     if (self.flavor != nil)
-        [dict setObject:self.flavor forKey:kCodingKey_Flavor];
+        dict[kCodingKey_Flavor] = self.flavor;
     return dict;
 }
 
@@ -97,9 +80,6 @@
     if (self.version != other.version) {
         return NO;
     }
-    if (self.updateAutomatically != other.updateAutomatically) {
-        return NO;
-    }
     if (self.flavor != nil || other.flavor != nil) {
         if (![self.flavor isEqual:other.flavor]) {
             return NO;
@@ -111,9 +91,8 @@
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@ updateAutomatically=%d>",
-            [self class], self, self.distribution, self.version, self.flavor, self.updateAutomatically];
+    return [NSString stringWithFormat:@"<%@: %p distro=%@ version=%d flavor=%@>",
+            [self class], self, self.distribution, self.version, self.flavor];
 }
-
 
 @end

@@ -1,6 +1,6 @@
 //
-//  ZCBundleManager.h
-//  Zinc-iOS
+//  ZincRepo.h
+//  Zinc-ObjC
 //
 //  Created by Andy Mroczkowski on 12/6/11.
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
@@ -9,170 +9,318 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
-#define kZincRepoDefaultObjectDownloadCount (5)
-#define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
-#define kZincRepoDefaultAutoRefreshInterval (120)
-#define kZincRepoDefaultCacheCount (20)
-
-typedef enum {
-    ZincBundleStateNone      = 0,
-    ZincBundleStateCloning   = 1,
-    ZincBundleStateAvailable = 2,
-    ZincBundleStateDeleting  = 3,
-} ZincBundleState;
-
-extern NSString* const ZincBundleStateName[];
-
-extern ZincBundleState ZincBundleStateFromName(NSString* name);
-
-// -- Bundle Notifications
-extern NSString* const ZincRepoBundleStatusChangeNotification;
-extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
-extern NSString* const ZincRepoBundleWillStopTrackingNotification;
-extern NSString* const ZincRepoBundleWillDeleteNotification;
-
-// -- Bundle Notification UserInfo Keys
-extern NSString* const ZincRepoBundleChangeNotificationBundleIdKey;
-extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
-
-// -- Task Notifications
-extern NSString* const ZincRepoTaskAddedNotification;
-extern NSString* const ZincRepoTaskFinishedNotification;
-
-// -- Task Notification UserInfo Keys
-extern NSString* const ZincRepoTaskNotificationTaskKey;
-
-@protocol ZincRepoDelegate;
-@class ZincManifest;
+@protocol ZincRepoEventListener;
 @class ZincBundle;
-@class ZincEvent;
 @class ZincBundleTrackingRequest;
 @class ZincDownloadPolicy;
+@class ZincEvent;
 @class ZincTaskRef;
-
-@interface ZincRepo : NSObject
-
-// !!!: Note all repos start suspended. After obtaining a repo object,
-// you must all [repo resumeAllTasks]
-
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
-+ (ZincRepo*) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
-
-+ (BOOL) repoExistsAtURL:(NSURL*)fileURL;
-
-@property (nonatomic, assign) id<ZincRepoDelegate> delegate;
-@property (nonatomic, retain, readonly) NSURL* url;
+@class KSReachability;
 
 /**
- @discussion The repo may need to perform some initialization tasks. This will be NO until they are performed.
+ `ZincRepo`
+ 
+ This class is part of the *Zinc Public API*.
+ 
+ ## Usage Notes
+ 
+ - All `ZincRepo` objects start suspended. After obtaining a `ZincRepo` object, you must call `-resumeAllTasks`
+ */
+@interface ZincRepo : NSObject
+
+///---------------------
+/// @name Initialization
+//----------------------
+
+/**
+ Create a new `ZincRepo` object with the given fileURL. This is the standard way to obtain a `ZincRepo` object.
+
+ @param fileURL a local file URL
+ @param outError error output param
+ */
++ (instancetype) repoWithURL:(NSURL*)fileURL error:(NSError**)outError;
+
+/**
+ Create a new `ZincRepo` object with the given fileURL. This allows for a custom networkQueue
+
+ @param fileURL a local file URL
+ @param networkQueue the `NSOperationQueue` to use for network operations
+ @param outError error output param
+ */
++ (instancetype) repoWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue error:(NSError**)outError;
+
+@property (nonatomic, strong, readonly) KSReachability *reachability;
+
+/**
+ The Zinc repo may need to perform some initialization tasks. This property be `NO` until these initialization tasks are performed, and `YES` aferwards.
  */
 @property (nonatomic, assign, readonly) BOOL isInitialized;
 
 /**
- @discussion Block until initialization is complete.
+ Block until initialization is complete.
  */
 - (void) waitForInitialization;
 
 /**
- @discussion Returns an task reference for any initialization tasks that need to be done. Returns nil if no initialization is required.
+ Returns an task reference (`ZincTaskRef`) for any initialization tasks that need to be done. Returns nil if no initialization is required. See the `ZincTaskRef` documentation for usage.
  */
 - (ZincTaskRef*) taskRefForInitialization;
 
-/**
- @discussion Manually trigger refresh of sources and bundles.
- */
-- (void) refresh;
+///--------------------------------
+/// @name Getting basic information
+///--------------------------------
 
 /**
- @discussion Manually trigger refresh of sources and bundles, with completion block.
+ The local file URL of the `ZincRepo`
  */
-- (void) refreshWithCompletion:(dispatch_block_t)completion;
+@property (nonatomic, strong, readonly) NSURL* url;
+
 
 /**
- @discussion Interval at which catalogs are updated and automatic clone tasks started.
+ Whether their is a valid Zinc repo at the given URL.
+ @param fileURL a local file URL
  */
-@property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
++ (BOOL) repoExistsAtURL:(NSURL*)fileURL;
+
+
+///--------------------
+/// @name Configuration
+///--------------------
 
 /**
- @discussion default is YES
+ Set the event listender. See documentation for `ZincRepoEventListener`.
  */
-@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+@property (nonatomic, weak) id<ZincRepoEventListener> eventListener;
 
 /**
+ Set the default thread priority for all Zinc operations. It is initially set to `0.5`, which is the same as the default thread priority for `NSOperation`.
+ @param defaultThreadPriority New default thread priorty, between 0.0 and 1.0
  */
-@property (nonatomic, retain, readonly) ZincDownloadPolicy* downloadPolicy;
++ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
 
-#pragma mark Sources
+///------------------
+/// @name Maintenance
+///------------------
 
+/**
+ * Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
+ */
+- (void) cleanWithCompletion:(dispatch_block_t)completion;
+
+///-----------------------
+/// @name Managing Sources
+///-----------------------
+
+/**
+ Add a new source URL, if it does not already exist.
+ */
 - (void) addSourceURL:(NSURL*)url;
+
+/**
+ Remove a source URL.
+ @param url The URL to remove. If the source URL is not registered, this does nothing.
+ */
 - (void) removeSourceURL:(NSURL*)url;
+
+/**
+ Return a copy of all registered source URLs.
+ */
 - (NSSet*) sourceURLs;
 
+/**
+ Refresh local copies of Zinc catalogs from all registered source URLs. This will attempt to refresh each source only once, and may fail due to connectivity issues. To refresh sources more automatically, see `ZincAgent`.
+ @param completion A block to call once all sources have been attempted to be refreshed. May be nil.
+ */
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
-#pragma mark External Bundles
-
-- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath error:(NSError**)outError;
-
-#pragma mark Tracking Remote Bundles
-
-- (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro automaticallyUpdate:(BOOL)autoUpdate;
-- (void) beginTrackingBundleWithId:(NSString*)bundleId distribution:(NSString*)distro flavor:(NSString*)flavor automaticallyUpdate:(BOOL)autoUpdate;
-
-- (void) stopTrackingBundleWithId:(NSString*)bundleId;
-
-- (NSSet*) trackedBundleIds;
-
-#pragma mark mark Updating Bundles
+///---------------------------
+/// @name Working with Bundles
+///---------------------------
 
 /**
- @discussion Manually update a bundle. Currently ignores downloadPolicy and will update regardles
- of connectivity.
+ Begin tracking a bundle.
+ 
+ @param req The bundle tracking request
  */
-- (void) updateBundleWithID:(NSString*)bundleId completionBlock:(ZincCompletionBlock)completion;
+- (void) beginTrackingBundleWithRequest:(ZincBundleTrackingRequest*)req;
+
+/**
+ Convenience method for tracking a bundle. Assumes flavor is nil.
+ 
+ @param bundleID The ID of the bundle
+ @param distro The distro to track
+ */
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/**
+ Convenience method for tracking a bundle
+
+ @param bundleID The ID of the bundle
+ @param distro The distro to track
+ @param flavor The flavor to track
+ */
+- (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor;
+
+/**
+ Stop tracking a bundle.
+ */
+- (void) stopTrackingBundleWithID:(NSString*)bundleID;
+
+/**
+ Get all currently tracking bundles.
+ */
+- (NSSet*) trackedBundleIDs;
+
+/**
+ Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
+ 
+ @param bundleID The ID of the bundle to update.
+ @param completion A block to be called once the update attempt completes.
+ */
+- (void) updateBundleWithID:(NSString*)bundleID completionBlock:(ZincCompletionBlock)completion;
+
+/**
+ Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
+ 
+ This is similar to `updateBundleWithID:completionBlock:` except it returns a `ZincTaskRef` instead of the completion block.
+ */
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID;
 
 /**
- @discussion Update all bundles
+ Obtain a Zinc bundle. This will raise an exception if the repo is not initialized
+ 
+ @param bundleID The ID of the bundle.
  */
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
-
-- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
-
-#pragma mark -
+- (ZincBundle*) bundleWithID:(NSString*)bundleID;
 
 /**
- @discussion Main, offical way to get a bundle of files. Will raise an exception if the repo is not initialized
+ Get the state of a bundle.
+ 
+ @param bundleID The ID of the bundle
  */
-- (ZincBundle*) bundleWithId:(NSString*)bundleId;
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
 
-- (ZincBundleState) stateForBundleWithId:(NSString*)bundleId;
+/**
+ @param bundleID the bundleID
+ @param versionSpec the versionSpec
+ @return `YES` if the current version of the bundle satisfies the version spec, `NO` otherwise
+ */
+- (BOOL) hasSpecifiedVersion:(ZincBundleVersionSpecifier)versionSpec forBundleID:(NSString*)bundleID;
 
+/**
+ Register an external bundle.
+ 
+ TODO: document this feature with more detail
+ 
+ @param manifestPath The path to the manifest for the bundle
+ @param bundleRootPath The path of the bundles files
+ @param outError Error output parameter
+ */
+- (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)bundleRootPath error:(NSError**)outError;
 
-#pragma mark Tasks
+///----------------------
+/// @name Task Management
+///----------------------
 
+/**
+ Returns a copy of all active tasks within this repo.
+ */
 @property (readonly) NSArray* tasks;
 
+/**
+ Suspend (or pause) all *pending* tasks in this repo. Tasks in process will run to completion.
+ */
 - (void) suspendAllTasks;
-- (void) suspendAllTasksAndWaitExecutingTasksToComplete;
-- (void) resumeAllTasks;
-- (BOOL) isSuspended;
-
-#pragma mark Utility
-
-+ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
 
 /**
- @discussion Perform cleanup tasks. Runs automatically at repo initialization, but can be queued manually as well.
+ Suspend all *pending* tasks, and block until all *executing tasks are completed.
  */
-- (void)cleanWithCompletion:(dispatch_block_t)completion;
+- (void) suspendAllTasksAndWaitExecutingTasksToComplete;
+
+/**
+ Resume all tasks if the repo is suspended.
+ */
+- (void) resumeAllTasks;
+
+/**
+ Returns `YES` if the repo is suspended, `NO` otherwise.
+ */
+- (BOOL) isSuspended;
+
+///----------------------
+/// @name Download Policy
+///----------------------
+
+@property (nonatomic, strong, readonly) ZincDownloadPolicy* downloadPolicy;
+
+- (BOOL) doesPolicyAllowDownloadForBundleID:(NSString*)bundleID;
        
 @end
 
 
-@protocol ZincRepoDelegate <NSObject>
+///-------------------
+/// @name Notifcations
+///-------------------
 
+extern NSString* const ZincRepoReachabilityChangedNotification;
+
+/**
+ Posted when a bundle's status changes
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
+extern NSString* const ZincRepoBundleStatusChangeNotification;
+
+/**
+ Posted when a bundle begins tracking.
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
+extern NSString* const ZincRepoBundleDidBeginTrackingNotification;
+
+/**
+ Posted when a bundle is no longer being tracked.
+ 
+ The `useInfo` dict will contain the key `ZincRepoBundleChangeNotificationBundleIDKey` whose value will be the bundle ID.
+ */
+extern NSString* const ZincRepoBundleWillStopTrackingNotification;
+
+/**
+ Posted when a bundle will be deleted.
+ */
+extern NSString* const ZincRepoBundleWillDeleteNotification;
+
+extern NSString* const ZincRepoBundleChangeNotificationBundleIDKey;
+extern NSString* const ZincRepoBundleChangeNotifiationStatusKey;
+
+/**
+ Posted when a task is added in this repo.
+ 
+ The `userInfo` dict will contain the `ZincRepoTaskNotificationTaskKey` whose value will be the task.
+ */
+extern NSString* const ZincRepoTaskAddedNotification;
+
+/**
+ Posted when a task finishes in this repo.
+ 
+ The `userInfo` dict will contain the `ZincRepoTaskNotificationTaskKey` whose value will be the task.
+ */
+extern NSString* const ZincRepoTaskFinishedNotification;
+
+extern NSString* const ZincRepoTaskNotificationTaskKey;
+
+
+/**
+ `ZincRepoEventListener`
+ */
+@protocol ZincRepoEventListener <NSObject>
+
+/**
+ Called whenever an event occurs in the ZincRepo
+ 
+ @param repo The repo
+ @param event The event
+ */
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event;
 
 @end

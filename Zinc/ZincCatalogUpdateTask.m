@@ -7,14 +7,14 @@
 //
 
 #import "ZincCatalogUpdateTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincCatalog.h"
-#import "ZincResource.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
 #import "NSData+Zinc.h"
 #import "ZincTaskActions.h"
+
+
 @implementation ZincCatalogUpdateTask
 
 + (NSString *)action
@@ -29,11 +29,6 @@
         self.title = NSLocalizedString(@"Updating Catalog", @"ZincCatalogUpdateTask");
     }
     return self;
-}
-
-- (void)dealloc 
-{
-    [super dealloc];
 }
 
 - (ZincCatalog*) catalog

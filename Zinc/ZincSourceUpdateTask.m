@@ -7,17 +7,11 @@
 //
 
 #import "ZincSourceUpdateTask.h"
+
+#import "ZincInternals.h"
+
 #import "ZincTask+Private.h"
-#import "ZincHTTPRequestOperation.h"
-#import "NSData+Zinc.h"
-#import "ZincCatalog.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincSource.h"
-#import "ZincCatalogUpdateTask.h"
-#import "ZincResource.h"
-#import "ZincErrors.h"
 #import "ZincTaskActions.h"
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
@@ -37,10 +31,6 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [super dealloc];
-}
 
 - (NSURL*) sourceURL
 {
@@ -52,7 +42,7 @@
     NSError* error = nil;
     
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    ZincHTTPRequestOperation* requestOp = [[ZincHTTPRequestOperation alloc] initWithRequest:request];
     [self queueChildOperation:requestOp];
     
     [requestOp waitUntilFinished];

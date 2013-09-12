@@ -6,21 +6,11 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleRemoteCloneTask.h"
-#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincBundle.h"
-#import "ZincManifest.h"
-#import "ZincResource.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincManifestDownloadTask.h"
-#import "ZincEvent.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincObjectDownloadTask.h"
-#import "ZincArchiveDownloadTask.h"
-#import "ZincResource.h"
-#import "ZincErrors.h"
 
 @interface ZincBundleRemoteCloneTask ()
 @property (assign) long long maxProgressValue;
@@ -28,8 +18,6 @@
 @end
 
 @implementation ZincBundleRemoteCloneTask
-
-@synthesize httpOverheadConstant = _httpOverheadConstant;
 
 - (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
 {
@@ -69,8 +57,8 @@
     ZincTask* manifestDownloadTask = nil;
 
     // if the manifest doesn't exist, get it. 
-    if (![self.repo hasManifestForBundleIdentifier:self.bundleId version:self.version]) {
-        NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleId version:self.version];
+    if (![self.repo hasManifestForBundleIDentifier:self.bundleID version:self.version]) {
+        NSURL* manifestRes = [NSURL zincResourceForManifestWithId:self.bundleID version:self.version];
         ZincTaskDescriptor* taskDesc = [ZincManifestDownloadTask taskDescriptorForResource:manifestRes];
         manifestDownloadTask = [self queueChildTaskForDescriptor:taskDesc];
     }
@@ -139,7 +127,7 @@
         
         if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
             
-            NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleId version:self.version];
+            NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleID version:self.version];
             ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
             ZincTask* archiveOp = [self queueChildTaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
             
@@ -152,7 +140,7 @@
             
         } else { // INVIDIDUAL FILE MODE
             
-            NSString* catalogId = [ZincBundle catalogIdFromBundleId:self.bundleId];
+            NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
             NSArray* files = [manifest allFiles];
             NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
             
@@ -161,7 +149,7 @@
                 NSString* sha = [manifest shaForFile:file];
                 NSArray* formats = [manifest formatsForFile:file];
                 
-                NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogId:catalogId];
+                NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogID:catalogID];
                 ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
                 
                 ZincTask* fileOp = [self queueChildTaskForDescriptor:fileTaskDesc input:formats];
@@ -192,7 +180,7 @@
 
 - (BOOL) isReady
 {
-    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleId];
+    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
 }
 
 - (void) main
@@ -206,7 +194,7 @@
         return;
     }
     
-    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundleId version:self.version error:&error];
+    ZincManifest* manifest = [self.repo manifestWithBundleID:self.bundleID version:self.version error:&error];
     if (manifest == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
         [self completeWithSuccess:NO];

@@ -7,18 +7,11 @@
 //
 
 #import "ZincObjectDownloadTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
-#import "ZincSource.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincResource.h"
-#import "NSFileManager+Zinc.h"
-#import "NSData+Zinc.h"
-#import "ZincErrors.h"
-#import "ZincUtils.h"
-#import "ZincHTTPRequestOperation.h"
 #import "ZincSHA.h"
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
@@ -30,14 +23,6 @@
 
 @implementation ZincObjectDownloadTask
 
-@synthesize bytesRead = _bytesRead;
-@synthesize totalBytesToRead = _totalBytesToRead;
-
-- (void)dealloc
-{
-    [super dealloc];
-}
-
 - (NSString*) sha
 {
     return [self.resource zincObjectSHA];
@@ -47,7 +32,7 @@
 {
     NSError* error = nil;
     BOOL gz = NO;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     // don't need to donwload if the file already exists
     if ([self.repo hasFileWithSHA:self.sha])
@@ -67,12 +52,11 @@
         ext = @"gz";
     }
     
-    NSString* catalogId = [self.resource zincCatalogId];
+    NSString* catalogID = [self.resource zincCatalogID];
     
-    NSArray* sources = [self.repo sourcesForCatalogId:catalogId];
+    NSArray* sources = [self.repo sourcesForCatalogID:catalogID];
     if (sources == nil || [sources count] == 0) {
-        NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                              catalogId, @"catalogId", nil];
+        NSDictionary* info = @{@"catalogID": catalogID};
         error = ZincErrorWithInfo(ZINC_ERR_NO_SOURCES_FOR_CATALOG, info);
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
@@ -103,7 +87,7 @@
         }
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
-        NSOutputStream* outStream = [[[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO] autorelease];
+        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
         [self queueOperationForRequest:request outputStream:outStream context:nil];
         
         [self.httpRequestOperation waitUntilFinished];
@@ -119,7 +103,7 @@
         NSString* targetPath = [self.repo pathForFileWithSHA:self.sha];
         
         if (gz) {
-            NSData* compressed = [[[NSData alloc] initWithContentsOfFile:downloadPath] autorelease];
+            NSData* compressed = [[NSData alloc] initWithContentsOfFile:downloadPath];
             NSData* uncompressed = [compressed zinc_gzipInflate];
             if (![uncompressed writeToFile:uncompressedPath options:0 error:&error]) {
                 [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
@@ -135,11 +119,9 @@
         
         if (![actualSHA isEqualToString:self.sha]) {
             
-            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                    self.sha, @"expectedSHA",
-                    actualSHA, @"actualSHA",
-                    source, @"source",
-                    nil];
+            NSDictionary* info = @{@"expectedSHA": self.sha,
+                    @"actualSHA": actualSHA,
+                    @"source": source};
             error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
             continue;
@@ -152,14 +134,11 @@
                 continue;
             }
 
-            if (![fm moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
-                if (error.code != NSFileWriteFileExistsError) // ignore error if file already existed
-                {
-                    [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
-                    continue;
-                }
+            if (![fm zinc_moveItemAtPath:uncompressedPath toPath:targetPath error:&error]) {
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+                continue;
             }
-            
+
             ZincAddSkipBackupAttributeToFileWithPath(targetPath);
             self.finishedSuccessfully = YES;
         }
@@ -177,6 +156,5 @@
         break; // make sure to break out of the loop when we finish successfully 
     }
 }
-
 
 @end

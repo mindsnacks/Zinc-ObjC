@@ -15,7 +15,7 @@
 @property (readwrite) NSInteger bytesRead;
 @property (readwrite) NSInteger totalBytesToRead;
 
-@property (nonatomic, retain, readwrite) ZincHTTPRequestOperation* httpRequestOperation;
+@property (nonatomic, strong, readwrite) ZincHTTPRequestOperation* httpRequestOperation;
 
 - (void) queueOperationForRequest:(NSURLRequest *)request
                      outputStream:(NSOutputStream *)outputStream

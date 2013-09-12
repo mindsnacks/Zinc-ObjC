@@ -7,12 +7,10 @@
 //
 
 #import "ZincGarbageCollectTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincRepo.h"
 #import "ZincRepo+Private.h"
-#import "ZincResource.h"
-#import "ZincManifest.h"
-#import "ZincEvent.h"
 
 @implementation ZincGarbageCollectTask
 
@@ -24,11 +22,11 @@
 - (void) doMaintenance
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
-                                includingPropertiesForKeys:[NSArray arrayWithObjects:NSURLIsRegularFileKey, NSURLLinkCountKey, nil]
+                                includingPropertiesForKeys:@[NSURLIsRegularFileKey, NSURLLinkCountKey]
                                                    options:0
-                                              errorHandler:^(NSURL* url, NSError* error){
+                                              errorHandler:^(NSURL* url, NSError* e){
                                                   return YES;
                                               }];
     for (NSURL *theURL in filesEnum) {

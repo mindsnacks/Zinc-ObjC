@@ -6,8 +6,12 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincTrackingInfoTest.h"
 #import "ZincTrackingInfo.h"
+
+
+@interface ZincTrackingInfoTest : SenTestCase
+@end
+
 
 @implementation ZincTrackingInfoTest
 

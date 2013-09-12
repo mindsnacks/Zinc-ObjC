@@ -6,92 +6,79 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundleAvailabilityMonitor.h"
+#import "ZincBundleAvailabilityMonitor+Private.h"
+
+#import "ZincInternals.h"
 #import "ZincActivityMonitor+Private.h"
-#import "ZincRepo.h"
-#import "ZincTask.h"
-#import "ZincTaskDescriptor.h"
-#import "ZincResource.h"
+#import "ZincRepo+Private.h"
+#import "ZincProgress+Private.h"
 #import "ZincTaskActions.h"
 
+
 @interface ZincBundleAvailabilityMonitor ()
-@property (nonatomic, readwrite, retain) NSArray* bundleIDs;
-@property (nonatomic, retain) NSMutableDictionary* myItems;
-@property (nonatomic, readwrite, assign) float totalProgress;
+@property (nonatomic, retain) NSMutableDictionary* itemsByBundleID;
+@property (nonatomic, readwrite, copy) NSArray* bundleIDs;
 @end
 
-@interface ZincBundleAvailabilityMonitorItem ()
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID;
-@end
 
 @implementation ZincBundleAvailabilityMonitor
 
-@synthesize repo = _repo;
-@synthesize bundleIDs = _bundleIDs;
-@synthesize myItems = _myItems;
+@dynamic bundleIDs;
 
-- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
+- (id)initWithRepo:(ZincRepo*)repo requirements:(NSArray*)items
 {
+    NSParameterAssert(repo);
+    NSParameterAssert(items);
     self = [super init];
     if (self) {
-        _repo = [repo retain];
-        _bundleIDs = [bundleIDs retain];
+        _repo = repo;
+        _itemsByBundleID = [[NSMutableDictionary alloc] init];
+        for (ZincBundleAvailabilityRequirement* req in items) {
+            [self addBundleAvailabilityMonitorItemForRequest:req];
+        }
     }
     return self;
 }
 
-- (void)dealloc
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
-    [_myItems release];
-    [_repo release];
-    [_bundleIDs release];
-    [super dealloc];
-}
-
-- (NSArray*) items
-{
-    return [self.myItems allValues];
-}
-
-- (ZincBundleAvailabilityMonitorItem*) itemForBundleID:(NSString*)bundleID
-{
-    return [self.myItems objectForKey:bundleID];
-}
-
-- (void) update
-{
-    if ([self isFinished]) return;
-    
-    [[self items] makeObjectsPerformSelector:@selector(update)];
-    
-    NSArray* finishedItems = [[self items] filteredArrayUsingPredicate:
-                              [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-        return [evaluatedObject isFinished];
-    }]];
-       
-    if ([finishedItems count] == [self.myItems count]) {
-        [self finish];
-    } else {
-        self.totalProgress = [[[self.myItems allValues]  valueForKeyPath:@"@avg.progress"] floatValue];
-        
-        ZINC_DEBUG_LOG(@"total %f", self.totalProgress);
+    NSMutableArray* requests = [[NSMutableArray alloc] initWithCapacity:[bundleIDs count]];
+    for (NSString* bundleID in bundleIDs) {
+        [requests addObject:[ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:versionSpecifier]];
     }
-    
-    [[NSNotificationCenter defaultCenter] postNotificationName:ZincActivityMonitorRefreshedNotification object:self];
+    return [self initWithRepo:repo requirements:requests];
 }
 
-- (void) finish
+- (id)initWithRepo:(ZincRepo*)repo bundleIDs:(NSArray*)bundleIDs
 {
-    self.totalProgress = 1.0f;
-    if (self.completionBlock != nil) {
-        self.completionBlock(nil); // TODO: add errors?
-    }
+    return [self initWithRepo:repo bundleIDs:bundleIDs versionSpecifier:NO];
+}
+
+- (id)init
+{
+    return [self initWithRepo:nil requirements:nil];
+}
+
+- (void) dealloc
+{
     [self stopMonitoring];
 }
 
-- (BOOL) isFinished
+- (void) addBundleAvailabilityMonitorItemForRequest:(ZincBundleAvailabilityRequirement*)request;
 {
-    return self.totalProgress == 1.0f;
+    ZincBundleAvailabilityMonitorActivityItem* item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:self request:request];
+    [super addItem:item];
+    self.itemsByBundleID[request.bundleID] = item;
+}
+
+- (NSArray*) bundleIDs
+{
+    return [self.itemsByBundleID allKeys];
+}
+
+- (ZincBundleAvailabilityMonitorActivityItem*) activityItemForBundleID:(NSString*)bundleID
+{
+    return self.itemsByBundleID[bundleID];
 }
 
 - (void) monitoringDidStart
@@ -101,14 +88,6 @@
                                                  name:ZincRepoTaskAddedNotification
                                                object:self.repo];
     
-    NSMutableDictionary* items = [NSMutableDictionary dictionaryWithCapacity:[self.bundleIDs count]];
-    for (NSString* bundleID in self.bundleIDs) {
-        ZincBundleAvailabilityMonitorItem* item = [[[ZincBundleAvailabilityMonitorItem alloc] initWithMonitor:self bundleID:bundleID] autorelease];
-        [items setObject:item forKey:bundleID];
-    }
-    
-    self.myItems = items;
-
     NSArray* existingTasks = [self.repo tasks];
     for (ZincTask* task in existingTasks) {
         [self associateTaskWithActivityItem:task];
@@ -124,55 +103,105 @@
 
 - (void) associateTaskWithActivityItem:(ZincTask*)task
 {
+    // Check if it's a bundle update task
     if (![task.taskDescriptor.resource isZincBundleResource]) return;
     if (![task.taskDescriptor.action isEqualToString:ZincTaskActionUpdate]) return;
-    
-    NSString* taskBundleID = [task.resource zincBundleId];
-    
-    if (![self.bundleIDs containsObject:taskBundleID]) return;
-    if ([self.repo stateForBundleWithId:taskBundleID] == ZincBundleStateAvailable) return;
-    
-    ZincBundleAvailabilityMonitorItem* item = [self.myItems objectForKey:taskBundleID];
-    item.task = task;
+
+    // Check if it's one of the bundles were interested in
+    NSString* taskBundleID = [task.resource zincBundleID];
+    ZincBundleAvailabilityMonitorActivityItem* item = self.itemsByBundleID[taskBundleID];
+    if (item == nil) return;
+
+    // Check if its going to be updating the right version
+    if (![self.repo bundleResource:task.taskDescriptor.resource satisfiesVersionSpecifier:item.requirement.versionSpecifier]) return;
+
+    item.operation = task;
 }
 
 - (void) taskAdded:(NSNotification*)note
 {
-    ZincTask* task = [[note userInfo] objectForKey:ZincRepoTaskNotificationTaskKey];
+    ZincTask* task = [note userInfo][ZincRepoTaskNotificationTaskKey];
     [self associateTaskWithActivityItem:task];
 }
 
 @end
 
 
-@implementation ZincBundleAvailabilityMonitorItem
+@implementation ZincBundleAvailabilityRequirement
 
-@synthesize bundleID = _bundleID;
-
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor bundleID:(NSString*)bundleID
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
-    self = [super initWithActivityMonitor:monitor];
+    self = [super init];
     if (self) {
-        _bundleID = [bundleID retain];
+        _bundleID = bundleID;
+        _versionSpecifier = versionSpecifier;
     }
     return self;
 }
 
-- (void) dealloc
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)requireCatalogVersion
 {
-    [_bundleID release];
-    [super dealloc];
+    return [[self alloc] initWithBundleID:bundleID versionSpecifier:requireCatalogVersion];
+}
+
++ (instancetype) requirementForBundleID:(NSString*)bundleID
+{
+    return [self requirementForBundleID:bundleID versionSpecifier:NO];
+}
+
+@end
+
+
+@implementation ZincBundleAvailabilityMonitorActivityItem
+
+- (id)initWithMonitor:(ZincBundleAvailabilityMonitor *)monitor request:(ZincBundleAvailabilityRequirement *)requirement
+{
+    self = [super initWithActivityMonitor:monitor];
+    if (self) {
+        _requirement = requirement;
+    }
+    return self;
+}
+
+- (ZincRepo*) repo
+{
+    ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
+    return bundleMon.repo;
+}
+
+- (BOOL) hasDesiredVersionForBundleID:(NSString*)bundleID
+{
+    return [[self repo] hasSpecifiedVersion:self.requirement.versionSpecifier forBundleID:bundleID];
+}
+
+- (BOOL) hasDesiredBundleVersion
+{
+    return [self hasDesiredVersionForBundleID:self.requirement.bundleID];
 }
 
 - (void) update
 {
     if ([self isFinished]) return;
 
-    ZincBundleAvailabilityMonitor* bundleMon = (ZincBundleAvailabilityMonitor*)self.monitor;
-    ZincBundleState state = [bundleMon.repo stateForBundleWithId:self.bundleID];
-
-    if (state == ZincBundleStateAvailable) {
+    if ([self hasDesiredBundleVersion]) {
+        
         [self finish];
+
+    } else if (self.operation != nil) {
+
+        if ([self.operation isFinished]) {
+
+            // the task finished, but the desired version is still not
+            // available. nil out the task and wait for another one
+            [self updateCurrentProgressValue:0 maxProgressValue:self.operation.maxProgressValue];
+            self.operation = nil;
+            self.currentProgressValue = 0;
+
+        } else {
+
+            // the operation is valid, use it's progress
+            [self updateFromProgress:self.operation];
+        }
     }
 }
 

@@ -6,34 +6,23 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "ZincBundleCloneTask.h"
-#import "ZincTask+Private.h"
 #import "ZincBundleCloneTask+Private.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincResource.h"
-#import "ZincEvent.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincManifest.h"
 #import "ZincTaskActions.h"
 
 @implementation ZincBundleCloneTask
-
-@synthesize fileManager = _fileManager;
 
 + (NSString *)action
 {
     return ZincTaskActionUpdate;
 }
 
-- (void)dealloc
+- (NSString*) bundleID
 {
-    [_fileManager release];
-    [super dealloc];
-}
-
-- (NSString*) bundleId
-{
-    return [self.resource zincBundleId];
+    return [self.resource zincBundleID];
 }
 
 - (ZincVersion) version
@@ -43,13 +32,13 @@
 
 - (NSString*) getTrackedFlavor
 {
-    return [self.repo.index trackedFlavorForBundleId:self.bundleId];
+    return [self.repo.index trackedFlavorForBundleID:self.bundleID];
 }
 
 - (void) setUp
 {
-    self.fileManager = [[[NSFileManager alloc] init] autorelease];
-    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId]];
+    self.fileManager = [[NSFileManager alloc] init];
+    [self addEvent:[ZincBundleCloneBeginEvent bundleCloneBeginEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleID]];
 }
 
 - (void) completeWithSuccess:(BOOL)success
@@ -60,7 +49,7 @@
         [self.repo registerBundle:self.resource status:ZincBundleStateNone];
     }
 
-    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleId success:success]];
+    [self addEvent:[ZincBundleCloneCompleteEvent bundleCloneCompleteEventForBundleResource:self.resource source:ZINC_EVENT_SRC() context:self.bundleID success:success]];
     
     self.finishedSuccessfully = success;
 }
@@ -71,7 +60,7 @@
     
     NSString* flavor = [self getTrackedFlavor];
     
-    NSString* bundlePath = [self.repo pathForBundleWithId:self.bundleId version:self.version];
+    NSString* bundlePath = [self.repo pathForBundleWithID:self.bundleID version:self.version];
     NSArray* allFiles = [manifest filesForFlavor:flavor];
     
     // Build a list of all dirs needed for the bundle

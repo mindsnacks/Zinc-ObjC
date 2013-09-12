@@ -7,9 +7,9 @@
 //
 
 #import "ZincMaintenanceTask.h"
+
+#import "ZincInternals.h"
 #import "ZincTask+Private.h"
-#import "ZincEvent.h"
-#import "ZincTaskDescriptor.h"
 
 
 @implementation ZincMaintenanceTask
@@ -22,7 +22,7 @@
 
 + (ZincTaskDescriptor*) taskDescriptorForResource:(NSURL*)resource
 {
-    return [ZincTaskDescriptor taskDescriptorWithResource:resource action:[self action] method:[self taskMethod]];
+    return [[ZincTaskDescriptor alloc] initWithResource:resource action:[self action] method:[self taskMethod]];
 }
 
 - (void) main

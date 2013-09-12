@@ -6,17 +6,19 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincDownloadTask.h"
-#import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
-#import "ZincHTTPRequestOperation.h"
-#import "ZincEvent.h"
-#import "ZincHTTPRequestOperation.h"
+
+#import "ZincInternals.h"
+#import "ZincTask+Private.h"
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
+#import "ZincHTTPRequestOperation.h"
+
+// TODO: break this dependency?
+#import "ZincRepo+Private.h"
 
 @interface ZincDownloadTask()
-@property (nonatomic, retain, readwrite) id context;
+@property (nonatomic, strong, readwrite) id context;
 @property (atomic, readwrite) BOOL trackingProgress;
 @end
 
@@ -32,13 +34,13 @@
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    ZincHTTPRequestOperation* requestOp = [[[ZincHTTPRequestOperation alloc] initWithRequest:request] autorelease];
+    ZincHTTPRequestOperation* requestOp = [[ZincHTTPRequestOperation alloc] initWithRequest:request];
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
     }
     
-    if (self.repo.executeTasksInBackgroundEnabled) {
+    if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // TODO: break this dependency?
         [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
     }
     
@@ -60,9 +62,12 @@
     
     static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
     __block NSTimeInterval lastTimeEventSentDate = 0;
+    __weak typeof(self) weakself = self;
     
     [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-        
+
+        __weak typeof(weakself) strongself = weakself;
+
         NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
         NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
         
@@ -71,7 +76,7 @@
         if (enoughTimePassedSinceLastNotification || downloadCompleted)
         {
             lastTimeEventSentDate = currentDate;
-            [self updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
+            [strongself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
         }
     }];
 }
@@ -96,8 +101,7 @@
 
 - (void)dealloc
 {
-    [_context release];
-    [super dealloc];
+    [self.httpRequestOperation waitUntilFinished];
 }
 
 @end

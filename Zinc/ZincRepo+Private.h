@@ -7,50 +7,68 @@
 //
 
 #import "ZincRepo.h"
+
 #import "ZincRepoIndex.h"
+#import "ZincRepoBundleManager.h"
+#import "ZincRepoTaskManager.h"
+
+#define kZincRepoDefaultObjectDownloadCount (5)
+#define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
+#define kZincRepoDefaultCacheCount (20)
+#define kZincRepoDefaultBundleUpdatePriority (NSOperationQueuePriorityVeryHigh)
 
 @class ZincRepoIndex;
 @class ZincCatalog;
-@class ZincTask;
-@class ZincTaskDescriptor;
 @class ZincManifest;
-@class ZincKSReachability;
 
 @interface ZincRepo ()
 
-- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)operationQueue reachability:(ZincKSReachability*)reachability;
-@property (nonatomic, retain) ZincRepoIndex* index;
+- (id) initWithURL:(NSURL*)fileURL networkOperationQueue:(NSOperationQueue*)networkQueue reachability:(KSReachability*)reachability;
+@property (nonatomic, strong) ZincRepoIndex* index;
+@property (nonatomic, strong) NSFileManager* fileManager;
+@property (nonatomic, strong) ZincRepoTaskManager* taskManager;
 
 - (NSURL*) indexURL;
 
 - (void) completeInitialization;
 
 - (void) registerSource:(NSURL*)source forCatalog:(ZincCatalog*)catalog;
-- (NSArray*) sourcesForCatalogId:(NSString*)catalogId;
+- (NSArray*) sourcesForCatalogID:(NSString*)catalogID;
 
 - (void) registerCatalog:(ZincCatalog*)catalog;
 - (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
 
-- (void) addManifest:(ZincManifest*)manifest forBundleId:(NSString*)bundleId;
-- (BOOL) removeManifestForBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
-- (BOOL) hasManifestForBundleIdentifier:(NSString*)bundleId version:(ZincVersion)version;
-- (ZincManifest*) manifestWithBundleId:(NSString*)bundleId version:(ZincVersion)version error:(NSError**)outError;
-- (NSString*) pathForManifestWithBundleId:(NSString*)identifier version:(ZincVersion)version;
+- (void) addManifest:(ZincManifest*)manifest forBundleID:(NSString*)bundleID;
+- (BOOL) removeManifestForBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
+- (BOOL) hasManifestForBundleIDentifier:(NSString*)bundleID version:(ZincVersion)version;
+- (ZincManifest*) manifestWithBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;
+- (NSString*) pathForManifestWithBundleID:(NSString*)identifier version:(ZincVersion)version;
 
 #pragma mark Bundles
 
-- (ZincVersion) versionForBundleId:(NSString*)bundleId distribution:(NSString*)distro;
+/*
+ * TODO: document the difference between this and catalogVersionForBundleID
+ */
+- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/*
+ * TODO: document the difference between this and versionForBundleID
+ */
+- (ZincVersion) catalogVersionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
+
+- (BOOL) bundleResource:(NSURL*)bundleResource satisfiesVersionSpecifier:(ZincBundleVersionSpecifier)versionSpec;
 
 - (void) registerBundle:(NSURL*)bundleResource status:(ZincBundleState)status;
+- (void) deregisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion;
 - (void) deregisterBundle:(NSURL*)bundleResource;
 
-- (NSString*) pathForBundleWithId:(NSString*)bundleId version:(ZincVersion)version;
+- (NSString*) pathForBundleWithID:(NSString*)bundleID version:(ZincVersion)version;
 
 // includes all currently tracked and open bundles
 // returns NSURLs (ZincBundleDescriptors)
 - (NSSet*) activeBundles;
 
-- (void) bundleWillDeallocate:(ZincBundle*)bundle;
+- (ZincTask*) queueBundleCloneTaskForBundle:(NSURL*)bundleRes priority:(NSOperationQueuePriority)priority;
 
 #pragma mark Files
 
@@ -61,12 +79,6 @@
 // clone tasks can copy the file from a local path instead of downloading from the catalog
 - (NSString*) externalPathForFileWithSHA:(NSString*)sha;
 
-#pragma mark Tasks
-
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor;
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input;
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input dependencies:(NSArray*)dependencies;
-- (void) addOperation:(NSOperation*)operation;
 
 #pragma mark Paths
 
@@ -77,6 +89,9 @@
 #pragma mark Events
 
 - (void) logEvent:(ZincEvent*)event;
+
+- (void) postNotification:(NSString*)notificationName userInfo:(NSDictionary*)userInfo;
+
 
 @end
 

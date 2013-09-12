@@ -7,25 +7,20 @@
 //
 
 #import "ZincArchiveExtractOperation.h"
-#import "ZincErrors.h"
+
+#import "ZincInternals.h"
 #import "ZincRepo+Private.h"
 #import "NSFileManager+ZincTar.h"
-#import "NSFileManager+Zinc.h"
-#import "ZincUtils.h"
 #import "ZincSHA.h"
 #import "ZincGzip.h"
 
 @interface ZincArchiveExtractOperation ()
-@property (nonatomic, assign, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSString* archivePath;
-@property (nonatomic, retain, readwrite) NSError* error;
+@property (nonatomic, weak, readwrite) ZincRepo* repo;
+@property (nonatomic, copy, readwrite) NSString* archivePath;
+@property (nonatomic, copy, readwrite) NSError* error;
 @end
 
 @implementation ZincArchiveExtractOperation
-
-@synthesize repo = _repo;
-@synthesize archivePath = _archivePath;
-@synthesize error = _error;
 
 - (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath;                
 {
@@ -37,17 +32,11 @@
     return self;
 }
 
-- (void)dealloc 
-{
-    [_archivePath release];
-    [_error release];
-    [super dealloc];
-}
 
 - (void) main
 {
     NSError* error = nil;
-    NSFileManager* fm = [[[NSFileManager alloc] init] autorelease];
+    NSFileManager* fm = [[NSFileManager alloc] init];
 
     NSString* untarDir = [ZincGetUniqueTemporaryDirectory() stringByAppendingPathComponent:
                           [[self.archivePath lastPathComponent] stringByDeletingPathExtension]];
@@ -104,18 +93,16 @@
 
         if (![actualSHA isEqualToString:expectedSHA]) {
             
-            NSDictionary* info = [NSDictionary dictionaryWithObjectsAndKeys:
-                                  expectedSHA, @"expectedSHA",
-                                  actualSHA, @"actualSHA",
-                                  self.archivePath, @"archivePath",
-                                  nil];
+            NSDictionary* info = @{@"expectedSHA": expectedSHA,
+                                  @"actualSHA": actualSHA,
+                                  @"archivePath": self.archivePath};
             self.error = ZincErrorWithInfo(ZINC_ERR_SHA_MISMATCH, info);
             cleanup();
             return;
 
         } else {
         
-            if (![fm moveItemAtPath:fullPath toPath:targetPath error:&error]) {
+            if (![fm zinc_moveItemAtPath:fullPath toPath:targetPath error:&error]) {
                 self.error = error;
                 cleanup();
                 return;

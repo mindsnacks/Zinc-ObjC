@@ -9,11 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "ZincRepo.h"
 
+@class ZincAgent;
 
-//@class ViewController;
-
-@interface AppDelegate : UIResponder <UIApplicationDelegate, ZincRepoDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate, ZincRepoEventListener>
 
 @property (strong, nonatomic) UIWindow *window;
+
+@property (strong, nonatomic) ZincAgent *zincAgent;
 
 @end

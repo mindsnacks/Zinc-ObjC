@@ -1,0 +1,16 @@
+//
+//  libZinc.xcconfig
+//  Zinc-ObjC
+//
+//  Created by Andy Mroczkowski on 2/15/13.
+//  Copyright (c) 2013 MindSnacks. All rights reserved.
+//
+
+#include "Base.xcconfig"
+
+// Put headers in a place that is convenient for other libraries to find
+PUBLIC_HEADERS_FOLDER_PATH = include/$(TARGET_NAME)
+
+// Xcode needs this to find archived headers if SKIP_INSTALL is set
+HEADER_SEARCH_PATHS = "$(OBJROOT)/UninstalledProducts/include" $(HEADER_SEARCH_PATHS)
+

@@ -7,7 +7,7 @@
 //
 
 #import "BundleDetailViewController.h"
-#import "Zinc.h"
+#import <Zinc/Zinc.h>
 
 #import "ZincRepo+Private.h"
 #import "ZincManifest.h"
@@ -49,11 +49,11 @@
     [super viewDidLoad];
     
     
-    self.title = [NSString stringWithFormat:@"%@-%d", [ZincBundle bundleNameFromBundleId:self.bundle.bundleId], self.bundle.version];
+    self.title = [NSString stringWithFormat:@"%@-%d", ZincBundleNameFromBundleID(self.bundle.bundleID), self.bundle.version];
 
-    [self.bundle.repo bundleWithId:self.bundle.bundleId];
+    [self.bundle.repo bundleWithID:self.bundle.bundleID];
     
-    ZincManifest* manifest = [self.repo manifestWithBundleId:self.bundle.bundleId version:self.bundle.version error:NULL];
+    ZincManifest* manifest = [self.repo manifestWithBundleID:self.bundle.bundleID version:self.bundle.version error:NULL];
     
     self.files = [[manifest allFiles] sortedArrayUsingSelector:@selector(compare:)];
     
@@ -70,7 +70,7 @@
 //    NSString* audioPath = [bundle pathForResource:@"audio/more-adv-numbers-20" ofType:@"caf"];
 //    NSLog(@"audioPath: %@", audioPath);
 //    
-//    NSLog(@"id %@", self.bundle.bundleId);
+//    NSLog(@"id %@", self.bundle.bundleID);
 }
 
 - (void) viewDidAppear:(BOOL)animated

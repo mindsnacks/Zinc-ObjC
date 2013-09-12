@@ -6,23 +6,21 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#ifndef _ZINC_
-#define _ZINC_
-
-#import "ZincGlobals.h"
-#import "ZincErrors.h"
-#import "ZincRepo.h"
-#import "ZincBundle.h"
-#import "ZincEvent.h"
-#import "ZincResource.h"
-#import "ZincBundleTrackingRequest.h"
-#import "ZincDownloadPolicy.h"
-#import "ZincTaskRef.h"
-#import "ZincUtils.h"
-#import "UIImage+Zinc.h"
-
-#import "ZincTaskMonitor.h"
-#import "ZincRepoMonitor.h"
-#import "ZincBundleAvailabilityMonitor.h"
-
-#endif
+#import <Zinc/ZincGlobals.h>
+#import <Zinc/ZincErrors.h>
+#import <Zinc/ZincRepo.h>
+#import <Zinc/ZincAgent.h>
+#import <Zinc/ZincBundle.h>
+#import <Zinc/ZincEvent.h>
+#import <Zinc/ZincResource.h>
+#import <Zinc/ZincBundleTrackingRequest.h>
+#import <Zinc/ZincDownloadPolicy.h>
+#import <Zinc/ZincOperation.h>
+#import <Zinc/ZincTask.h>
+#import <Zinc/ZincTaskRef.h>
+#import <Zinc/ZincUtils.h>
+#import <Zinc/UIImage+Zinc.h>
+#import <Zinc/ZincActivityMonitor.h>
+#import <Zinc/ZincTaskMonitor.h>
+#import <Zinc/ZincRepoMonitor.h>
+#import <Zinc/ZincBundleAvailabilityMonitor.h>

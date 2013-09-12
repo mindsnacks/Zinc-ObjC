@@ -8,37 +8,32 @@
 
 
 #import "ZincManifest.h"
+
 #import "ZincJSONSerialization.h"
 #import "ZincResource.h"
 
 @interface ZincManifest ()
-@property (nonatomic, retain) NSMutableDictionary* files;
+@property (nonatomic, strong) NSMutableDictionary* files;
 @end
 
 @implementation ZincManifest
-
-@synthesize bundleName = _bundleName;
-@synthesize catalogId = _catalogId;
-@synthesize version = _version;
-@synthesize files = _files;
-@synthesize flavors = _flavors;
 
 - (id) initWithDictionary:(NSDictionary*)dict;
 {
     self = [super init];
     if (self) {
-        self.bundleName = [dict objectForKey:@"bundle"];
-        self.catalogId = [dict objectForKey:@"catalog"];
-        self.version = [[dict objectForKey:@"version"] integerValue];
-        self.files = [dict objectForKey:@"files"];
-        self.flavors = [dict objectForKey:@"flavors"];
+        self.bundleName = dict[@"bundle"];
+        self.catalogID = dict[@"catalog"];
+        self.version = [dict[@"version"] integerValue];
+        self.files = dict[@"files"];
+        self.flavors = dict[@"flavors"];
         
         if (self.flavors == nil) {  // try to build flavors for files
             
             NSMutableSet* flavorSet = [NSMutableSet set];
             
             [self.files enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-                NSArray* fileFlavors = [obj objectForKey:@"flavors"];
+                NSArray* fileFlavors = obj[@"flavors"];
                 if (fileFlavors != nil) {
                     [flavorSet addObjectsFromArray:fileFlavors];
                 }
@@ -71,32 +66,24 @@
     if (manifestDict == nil) {
         return nil;
     }
-    ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
+    ZincManifest* manifest = [[ZincManifest alloc] initWithDictionary:manifestDict];
     return manifest;
 }
 
-- (void)dealloc
-{
-    [_catalogId release];
-    [_bundleName release];
-    [_files release];
-    [_flavors release];
-    [super dealloc];
-}
 
-- (NSString*) bundleId
+- (NSString*) bundleID
 {
-    return [NSString stringWithFormat:@"%@.%@", self.catalogId, self.bundleName];
+    return [NSString stringWithFormat:@"%@.%@", self.catalogID, self.bundleName];
 }
 
 - (NSString*) shaForFile:(NSString*)path
 {
-    return [[self.files objectForKey:path] objectForKey:@"sha"];
+    return (self.files)[path][@"sha"];
 }
 
 - (NSArray*) formatsForFile:(NSString*)path
 {
-    return [[[self.files objectForKey:path] objectForKey:@"formats"] allKeys];
+    return [(self.files)[path][@"formats"] allKeys];
 }
 
 - (NSString*) bestFormatForFile:(NSString*)path withPreferredFormats:(NSArray*)preferredFormats
@@ -112,21 +99,18 @@
 
 - (NSString*) bestFormatForFile:(NSString*)path
 {
-    return [self bestFormatForFile:path withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
+    return [self bestFormatForFile:path withPreferredFormats:@[ZincFileFormatGZ, ZincFileFormatRaw]];
 }
 
 - (NSUInteger) sizeForFile:(NSString*)path format:(NSString*)format 
 {
-    return [[[[[self.files objectForKey:path] 
-               objectForKey:@"formats"] 
-              objectForKey:format ]
-             objectForKey:@"size"] unsignedIntegerValue];
+    return [(self.files)[path][@"formats"][format][@"size"] unsignedIntegerValue];
 }
 
 - (NSArray*) flavorsForFile:(NSString*)path
 {
-    NSDictionary* fileDict = [self.files objectForKey:path];
-    return [fileDict objectForKey:@"flavors"];
+    NSDictionary* fileDict = (self.files)[path];
+    return fileDict[@"flavors"];
 }
 
 - (NSArray*) allFiles
@@ -161,25 +145,18 @@
 
 - (NSURL*) bundleResource
 {
-    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
+    return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
 }
 
 - (NSDictionary*) dictionaryRepresentation
 {            
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:3];
-    [d setObject:self.bundleName forKey:@"bundle"];
-    [d setObject:self.catalogId forKey:@"catalog"];
-    [d setObject:[NSNumber numberWithInteger:self.version] forKey:@"version"];
-    [d setObject:self.files forKey:@"files"];
-    if (self.flavors != nil) [d setObject:self.flavors forKey:@"flavors"];
+    d[@"bundle"] = self.bundleName;
+    d[@"catalog"] = self.catalogID;
+    d[@"version"] = @(self.version);
+    d[@"files"] = self.files;
+    if (self.flavors != nil) d[@"flavors"] = self.flavors;
     return d;
 }
-
-// TODO: refactor
-- (NSData*) jsonRepresentation:(NSError**)outError
-{
-    return [ZincJSONSerialization dataWithJSONObject:[self dictionaryRepresentation] options:0 error:outError];
-}
-
 
 @end

@@ -8,22 +8,21 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincModelObject.h"
 
-@interface ZincCatalog : NSObject
+@interface ZincCatalog : ZincModelObject
 
 - (id) init;
 
-@property (nonatomic, retain) NSString* identifier;
+@property (nonatomic, strong, readonly) NSString* identifier;
 @property (nonatomic, assign) ZincFormat format;
-@property (nonatomic, retain) NSDictionary* bundleInfoById;
+@property (nonatomic, strong, readonly) NSDictionary* bundleInfoById;
 
 #pragma mark -
-- (ZincVersion) versionForBundleId:(NSString*)bundleName distribution:(NSString*)distro;
+- (ZincVersion) versionForBundleID:(NSString*)bundleName distribution:(NSString*)distro;
 
 #pragma mark Encoding
 - (id) initWithDictionary:(NSDictionary*)dict;
-- (NSDictionary*) dictionaryRepresentation;
-- (NSData*) jsonRepresentation:(NSError**)outError;
 
 @end
 

@@ -8,14 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+/**
+ `UIImage (Zinc)` - extensions for `UIImage`.
+
+ This class is part of the *Zinc Public API*.
+ */
 @interface UIImage (Zinc)
 
-/* bundle can be an NSBundle or ZincBundle */
+/**
+ Replacement for `[UIImage imageNamed:]` that will look in the specified bundle.
+ 
+ @param name The image name
+ @param bundle A bundle, which can be an NSBundle or a ZincBundle
+ */
 + (UIImage *)zinc_imageNamed:(NSString *)name inBundle:(id)bundle;
-
-#pragma mark Private
-
-+ (NSString*) zinc1xPathForImagePath:(NSString*)path;
-+ (NSString*) zinc2xPathForImagePath:(NSString*)path;
 
 @end

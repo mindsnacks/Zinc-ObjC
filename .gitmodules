@@ -1,0 +1,3 @@
+[submodule "Dependencies/External/KSReachability"]
+	path = Dependencies/External/KSReachability
+	url = git@github.com:mindsnacks/KSReachability.git

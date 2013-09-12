@@ -9,6 +9,22 @@
 #import "ZincUtils.h"
 #import <sys/xattr.h> // for AddSkipBackupAttributeToFile
 
+ZincBundleState ZincBundleStateFromName(NSString* name)
+{
+    if ([name isEqualToString:ZincBundleStateName[ZincBundleStateNone]]) {
+        return ZincBundleStateNone;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateAvailable]]) {
+        return ZincBundleStateAvailable;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateCloning]]) {
+        return ZincBundleStateCloning;
+    } else if ([name isEqualToString:ZincBundleStateName[ZincBundleStateDeleting]]) {
+        return ZincBundleStateDeleting;
+    }
+
+    NSCAssert(NO, @"unknown bundle state name: %@", name);
+    return ZincBundleStateInvalid;
+}
+
 int ZincAddSkipBackupAttributeToFileWithPath(NSString * path)
 {
     u_int8_t b = 1;
@@ -25,7 +41,7 @@ NSString* ZincGetApplicationDocumentsDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        dir = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
         if([dir length] == 0) {
             [NSException raise:@"Documents dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
@@ -38,7 +54,7 @@ NSString* ZincGetApplicationCacheDirectory(void)
 {
     static NSString* dir = nil;
     if (dir == nil) {
-        dir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) objectAtIndex:0] retain];
+        dir = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES)[0];
         if([dir length] == 0) {
             [NSException raise:@"Caches dir not found"
                         format:@"NSSearchPathForDirectoriesInDomains returned an empty dir"];
@@ -47,9 +63,9 @@ NSString* ZincGetApplicationCacheDirectory(void)
     return dir;
 }
 
-NSString* ZincCatalogIdFromBundleId(NSString* bundleId)
+NSString* ZincCatalogIDFromBundleID(NSString* bundleID)
 {
-    NSArray* comps = [bundleId componentsSeparatedByString:@"."];
+    NSArray* comps = [bundleID componentsSeparatedByString:@"."];
     NSString* sourceId = [[comps subarrayWithRange:NSMakeRange(0, [comps count]-1)] componentsJoinedByString:@"."];
     return sourceId;
 }
@@ -58,18 +74,18 @@ NSString* ZincGetUniqueTemporaryDirectory(void)
 {
     NSString* tmpFormat = [NSTemporaryDirectory() stringByAppendingPathComponent:@"zinc.XXXXXXXX"];
     char* tmpDirCstring = mkdtemp((char*)[tmpFormat cStringUsingEncoding:NSUTF8StringEncoding]);
-    NSString* tmpDir = [NSString stringWithCString:tmpDirCstring encoding:NSUTF8StringEncoding];
+    NSString* tmpDir = @(tmpDirCstring);
     return tmpDir;
 }
 
-NSString* ZincBundleNameFromBundleId(NSString* bundleId)
+NSString* ZincBundleNameFromBundleID(NSString* bundleID)
 {
-    return [[bundleId componentsSeparatedByString:@"."] lastObject];
+    return [[bundleID componentsSeparatedByString:@"."] lastObject];
 }
 
-NSString* ZincBundleIdFromCatalogIdAndBundleName(NSString* catalogId, NSString* bundleName)
+NSString* ZincBundleIDFromCatalogIDAndBundleName(NSString* catalogID, NSString* bundleName)
 {
-    return [NSString stringWithFormat:@"%@.%@", catalogId, bundleName];
+    return [NSString stringWithFormat:@"%@.%@", catalogID, bundleName];
 }
 
 NSString* ZincBundleIDFromBundleDescriptor(NSString* bundleDescriptor)

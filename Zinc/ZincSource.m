@@ -7,18 +7,19 @@
 //
 
 #import "ZincSource.h"
+
 #import "ZincCatalog.h"
 
 @implementation NSURL (ZincSource)
 
 - (NSURL*) urlForCatalogIndex
 {
-    return [[NSURL URLWithString:@"index.json.gz" relativeToURL:self] absoluteURL];
+    return [[NSURL URLWithString:@"catalog.json.gz" relativeToURL:self] absoluteURL];
 }
 
 - (NSMutableURLRequest*) getRequestForURL:(NSURL*)url
 {
-    NSMutableURLRequest* req = [[[NSMutableURLRequest alloc] initWithURL:url] autorelease];
+    NSMutableURLRequest* req = [[NSMutableURLRequest alloc] initWithURL:url];
     [req setHTTPMethod:@"GET"];
     
 //    [req setCachePolicy:NSURLRequestReloadIgnoringLocalAndRemoteCacheData];
@@ -53,7 +54,7 @@
 
 - (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog
 {
-    NSInteger version = [catalog versionForBundleId:name distribution:distro];
+    NSInteger version = [catalog versionForBundleID:name distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
     }

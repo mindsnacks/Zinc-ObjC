@@ -6,9 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincManifestTests.h"
 #import "ZincManifest.h"
 #import "ZincJSONSerialization.h"
+
+
+@interface ZincManifestTests : SenTestCase
+@end
+
 
 @implementation ZincManifestTests
 
@@ -328,7 +332,7 @@
 - (ZincManifest*) _manifestForDictionaryRepresentationTest
 {
     ZincManifest* manifest = [[[ZincManifest alloc] init] autorelease];
-    manifest.catalogId = @"com.mindsnacks.food";
+    manifest.catalogID = @"com.mindsnacks.food";
     manifest.bundleName = @"pork";
     manifest.version = 5;
     return manifest;
@@ -349,7 +353,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogId, @"catalog id doesn't match");
+    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogID, @"catalog id doesn't match");
 }
 
 - (void) testDictionaryRepresentation_version

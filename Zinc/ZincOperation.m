@@ -7,6 +7,7 @@
 //
 
 #import "ZincOperation.h"
+#import "NSOperation+Zinc.h"
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
 
@@ -45,7 +46,11 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 
 - (long long) currentProgressValue
 {
-    return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] longLongValue] + ([self isFinished] ? 1 : 0);
+    if ([self isFinished]) {
+        return [self maxProgressValue];
+    } else {
+        return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] longLongValue];
+    }
 }
 
 - (long long) maxProgressValue
@@ -53,9 +58,15 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] longLongValue] + 1;
 }
 
-- (float) progress
+- (float) progressPercentage
 {
-    return ZincProgressCalculate(self);
+    return ZincProgressPercentageCalculate(self);
+}
+
+- (void) addDependency:(NSOperation *)op
+{
+    NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Dependency: %@", self, op);
+    [super addDependency:op];
 }
 
 @end

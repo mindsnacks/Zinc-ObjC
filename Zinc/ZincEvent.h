@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 #pragma mark Event Types
 
 typedef enum {
@@ -54,51 +53,27 @@ extern NSString *const kZincEventArchiveExtractCompleteNotification;
 extern NSString *const kZincEventMaintenanceBeginNotification;
 extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
-
-#pragma mark Event Source Utils
-
-#define ZINC_EVENT_SRC() _ZincEventSrcMake(self, __PRETTY_FUNCTION__, __LINE__)
-
-static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int line)
-{
-    return @{
-             @"object": [NSString stringWithFormat:@"%p", obj],
-             @"class": NSStringFromClass([obj class]),
-             @"function": [NSString stringWithFormat:@"%s", func],
-             @"line": [NSString stringWithFormat:@"%d", line],
-             };
-}
-
-
 #pragma mark -
 
 @interface ZincEvent : NSObject
 
-- (id) initWithType:(ZincEventType)type source:(NSDictionary*)source;
-- (id) initWithType:(ZincEventType)type source:(NSDictionary*)source attributes:(NSDictionary*)attributes;;
-
 + (NSString*) name;
 
 @property (nonatomic, assign, readonly) ZincEventType type;
-@property (nonatomic, retain, readonly) NSDate* timestamp;
-@property (nonatomic, retain, readonly) NSDictionary* attributes;
+@property (nonatomic, copy, readonly) NSDate* timestamp;
+@property (nonatomic, copy, readonly) NSDictionary* attributes;
 
 @end
 
 @interface ZincErrorEvent : ZincEvent
 
-- (id) initWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
-@property (nonatomic, retain, readonly) NSError* error;
-
-+ (id) eventWithError:(NSError*)error source:(NSDictionary*)source;
-+ (id) eventWithError:(NSError*)error source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
+@property (readonly, strong) NSError* error;
 
 @end
 
 
-@interface ZincDeleteEvent : ZincEvent 
+@interface ZincDeleteEvent : ZincEvent
 
-+ (id) deleteEventForPath:(NSString*)path source:(NSDictionary*)source;
 @property (readonly) NSString* path;
 
 @end
@@ -106,7 +81,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincDownloadBeginEvent : ZincEvent 
 
-+ (id) downloadBeginEventForURL:(NSURL*)url;
 @property (readonly) NSURL* url;
 
 @end
@@ -114,7 +88,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size;
 @property (readonly) NSURL* url;
 @property (readonly) NSInteger size;
 
@@ -123,8 +96,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincBundleCloneBeginEvent : ZincEvent 
 
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource context:(id)context;
-+ (id) bundleCloneBeginEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;
 
@@ -133,25 +104,21 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincBundleCloneCompleteEvent : ZincEvent 
 
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource source:(NSDictionary*)source context:(id)context success:(BOOL)success;
-+ (id) bundleCloneCompleteEventForBundleResource:(NSURL*)bundleResource context:(id)context success:(BOOL)success;
 @property (readonly) NSURL* bundleResource;
 @property (readonly) id context;
 
 @end
 
 
-@interface ZincAchiveExtractBeginEvent : ZincEvent 
+@interface ZincArchiveExtractBeginEvent : ZincEvent 
 
-+ (id) archiveExtractBeginEventForResource:(NSURL*)archiveResource;
 @property (readonly) NSURL* archiveResource;
 
 @end
 
 
-@interface ZincAchiveExtractCompleteEvent : ZincEvent 
+@interface ZincArchiveExtractCompleteEvent : ZincEvent 
 
-+ (id) archiveExtractCompleteEventForResource:(NSURL*)archiveResource context:(id)context;
 @property (readonly) NSURL* archiveResource;
 @property (readonly) id context;
 
@@ -160,7 +127,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincMaintenanceBeginEvent : ZincEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)category;
 @property (readonly) NSString* action;
 
 @end
@@ -168,7 +134,6 @@ static inline NSDictionary* _ZincEventSrcMake(id obj, char const * func, int lin
 
 @interface ZincMaintenanceCompleteEvent : ZincEvent
 
-+ (id) maintenanceEventWithAction:(NSString*)action;
 @property (readonly) NSString* action;
 
 @end

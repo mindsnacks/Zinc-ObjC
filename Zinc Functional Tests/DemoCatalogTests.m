@@ -6,15 +6,18 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincFunctionalTestCase.h"
+#import "ZincRepoFunctionalTestCase.h"
 #import "ZincRepo+Private.h"
+#import "ZincAgent.h"
 #import "ZincJSONSerialization.h"
+#import "ZincBundle.h"
+#import "ZincUtils.h"
 
 #define DEMO_CATALOG_URL [NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]
 #define DEMO_CATALOG_ID @"com.mindsnacks.demo1"
 #define DEFAULT_TIMEOUT_SECONDS 60
 
-@interface DemoCatalogTests : ZincFunctionalTestCase
+@interface DemoCatalogTests : ZincRepoFunctionalTestCase
 
 @end
 
@@ -48,11 +51,11 @@
 {
     [self refreshCatalog];
 
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -68,7 +71,7 @@
     
     // -- Verify
     
-    ZincBundleState bundleState = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState, ZincBundleStateAvailable, @"bundle should be available");
 }
 
@@ -79,11 +82,11 @@
 {
     [self refreshCatalog];
  
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"dogs");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"dogs");
     
     // -- Update bundle @ master
 
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -96,12 +99,12 @@
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
-    ZincBundle *masterBundle = [self.zincRepo bundleWithId:bundleID];
+    ZincBundle *masterBundle = [self.zincRepo bundleWithID:bundleID];
     GHTestLog(@"master bundle version: %d", masterBundle.version);
     
     // -- Update bundle @ test
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"test" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"test"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -114,7 +117,7 @@
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
-    ZincBundle *testBundle = [self.zincRepo bundleWithId:bundleID];
+    ZincBundle *testBundle = [self.zincRepo bundleWithID:bundleID];
     GHTestLog(@"test bundle version: %d", testBundle.version);
     
     // -- Verify
@@ -132,7 +135,7 @@
 {
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Import
     
@@ -143,12 +146,12 @@
     BOOL registerSuccess = [self.zincRepo registerExternalBundleWithManifestPath:manifestPath bundleRootPath:resourcePath error:&error];;
     GHAssertTrue(registerSuccess, @"error: %@", error);
 
-    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState state = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(state, ZincBundleStateAvailable, @"should be available");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -164,10 +167,10 @@
     
     // -- Verify
     
-    ZincBundleState bundleState = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState, ZincBundleStateAvailable, @"bundle should be available");
     
-    ZincBundle *catsBundle = [self.zincRepo bundleWithId:bundleID];
+    ZincBundle *catsBundle = [self.zincRepo bundleWithID:bundleID];
     GHAssertFalse(catsBundle.version == 0, @"should not be v0");
     
     UIImage *image1 = [UIImage imageWithContentsOfFile:[catsBundle pathForResource:@"kucing.jpeg"]];
@@ -181,11 +184,11 @@
 {
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -200,31 +203,33 @@
     
     // -- Verify Available
     
-    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState1, ZincBundleStateAvailable, @"bundle should be available");
     
-    ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
-    NSString* bundleRoot = [self.zincRepo pathForBundleWithId:bundleID version:version];
+    ZincVersion version = [self.zincRepo versionForBundleID:bundleID distribution:@"master"];
+    NSString* bundleRoot = [self.zincRepo pathForBundleWithID:bundleID version:version];
 
     BOOL rootExists1 = [[NSFileManager defaultManager] fileExistsAtPath:bundleRoot];
     GHAssertTrue(rootExists1, @"bundle should exist");
     
     // -- Stop tracking
     
-    [self.zincRepo stopTrackingBundleWithId:bundleID];
+    [self.zincRepo stopTrackingBundleWithID:bundleID];
+
+    // -- Clean to remove old bundle
 
     [self prepare];
-    [self.zincRepo refreshWithCompletion:^{
+    [self.zincRepo cleanWithCompletion:^{
         [self notify:kGHUnitWaitStatusSuccess forSelector:_cmd];
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
-    
+
     // -- Wait for the bundle delete task to run
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
 
     // -- Verify Not Available
     
-    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertNotEquals(bundleState2, ZincBundleStateAvailable, @"bundle should not be available");
     
     BOOL rootExists2 = [[NSFileManager defaultManager] fileExistsAtPath:bundleRoot];
@@ -237,11 +242,11 @@
     
     NSError* error = nil;
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -255,15 +260,15 @@
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
-    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState1, ZincBundleStateAvailable, @"bundle should be available");
 
     [self.zincRepo suspendAllTasksAndWaitExecutingTasksToComplete];
 
     // -- Add a dummy symlink to cause the bundle to be cleaned
     
-    ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
-    NSString* bundleRoot = [self.zincRepo pathForBundleWithId:bundleID version:version];
+    ZincVersion version = [self.zincRepo versionForBundleID:bundleID distribution:@"master"];
+    NSString* bundleRoot = [self.zincRepo pathForBundleWithID:bundleID version:version];
     
     NSString* symlinkPath = [bundleRoot stringByAppendingPathComponent:@"dummy"];
     
@@ -303,15 +308,14 @@
         
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
     
     [self.zincRepo waitForInitialization];
     
-    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateNone, @"bundle should not be available");
 }
 
@@ -319,11 +323,11 @@
 {
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
     
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -336,13 +340,13 @@
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
-    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState1, ZincBundleStateAvailable, @"bundle should be available");
     
     // -- Add a dummy symlink to cause the bundle to be cleaned
     
-    ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
-    NSString* bundleRoot = [self.zincRepo pathForBundleWithId:bundleID version:version];
+    ZincVersion version = [self.zincRepo versionForBundleID:bundleID distribution:@"master"];
+    NSString* bundleRoot = [self.zincRepo pathForBundleWithID:bundleID version:version];
     
     NSString* symlinkPath = [bundleRoot stringByAppendingPathComponent:@"dummy"];
     
@@ -357,15 +361,14 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
-    
+
     // -- Wait for initialization
 
     [self.zincRepo waitForInitialization];
 
-    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
 }
 
@@ -375,11 +378,11 @@
     
     NSError* error = nil;
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -393,7 +396,7 @@
     }];
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
     
-    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState1 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState1, ZincBundleStateAvailable, @"bundle should be available");
     
     // -- Reset the zinc repo
@@ -431,15 +434,14 @@
 
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
 
     [self.zincRepo waitForInitialization];
     
-    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState bundleState2 = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(bundleState2, ZincBundleStateAvailable, @"bundle should still be available");
 }
 
@@ -449,11 +451,11 @@
     
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -511,8 +513,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
     
     // -- Wait for initialization
@@ -527,11 +528,11 @@
 {
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -561,8 +562,7 @@
     
     self.zincRepo = [ZincRepo repoWithURL:[NSURL fileURLWithPath:[[self.zincRepo url] path]] error:&error];
     GHAssertNil(error, @"error: %@", error);
-    self.zincRepo.delegate = self;
-    self.zincRepo.autoRefreshInterval = 0;
+    self.zincRepo.eventListener = self;
     [self.zincRepo resumeAllTasks];
 
     // -- Wait for initialization
@@ -581,11 +581,11 @@
 {
     [self refreshCatalog];
     
-    NSString *bundleID = ZincBundleIdFromCatalogIdAndBundleName(DEMO_CATALOG_ID, @"cats");
+    NSString *bundleID = ZincBundleIDFromCatalogIDAndBundleName(DEMO_CATALOG_ID, @"cats");
     
     // -- Clone bundle
     
-    [self.zincRepo beginTrackingBundleWithId:bundleID distribution:@"master" automaticallyUpdate:NO];
+    [self.zincRepo beginTrackingBundleWithID:bundleID distribution:@"master"];
 
     [self prepare];
     [self.zincRepo updateBundleWithID:bundleID completionBlock:^(NSArray *errors) {
@@ -601,18 +601,18 @@
 
     // -- Remove bundle files
     
-    ZincVersion version = [self.zincRepo versionForBundleId:bundleID distribution:@"master"];
-    NSString* bundleRoot = [self.zincRepo pathForBundleWithId:bundleID version:version];
+    ZincVersion version = [self.zincRepo versionForBundleID:bundleID distribution:@"master"];
+    NSString* bundleRoot = [self.zincRepo pathForBundleWithID:bundleID version:version];
     
     NSError* deleteError = nil;
     if (![[NSFileManager defaultManager] removeItemAtPath:bundleRoot error:&deleteError]) {
         GHFail(@"error: %@", deleteError);
     }
     
-    ZincBundle* bundle = [self.zincRepo bundleWithId:bundleID];
+    ZincBundle* bundle = [self.zincRepo bundleWithID:bundleID];
     GHAssertNil(bundle, @"bundle should be nil");
     
-    ZincBundleState state = [self.zincRepo stateForBundleWithId:bundleID];
+    ZincBundleState state = [self.zincRepo stateForBundleWithID:bundleID];
     GHAssertEquals(state, ZincBundleStateNone, @"should not be available");
 }
 

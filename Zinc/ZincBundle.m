@@ -6,32 +6,27 @@
 //  Copyright (c) 2011 MindSnacks. All rights reserved.
 //
 
-#import "ZincBundle.h"
 #import "ZincBundle+Private.h"
-#import "ZincResource.h"
-#import "ZincRepo+Private.h"
-#import "ZincUtils.h"
+
+#import "ZincInternals.h"
+#import "ZincRepoBundleManager.h"
 
 @interface ZincBundle ()
-@property (nonatomic, retain, readwrite) ZincRepo* repo;
-@property (nonatomic, retain, readwrite) NSString* bundleId;
+@property (nonatomic, strong, readwrite) ZincRepoBundleManager* bundleManager;
+@property (nonatomic, strong, readwrite) ZincRepo* repo;
+@property (nonatomic, copy, readwrite) NSString* bundleID;
 @property (nonatomic, assign, readwrite) ZincVersion version;
-@property (nonatomic, retain, readwrite) NSURL* url;
-@property (nonatomic, retain, readwrite) NSBundle* bundle;
+@property (nonatomic, strong, readwrite) NSURL* url;
+@property (nonatomic, strong, readwrite) NSBundle* bundle;
 @end
 
 @implementation ZincBundle
 
-@synthesize repo = _repo;
-@synthesize bundleId = _bundleId;
-@synthesize version = _version;
-@synthesize url = _url;
-@synthesize bundle = _bundle;
-
-- (id) initWithRepo:(ZincRepo*)repo bundleId:(NSString*)bundleId version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
+- (id) initWithRepoBundleManager:(ZincRepoBundleManager*)bundleManager bundleID:(NSString*)bundleID version:(ZincVersion)version bundleURL:(NSURL*)bundleURL
 {
-    self.repo = repo;
-    self.bundleId = bundleId;
+    self.bundleManager = bundleManager;
+    self.repo = self.bundleManager.repo; // make sure we retain the repo as well
+    self.bundleID = bundleID;
     self.version = version;
     self.url = bundleURL;
     self.bundle = [NSBundle bundleWithURL:bundleURL];
@@ -46,19 +41,14 @@
 
 - (void) dealloc 
 {
-    [self.repo bundleWillDeallocate:self];
-    [_repo release];
-    [_bundle release];
-    [_bundleId release];
-    [_url release];
-    [super dealloc];
+    [self.bundleManager bundleWillDeallocate:self];
 }
 
 - (NSURL*) resource
 {
-    return [NSURL zincResourceForBundleWithId:self.bundleId version:self.version];
+    return [NSURL zincResourceForBundleWithID:self.bundleID version:self.version];
 }
- 
+
 - (BOOL)isKindOfClass:(Class)aClass
 {
     return aClass == [ZincBundle class] || aClass == [NSBundle class];
@@ -66,7 +56,6 @@
 
 - (NSBundle*) NSBundle
 {
-//    return [NSBundle bundleWithURL:self.url];
     return (NSBundle*)self;
 }
 
@@ -82,38 +71,47 @@
     [anInvocation invoke];
 }
 
-
 #pragma mark -
 
-+ (NSString*) catalogIdFromBundleId:(NSString*)bundleId
++ (NSString*) descriptorForBundleID:(NSString*)bundleID version:(ZincVersion)version
 {
-    return ZincCatalogIdFromBundleId(bundleId);
+    return [NSString stringWithFormat:@"%@-%d", bundleID, version];
 }
-
-+ (NSString*) bundleNameFromBundleId:(NSString*)bundleId
-{
-    return ZincBundleNameFromBundleId(bundleId);
-}
-
-+ (NSString*) descriptorForBundleId:(NSString*)bundleId version:(ZincVersion)version
-{
-    return [NSString stringWithFormat:@"%@-%d", bundleId, version];
-}
-
-@end
-
-
-
-@implementation NSBundle (ZincBundle)
 
 - (NSURL *)URLForResource:(NSString *)name
 {
+    // NOTE: this is re-implemented for the NSBundle (ZincBundle) category.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
     return [NSURL fileURLWithPath:
             [self pathForResource:name]];
 }
 
 - (NSString *)pathForResource:(NSString *)name
 {
+    // NOTE: this is re-implemented for the NSBundle (ZincBundle) category.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
+    NSString* base = [name stringByDeletingPathExtension];
+    NSString* ext = [name pathExtension];
+    return [(NSBundle *)self pathForResource:base ofType:ext];
+}
+
+@end
+
+
+@implementation NSBundle (ZincBundle)
+
+- (NSURL *)URLForResource:(NSString *)name
+{
+    // NOTE: this is re-implemented for the ZincBundle object.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
+    return [NSURL fileURLWithPath:
+            [self pathForResource:name]];
+}
+
+- (NSString *)pathForResource:(NSString *)name
+{
+    // NOTE: this is re-implemented for the ZincBundle object.
+    // It was the only way to avoid warnings, compile errors, and runtime errors.
     NSString* base = [name stringByDeletingPathExtension];
     NSString* ext = [name pathExtension];
     return [self pathForResource:base ofType:ext];

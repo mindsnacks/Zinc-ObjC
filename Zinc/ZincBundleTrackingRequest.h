@@ -8,41 +8,46 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ `ZincBundleTrackingRequest`
+
+ This class is part of the *Zinc Public API*.
+ */
 @interface ZincBundleTrackingRequest : NSObject
 
 /**
- * @discussion Bundle ID to track.
+ Bundle ID to track.
  */
 @property (nonatomic, copy) NSString* bundleID;
 
 /**
- * @discussion Distribution name to track.
+ Distribution name to track.
  */
 @property (nonatomic, copy) NSString* distribution;
 
 /**
- * @discussion Bundle flavor name to track.
+ Bundle flavor name to track.
  */
 @property (nonatomic, copy) NSString* flavor;
 
 /**
- * @discussion Enable or disable automatic updates.
+ Convenience constructor that includes all options.
+
+ @param bundleID The bundle ID
+ @param distribution The distribution name to track.
+ @param flavor The bundle flavor.
  */
-@property (nonatomic, assign) BOOL updateAutomatically;
++ (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
+                                      distribution:(NSString*)distribution
+                                            flavor:(NSString*)flavor;
 
 /**
- * @discussion Convenience constructor that includes all options.
- */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                    distribution:(NSString*)distribution
-                                                          flavor:(NSString*)flavor
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate;
+ Convenience constructor for tracking requests with no flavor.
 
-/**
- * @discussion Convenience constructor for tracking requests with no flavor.
+ @param bundleID The bundle ID
+ @param distribution The distribution name to track.
  */
-+ (ZincBundleTrackingRequest*) bundleTrackingRequestWithBundleID:(NSString*)bundleID
-                                                    distribution:(NSString*)distribution
-                                             automaticallyUpdate:(BOOL)automaticallyUpdate;
++ (instancetype) bundleTrackingRequestWithBundleID:(NSString*)bundleID
+                                      distribution:(NSString*)distribution;
 
 @end

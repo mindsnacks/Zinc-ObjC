@@ -6,10 +6,14 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincRepoIndexTests.h"
 #import "ZincRepoIndex.h"
 #import "ZincResource.h"
 #import "ZincTrackingInfo.h"
+
+
+@interface ZincRepoIndexTests : SenTestCase
+@end
+
 
 @implementation ZincRepoIndexTests
 
@@ -45,16 +49,16 @@
 - (void) testAddTrackedBundle
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod" updateAutomatically:YES];
-    [i1 setTrackingInfo:ref forBundleId:@"com.foo.bundle"];
-    STAssertTrue([[i1 trackedDistributionForBundleId:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
+    ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod"];
+    [i1 setTrackingInfo:ref forBundleID:@"com.foo.bundle"];
+    STAssertTrue([[i1 trackedDistributionForBundleID:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
     
     [self _testDictionaryRoundtrip:i1];
 }
 
 - (void) testAvailableBundle
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateAvailable forBundle:bundleRes];
@@ -67,7 +71,7 @@
 
 - (void) testUnavailableBundle
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateCloning forBundle:bundleRes];
@@ -80,7 +84,7 @@
 
 - (void) testSetBundleState
 {
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:@"com.foo.bundle" version:1];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     [i1 setState:ZincBundleStateCloning forBundle:bundleRes];
@@ -95,7 +99,7 @@
 - (void) testReturnsNilTrackingRefIfBundleIsNotTracked
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    ZincTrackingInfo* ref = [i1 trackingInfoForBundleId:@"foo.bundle"];
+    ZincTrackingInfo* ref = [i1 trackingInfoForBundleID:@"foo.bundle"];
     STAssertNil(ref, @"tracking ref should be nil");
 }
 
@@ -122,7 +126,7 @@
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] initWithFormat:2] autorelease];
     NSString* bundleID = @"com.foo.pants";
     ZincVersion version = 5;
-    NSURL* bundleRes = [NSURL zincResourceForBundleWithId:bundleID version:version];
+    NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
     [i1 setState:ZincBundleStateAvailable forBundle:bundleRes];
     
     NSDictionary* d = [i1 dictionaryRepresentation];

@@ -6,8 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "UIImageZincTests.h"
 #import "UIImage+Zinc.h"
+#import "UIImage+ZincHelpers.h"
+
+
+@interface UIImageZincTests : SenTestCase
+@end
+
 
 @implementation UIImageZincTests
 

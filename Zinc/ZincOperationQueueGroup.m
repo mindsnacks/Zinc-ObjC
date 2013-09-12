@@ -7,25 +7,26 @@
 //
 
 #import "ZincOperationQueueGroup.h"
+#import "NSOperation+Zinc.h"
 
 @interface ZincOperationQueueGroup ()
-@property (atomic, retain) NSMutableDictionary* infoByClassName;
+@property (atomic, strong) NSMutableDictionary* infoByClassName;
 @property (atomic) BOOL mySuspended;
-@property (atomic, retain) NSOperationQueue* defaultQueue;
+@property (atomic, strong) NSOperationQueue* defaultQueue;
 @end
 
 @interface ZincOperationQueueGroupInfo : NSObject
-@property (nonatomic, retain) NSString* className;
+@property (nonatomic, strong) NSString* className;
 @property (nonatomic, assign) NSInteger maxConcurrentOperationCount;
 @property (nonatomic, assign) BOOL isBarrier;
-@property (nonatomic, retain) NSOperationQueue* queue;
+@property (nonatomic, strong) NSOperationQueue* queue;
 @end
 
 @implementation ZincOperationQueueGroupInfo
 
 + (ZincOperationQueueGroupInfo*) infoForClassName:(NSString*)className maxConcurrentOperationCount:(NSInteger)count
 {
-    ZincOperationQueueGroupInfo* info = [[[ZincOperationQueueGroupInfo alloc] init] autorelease];
+    ZincOperationQueueGroupInfo* info = [[ZincOperationQueueGroupInfo alloc] init];
     info.className = className;
     info.maxConcurrentOperationCount = count;
     info.isBarrier = NO;
@@ -35,7 +36,7 @@
 
 + (ZincOperationQueueGroupInfo*) barrierInfoForClassName:(NSString*)className
 {
-    ZincOperationQueueGroupInfo* info = [[[ZincOperationQueueGroupInfo alloc] init] autorelease];
+    ZincOperationQueueGroupInfo* info = [[ZincOperationQueueGroupInfo alloc] init];
     info.className = className;
     info.maxConcurrentOperationCount = 1;
     info.isBarrier = YES;
@@ -53,43 +54,28 @@
 
 - (void)setQueue:(NSOperationQueue *)queue
 {
-    [queue retain];
-    [_queue release];
     _queue = queue;
     
     [_queue setMaxConcurrentOperationCount:self.maxConcurrentOperationCount];
 }
 
-- (void)dealloc
-{
-    [_className release];
-    [_queue release];
-    [super dealloc];
-}
 
 @end
 
 
 @implementation ZincOperationQueueGroup
 
-@synthesize infoByClassName = _queuesByClass;
-@synthesize mySuspended = _mySuspended;
-
 - (id)init
 {
     self = [super init];
     if (self) {
         self.infoByClassName = [NSMutableDictionary dictionary];
-        self.defaultQueue = [[[NSOperationQueue alloc] init] autorelease];
+        self.defaultQueue = [[NSOperationQueue alloc] init];
+        [self setSuspended:YES];
     }
     return self;
 }
 
-- (void)dealloc
-{
-    self.infoByClassName = nil;
-    [super dealloc];
-}
 
 
 #pragma mark Entry Points
@@ -125,12 +111,18 @@
             deps = [self getAllBarrierOperations];
         }
         for (NSOperation* dep in deps) {
-            [theOperation addDependency:dep];
+
+            // only add a new dependency if the target doesn't already depend
+            // on this operation to avoid cycles
+
+            if (![[dep zinc_allDependencies] containsObject:theOperation]) {
+                [theOperation addDependency:dep];
+            }
         }
         
         if (info != nil) {
             if (info.queue == nil) {
-                info.queue = [[[NSOperationQueue alloc] init] autorelease];
+                info.queue = [[NSOperationQueue alloc] init];
                 [info.queue setSuspended:self.isSuspended];
             }
             [info.queue addOperation:theOperation];
@@ -185,7 +177,7 @@
 - (ZincOperationQueueGroupInfo*) infoForClass:(Class)theClass
 {
     NSString* className = NSStringFromClass(theClass);
-    return [self.infoByClassName objectForKey:className];
+    return (self.infoByClassName)[className];
 }
 
 - (NSArray*) getAllQueues
