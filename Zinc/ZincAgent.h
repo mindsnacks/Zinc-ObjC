@@ -8,18 +8,42 @@
 
 #import <Foundation/Foundation.h>
 
+
 @class ZincRepo;
 @class ZincDownloadPolicy;
 
+
+/**
+ `ZincAgent`
+
+ This class is part of the *Zinc Public API*.
+ */
 @interface ZincAgent : NSObject
 
+///---------------------
+/// @name Initialization
+//----------------------
+
+/**
+ Get the `ZincAgent` for the specified repo. This will always return the
+ same `ZincAgent` object for the same `ZincRepo`.
+ */
 + (instancetype) agentForRepo:(ZincRepo*)repo;
 
+/**
+ The `ZincRepo` for this agent.
+ */
 @property (nonatomic, strong, readonly) ZincRepo *repo;
 
 
-#pragma mark -
-#pragma mark Refresh
+///--------------
+/// @name Refresh
+//---------------
+
+/**
+ Interval at which catalogs are updated and automatic clone tasks started.
+ */
+@property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
 
 /**
  * Manually trigger refresh of sources and bundles.
@@ -27,23 +51,24 @@
 - (void) refresh;
 
 /**
- * Manually trigger refresh of sources and bundles, with completion block.
+ Manually trigger refresh of sources and bundles, with completion block.
+ 
+ @param completionBlock a block to call when update attempt is finished
  */
-- (void) refreshWithCompletion:(dispatch_block_t)completion;
-
-/**
- * Interval at which catalogs are updated and automatic clone tasks started.
- */
-@property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
+- (void) refreshWithCompletion:(dispatch_block_t)completionBlock;
 
 /**
  Refresh all sources. This is the same as calling directly on the Zinc repo.
+ 
+ @param completionBlock a block to call when update attempt is finished
  */
-- (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
+- (void) refreshSourcesWithCompletion:(dispatch_block_t)completionBlock;
 
 /**
- @discussion Update all bundles
+ Attempt to update all bundles exactly once.
+
+ @param completionBlock a block to call when update attempt is finished
  */
-- (void) refreshBundlesWithCompletion:(dispatch_block_t)completion;
+- (void) refreshBundlesWithCompletion:(dispatch_block_t)completionBlock;
 
 @end
