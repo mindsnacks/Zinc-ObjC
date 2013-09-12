@@ -11,12 +11,41 @@
 @class ZincRepo;
 @class ZincBundleAvailabilityMonitorActivityItem;
 
+
+typedef NS_ENUM(NSInteger, ZincBundleAvailabilityRequirementVersionSpecifier) {
+    /**
+     Any version, including bootstrapped "unversioned" bundles will be accepted.
+     */
+    ZincBundleAvailabilityRequirementVersionSpecifierAny,
+
+    /**
+     Require that the version is up to date with the tracked distro version
+     in the catalog.
+     */
+    ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly,
+};
+
+
+@interface ZincBundleAvailabilityRequirement : NSObject
+
+@property (nonatomic, readonly, copy) NSString* bundleID;
+@property (nonatomic, readonly, assign) ZincBundleAvailabilityRequirementVersionSpecifier versionSpecifier;
+
+- (id) initWithBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)versionSpecifier;
+
++ (instancetype) requirementForBundleID:(NSString*)bundleID versionSpecifier:(ZincBundleAvailabilityRequirementVersionSpecifier)versionSpecifier;
+
++ (instancetype) requirementForBundleID:(NSString*)bundleID;
+
+@end
+
+
 @interface ZincBundleAvailabilityMonitor : ZincCompletableActivityMonitor
 
 /**
  Designated Initializer
  */
-- (id)initWithRepo:(ZincRepo*)repo requests:(NSArray*)requests;
+- (id)initWithRepo:(ZincRepo*)repo requirements:(NSArray*)requirements;
 
 /**
  @param requireCatalogVersion this is used for all bundleIDs
@@ -38,22 +67,8 @@
 @end
 
 
-@interface ZincBundleAvailabilityMonitorRequest : NSObject
-
-@property (nonatomic, readonly, copy) NSString* bundleID;
-@property (nonatomic, readonly, assign) BOOL requireCatalogVersion;
-
-- (id) initWithBundleID:(NSString*)bundleID requireCatalogVersion:(BOOL)requireCatalogVersion;
-
-+ (instancetype) requestForBundleID:(NSString*)bundleID requireCatalogVersion:(BOOL)requireCatalogVersion;
-
-+ (instancetype) requestForBundleID:(NSString*)bundleID;
-
-@end
-
-
 @interface ZincBundleAvailabilityMonitorActivityItem : ZincActivityItem
 
-@property (nonatomic, retain, readonly) ZincBundleAvailabilityMonitorRequest* request;
+@property (nonatomic, retain, readonly) ZincBundleAvailabilityRequirement* requirement;
 
 @end

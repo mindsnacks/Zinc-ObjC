@@ -37,7 +37,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
     context(@"newly created", ^{
 
         beforeEach(^{
-            ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:NO];
+            ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierAny];
             item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
         });
 
@@ -63,7 +63,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
             __block id operation;
 
             beforeEach(^{
-                ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:NO];
+                ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierAny];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 operation = [ZincOperation mock];
                 item.operation = operation;
@@ -128,7 +128,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         context(@"catalog version is not required", ^{
 
             beforeEach(^{
-                ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:NO];
+                ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierAny];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 [item update];
             });
@@ -141,7 +141,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         context(@"catalog version is  required", ^{
 
             beforeEach(^{
-                ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:YES];
+                ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 [item update];
             });
@@ -162,7 +162,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         context(@"catalog version is not required", ^{
 
             beforeEach(^{
-                ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:NO];
+                ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierAny];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 [item update];
             });
@@ -175,7 +175,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         context(@"catalog version is  required", ^{
 
             beforeEach(^{
-                ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:YES];
+                ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 [item update];
             });
@@ -199,8 +199,8 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
     ZincVersion const currentVersion = 2;
 
     void (^initializeMonitor)(BOOL) = ^(BOOL requireCatalogVersion) {
-        ZincBundleAvailabilityMonitorRequest* req = [ZincBundleAvailabilityMonitorRequest requestForBundleID:bundleID requireCatalogVersion:requireCatalogVersion];
-        monitor = [[ZincBundleAvailabilityMonitor alloc] initWithRepo:repo requests:@[req]];
+        ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:requireCatalogVersion];
+        monitor = [[ZincBundleAvailabilityMonitor alloc] initWithRepo:repo requirements:@[req]];
     };
 
     // ----
@@ -213,13 +213,13 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
     context(@"monitoring a single bundle", ^{
 
         beforeEach(^{
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
         });
 
         it(@"should have one activity item", ^{
             [[[monitor items] should] haveCountOf:1];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-            [[item.request.bundleID should] equal:bundleID];
+            [[item.requirement.bundleID should] equal:bundleID];
         });
     });
 
@@ -230,7 +230,7 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateNone) withArguments:bundleID];
             [repo stub:@selector(tasks) andReturn:@[]];
 
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
         });
 
         it(@"should not be finished when updated", ^{
@@ -273,13 +273,13 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
         });
 
         it(@"should finish if the catalog version is not required", ^{
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
             [monitor update];
             [[theValue([monitor.progress isFinished]) should] beTrue];
         });
 
         it(@"should finish if the catalog version is required", ^{
-            initializeMonitor(YES);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly);
             [monitor update];
             [[theValue([monitor.progress isFinished]) should] beTrue];
         });
@@ -293,13 +293,13 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
         });
 
         it(@"should finish if the catalog version is not required", ^{
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
             [monitor update];
             [[theValue([monitor.progress isFinished]) should] beTrue];
         });
 
         it(@"should not finish if the catalog version is required", ^{
-            initializeMonitor(YES);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly);
             [monitor update];
             [[theValue([monitor.progress isFinished]) should] beFalse];
         });
@@ -316,7 +316,7 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             task = [mockFactory mockBundleCloneTaskForBundleID:bundleID version:currentVersion];
             [repo stub:@selector(tasks) andReturn:@[task]];
 
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
         });
 
         it(@"should associate the task when started", ^{
@@ -340,14 +340,14 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
         });
 
         it(@"should associate the task when started if it doesn't require current version", ^{
-            initializeMonitor(NO);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierAny);
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
             [[[item operation] should] beIdenticalTo:task];
         });
 
         it(@"should not associate the task when started if it requires current version", ^{
-            initializeMonitor(YES);
+            initializeMonitor(ZincBundleAvailabilityRequirementVersionSpecifierCatalogOnly);
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
             [[[item operation] should] beNil];

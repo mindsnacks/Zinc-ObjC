@@ -14,6 +14,6 @@
 /**
  Designated initializer
  */
-- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor request:(ZincBundleAvailabilityMonitorRequest*)request;
+- (id) initWithMonitor:(ZincBundleAvailabilityMonitor*)monitor request:(ZincBundleAvailabilityRequirement*)request;
 
 @end
