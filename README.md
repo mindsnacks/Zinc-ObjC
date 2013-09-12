@@ -1,6 +1,6 @@
 # Zinc-ObjC
 
-[![Continuous Integration status](https://secure.travis-ci.org/travis-ci/travis-lint.png)](http://travis-ci.org/travis-ci/travis-lint)
+[![Build Status](https://travis-ci.org/mindsnacks/Zinc-ObjC.png?branch=master)](https://travis-ci.org/mindsnacks/Zinc-ObjC)
 
 Objective-C client for Zinc asset distribution system. Common use cases for
 Zinc are for downloading content purchased through an in-app-purchase
