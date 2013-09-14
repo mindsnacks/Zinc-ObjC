@@ -18,6 +18,7 @@
 #import "NSError+Zinc.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
+#import "NSString+Zinc.h"
 
 // Models
 #import "ZincBundle.h"
