@@ -64,7 +64,7 @@
     NSArray* tasks = self.repo.tasks;
     for (ZincTask* task in tasks) {
         if ([self.taskPredicate evaluateWithObject:task]) {
-            ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self operation:task];
+            ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self subject:task];
             [self addItem:item];
         }
     }
@@ -87,7 +87,7 @@
 
 - (void) addTask:(ZincTask*)task
 {
-    ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self operation:task];
+    ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self subject:task];
     [self addItem:item];
 }
 

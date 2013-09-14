@@ -31,7 +31,7 @@ describe(@"ZincTaskMonitor", ^{
         it(@"creates an activity item", ^{
             [[[monitor items] should] haveCountOf:1];
             ZincActivityItem* item = [[monitor items] objectAtIndex:0];
-            [[item.operation should] beIdenticalTo:taskRef];
+            [[(NSObject*)item.subject should] beIdenticalTo:taskRef];
         });
 
         it(@"finishes if the tasks finishes after monitoring starts", ^{

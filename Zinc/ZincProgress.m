@@ -28,6 +28,18 @@ float ZincProgressPercentageCalculate(id<ZincProgress> progress)
     self.progressPercentage = 1.0f;
 }
 
+- (void) setCurrentProgressValue:(long long)currentProgressValue
+{
+    _currentProgressValue = currentProgressValue;
+    [self updateFromProgress:self];
+}
+
+- (void) setMaxProgressValue:(long long)maxProgressValue
+{
+    _maxProgressValue = maxProgressValue;
+    [self updateFromProgress:self];
+}
+
 - (BOOL) isFinished
 {
     return self.progressPercentage == 1.0f;

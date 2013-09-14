@@ -29,6 +29,8 @@ typedef void (^ZincProgressBlock)(id source, long long currentProgress, long lon
  */
 - (float) progressPercentage;
 
+- (BOOL) isFinished;
+
 @end
 
 
@@ -54,7 +56,15 @@ typedef void (^ZincProgressBlock)(id source, long long currentProgress, long lon
 
 @interface ZincProgressItem : NSObject <ZincObservableProgress>
 
-- (BOOL) isFinished;
+/**
+ @discussion Is Key-Value Observable
+ */
+@property (nonatomic, assign, readwrite) long long currentProgressValue;
+
+/**
+ @discussion Is Key-Value Observable
+ */
+@property (nonatomic, assign, readwrite) long long maxProgressValue;
 
 @end
 

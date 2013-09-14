@@ -28,11 +28,11 @@
 
 @interface ZincActivityItem ()
 
-- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor operation:(ZincOperation*)operation;
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincProgress>)subject;
 
 - (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor;
 
-@property (nonatomic, readwrite, strong) ZincOperation* operation;
+@property (nonatomic, readwrite, strong) id<ZincProgress> subject;
 
 - (void) update;
 

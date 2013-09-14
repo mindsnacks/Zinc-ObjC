@@ -10,8 +10,6 @@
 
 @interface ZincProgressItem ()
 
-@property (nonatomic, assign, readwrite) long long currentProgressValue;
-@property (nonatomic, assign, readwrite) long long maxProgressValue;
 @property (nonatomic, assign, readwrite) float progressPercentage;
 
 /**

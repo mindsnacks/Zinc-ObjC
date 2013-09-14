@@ -77,8 +77,13 @@ describe(@"ZincCompletableActivityMonitor", ^{
             const float overallProgressPercentage = (float)overallCurrentProgressValue / overallMaxProgressValue;
 
             beforeEach(^{
-                [item1 updateCurrentProgressValue:item1CurrentProgressValue maxProgressValue:item1MaxProgressValue];
-                [item2 updateCurrentProgressValue:item2CurrentProgressValue maxProgressValue:item2MaxProgressValue];
+                ZincProgressItem *subject1 = [[ZincProgressItem alloc] init];
+                [subject1 updateCurrentProgressValue:item1CurrentProgressValue maxProgressValue:item1MaxProgressValue];
+                item1.subject = subject1;
+
+                ZincProgressItem *subject2 = [[ZincProgressItem alloc] init];
+                [subject2 updateCurrentProgressValue:item2CurrentProgressValue maxProgressValue:item2MaxProgressValue];
+                item2.subject = subject2;
             });
 
             it(@"sets overall progress when updated", ^{

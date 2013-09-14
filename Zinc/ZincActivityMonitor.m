@@ -144,20 +144,20 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 @implementation ZincActivityItem
 
-- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor operation:(ZincOperation*)operation
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincProgress>)subject
 {
     NSParameterAssert(monitor);
     self = [super init];
     if (self) {
         _monitor = monitor;
-        _operation = operation;
+        _subject = subject;
     }
     return self;
 }
 
 - (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor
 {
-    return [self initWithActivityMonitor:monitor operation:nil];
+    return [self initWithActivityMonitor:monitor subject:nil];
 }
 
 - (void) setProgressPercentage:(float)progressPercentage
@@ -172,17 +172,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (void) update
 {
-    if ([self isFinished]) return;
-    if (self.operation == nil) return;
-    
-    if ([self.operation isFinished]) {
-        
-        [self finish];
-        
-    } else {
-        
-        [self updateFromProgress:self.operation];
-    }
+    [self updateFromProgress:self.subject];
 }
 
 @end

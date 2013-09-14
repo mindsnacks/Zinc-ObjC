@@ -45,10 +45,6 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
             [[theValue(item.currentProgressValue) should] equal:theValue(0)];
             [[theValue(item.maxProgressValue) should] equal:theValue(0)];
         });
-
-        it(@"should not be finished", ^{
-            [[theValue([item isFinished]) should] equal:theValue(NO)];
-        });
     });
 
     context(@"repo does not have desired version", ^{
@@ -65,7 +61,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
                 ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleVersionSpecifierAny];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
                 operation = [ZincOperation mock];
-                item.operation = operation;
+                item.subject = operation;
             });
 
             context(@"the operation is finished", ^{
@@ -76,20 +72,31 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
                     [operation stub:@selector(currentProgressValue) andReturn:theValue(operationProgressValue)];
                     [operation stub:@selector(maxProgressValue) andReturn:theValue(operationProgressValue)];
                     [operation stub:@selector(isFinished) andReturn:theValue(YES)];
-                    [item update];
-                });
-
-                it(@"should unassociate the operation", ^{
-                    [[item.operation should] beNil];
-                });
-
-                it(@"should reset progress", ^{
-                    [[theValue(item.currentProgressValue) should] equal:theValue(0)];
-                    [[theValue(item.maxProgressValue) should] equal:theValue(operationProgressValue)];
                 });
 
                 specify(^{
                     [[theValue([item isFinished]) should] beFalse];
+                });
+
+                context(@"the item is updated", ^{
+
+                    beforeEach(^{
+                        [item update];
+                    });
+
+                    specify(^{
+                        [[theValue([item isFinished]) should] beFalse];
+                    });
+
+                    it(@"should unassociate the operation", ^{
+                        [[(NSObject*)item.subject should] beNil];
+                    });
+
+                    it(@"should reset progress", ^{
+                        [[theValue(item.currentProgressValue) should] equal:theValue(0)];
+                        [[theValue(item.maxProgressValue) should] equal:theValue(operationProgressValue)];
+                    });
+
                 });
             });
 
@@ -121,7 +128,6 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
 
         beforeEach(^{
             [repo stub:@selector(hasSpecifiedVersion:forBundleID:) andReturn:theValue(YES) withArguments:any(), bundleID];
-//            [repo stub:@selector(stateForBundleWithID:) andReturn:theValue(ZincBundleStateAvailable) withArguments:any(), bundleID];
         });
 
         context(@"catalog version is not required", ^{
@@ -257,7 +263,7 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
 
                 [monitor update];
                 ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-                [[[item operation] should] beIdenticalTo:task];
+                [[(NSObject*)item.subject should] beIdenticalTo:task];
             });
         });
 
@@ -273,7 +279,7 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             it(@"should not associate the task when started", ^{
                 [monitor startMonitoring];
                 ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-                [[[item operation] should] beNil];
+                [[(NSObject *)item.subject should] beNil];
             });
         });
     });
@@ -338,7 +344,7 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
         it(@"should associate the task when started", ^{
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-            [[[item operation] should] beIdenticalTo:task];
+            [[(NSObject *)[item subject] should] beIdenticalTo:task];
         });
     });
 
@@ -363,14 +369,14 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             initializeMonitor(ZincBundleVersionSpecifierAny);
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-            [[[item operation] should] beIdenticalTo:task];
+            [[(NSObject*)item.subject should] beIdenticalTo:task];
         });
 
         it(@"should not associate the task when started if it requires current version", ^{
             initializeMonitor(ZincBundleVersionSpecifierCatalogOnly);
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-            [[[item operation] should] beNil];
+            [[(NSObject*)item.subject should] beNil];
         });
     });
 });
