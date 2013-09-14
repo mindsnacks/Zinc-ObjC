@@ -1,5 +1,7 @@
 language: objective-c
 before_install:
     - brew update
+    - brew unlink xctool
     - brew install xctool
-script: rake test
+script: xctool -workspace Zinc-ObjC.xcworkspace -scheme Zinc -sdk iphonesimulator run-tests 
+
