@@ -355,6 +355,7 @@
 		B3215E3414BFAF1700FC7FA7 /* ZincRepoIndexUpdateTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoIndexUpdateTask.h; sourceTree = "<group>"; };
 		B3215E3514BFAF1900FC7FA7 /* ZincRepoIndexUpdateTask.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoIndexUpdateTask.m; sourceTree = "<group>"; };
 		B3215E3A14BFC6DA00FC7FA7 /* ZincResourceTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincResourceTests.m; sourceTree = "<group>"; };
+		B3228CC317E5344100C2D7C7 /* ZincOperation+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincOperation+Private.h"; sourceTree = "<group>"; };
 		B326A94614B11B7E00CED8DF /* NSData+Zinc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+Zinc.h"; sourceTree = "<group>"; };
 		B326A94714B11B7E00CED8DF /* NSData+Zinc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+Zinc.m"; sourceTree = "<group>"; };
 		B327067F14B77FAB004E3244 /* ZincEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ZincEvent.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -1032,6 +1033,7 @@
 				B3E46B5514C3DF7800030349 /* ZincUtils.m */,
 				B3215E2C14BF67CB00FC7FA7 /* ZincOperationQueueGroup.h */,
 				B3215E2D14BF67CB00FC7FA7 /* ZincOperationQueueGroup.m */,
+				B3228CC317E5344100C2D7C7 /* ZincOperation+Private.h */,
 				B347EBDF15C3593500FA0649 /* ZincOperation.m */,
 				B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */,
 				B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */,
@@ -1139,7 +1141,6 @@
 				B3C5E20C17C04B0000B1EA19 /* ZincTaskRequest.h in Headers */,
 				B30716C517C1C0C8007705F3 /* ZincModelObject.h in Headers */,
 				B3A10A4817DE9BE60054D8C2 /* ZincCompletableActivityMonitor.h in Headers */,
-				B3DD9DA017C581F2003D6A21 /* UIImage+ZincHelpers.h in Headers */,
 				B32E5BB817E50A8900BDC634 /* NSString+Zinc.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

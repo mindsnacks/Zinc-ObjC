@@ -7,7 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "ZincProgress.h"
+//#import "ZincProgress.h"
+
+@protocol ZincProgress;
 
 /**
  `ZincOperation`
@@ -16,7 +18,7 @@
 
  Base `NSOperation` class for all internal Zinc operations
  */
-@interface ZincOperation : NSOperation <ZincProgress>
+@interface ZincOperation : NSOperation //<ZincProgress>
 
 /**
  Set the initial thread priority for all Zinc operations. Defaults to `kZincOperationInitialDefaultThreadPriority`
@@ -27,6 +29,8 @@
  Get the initial thread priority
  */
 + (double)defaultThreadPriority;
+
+- (id<ZincProgress>)progress;
 
 @end
 

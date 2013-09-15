@@ -6,10 +6,13 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincOperation.h"
+#import "ZincOperation+Private.h"
 #import "NSOperation+Zinc.h"
+#import "ZincProgress.h"
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
+
+#define DEFAULT_MAX_PROGRESS_VAL (100)
 
 @implementation ZincOperation
 
@@ -49,18 +52,19 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     if ([self isFinished]) {
         return [self maxProgressValue];
     } else {
-        return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] longLongValue];
+        return 0;
     }
 }
 
 - (long long) maxProgressValue
 {
-    return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] longLongValue] + 1;
+    return DEFAULT_MAX_PROGRESS_VAL;
 }
 
-- (float) progressPercentage
+- (id<ZincProgress>)progress
 {
-    return ZincProgressPercentageCalculate(self);
+    NSArray* items = [[self zincDependencies] arrayByAddingObject:self];
+    return ZincAggregatedProgressCalculate(items);
 }
 
 - (void) addDependency:(NSOperation *)op

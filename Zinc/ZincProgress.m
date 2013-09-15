@@ -8,6 +8,7 @@
 
 #import "ZincProgress+Private.h"
 
+const long long ZincProgressNotYetDetermined = -(LONG_LONG_MAX);
 
 float ZincProgressPercentageCalculate(id<ZincProgress> progress)
 {
@@ -19,8 +20,53 @@ float ZincProgressPercentageCalculate(id<ZincProgress> progress)
     return 0.0f;
 }
 
+id<ZincProgress> ZincAggregatedProgressCalculate(NSArray* items)
+{
+    ZincProgressItem* total = [[ZincProgressItem alloc] init];
+    long long totalCurrentProgress = 0;
+    long long totalMaxProgress = 0;
+    for (id<ZincProgress> item in items) {
+
+        if (([item currentProgressValue] == ZincProgressNotYetDetermined) ||
+            ([item maxProgressValue] == ZincProgressNotYetDetermined)) {
+            return total;
+        } else {
+            totalCurrentProgress += [item currentProgressValue];
+            totalMaxProgress += [item maxProgressValue];
+        }
+    }
+    [total updateCurrentProgressValue:totalCurrentProgress maxProgressValue:totalMaxProgress];
+    return total;
+}
+
+//@implementation ZincAggregatedProgressGenerator
+//
+//- (id<ZincProgress>) aggregatedProgressFromItems:(NSArray*)items
+//{
+//}
+//
+//@end
+
+//@implementation ZincAggregatedProgress
+//
+//- (void) updateProgressFromItems:(NSArray*)items
+//{
+//
+//}
+//
+//@end
 
 @implementation ZincProgressItem
+
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        _currentProgressValue = ZincProgressNotYetDetermined;
+        _maxProgressValue = ZincProgressNotYetDetermined;
+    }
+    return self;
+}
 
 - (void) finish
 {

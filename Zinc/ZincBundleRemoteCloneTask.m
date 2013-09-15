@@ -33,6 +33,11 @@
     return (double)self.httpOverheadConstant * connectionCount + totalSize;
 }
 
+- (void) determineMaxProgressFromMissingFileCount:(NSUInteger)missingCount totalMissnigSize:(NSUInteger)missingSize
+{
+    self.maxProgressValue = missingSize + (missingCount * 10);
+}
+
 - (BOOL) isProgressCalculated
 {
     return self.maxProgressValue > 0;
@@ -40,7 +45,7 @@
 
 - (long long) currentProgressValue
 {
-    if (![self isProgressCalculated]) return 0;
+    if (![self isProgressCalculated]) return ZincProgressNotYetDetermined;
     
     long long curVal = [super currentProgressValue];
     if (curVal < self.lastProgressValue) {
@@ -121,6 +126,7 @@
     if (missingSize > 0) {
         
         self.maxProgressValue = missingSize;
+        [self determineMaxProgressFromMissingFileCount:[missingFiles count] totalMissnigSize:missingSize];
         
         double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];

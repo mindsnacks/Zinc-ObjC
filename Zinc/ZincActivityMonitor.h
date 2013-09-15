@@ -70,6 +70,21 @@
 @end
 
 
+
+/**
+ `ZincAcitivySubject
+ */
+@protocol ZincActivitySubject <NSObject>
+
+@required
+
+- (id<ZincProgress>)progress;
+
+- (BOOL) isFinished;
+
+@end
+
+
 /**
  `ZincActivityItem`
 
@@ -86,7 +101,7 @@
 /**
  The subject of this item. May be nil.
  */
-@property (nonatomic, readonly, strong) id<ZincProgress> subject;
+@property (nonatomic, readonly, strong) id<ZincActivitySubject> subject;
 
 @end
 

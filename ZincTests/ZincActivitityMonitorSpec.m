@@ -32,9 +32,12 @@ describe(@"ZincActivityItem", ^{
     context(@"has an operation", ^{
 
         __block id operation;
+        __block id progress;
 
         beforeEach(^{
             operation = [ZincOperation mock];
+            progress = [ZincProgressItem mock];
+            [operation stub:@selector(progress) andReturn:progress];
             item.subject = operation;
         });
 
@@ -45,8 +48,8 @@ describe(@"ZincActivityItem", ^{
 
             beforeEach(^{
                 [operation stub:@selector(isFinished) andReturn:theValue(NO)];
-                [operation stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
-                [operation stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
+                [progress stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
+                [progress stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
             });
 
             it(@"has the right progress when updated", ^{
@@ -58,12 +61,9 @@ describe(@"ZincActivityItem", ^{
 
         context(@"operation is finished", ^{
 
-            const long long progressValue = 100;
-
             beforeEach(^{
                 [operation stub:@selector(isFinished) andReturn:theValue(YES)];
-                [operation stub:@selector(currentProgressValue) andReturn:theValue(progressValue)];
-                [operation stub:@selector(maxProgressValue) andReturn:theValue(progressValue)];
+                [operation stub:@selector(progress) andReturn:nil];
             });
 
             it(@"item is finished when updated", ^{

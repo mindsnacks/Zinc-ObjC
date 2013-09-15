@@ -144,7 +144,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 @implementation ZincActivityItem
 
-- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincProgress>)subject
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincActivitySubject>)subject
 {
     NSParameterAssert(monitor);
     self = [super init];
@@ -170,9 +170,14 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
     }
 }
 
+- (BOOL) isFinished
+{
+    return [self.subject isFinished];
+}
+
 - (void) update
 {
-    [self updateFromProgress:self.subject];
+    [self updateFromProgress:[self.subject progress]];
 }
 
 @end

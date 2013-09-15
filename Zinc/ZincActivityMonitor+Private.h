@@ -8,6 +8,9 @@
 
 
 #import "ZincActivityMonitor.h"
+#import "ZincOperation.h"
+
+@protocol ZincProgress;
 
 @interface ZincActivityMonitor ()
 
@@ -28,12 +31,18 @@
 
 @interface ZincActivityItem ()
 
-- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincProgress>)subject;
+- (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor subject:(id<ZincActivitySubject>)subject;
 
 - (id) initWithActivityMonitor:(ZincActivityMonitor*)monitor;
 
-@property (nonatomic, readwrite, strong) id<ZincProgress> subject;
+@property (nonatomic, readwrite, strong) id<ZincActivitySubject> subject;
 
 - (void) update;
+
+@end
+
+
+
+@interface ZincOperation (ZincActivitySubject) <ZincActivitySubject>
 
 @end

@@ -34,6 +34,7 @@
 #import "ZincEvent+Private.h"
 
 // Tasks
+#import "ZincTask+Private.h"
 #import "ZincArchiveDownloadTask.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincBundleDeleteTask.h"

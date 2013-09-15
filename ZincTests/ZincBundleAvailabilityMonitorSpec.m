@@ -18,12 +18,14 @@ SPEC_BEGIN(ZincBundleAvailabilityMonitorSpec)
 
 describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
 
+    __block ZincMockFactory* mockFactory;
     __block ZincBundleAvailabilityMonitorActivityItem* item;
     __block id monitor;
     __block id repo;
     NSString* const bundleID = @"com.mindsnacks.bundle1";
 
     beforeEach(^{
+        mockFactory = [[ZincMockFactory alloc] init];
         repo = [ZincRepo mock];
         monitor = [ZincBundleAvailabilityMonitor mock];
         [monitor stub:@selector(repo) andReturn:repo];
@@ -42,8 +44,8 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         });
 
         it(@"should have zero progress", ^{
-            [[theValue(item.currentProgressValue) should] equal:theValue(0)];
-            [[theValue(item.maxProgressValue) should] equal:theValue(0)];
+            [[theValue(item.currentProgressValue) should] equal:theValue(ZincProgressNotYetDetermined)];
+            [[theValue(item.maxProgressValue) should] equal:theValue(ZincProgressNotYetDetermined)];
         });
     });
 
@@ -60,7 +62,7 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
             beforeEach(^{
                 ZincBundleAvailabilityRequirement* req = [ZincBundleAvailabilityRequirement requirementForBundleID:bundleID versionSpecifier:ZincBundleVersionSpecifierAny];
                 item = [[ZincBundleAvailabilityMonitorActivityItem alloc] initWithMonitor:monitor request:req];
-                operation = [ZincOperation mock];
+                operation = [mockFactory mockOperation];
                 item.subject = operation;
             });
 
@@ -69,8 +71,8 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
                 const long long operationProgressValue = 100;
 
                 beforeEach(^{
-                    [operation stub:@selector(currentProgressValue) andReturn:theValue(operationProgressValue)];
-                    [operation stub:@selector(maxProgressValue) andReturn:theValue(operationProgressValue)];
+                    [(id)[operation progress] stub:@selector(currentProgressValue) andReturn:theValue(operationProgressValue)];
+                    [(id)[operation progress] stub:@selector(maxProgressValue) andReturn:theValue(operationProgressValue)];
                     [operation stub:@selector(isFinished) andReturn:theValue(YES)];
                 });
 
@@ -107,8 +109,8 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
 
                 beforeEach(^{
                     [operation stub:@selector(isFinished) andReturn:theValue(NO)];
-                    [operation stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
-                    [operation stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
+                    [(id)[operation progress] stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
+                    [(id)[operation progress] stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
                     [item update];
                 });
 

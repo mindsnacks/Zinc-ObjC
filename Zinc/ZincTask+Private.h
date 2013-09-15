@@ -7,6 +7,7 @@
 //
 
 #import "ZincTask.h"
+#import "ZincOperation+Private.h"
 
 @class ZincEvent;
 

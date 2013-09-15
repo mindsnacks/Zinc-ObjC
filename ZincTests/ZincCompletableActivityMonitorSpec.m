@@ -14,9 +14,11 @@ SPEC_BEGIN(ZincCompletableActivityMonitorSpec)
 
 describe(@"ZincCompletableActivityMonitor", ^{
 
-    __block ZincCompletableActivityMonitor* monitor = nil;
+    __block ZincMockFactory* mockFactory;
+    __block ZincCompletableActivityMonitor* monitor;
 
     beforeEach(^{
+        mockFactory = [[ZincMockFactory alloc] init];
         monitor = [[ZincCompletableActivityMonitor alloc] init];
         monitor.refreshInterval = 0;
     });
@@ -77,13 +79,8 @@ describe(@"ZincCompletableActivityMonitor", ^{
             const float overallProgressPercentage = (float)overallCurrentProgressValue / overallMaxProgressValue;
 
             beforeEach(^{
-                ZincProgressItem *subject1 = [[ZincProgressItem alloc] init];
-                [subject1 updateCurrentProgressValue:item1CurrentProgressValue maxProgressValue:item1MaxProgressValue];
-                item1.subject = subject1;
-
-                ZincProgressItem *subject2 = [[ZincProgressItem alloc] init];
-                [subject2 updateCurrentProgressValue:item2CurrentProgressValue maxProgressValue:item2MaxProgressValue];
-                item2.subject = subject2;
+                item1.subject = [mockFactory mockActivitySubjectWithCurrentProgressValue:item1CurrentProgressValue maxProgressValue:item1MaxProgressValue isFinished:NO];
+                item2.subject = [mockFactory mockActivitySubjectWithCurrentProgressValue:item2CurrentProgressValue maxProgressValue:item2MaxProgressValue isFinished:NO];
             });
 
             it(@"sets overall progress when updated", ^{
