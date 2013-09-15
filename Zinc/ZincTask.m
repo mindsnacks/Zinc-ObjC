@@ -10,6 +10,7 @@
 
 #import "ZincInternals.h"
 #import "ZincRepo+Private.h"
+#import "ZincOperation+Private.h"
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <UIKit/UIKit.h>
@@ -22,7 +23,7 @@ typedef id ZincBackgroundTaskIdentifier;
 @property (nonatomic, weak, readwrite) ZincRepo* repo;
 @property (nonatomic, strong, readwrite) NSURL* resource;
 @property (nonatomic, strong, readwrite) id input;
-@property (atomic, strong) NSMutableArray* myChildOperations;
+
 @property (atomic, strong) NSMutableArray* myEvents;
 @property (readwrite, nonatomic, assign) ZincBackgroundTaskIdentifier backgroundTaskIdentifier;
 @end
@@ -37,7 +38,6 @@ typedef id ZincBackgroundTaskIdentifier;
         self.resource = resource;
         self.input = input;
         self.myEvents = [NSMutableArray array];
-        self.myChildOperations = [NSMutableArray array];
     }
     return self;
 }
@@ -103,15 +103,6 @@ typedef id ZincBackgroundTaskIdentifier;
     }
 }
 
-- (void) addChildOperation:(NSOperation*)childOp
-{
-    @synchronized(self.myChildOperations) {
-        [self.myChildOperations addObject:childOp];
-    }
-    childOp.queuePriority = self.queuePriority;
-    [self addDependency:childOp];
-    // childOp may already be added as a dependency if created via queueTaskForDescriptor, but it's not a problem
-}
 
 - (ZincTask*) queueChildTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor
 {
@@ -122,18 +113,11 @@ typedef id ZincBackgroundTaskIdentifier;
 {
     if (self.isCancelled) return nil;
     
-    ZincTask* task;
-    
-    @synchronized(self) {
-        // synchronizing on self here because there is a slight race condition. The task is created
-        // and queued before it is added to myChildOperations.
-        task = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
-            request.taskDescriptor = taskDescriptor;
-            request.input = input;
-            request.parent = self;
-        }];
-        [self addChildOperation:task];
-    }
+    ZincTask* task = [self.repo.taskManager queueTaskWithRequestBlock:^(ZincTaskRequest *request) {
+        request.taskDescriptor = taskDescriptor;
+        request.input = input;
+        request.parent = self;
+    }];
 
     return task;
 }
@@ -146,20 +130,9 @@ typedef id ZincBackgroundTaskIdentifier;
     [self.repo.taskManager addOperation:operation];
 }
 
-- (NSArray*) childOperations
-{
-    NSArray* childOps;
-    @synchronized(self) {
-        // synchronizing on self here because there is a slight race condition.
-        // See queueChildTaskForDescriptor:input: above
-        childOps = [NSArray arrayWithArray:self.myChildOperations];
-    }
-    return childOps;
-}
-
 - (NSArray*) childTasks
 {
-    NSArray* subops = [self childOperations];
+    NSArray* subops = [self immediateChildren];
     return [subops filteredArrayUsingPredicate:
             [NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
         return [evaluatedObject isKindOfClass:[ZincTask class]];
@@ -235,13 +208,5 @@ typedef id ZincBackgroundTaskIdentifier;
 #endif
 }
 
-- (void) cancel
-{
-    @synchronized(self.myChildOperations) {
-        [self.myChildOperations makeObjectsPerformSelector:@selector(cancel)];
-    }
-    
-    [super cancel];
-}
 
 @end

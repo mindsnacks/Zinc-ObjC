@@ -11,4 +11,6 @@
 
 @interface ZincOperation () <ZincProgress>
 
+- (void) addChildOperation:(NSOperation*)childOp;
+
 @end

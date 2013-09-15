@@ -12,7 +12,11 @@
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
 
-#define DEFAULT_MAX_PROGRESS_VAL (100)
+#define DEFAULT_MAX_PROGRESS_VAL (1000)
+
+@interface ZincOperation ()
+@property (atomic, strong) NSMutableSet* myChildOperations;
+@end
 
 @implementation ZincOperation
 
@@ -35,6 +39,7 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     self = [super init];
     if (self) {
         self.threadPriority = [[self class] defaultThreadPriority];
+        self.myChildOperations = [NSMutableSet set];
     }
     return self;
 }
@@ -63,7 +68,9 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 
 - (id<ZincProgress>)progress
 {
-    NSArray* items = [[self zincDependencies] arrayByAddingObject:self];
+    NSArray* items = [[[self allChildren] arrayByAddingObject:self] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject conformsToProtocol:@protocol(ZincProgress)];
+    }]];
     return ZincAggregatedProgressCalculate(items);
 }
 
@@ -71,6 +78,44 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 {
     NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Dependency: %@", self, op);
     [super addDependency:op];
+}
+
+- (NSArray*) immediateChildren
+{
+    NSArray* childOps;
+    @synchronized(self) {
+        childOps = [self.myChildOperations allObjects];
+    }
+    return childOps;
+}
+
+- (NSArray*) allChildren
+{
+    NSArray* myChildren = [self immediateChildren];
+    NSMutableSet* allChildren = [NSMutableSet setWithArray:myChildren];
+    for (NSOperation* child in myChildren) {
+        if ([child conformsToProtocol:@protocol(ZincChildren)]) {
+            [allChildren addObjectsFromArray:[(id<ZincChildren>)child allChildren]];
+        }
+    }
+    return [allChildren allObjects];
+}
+
+- (void) addChildOperation:(NSOperation*)childOp
+{
+    @synchronized(self.myChildOperations) {
+        [self.myChildOperations addObject:childOp];
+    }
+    childOp.queuePriority = self.queuePriority;
+    [self addDependency:childOp];
+}
+
+- (void) cancel
+{
+    @synchronized(self.myChildOperations) {
+        [self.myChildOperations makeObjectsPerformSelector:@selector(cancel)];
+    }
+    [super cancel];
 }
 
 @end

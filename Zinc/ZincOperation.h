@@ -7,9 +7,23 @@
 //
 
 #import <Foundation/Foundation.h>
-//#import "ZincProgress.h"
+#import "ZincActivity.h"
 
-@protocol ZincProgress;
+
+@protocol ZincChildren <NSObject>
+
+/**
+ @return all children that were directly added
+ */
+- (NSArray*) immediateChildren;
+
+/**
+ @return all children, including children's children
+ */
+- (NSArray*) allChildren;
+
+@end
+
 
 /**
  `ZincOperation`
@@ -18,17 +32,18 @@
 
  Base `NSOperation` class for all internal Zinc operations
  */
-@interface ZincOperation : NSOperation //<ZincProgress>
+@interface ZincOperation : NSOperation <ZincChildren, ZincActivitySubject>
 
 /**
  Set the initial thread priority for all Zinc operations. Defaults to `kZincOperationInitialDefaultThreadPriority`
  */
-+ (void)setDefaultThreadPriority:(double)defaultThreadPriority;
++ (void) setDefaultThreadPriority:(double)defaultThreadPriority;
 
 /**
  Get the initial thread priority
  */
-+ (double)defaultThreadPriority;
++ (double) defaultThreadPriority;
+
 
 - (id<ZincProgress>)progress;
 

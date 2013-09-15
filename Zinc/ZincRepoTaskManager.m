@@ -172,8 +172,10 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
     return [self queueTaskForRequest:request];
 }
 
-- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input priority:(NSOperationQueuePriority)priority parent:(NSOperation*)parent dependencies:(NSArray*)dependencies
+- (ZincTask*) queueTaskForDescriptor:(ZincTaskDescriptor*)taskDescriptor input:(id)input priority:(NSOperationQueuePriority)priority parent:(ZincOperation*)parent dependencies:(NSArray*)dependencies
 {
+    NSAssert(parent == nil || [parent isKindOfClass:[ZincOperation class]], @"temporary assert");
+
     ZincTask* task = nil;
 
     @synchronized(self.tasks) {
@@ -208,7 +210,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         NSAssert(task, @"task is nil");
 
         // add dependency to parent (nil is OK)
-        [parent addDependency:task];
+        [parent addChildOperation:task];
 
         // add all explicit deps
         for (NSOperation* dep in dependencies) {

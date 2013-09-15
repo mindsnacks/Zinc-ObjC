@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincActivity.h"
 #import "ZincProgress.h"
 
 
@@ -69,20 +70,6 @@
 
 @end
 
-
-
-/**
- `ZincAcitivySubject
- */
-@protocol ZincActivitySubject <NSObject>
-
-@required
-
-- (id<ZincProgress>)progress;
-
-- (BOOL) isFinished;
-
-@end
 
 
 /**
