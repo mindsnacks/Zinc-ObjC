@@ -107,7 +107,6 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
         [self.myChildOperations addObject:childOp];
     }
     childOp.queuePriority = self.queuePriority;
-    [self addDependency:childOp];
 }
 
 - (void) cancel

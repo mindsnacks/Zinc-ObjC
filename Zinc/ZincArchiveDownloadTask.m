@@ -14,8 +14,34 @@
 #import "ZincRepo+Private.h"
 #import "ZincHTTPRequestOperation+ZincContextInfo.h"
 
+@interface ZincArchiveDownloadTask ()
+@property (nonatomic, strong) ZincArchiveExtractOperation* extractOp;
+@property (nonatomic, strong) NSString* downloadPath;
+@end
+
+
 @implementation ZincArchiveDownloadTask
 
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
+{
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
+    if (self) {
+
+        NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
+        NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
+        
+        NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogID];
+        self.downloadPath = [downloadDir stringByAppendingPathComponent:
+                             [NSString stringWithFormat:@"%@-%ld.tar", bundleName, (long)self.version]];
+
+
+        ZincManifest* manifest = [repo manifestWithBundleID:[resource zincBundleID] version:[resource zincBundleVersion] error:NULL];
+
+        self.extractOp = [[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:self.downloadPath manifest:manifest];
+        [self addChildOperation:self.extractOp];
+    }
+    return self;
+}
 
 - (NSString*) bundleID
 {
@@ -44,18 +70,13 @@
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
         return;
     }
-    
-    NSString* downloadDir = [[self.repo downloadsPath] stringByAppendingPathComponent:catalogID];
 
-    NSString* downloadPath = [downloadDir stringByAppendingPathComponent:
-                              [NSString stringWithFormat:@"%@-%ld.tar", bundleName, (long)self.version]];
-    
-    [fm createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:NULL];
+    [fm createDirectoryAtPath:[self.downloadPath stringByDeletingLastPathComponent] withIntermediateDirectories:YES attributes:nil error:NULL];
     
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
-        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
+        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:self.downloadPath append:NO];
         [self queueOperationForRequest:request outputStream:outStream context:self.bundleID];
         
         [self.httpRequestOperation waitUntilFinished];
@@ -70,14 +91,13 @@
         
         [self addEvent:[ZincArchiveExtractBeginEvent archiveExtractBeginEventForResource:self.resource]];
         
-        ZincArchiveExtractOperation* extractOp = [[ZincArchiveExtractOperation alloc] initWithZincRepo:self.repo archivePath:downloadPath];
-        [self queueChildOperation:extractOp];
+        [self queueChildOperation:self.extractOp];
         
-        [extractOp waitUntilFinished];
+        [self.extractOp waitUntilFinished];
         if (self.isCancelled) return;
 
-        if (extractOp.error != nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:extractOp.error source:ZINC_EVENT_SRC()]];
+        if (self.extractOp.error != nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.extractOp.error source:ZINC_EVENT_SRC()]];
             continue;
         }
         
@@ -88,7 +108,7 @@
     
     // cleanup
     
-    [fm removeItemAtPath:downloadPath error:NULL];
+    [fm removeItemAtPath:self.downloadPath error:NULL];
 }
 
 @end

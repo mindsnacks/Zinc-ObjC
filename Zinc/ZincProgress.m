@@ -7,8 +7,8 @@
 //
 
 #import "ZincProgress+Private.h"
-
 #import "ZincInternals.h"
+
 
 const long long ZincProgressNotYetDetermined = -(LONG_LONG_MAX);
 

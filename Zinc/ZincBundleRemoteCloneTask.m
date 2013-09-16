@@ -35,7 +35,7 @@
 
 - (long long) currentProgressValue
 {
-    if (![self isProgressCalculated]) {
+    if (!self.isProgressCalculated) {
         return ZincProgressNotYetDetermined;
     }
     return [super currentProgressValue];
@@ -108,7 +108,12 @@
     NSString* const flavor = [self getTrackedFlavor];
     NSArray* const allFiles = [manifest filesForFlavor:flavor];
     NSMutableArray* const missingFiles = [NSMutableArray arrayWithCapacity:[allFiles count]];
-    
+
+    // Create the link operation and add it as a child so it's
+    // progress is account into the total progress
+    ZincCreateBundleLinksOperation* linkOp = [[ZincCreateBundleLinksOperation alloc] initWithRepo:self.repo manifest:manifest];
+    [self addChildOperation:linkOp];
+
     for (NSString* path in allFiles) {
         
         NSString* format = [manifest bestFormatForFile:path];
@@ -140,13 +145,9 @@
         }
     }
     
+    BOOL downloadedAllFilesSuccessfully = YES;
     if (missingSize > 0) {
-
-        // Create the link operation and add it as a child so it's
-        // progress is account into the total progress
-        ZincCreateBundleLinksOperation* linkOp = [[ZincCreateBundleLinksOperation alloc] initWithRepo:self.repo manifest:manifest];
-        [self addChildOperation:linkOp];
-
+        
         const double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         const double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
         const BOOL shouldDownloadArchive = ([missingFiles count] > 1 && archiveCost < filesCost);
@@ -160,22 +161,20 @@
 
         self.isProgressCalculated = YES;
 
-        BOOL success = YES;
         for (ZincTask* op in downloadTasks) {
 
             [op waitUntilFinished];
             if (self.isCancelled) return NO;
-            success &= op.finishedSuccessfully;
+            downloadedAllFilesSuccessfully &= op.finishedSuccessfully;
         }
-
-        if (success) {
-            [self queueChildOperation:linkOp];
-            [linkOp waitUntilFinished];
-        }
-        
-        return success;
     }
-    return YES;
+
+    if (downloadedAllFilesSuccessfully) {
+        [self queueChildOperation:linkOp];
+        [linkOp waitUntilFinished];
+    }
+
+    return downloadedAllFilesSuccessfully && [linkOp isSuccessful];
 }
 
 - (BOOL) isReady
