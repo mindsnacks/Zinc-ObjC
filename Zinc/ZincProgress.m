@@ -27,21 +27,27 @@ id<ZincProgress> ZincAggregatedProgressCalculate(NSArray* items)
     ZincProgressItem* total = [[ZincProgressItem alloc] init];
     long long totalCurrentProgress = 0;
     long long totalMaxProgress = 0;
+    BOOL anyUndetermined = NO;
+    
     for (id<ZincProgress> item in items) {
 
         ZINC_DEBUG_LOG(@"%@: %lld %lld", item, [item currentProgressValue], [item maxProgressValue]);
 
         if (([item currentProgressValue] == ZincProgressNotYetDetermined) ||
             ([item maxProgressValue] == ZincProgressNotYetDetermined)) {
-            return total;
+            anyUndetermined = YES;
+            break;
         } else {
             totalCurrentProgress += [item currentProgressValue];
             totalMaxProgress += [item maxProgressValue];
         }
     }
-    [total updateCurrentProgressValue:totalCurrentProgress maxProgressValue:totalMaxProgress];
-    ZINC_DEBUG_LOG(@"---------------- %f ", total.progressPercentage);
 
+    if (!anyUndetermined) {
+        [total updateCurrentProgressValue:totalCurrentProgress maxProgressValue:totalMaxProgress];
+    }
+
+    ZINC_DEBUG_LOG(@"---------------- %f ", total.progressPercentage);
     return total;
 }
 
@@ -103,6 +109,7 @@ id<ZincProgress> ZincAggregatedProgressCalculate(NSArray* items)
 
 - (BOOL) updateFromProgress:(id<ZincProgress>)progress
 {
+    NSParameterAssert(progress);
     return [self updateCurrentProgressValue:[progress currentProgressValue] maxProgressValue:[progress maxProgressValue]];
 }
 
