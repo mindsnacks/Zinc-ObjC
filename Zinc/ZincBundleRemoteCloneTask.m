@@ -14,7 +14,7 @@
 #import "ZincCreateBundleLinksOperation.h"
 
 @interface ZincBundleRemoteCloneTask ()
-@property (assign) BOOL isProgressCalculated;
+@property (strong) NSArray* downloadTasks;
 @end
 
 @implementation ZincBundleRemoteCloneTask
@@ -35,7 +35,7 @@
 
 - (long long) currentProgressValue
 {
-    if (!self.isProgressCalculated) {
+    if (self.downloadTasks == nil) {
         return ZincProgressNotYetDetermined;
     }
     return [super currentProgressValue];
@@ -146,27 +146,28 @@
     }
     
     BOOL downloadedAllFilesSuccessfully = YES;
+
     if (missingSize > 0) {
         
         const double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
         const double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
         const BOOL shouldDownloadArchive = ([missingFiles count] > 1 && archiveCost < filesCost);
 
-        NSArray* downloadTasks;
         if (shouldDownloadArchive) {
-            downloadTasks = [self buildTasksForDownloadingArchive];
+            self.downloadTasks = [self buildTasksForDownloadingArchive];
         } else {
-            downloadTasks = [self buildTasksForDownloadUsingIndividualFilesWithManifest:manifest missingFiles:missingFiles];
+            self.downloadTasks = [self buildTasksForDownloadUsingIndividualFilesWithManifest:manifest missingFiles:missingFiles];
         }
+        
+    } else {
+        self.downloadTasks = @[];
+    }
 
-        self.isProgressCalculated = YES;
+    for (ZincTask* task in self.downloadTasks) {
 
-        for (ZincTask* op in downloadTasks) {
-
-            [op waitUntilFinished];
-            if (self.isCancelled) return NO;
-            downloadedAllFilesSuccessfully &= op.finishedSuccessfully;
-        }
+        [task waitUntilFinished];
+        if (self.isCancelled) return NO;
+        downloadedAllFilesSuccessfully &= task.finishedSuccessfully;
     }
 
     if (downloadedAllFilesSuccessfully) {
