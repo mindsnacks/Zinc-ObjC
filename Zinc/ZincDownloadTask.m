@@ -100,7 +100,7 @@
     if (self.httpRequestOperation.response != nil) {
         return [self.httpRequestOperation.response expectedContentLength];
     }
-    return 0;
+    return [self isFinished] ? 0 : ZincProgressNotYetDetermined;
 }
 
 - (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
