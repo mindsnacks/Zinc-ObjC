@@ -103,6 +103,25 @@ describe(@"ZincCompletableActivityMonitor", ^{
                 [[expectFutureValue(theValue(progressBlockCalled)) shouldEventually] beTrue];
             });
         });
+
+        context(@"one item has progress not yet determined", ^{
+
+            const long long item1CurrentProgressValue = ZincProgressNotYetDetermined;
+            const long long item1MaxProgressValue = 10;
+            const long long item2CurrentProgressValue = 10;
+            const long long item2MaxProgressValue = 100;
+
+            beforeEach(^{
+                item1.subject = [mockFactory mockActivitySubjectWithCurrentProgressValue:item1CurrentProgressValue maxProgressValue:item1MaxProgressValue isFinished:NO];
+                item2.subject = [mockFactory mockActivitySubjectWithCurrentProgressValue:item2CurrentProgressValue maxProgressValue:item2MaxProgressValue isFinished:NO];
+            });
+
+            it(@"should have undetermind overall progress", ^{
+                [monitor update];
+                [[theValue([monitor.progress currentProgressValue]) should] equal:theValue(ZincProgressNotYetDetermined)];
+                [[theValue([monitor.progress maxProgressValue]) should] equal:theValue(ZincProgressNotYetDetermined)];
+            });
+        });
     });
 });
 
