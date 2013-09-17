@@ -36,7 +36,7 @@ describe(@"ZincActivityItem", ^{
 
         beforeEach(^{
             operation = [ZincOperation mock];
-            progress = [ZincProgressItem mock];
+            progress = [ZincProgressItem nullMock];
             [operation stub:@selector(progress) andReturn:progress];
             item.subject = operation;
         });
@@ -61,9 +61,13 @@ describe(@"ZincActivityItem", ^{
 
         context(@"operation is finished", ^{
 
+            const long long currentProgressValue = 100;
+            const long long maxProgressValue = 100;
+
             beforeEach(^{
+                [progress stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
+                [progress stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
                 [operation stub:@selector(isFinished) andReturn:theValue(YES)];
-                [operation stub:@selector(progress) andReturn:nil];
             });
 
             it(@"item is finished when updated", ^{

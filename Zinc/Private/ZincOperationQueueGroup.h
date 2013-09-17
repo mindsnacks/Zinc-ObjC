@@ -20,9 +20,9 @@
 
 - (void) addOperation:(NSOperation*)operation;
 
-- (void)setSuspended:(BOOL)b;
-- (BOOL)isSuspended;
+- (void) setSuspended:(BOOL)b;
+- (BOOL) isSuspended;
 
-- (void)suspendAndWaitForExecutingOperationsToComplete;
+- (void) suspendAndWaitForExecutingOperationsToComplete;
 
 @end

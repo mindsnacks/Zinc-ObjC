@@ -177,7 +177,9 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (void) update
 {
-    [self updateFromProgress:[self.subject progress]];
+    if (self.subject != nil) {
+        [self updateFromProgress:[self.subject progress]];
+    }
 }
 
 @end

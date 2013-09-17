@@ -46,15 +46,8 @@
 
 - (void) itemsDidUpdate
 {
-    long long newMaxProgressValue = 0;
-    long long newCurrentProgressValue = 0;
-
-    for (ZincActivityItem* item in [self items]) {
-        newCurrentProgressValue += item.currentProgressValue;
-        newMaxProgressValue += item.maxProgressValue;
-    }
-
-    if ([self.progress updateCurrentProgressValue:newCurrentProgressValue maxProgressValue:newMaxProgressValue]) {
+    id<ZincProgress> newProgress = ZincAggregatedProgressCalculate([self items]);
+    if ([self.progress updateFromProgress:newProgress]) {
         [self callProgressBlock];
     }
 

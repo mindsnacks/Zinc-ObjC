@@ -68,27 +68,6 @@ typedef void (^ZincProgressBlock)(id source, long long currentProgress, long lon
 @end
 
 
-////@interface ZincAggregatedProgress  : NSObject <ZincObservableProgress>
-////
-////- (id) initWithItems:(NSArray*)items; // id<ZincProgress>
-////
-////- (id) initWithItemsBlock:(
-//
-//@end
-//
-//@interface ZincAggregatedProgressGenerator : NSObject
-//
-//- (id<ZincProgress>) aggregatedProgressFromItems:(NSArray*)items;
-//
-//@end
-
-//@interface ZincAggregatedProgress : NSObject <ZincObservableProgress>
-//
-//- (void) updateProgressFromItems:(NSArray*)items; // id<ZincProgress>
-//
-//@end
-
-
 /**
  Helper function to calculate floating-point progress. Basically just avoids divide by zero.
  
@@ -98,11 +77,3 @@ typedef void (^ZincProgressBlock)(id source, long long currentProgress, long lon
 extern float ZincProgressPercentageCalculate(id<ZincProgress> progress);
 
 extern id<ZincProgress> ZincAggregatedProgressCalculate(NSArray* items);
-
-
-//@interface ZincProgressHelper : NSObject
-
-//- (float) calculateProgressPercentageForItem:(id<ZincProgress>)item;
-
-
-//@end

@@ -6,7 +6,7 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincOperationQueueGroup.h"
+#import "ZincOperationQueueGroup+Private.h"
 #import "NSOperation+Zinc.h"
 
 @interface ZincOperationQueueGroup ()
@@ -99,35 +99,49 @@
     }
 }
 
+- (NSArray*) getDependenciesForOperationWithInfo:(ZincOperationQueueGroupInfo*)info
+{
+    NSArray* deps = nil;
+    if (info != nil && info.isBarrier) {
+        deps = [self getAllOperations];
+    } else {
+        deps = [self getAllBarrierOperations];
+    }
+    return deps;
+}
+
 - (void) addOperation:(NSOperation*)theOperation
 {
     @synchronized(self) {
-        ZincOperationQueueGroupInfo* info = [self infoForClass:[theOperation class]];
 
-        NSArray* deps = nil;
-        if (info != nil && info.isBarrier) {
-            deps = [self getAllOperations];
-        } else {
-            deps = [self getAllBarrierOperations];
-        }
-        for (NSOperation* dep in deps) {
+        NSOperationQueue* queue = [self getQueueForClass:[theOperation class]];
+        if (![[queue operations] containsObject:theOperation]) {
 
-            // only add a new dependency if the target doesn't already depend
-            // on this operation to avoid cycles
+            ZincOperationQueueGroupInfo* info = [self infoForClass:[theOperation class]];
+            NSArray* possibleDeps = [self getDependenciesForOperationWithInfo:info];
 
-            if (![[dep zinc_allDependencies] containsObject:theOperation]) {
-                [theOperation addDependency:dep];
+            for (NSOperation* possibleDep in possibleDeps) {
+                // only add a new dependency if the target doesn't already depend
+                // on this operation *or any of it's children* to avoid cycles
+                // TODO: THIS IS SPARTA!!
+
+                NSMutableSet* existingDepsAndChildrenOfPossibleDep = [NSMutableSet set];
+
+                NSSet* allDepsOfPossibleDep = [possibleDep zinc_allDependencies];
+                [existingDepsAndChildrenOfPossibleDep addObjectsFromArray:[allDepsOfPossibleDep allObjects]];
+
+                for (NSOperation* depOfPossibleDep in allDepsOfPossibleDep) {
+                    if ([depOfPossibleDep conformsToProtocol:@protocol(ZincChildren)]) {
+                        [existingDepsAndChildrenOfPossibleDep addObjectsFromArray:[(id<ZincChildren>)depOfPossibleDep allChildren]];
+                    }
+                }
+
+                if (![existingDepsAndChildrenOfPossibleDep containsObject:theOperation]) {
+                    [theOperation addDependency:possibleDep];
+                }
             }
-        }
-        
-        if (info != nil) {
-            if (info.queue == nil) {
-                info.queue = [[NSOperationQueue alloc] init];
-                [info.queue setSuspended:self.isSuspended];
-            }
-            [info.queue addOperation:theOperation];
-        } else {
-            [self.defaultQueue addOperation:theOperation];
+
+            [queue addOperation:theOperation];
         }
     }
 }
@@ -190,6 +204,21 @@
         }
     }
     return allQueues;
+}
+
+- (NSOperationQueue*) getQueueForClass:(Class)cls
+{
+    ZincOperationQueueGroupInfo* info = [self infoForClass:cls];
+    if (info == nil) {
+        return self.defaultQueue;
+    } else {
+        if (info.queue == nil) {
+            info.queue = [[NSOperationQueue alloc] init];
+            [info.queue setSuspended:self.isSuspended];
+        }
+        return info.queue;
+
+    }
 }
 
 - (NSArray*) getAllOperations
