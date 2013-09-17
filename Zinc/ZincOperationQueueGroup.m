@@ -8,6 +8,7 @@
 
 #import "ZincOperationQueueGroup+Private.h"
 #import "NSOperation+Zinc.h"
+#import "ZincChildren.h"
 
 @interface ZincOperationQueueGroup ()
 @property (atomic, strong) NSMutableDictionary* infoByClassName;

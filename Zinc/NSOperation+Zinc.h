@@ -18,20 +18,3 @@
 
 @end
 
-
-
-
-@protocol ZincChildren <NSObject>
-
-/**
- @return all children that were directly added
- */
-- (NSArray*) immediateChildren;
-
-/**
- @return all children, including children's children
- */
-- (NSArray*) allChildren;
-
-@end
-

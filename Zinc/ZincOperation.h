@@ -7,10 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NSOperation+Zinc.h"
+#import "ZincChildren.h"
 
 
 @protocol ZincProgress;
+
 
 /**
  `ZincOperation`
