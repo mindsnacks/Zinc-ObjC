@@ -60,7 +60,6 @@
     [_queue setMaxConcurrentOperationCount:self.maxConcurrentOperationCount];
 }
 
-
 @end
 
 
@@ -119,26 +118,16 @@
         if (![[queue operations] containsObject:theOperation]) {
 
             ZincOperationQueueGroupInfo* info = [self infoForClass:[theOperation class]];
-            NSArray* possibleDeps = [self getDependenciesForOperationWithInfo:info];
+            NSArray* existingOps = [self getDependenciesForOperationWithInfo:info];
 
-            for (NSOperation* possibleDep in possibleDeps) {
+            for (NSOperation* existingOp in existingOps) {
+
                 // only add a new dependency if the target doesn't already depend
                 // on this operation *or any of it's children* to avoid cycles
-                // TODO: THIS IS SPARTA!!
 
-                NSMutableSet* existingDepsAndChildrenOfPossibleDep = [NSMutableSet set];
-
-                NSSet* allDepsOfPossibleDep = [possibleDep zinc_allDependencies];
-                [existingDepsAndChildrenOfPossibleDep addObjectsFromArray:[allDepsOfPossibleDep allObjects]];
-
-                for (NSOperation* depOfPossibleDep in allDepsOfPossibleDep) {
-                    if ([depOfPossibleDep conformsToProtocol:@protocol(ZincChildren)]) {
-                        [existingDepsAndChildrenOfPossibleDep addObjectsFromArray:[(id<ZincChildren>)depOfPossibleDep allChildren]];
-                    }
-                }
-
-                if (![existingDepsAndChildrenOfPossibleDep containsObject:theOperation]) {
-                    [theOperation addDependency:possibleDep];
+                NSSet* depsOfExistingOp = [existingOp zinc_allDependenciesIncludingChildren:YES];
+                if (![depsOfExistingOp containsObject:theOperation]) {
+                    [theOperation addDependency:existingOp];
                 }
             }
 

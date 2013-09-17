@@ -7,10 +7,11 @@
 //
 
 #import "NSOperation+Zinc.h"
+#import "ZincChildren.h"
 
 @implementation NSOperation (Zinc)
 
-- (NSSet*) zinc_allDependencies
+- (NSSet*) zinc_allDependenciesIncludingChildren:(BOOL)includeChildren
 {
     NSMutableArray *pendingOperationsToVisit = [NSMutableArray arrayWithObject:self];
     NSMutableSet *visitedOperations = [NSMutableSet set];
@@ -28,6 +29,9 @@
         NSArray* deps = [op dependencies];
         for (id obj in deps) {
             [allDependencies addObject:obj];
+            if (includeChildren && [obj conformsToProtocol:@protocol(ZincChildren)]) {
+                [allDependencies addObjectsFromArray:[(id<ZincChildren>)obj allChildren]];
+            }
             if (![visitedOperations containsObject:obj]) {
                 [pendingOperationsToVisit addObject:obj];
             }
@@ -35,6 +39,11 @@
     }
     
     return allDependencies;
+}
+
+- (NSSet*) zinc_allDependencies
+{
+    return [self zinc_allDependenciesIncludingChildren:NO];
 }
 
 @end

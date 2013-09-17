@@ -17,6 +17,7 @@
 		B30B052717D7BF4F0036F9BD /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37716CAFF15004F88ED /* libKSReachability.a */; };
 		B30B763C14B75750004E6587 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = B30B763B14B75750004E6587 /* libz.dylib */; };
 		B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */; };
+		B313BF9417E8E27500B69E7D /* NSOperationZincSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B313BF9317E8E27500B69E7D /* NSOperationZincSpec.m */; };
 		B317E4F215C9F8AF00DE9D73 /* ZincJSONSerialization.m in Sources */ = {isa = PBXBuildFile; fileRef = B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */; };
 		B31DE37816CAFF15004F88ED /* libKSReachability.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B31DE37716CAFF15004F88ED /* libKSReachability.a */; };
 		B31DE38716CB0030004F88ED /* NSFileManager+ZincTar.m in Sources */ = {isa = PBXBuildFile; fileRef = B31DE37E16CAFF58004F88ED /* NSFileManager+ZincTar.m */; };
@@ -339,6 +340,7 @@
 		B308D67616CA221F008A1237 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		B30B763B14B75750004E6587 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ErrorStateTests.m; sourceTree = "<group>"; };
+		B313BF9317E8E27500B69E7D /* NSOperationZincSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOperationZincSpec.m; sourceTree = "<group>"; };
 		B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincJSONSerialization.h; sourceTree = "<group>"; };
 		B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincJSONSerialization.m; sourceTree = "<group>"; };
 		B31DE37716CAFF15004F88ED /* libKSReachability.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libKSReachability.a; path = "Dependencies/External/KSReachability/build/Release-iphoneos/libKSReachability.a"; sourceTree = "<group>"; };
@@ -791,6 +793,7 @@
 				B3AE827317DFCCFA003AA609 /* ZincTaskMonitorSpec.m */,
 				B3AE827D17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m */,
 				B386697117E77E6A001D03A4 /* ZincOperationQueueGroupSpec.m */,
+				B313BF9317E8E27500B69E7D /* NSOperationZincSpec.m */,
 				B3549DF2148DC0ED00DD63D1 /* Data */,
 				B340F985148D52D800206F86 /* Supporting Files */,
 			);
@@ -1593,6 +1596,7 @@
 				B3AE827E17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m in Sources */,
 				B3AE828217DFFCDF003AA609 /* ZincMockFactory.m in Sources */,
 				B386697217E77E6A001D03A4 /* ZincOperationQueueGroupSpec.m in Sources */,
+				B313BF9417E8E27500B69E7D /* NSOperationZincSpec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
