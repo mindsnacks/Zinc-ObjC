@@ -54,46 +54,4 @@
     self.finishedSuccessfully = success;
 }
 
-- (BOOL) createBundleLinksForManifest:(ZincManifest*)manifest
-{
-    NSError* error = nil;
-    
-    NSString* flavor = [self getTrackedFlavor];
-    
-    NSString* bundlePath = [self.repo pathForBundleWithID:self.bundleID version:self.version];
-    NSArray* allFiles = [manifest filesForFlavor:flavor];
-    
-    // Build a list of all dirs needed for the bundle
-    NSMutableSet* allDirs = [NSMutableSet setWithCapacity:[allFiles count]];
-    for (NSString* file in allFiles) {
-        NSString* dir = [file stringByDeletingLastPathComponent];
-        [allDirs addObject:dir];
-    }
-    
-    // Create all dirs
-    for (NSString* relativeDir in allDirs) {
-        NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
-        if (![self.fileManager zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
-            [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
-            return NO;
-        }
-    }
-    
-    // Link files
-    for (NSString* file in allFiles) {
-        @autoreleasepool {
-            NSString* filePath = [bundlePath stringByAppendingPathComponent:file];
-            const BOOL createLink = ![self.fileManager fileExistsAtPath:filePath];
-            if (createLink) {
-                NSString* shaPath = [self.repo pathForFileWithSHA:[manifest shaForFile:file]];
-                if (![self.fileManager linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                    [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
-                    return NO;
-                }
-            }
-        }
-    }
-    return YES;
-}
-
 @end

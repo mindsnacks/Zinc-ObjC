@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
+#import "ZincActivity.h"
 #import "ZincProgress.h"
 
 
@@ -70,6 +71,7 @@
 @end
 
 
+
 /**
  `ZincActivityItem`
 
@@ -84,9 +86,9 @@
 @property (nonatomic, readonly, weak) ZincActivityMonitor* monitor;
 
 /**
- Reference to associated operation. May be nil.
+ The subject of this item. May be nil.
  */
-@property (nonatomic, readonly, strong) ZincOperation* operation;
+@property (nonatomic, readonly, strong) id<ZincActivitySubject> subject;
 
 @end
 

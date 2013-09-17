@@ -15,6 +15,8 @@
 #import <Zinc/ZincResource.h>
 #import <Zinc/ZincBundleTrackingRequest.h>
 #import <Zinc/ZincDownloadPolicy.h>
+#import <Zinc/ZincProgress.h>
+#import <Zinc/ZincActivity.h>
 #import <Zinc/ZincOperation.h>
 #import <Zinc/ZincTask.h>
 #import <Zinc/ZincTaskRef.h>

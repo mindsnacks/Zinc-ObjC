@@ -16,22 +16,30 @@
 
 @interface ZincArchiveExtractOperation ()
 @property (nonatomic, weak, readwrite) ZincRepo* repo;
+@property (nonatomic, strong, readwrite) ZincManifest* manifest;
 @property (nonatomic, copy, readwrite) NSString* archivePath;
 @property (nonatomic, copy, readwrite) NSError* error;
 @end
 
 @implementation ZincArchiveExtractOperation
 
-- (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath;                
+- (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath manifest:(ZincManifest *)manifest
 {
+    NSParameterAssert(repo);
+    NSParameterAssert(archivePath);
     self = [super init];
     if (self) {
         self.repo = repo;
         self.archivePath = archivePath;
+        self.manifest = manifest; // TODO: use manifest to calculate progress
     }
     return self;
 }
 
+- (id) initWithZincRepo:(ZincRepo*)repo archivePath:(NSString*)archivePath
+{
+    return [self initWithZincRepo:repo archivePath:archivePath manifest:nil];
+}
 
 - (void) main
 {

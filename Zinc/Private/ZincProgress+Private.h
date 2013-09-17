@@ -10,9 +10,18 @@
 
 @interface ZincProgressItem ()
 
-@property (nonatomic, assign, readwrite) long long currentProgressValue;
-@property (nonatomic, assign, readwrite) long long maxProgressValue;
 @property (nonatomic, assign, readwrite) float progressPercentage;
+
+/**
+ @discussion Is Key-Value Observable
+ */
+@property (nonatomic, assign, readwrite) long long currentProgressValue;
+
+/**
+ @discussion Is Key-Value Observable
+ */
+@property (nonatomic, assign, readwrite) long long maxProgressValue;
+
 
 /**
  @return YES if progress is updated (different from last value), NO otherwise

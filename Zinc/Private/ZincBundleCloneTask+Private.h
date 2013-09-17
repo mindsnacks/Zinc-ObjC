@@ -19,6 +19,4 @@
 
 - (NSString*) getTrackedFlavor;
 
-- (BOOL) createBundleLinksForManifest:(ZincManifest*)manifest;
-
 @end

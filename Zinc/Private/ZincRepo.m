@@ -704,7 +704,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         NSArray* allFiles = [manifest allFiles];
         for (NSString* f in allFiles) {
             NSString* sha = [manifest shaForFile:f];
-            self.localFilesBySHA[sha] = [bundleRoot stringByAppendingPathComponent:f];
+            NSString* path = [[bundleRoot stringByAppendingPathComponent:f] zinc_realPath];
+            self.localFilesBySHA[sha] = path;
         }
     }
 }

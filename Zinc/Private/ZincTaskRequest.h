@@ -8,13 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+@class ZincOperation;
 @class ZincTaskDescriptor;
 
 @interface ZincTaskRequest : NSObject
 
 @property (nonatomic, strong) ZincTaskDescriptor* taskDescriptor;
 @property (nonatomic, strong) id input;
-@property (nonatomic, strong) NSOperation* parent;
+@property (nonatomic, strong) ZincOperation* parent;
 @property (nonatomic, strong) NSArray* dependencies;
 
 /**

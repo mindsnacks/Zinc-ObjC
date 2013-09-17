@@ -11,6 +11,12 @@
 
 @interface ZincMockFactory : NSObject
 
+- (id) mockOperation;
+
 - (id) mockBundleCloneTaskForBundleID:(NSString*)bundleID version:(ZincVersion)version;
+
+- (id) mockActivitySubjectWithCurrentProgressValue:(long long)currentProgress
+                                  maxProgressValue:(long long)maxProgressValue
+                                        isFinished:(BOOL)isFinished;
 
 @end

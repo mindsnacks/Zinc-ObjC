@@ -11,10 +11,10 @@
 #import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
+#import "ZincCreateBundleLinksOperation.h"
 
 @interface ZincBundleRemoteCloneTask ()
-@property (assign) long long maxProgressValue;
-@property (assign) long long lastProgressValue;
+@property (assign) BOOL isProgressCalculated;
 @end
 
 @implementation ZincBundleRemoteCloneTask
@@ -33,24 +33,14 @@
     return (double)self.httpOverheadConstant * connectionCount + totalSize;
 }
 
-- (BOOL) isProgressCalculated
-{
-    return self.maxProgressValue > 0;
-}
-
 - (long long) currentProgressValue
 {
-    if (![self isProgressCalculated]) return 0;
-    
-    long long curVal = [super currentProgressValue];
-    if (curVal < self.lastProgressValue) {
-        curVal = self.lastProgressValue;
-    } else if (curVal > [self maxProgressValue]) {
-        curVal = [self maxProgressValue];
+    if (![self isProgressCalculated]) {
+        return ZincProgressNotYetDetermined;
     }
-    self.lastProgressValue = curVal;
-    return curVal;
+    return [super currentProgressValue];
 }
+
 
 - (BOOL) prepareManifest
 {
@@ -76,10 +66,42 @@
     return YES;
 }
 
+- (NSArray*) buildTasksForDownloadingArchive
+{
+    NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleID version:self.version];
+    ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
+    ZincTask* archiveOp = [self queueChildTaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
+
+    return [NSArray arrayWithObject:archiveOp];
+}
+
+- (NSArray*) buildTasksForDownloadUsingIndividualFilesWithManifest:(ZincManifest*)manifest missingFiles:(NSArray*)missingFiles
+{
+    NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
+    NSArray* files = [manifest allFiles];
+    NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
+
+    for (NSString* file in missingFiles) {
+
+        NSString* sha = [manifest shaForFile:file];
+        NSArray* formats = [manifest formatsForFile:file];
+
+        NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogID:catalogID];
+        ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
+
+        ZincTask* fileOp = [self queueChildTaskForDescriptor:fileTaskDesc input:formats];
+        if (fileOp != nil) {
+            // can be nil if cancelled
+            [fileOps addObject:fileOp];
+        }
+    }
+    return fileOps;
+}
+
 - (BOOL) prepareObjectFilesUsingRemoteCatalogForManifest:(ZincManifest*)manifest
 {
     if (self.isCancelled) return NO;
-    
+
     NSError* error = nil;
     NSUInteger totalSize = 0;
     NSUInteger missingSize = 0;
@@ -119,61 +141,39 @@
     }
     
     if (missingSize > 0) {
-        
-        self.maxProgressValue = missingSize;
-        
-        double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
-        double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
-        
-        if ([missingFiles count] > 1 && archiveCost < filesCost) { // ARCHIVE MODE
-            
-            NSURL* bundleRes = [NSURL zincResourceForArchiveWithId:self.bundleID version:self.version];
-            ZincTaskDescriptor* archiveTaskDesc = [ZincArchiveDownloadTask taskDescriptorForResource:bundleRes];
-            ZincTask* archiveOp = [self queueChildTaskForDescriptor:archiveTaskDesc input:[self getTrackedFlavor]];
-            
-            [archiveOp waitUntilFinished];
-            if (self.isCancelled) return NO;
 
-            if (!archiveOp.finishedSuccessfully) {
-                return NO;
-            }
-            
-        } else { // INVIDIDUAL FILE MODE
-            
-            NSString* catalogID = ZincCatalogIDFromBundleID(self.bundleID);
-            NSArray* files = [manifest allFiles];
-            NSMutableArray* fileOps = [NSMutableArray arrayWithCapacity:[files count]];
-            
-            for (NSString* file in missingFiles) {
-                
-                NSString* sha = [manifest shaForFile:file];
-                NSArray* formats = [manifest formatsForFile:file];
-                
-                NSURL* fileRes = [NSURL zincResourceForObjectWithSHA:sha inCatalogID:catalogID];
-                ZincTaskDescriptor* fileTaskDesc = [ZincObjectDownloadTask taskDescriptorForResource:fileRes];
-                
-                ZincTask* fileOp = [self queueChildTaskForDescriptor:fileTaskDesc input:formats];
-                if (fileOp != nil) {
-                    // can be nil if cancelled
-                    [fileOps addObject:fileOp];
-                }
-            }
-            
-            if (self.isCancelled) return NO;
-            
-            BOOL allSuccessful = YES;
-            for (ZincTask* op in fileOps) {
-                
-                [op waitUntilFinished];
-                if (self.isCancelled) return NO;
-                
-                if (!op.finishedSuccessfully) {
-                    allSuccessful = NO;
-                }
-            }
-            
-            if (!allSuccessful) return NO;
+        // Create the link operation and add it as a child so it's
+        // progress is account into the total progress
+        ZincCreateBundleLinksOperation* linkOp = [[ZincCreateBundleLinksOperation alloc] initWithRepo:self.repo manifest:manifest];
+        [self addChildOperation:linkOp];
+
+        const double filesCost = [self downloadCostForTotalSize:missingSize connectionCount:[missingFiles count]];
+        const double archiveCost = [self downloadCostForTotalSize:totalSize connectionCount:1];
+        const BOOL shouldDownloadArchive = ([missingFiles count] > 1 && archiveCost < filesCost);
+
+        NSArray* downloadTasks;
+        if (shouldDownloadArchive) {
+            downloadTasks = [self buildTasksForDownloadingArchive];
+        } else {
+            downloadTasks = [self buildTasksForDownloadUsingIndividualFilesWithManifest:manifest missingFiles:missingFiles];
         }
+
+        self.isProgressCalculated = YES;
+
+        BOOL success = YES;
+        for (ZincTask* op in downloadTasks) {
+
+            [op waitUntilFinished];
+            if (self.isCancelled) return NO;
+            success &= op.finishedSuccessfully;
+        }
+
+        if (success) {
+            [self queueChildOperation:linkOp];
+            [linkOp waitUntilFinished];
+        }
+        
+        return success;
     }
     return YES;
 }
@@ -205,12 +205,7 @@
         [self completeWithSuccess:NO];
         return;
     }
-    
-    if (![self createBundleLinksForManifest:manifest]) {
-        [self completeWithSuccess:NO];
-        return;
-    }
-    
+
     [self completeWithSuccess:YES];
 }
 

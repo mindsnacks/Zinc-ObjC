@@ -18,6 +18,7 @@
 #import "NSError+Zinc.h"
 #import "NSFileManager+Zinc.h"
 #import "NSData+Zinc.h"
+#import "NSString+Zinc.h"
 
 // Models
 #import "ZincBundle.h"
@@ -33,6 +34,7 @@
 #import "ZincEvent+Private.h"
 
 // Tasks
+#import "ZincTask+Private.h"
 #import "ZincArchiveDownloadTask.h"
 #import "ZincArchiveExtractOperation.h"
 #import "ZincBundleDeleteTask.h"

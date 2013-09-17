@@ -57,6 +57,8 @@
 
 - (void)addProgressTrackingIfNeeded
 {
+    if ([self isFinished]) return;
+
     @synchronized(self) {
         if (self.trackingProgress) return;
         self.trackingProgress = YES;
@@ -85,20 +87,26 @@
 
 - (long long) currentProgressValue
 {
+    if ([self isFinished]) {
+        return [self maxProgressValue];
+    }
+
     [self addProgressTrackingIfNeeded];
     return self.bytesRead;
 }
 
 - (long long) maxProgressValue
 {
-    [self addProgressTrackingIfNeeded];
-    return MAX(self.totalBytesToRead, self.bytesRead);
+    if (self.httpRequestOperation.response != nil) {
+        return [self.httpRequestOperation.response expectedContentLength];
+    }
+    return 0;
 }
 
 - (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
 {
     self.bytesRead = currentBytes;
-    self.totalBytesToRead = totalBytes;
+    self.totalBytesToRead = totalBytes; // TODO: totalBytesToRead not used
 }
 
 - (void)dealloc

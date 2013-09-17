@@ -6,10 +6,17 @@
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
 
-#import "ZincOperation.h"
+#import "ZincOperation+Private.h"
 #import "NSOperation+Zinc.h"
+#import "ZincProgress.h"
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
+
+#define DEFAULT_MAX_PROGRESS_VAL (1000)
+
+@interface ZincOperation ()
+@property (atomic, strong) NSMutableSet* myChildOperations;
+@end
 
 @implementation ZincOperation
 
@@ -32,6 +39,7 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     self = [super init];
     if (self) {
         self.threadPriority = [[self class] defaultThreadPriority];
+        self.myChildOperations = [NSMutableSet set];
     }
     return self;
 }
@@ -49,24 +57,65 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     if ([self isFinished]) {
         return [self maxProgressValue];
     } else {
-        return [[self.zincDependencies valueForKeyPath:@"@sum.currentProgressValue"] longLongValue];
+        return 0;
     }
 }
 
 - (long long) maxProgressValue
 {
-    return [[self.zincDependencies valueForKeyPath:@"@sum.maxProgressValue"] longLongValue] + 1;
+    return DEFAULT_MAX_PROGRESS_VAL;
 }
 
-- (float) progressPercentage
+- (id<ZincProgress>)progress
 {
-    return ZincProgressPercentageCalculate(self);
+    NSArray* items = [[[self allChildren] arrayByAddingObject:self] filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        return [evaluatedObject conformsToProtocol:@protocol(ZincProgress)];
+    }]];
+    return ZincAggregatedProgressCalculate(items);
 }
 
 - (void) addDependency:(NSOperation *)op
 {
     NSAssert(![[op zinc_allDependencies] containsObject:self], @"attempt to add circular dependency\n  Operation: %@\n  Dependency: %@", self, op);
     [super addDependency:op];
+}
+
+- (NSArray*) immediateChildren
+{
+    NSArray* childOps;
+    @synchronized(self) {
+        childOps = [self.myChildOperations allObjects];
+    }
+    return childOps;
+}
+
+- (NSArray*) allChildren
+{
+    NSArray* myChildren = [self immediateChildren];
+    NSMutableSet* allChildren = [NSMutableSet setWithArray:myChildren];
+    for (NSOperation* child in myChildren) {
+        if ([child conformsToProtocol:@protocol(ZincChildren)]) {
+            [allChildren addObjectsFromArray:[(id<ZincChildren>)child allChildren]];
+        }
+    }
+    return [allChildren allObjects];
+}
+
+- (void) addChildOperation:(NSOperation*)childOp
+{
+    @synchronized(self.myChildOperations) {
+        [self.myChildOperations addObject:childOp];
+    }
+    childOp.queuePriority = self.queuePriority;
+    [self addDependency:childOp];
+}
+
+- (void) cancel
+{
+    @synchronized(self.myChildOperations) {
+        [self.myChildOperations makeObjectsPerformSelector:@selector(cancel)];
+    }
+    [super cancel];
 }
 
 @end

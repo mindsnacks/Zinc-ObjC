@@ -32,10 +32,13 @@ describe(@"ZincActivityItem", ^{
     context(@"has an operation", ^{
 
         __block id operation;
+        __block id progress;
 
         beforeEach(^{
             operation = [ZincOperation mock];
-            item.operation = operation;
+            progress = [ZincProgressItem mock];
+            [operation stub:@selector(progress) andReturn:progress];
+            item.subject = operation;
         });
 
         context(@"operation is not finished", ^{
@@ -45,8 +48,8 @@ describe(@"ZincActivityItem", ^{
 
             beforeEach(^{
                 [operation stub:@selector(isFinished) andReturn:theValue(NO)];
-                [operation stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
-                [operation stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
+                [progress stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
+                [progress stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
             });
 
             it(@"has the right progress when updated", ^{
@@ -60,6 +63,7 @@ describe(@"ZincActivityItem", ^{
 
             beforeEach(^{
                 [operation stub:@selector(isFinished) andReturn:theValue(YES)];
+                [operation stub:@selector(progress) andReturn:nil];
             });
 
             it(@"item is finished when updated", ^{
@@ -156,10 +160,7 @@ describe(@"ZincActivitityMonitor", ^{
 
         it(@"should update after refresh interval", ^{
 
-            // set a finished operation on the item
-            __block id operation = [ZincOperation mock];
-            [operation stub:@selector(isFinished) andReturn:theValue(YES)];
-            item.operation = operation;
+            const long long progressValue = 100;
 
             // make sure it's not finished
             [[theValue([item isFinished]) should] beFalse];
@@ -169,8 +170,15 @@ describe(@"ZincActivitityMonitor", ^{
             monitor.refreshInterval = refreshInterval;
             [monitor startMonitoring];
 
+            // set a finished operation on the item
+            __block id operation = [ZincOperation mock];
+            [operation stub:@selector(isFinished) andReturn:theValue(YES)];
+            [operation stub:@selector(currentProgressValue) andReturn:theValue(progressValue)];
+            [operation stub:@selector(maxProgressValue) andReturn:theValue(progressValue)];
+            item.subject = operation;
+
             // and expect it will be finished
-            [[expectFutureValue(theValue([item isFinished])) shouldEventuallyBeforeTimingOutAfter(refreshInterval*2)] beTrue];
+            [[expectFutureValue(theValue([item isFinished])) shouldEventuallyBeforeTimingOutAfter(refreshInterval*3)] beTrue];
         });
     });
 });

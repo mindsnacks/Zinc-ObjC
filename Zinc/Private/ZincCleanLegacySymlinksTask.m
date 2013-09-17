@@ -24,6 +24,16 @@
     return @"CleanLegacySymlinks";
 }
 
+- (id) initWithRepo:(ZincRepo*)repo resourceDescriptor:(NSURL*)resource input:(id)input
+{
+    self = [super initWithRepo:repo resourceDescriptor:resource input:input];
+    if (self) {
+        _totalItemsToClean = ZincProgressNotYetDetermined;
+        _itemsCleaned = ZincProgressNotYetDetermined;
+    }
+    return self;
+}
+
 - (long long) currentProgressValue
 {
     return self.itemsCleaned;
@@ -63,6 +73,7 @@
     NSArray* allBundleURLs = [bundlesEnum allObjects];
     
     self.totalItemsToClean = [allFileURLs count] + [allBundleURLs count];
+    self.itemsCleaned = 0;
     
     // -- Clean Files
     

@@ -30,7 +30,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         _taskRefs = taskRefs;
 
         for (ZincTaskRef* taskRef in taskRefs) {
-            ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self operation:taskRef];
+            ZincActivityItem* item = [[ZincActivityItem alloc] initWithActivityMonitor:self subject:taskRef];
             [self addItem:item];
         }
     }

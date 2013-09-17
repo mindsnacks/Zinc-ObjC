@@ -115,7 +115,7 @@
     // Check if its going to be updating the right version
     if (![self.repo bundleResource:task.taskDescriptor.resource satisfiesVersionSpecifier:item.requirement.versionSpecifier]) return;
 
-    item.operation = task;
+    item.subject = task;
 }
 
 - (void) taskAdded:(NSNotification*)note
@@ -174,34 +174,18 @@
     return [[self repo] hasSpecifiedVersion:self.requirement.versionSpecifier forBundleID:bundleID];
 }
 
-- (BOOL) hasDesiredBundleVersion
+- (BOOL) isFinished
 {
     return [self hasDesiredVersionForBundleID:self.requirement.bundleID];
 }
 
 - (void) update
 {
-    if ([self isFinished]) return;
+    [super update];
 
-    if ([self hasDesiredBundleVersion]) {
-        
-        [self finish];
-
-    } else if (self.operation != nil) {
-
-        if ([self.operation isFinished]) {
-
-            // the task finished, but the desired version is still not
-            // available. nil out the task and wait for another one
-            [self updateCurrentProgressValue:0 maxProgressValue:self.operation.maxProgressValue];
-            self.operation = nil;
-            self.currentProgressValue = 0;
-
-        } else {
-
-            // the operation is valid, use it's progress
-            [self updateFromProgress:self.operation];
-        }
+    if ([self.subject isFinished] && ![self isFinished]) {
+        self.currentProgressValue = 0;
+        self.subject = nil;
     }
 }
 
