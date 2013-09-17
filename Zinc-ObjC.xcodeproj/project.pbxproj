@@ -545,6 +545,7 @@
 		B3DD9D9D17C58071003D6A21 /* ZincTaskRef+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZincTaskRef+Private.h"; sourceTree = "<group>"; };
 		B3DD9D9E17C581F2003D6A21 /* UIImage+ZincHelpers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ZincHelpers.h"; sourceTree = "<group>"; };
 		B3DD9D9F17C581F2003D6A21 /* UIImage+ZincHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ZincHelpers.m"; sourceTree = "<group>"; };
+		B3E039B817E8C6CA00575189 /* ZincChildren.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZincChildren.h; sourceTree = "<group>"; };
 		B3E46AB514C0DEDA00030349 /* UIImageZincTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageZincTests.m; sourceTree = "<group>"; };
 		B3E46B5414C3DF7800030349 /* ZincUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincUtils.h; sourceTree = "<group>"; };
 		B3E46B5514C3DF7800030349 /* ZincUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincUtils.m; sourceTree = "<group>"; };
@@ -972,6 +973,7 @@
 				B3E46B5414C3DF7800030349 /* ZincUtils.h */,
 				B327070C14BCC722004E3244 /* ZincTask.h */,
 				B347EBDE15C3593500FA0649 /* ZincOperation.h */,
+				B3E039B817E8C6CA00575189 /* ZincChildren.h */,
 			);
 			name = "Public Headers";
 			path = Public;
