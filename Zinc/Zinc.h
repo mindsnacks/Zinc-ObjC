@@ -26,7 +26,7 @@
 #import <Zinc/ZincRepoMonitor.h>
 #import <Zinc/ZincBundleAvailabilityMonitor.h>
 
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     #import <Zinc/UIImage+Zinc.h>
 #endif
 
