@@ -23,7 +23,11 @@
     NSString* ext = [path pathExtension];
 
     fileName = [fileName stringByAppendingString:@"@2x"];
-    file = [fileName stringByAppendingPathExtension:ext];
+    if ([ext length] > 0) {
+        file = [fileName stringByAppendingPathExtension:ext];
+    } else {
+        file = fileName;
+    }
     path = [dir stringByAppendingPathComponent:file];
 
     return path;
@@ -42,7 +46,11 @@
     NSString* ext = [path pathExtension];
 
     fileName = [fileName substringToIndex:[fileName length] - [@"@2x" length]];
-    file = [fileName stringByAppendingPathExtension:ext];
+    if ([ext length] > 0) {
+        file = [fileName stringByAppendingPathExtension:ext];
+    } else {
+        file = fileName;
+    }
     path = [dir stringByAppendingPathComponent:file];
 
     return path;

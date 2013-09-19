@@ -10,9 +10,14 @@
 
 @interface NSOperation (Zinc)
 
+/**
+ @param includeChildren should try to include children by checking if operations conform to the `ZincChildren` protocol
+ @return recursively generate *all* dependencies of the operation
+ */
+- (NSSet*) zinc_allDependenciesIncludingChildren:(BOOL)includeChildren;
 
 /**
- @discussion returns ALL dependencies of the operation, recursively.
+ @return recursively generate *all* dependencies of the operation. Does not include children.
  */
 - (NSSet*) zinc_allDependencies;
 

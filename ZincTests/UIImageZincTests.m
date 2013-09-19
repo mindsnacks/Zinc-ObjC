@@ -44,5 +44,32 @@
     STAssertTrue([p2 isEqualToString:@"image.png"], @"path wrong");
 }
 
+- (void) test2xPathFrom1xPath_no_extension
+{
+    NSString* p1 = @"image";
+    NSString* p2 = [UIImage zinc2xPathForImagePath:p1];
+    STAssertTrue([p2 isEqualToString:@"image@2x"], @"path wrong");
+}
+
+- (void) test2xPathFrom2xPath_no_extension
+{
+    NSString* p1 = @"image@2x";
+    NSString* p2 = [UIImage zinc2xPathForImagePath:p1];
+    STAssertTrue([p2 isEqualToString:@"image@2x"], @"path wrong");
+}
+
+- (void) test1xPathFrom2xPath_no_extension
+{
+    NSString* p1 = @"image@2x";
+    NSString* p2 = [UIImage zinc1xPathForImagePath:p1];
+    STAssertTrue([p2 isEqualToString:@"image"], @"path wrong: %@", p2);
+}
+
+- (void) test1xPathFrom1xPath_no_extension
+{
+    NSString* p1 = @"image";
+    NSString* p2 = [UIImage zinc1xPathForImagePath:p1];
+    STAssertTrue([p2 isEqualToString:@"image"], @"path wrong");
+}
 
 @end
