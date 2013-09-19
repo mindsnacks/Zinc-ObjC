@@ -3,5 +3,5 @@ before_install:
     - brew update
     - brew unlink xctool
     - brew install xctool
-script: xctool -workspace Zinc-ObjC.xcworkspace -scheme Zinc -sdk iphonesimulator run-tests 
+script: rake test
 
