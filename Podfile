@@ -1,13 +1,18 @@
 platform :ios, "6.0"
 inhibit_all_warnings!
 
-podspec :path => "Zinc.podspec"
+target :Zinc do
+	podspec :path => "Zinc.podspec"
 
-target :ZincTests, :exclusive => true do
-	pod 'OCMock', '~> 2.2.1'
-	pod 'Kiwi', '~> 2.2.1'
+	target :Tests do
+		pod 'OCMock', '~> 2.2.1'
+		pod 'Kiwi', '~> 2.2.1'
+		link_with 'ZincTests'
+	end
+
+	target :FunctionalTests do
+		pod 'GHUnitIOS', '~> 0.5.6'
+		link_with 'ZincFunctionalTests'
+	end
 end
 
-target :ZincFunctionalTests, :exclusive => true do
-	pod 'GHUnitIOS', '~> 0.5.6'
-end
