@@ -44,8 +44,25 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
         });
 
         it(@"should have zero progress", ^{
-            [[theValue(item.currentProgressValue) should] equal:theValue(ZincProgressNotYetDetermined)];
-            [[theValue(item.maxProgressValue) should] equal:theValue(ZincProgressNotYetDetermined)];
+            [[theValue(item.currentProgressValue) should] equal:theValue(0)];
+            [[theValue(item.maxProgressValue) should] equal:theValue(kZincBundleAvailabilityMonitorActivityItemMaxProgressValue)];
+        });
+
+        context(@"the bundle is available", ^{
+
+            beforeEach(^{
+                [repo stub:@selector(hasSpecifiedVersion:forBundleID:) andReturn:theValue(YES) withArguments:any(), bundleID];
+                [item update];
+            });
+
+            specify(^{
+                [[theValue([item currentProgressValue]) should] equal:theValue([item maxProgressValue])];
+            });
+
+            specify(^{
+                [[theValue([item isFinished]) should] beTrue];
+            });
+
         });
     });
 
@@ -96,7 +113,6 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
 
                     it(@"should reset progress", ^{
                         [[theValue(item.currentProgressValue) should] equal:theValue(0)];
-                        [[theValue(item.maxProgressValue) should] equal:theValue(operationProgressValue)];
                     });
 
                 });
@@ -106,17 +122,19 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
 
                 const long long currentProgressValue = 10;
                 const long long maxProgressValue = 100;
+                const float progressPercentage = 0.1f;
 
                 beforeEach(^{
                     [operation stub:@selector(isFinished) andReturn:theValue(NO)];
                     [(id)[operation progress] stub:@selector(currentProgressValue) andReturn:theValue(currentProgressValue)];
                     [(id)[operation progress] stub:@selector(maxProgressValue) andReturn:theValue(maxProgressValue)];
+                    [(id)[operation progress] stub:@selector(progressPercentage) andReturn:theValue(progressPercentage)];
+
                     [item update];
                 });
 
                 it(@"has the right progress when updated", ^{
-                    [[theValue(item.currentProgressValue) should] equal:theValue(currentProgressValue)];
-                    [[theValue(item.maxProgressValue) should] equal:theValue(maxProgressValue)];
+                    [[theValue(item.currentProgressValue) should] equal:progressPercentage*kZincBundleAvailabilityMonitorActivityItemMaxProgressValue withDelta:0.01];
                 });
 
                 specify(^{

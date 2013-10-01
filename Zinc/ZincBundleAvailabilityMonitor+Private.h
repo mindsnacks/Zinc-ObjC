@@ -8,6 +8,8 @@
 
 #import "ZincBundleAvailabilityMonitor.h"
 
+#define kZincBundleAvailabilityMonitorActivityItemMaxProgressValue (10000)
+
 
 @interface ZincBundleAvailabilityMonitorActivityItem ()
 

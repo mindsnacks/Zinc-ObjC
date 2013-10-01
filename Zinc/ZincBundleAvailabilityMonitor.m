@@ -159,6 +159,8 @@
     self = [super initWithActivityMonitor:monitor];
     if (self) {
         _requirement = requirement;
+        self.currentProgressValue = 0;
+        self.maxProgressValue = kZincBundleAvailabilityMonitorActivityItemMaxProgressValue;
     }
     return self;
 }
@@ -181,11 +183,22 @@
 
 - (void) update
 {
-    [super update];
+    if (self.subject != nil)
+    {
+        float subjectProgress = ZincProgressPercentageCalculate([self.subject progress]);
+        self.currentProgressValue = subjectProgress * kZincBundleAvailabilityMonitorActivityItemMaxProgressValue;
+    }
 
-    if ([self.subject isFinished] && ![self isFinished]) {
-        self.currentProgressValue = 0;
-        self.subject = nil;
+    if ([self isFinished])
+    {
+        self.currentProgressValue = kZincBundleAvailabilityMonitorActivityItemMaxProgressValue;
+
+    } else {
+        
+        if ([self.subject isFinished]) {
+            self.currentProgressValue = 0;
+            self.subject = nil;
+        }
     }
 }
 
