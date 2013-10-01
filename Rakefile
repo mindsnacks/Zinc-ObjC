@@ -1,8 +1,4 @@
 task :test do
-
-	## xctool isn't running kiwi specs...
-	#sh "xctool -workspace Zinc-ObjC.xcworkspace -scheme Zinc -sdk iphonesimulator test"
-	
-	sh "xcodebuild -workspace Zinc-ObjC.xcworkspace -scheme Zinc -sdk iphonesimulator -arch i386 test"
+	sh "xctool -workspace Zinc-ObjC.xcworkspace -scheme Zinc -reporter pretty -sdk iphonesimulator ONLY_ACTIVE_ARCH=NO test"
 end
 
