@@ -2,6 +2,7 @@ platform :ios, "6.0"
 inhibit_all_warnings!
 
 target :Zinc do
+	pod 'AMError', :git => 'https://github.com/amrox/AMError.git'
 	podspec :path => "Zinc.podspec"
 
 	target :Tests do

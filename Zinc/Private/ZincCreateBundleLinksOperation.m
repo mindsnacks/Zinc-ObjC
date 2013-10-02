@@ -91,7 +91,7 @@
     for (NSString* relativeDir in allDirs) {
         NSString* fullDir = [bundlePath stringByAppendingPathComponent:relativeDir];
         if (![fm zinc_createDirectoryIfNeededAtPath:fullDir error:&error]) {
-            self.error = AMErrorAddOriginToError(error);
+            self.error = AMErrorWrap(error);
             return;
         }
     }
@@ -104,7 +104,7 @@
             if (createLink) {
                 NSString* shaPath = [self.repo pathForFileWithSHA:[self.manifest shaForFile:file]];
                 if (![fm linkItemAtPath:shaPath toPath:filePath error:&error]) {
-                    self.error = AMErrorAddOriginToError(error);
+                    self.error = AMErrorWrap(error);
                     return;
                 }
             }
