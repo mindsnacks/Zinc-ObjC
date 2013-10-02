@@ -108,7 +108,8 @@ describe(@"ZincBundleAvailabilityMonitorActivityItem", ^{
                     });
 
                     it(@"should unassociate the operation", ^{
-                        [[(NSObject*)item.subject should] beNil];
+                        // this is an ugly expection but it wasn't compiling any other way
+                        [[theValue(item.subject == nil) should] beTrue];
                     });
 
                     it(@"should reset progress", ^{
@@ -299,7 +300,8 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             it(@"should not associate the task when started", ^{
                 [monitor startMonitoring];
                 ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-                [[(NSObject *)item.subject should] beNil];
+                // this is an ugly expection but it wasn't compiling any other way
+                [[theValue(item.subject == nil) should] beTrue];
             });
         });
     });
@@ -396,7 +398,8 @@ describe(@"ZincBundleAvailabilityMonitor", ^{
             initializeMonitor(ZincBundleVersionSpecifierCatalogOnly);
             [monitor startMonitoring];
             ZincBundleAvailabilityMonitorActivityItem* item = (ZincBundleAvailabilityMonitorActivityItem*)[[monitor items] objectAtIndex:0];
-            [[(NSObject*)item.subject should] beNil];
+            // this is an ugly expection but it wasn't compiling any other way
+            [[theValue(item.subject == nil) should] beTrue];
         });
     });
 });
