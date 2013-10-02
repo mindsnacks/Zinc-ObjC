@@ -3,7 +3,7 @@ inhibit_all_warnings!
 
 target "ZincTests" do
 	pod 'OCMock', '~> 2.2.1'
-	pod 'Kiwi', '~> 2.2.1'
+	pod 'Kiwi', '~> 1.1.1'
 end
 
 target "Zinc Functional Tests" do
