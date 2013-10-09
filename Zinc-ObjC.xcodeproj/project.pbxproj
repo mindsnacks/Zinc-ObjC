@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 3961E34F1649E4700008A65B /* Default-568h@2x.png */; };
 		54379984A7D44B67979C88D4 /* libPods-Zinc-FunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98567F54C9A94AB1A0663A24 /* libPods-Zinc-FunctionalTests.a */; };
 		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
 		B30716C517C1C0C8007705F3 /* ZincModelObject.h in Headers */ = {isa = PBXBuildFile; fileRef = B30716C317C1C0C8007705F3 /* ZincModelObject.h */; };
@@ -243,6 +242,7 @@
 		B3BFF9E115C62363005A879E /* ZincTaskRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BFF9DF15C62363005A879E /* ZincTaskRef.m */; };
 		B3C4B55B1804DFD0002B1140 /* libPods-Zinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */; };
 		B3C4B55C1804DFE4002B1140 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
+		B3C4B55E1804E1FD002B1140 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B3C4B55D1804E1FD002B1140 /* Default-568h@2x.png */; };
 		B3C512B2175E57FB00E5A93B /* ZincRepoTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B3C512B0175E57FB00E5A93B /* ZincRepoTaskManager.h */; };
 		B3C512B3175E57FB00E5A93B /* ZincRepoTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C512B1175E57FB00E5A93B /* ZincRepoTaskManager.m */; };
 		B3C5E20917C03F6A00B1EA19 /* ZincAgentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C5E20817C03F6A00B1EA19 /* ZincAgentTests.m */; };
@@ -332,7 +332,6 @@
 
 /* Begin PBXFileReference section */
 		33C9F7CDD3DC4BE8AAC529A9 /* Pods-Zinc-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc-Tests.xcconfig"; path = "Pods/Pods-Zinc-Tests.xcconfig"; sourceTree = "<group>"; };
-		3961E34F1649E4700008A65B /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "../Default-568h@2x.png"; sourceTree = "<group>"; };
 		4DF903572D4B405F8361AFBA /* libPods-Zinc-ZincTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc-ZincTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D9EAE466FC244928D4779AB /* libPods-Zinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc.xcconfig"; path = "Pods/Pods-Zinc.xcconfig"; sourceTree = "<group>"; };
@@ -516,6 +515,7 @@
 		B3BFF9DE15C62363005A879E /* ZincTaskRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskRef.h; sourceTree = "<group>"; };
 		B3BFF9DF15C62363005A879E /* ZincTaskRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskRef.m; sourceTree = "<group>"; };
 		B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libPods-Zinc.a"; path = "Pods/build/Debug-iphoneos/libPods-Zinc.a"; sourceTree = "<group>"; };
+		B3C4B55D1804E1FD002B1140 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B3C512B0175E57FB00E5A93B /* ZincRepoTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoTaskManager.h; sourceTree = "<group>"; };
 		B3C512B1175E57FB00E5A93B /* ZincRepoTaskManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoTaskManager.m; sourceTree = "<group>"; };
 		B3C5E20817C03F6A00B1EA19 /* ZincAgentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgentTests.m; sourceTree = "<group>"; };
@@ -687,11 +687,9 @@
 		B33A363316991112007F0A57 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				3961E34F1649E4700008A65B /* Default-568h@2x.png */,
 				B33A363A16991124007F0A57 /* com.mindsnacks.demo1.cats */,
 			);
 			name = Resources;
-			path = ZincTests;
 			sourceTree = "<group>";
 		};
 		B33A363A16991124007F0A57 /* com.mindsnacks.demo1.cats */ = {
@@ -707,6 +705,7 @@
 		B340F96B148D521000206F86 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				B3C4B55D1804E1FD002B1140 /* Default-568h@2x.png */,
 				B393432B1588144200C81A4F /* sphalerite.jpg */,
 				B393432C1588144200C81A4F /* sphalerite@2x.jpg */,
 				B3E743B615998B9F0098DB19 /* com.mindsnacks.demo1.cats.json */,
@@ -736,6 +735,7 @@
 		B340F984148D52D800206F86 /* ZincTests */ = {
 			isa = PBXGroup;
 			children = (
+				B33A363316991112007F0A57 /* Resources */,
 				B3AE827A17DFD89B003AA609 /* ZincTestDummies.h */,
 				B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */,
 				B3AE828017DFFCDF003AA609 /* ZincMockFactory.h */,
@@ -806,7 +806,6 @@
 				B33A36051698F3A5007F0A57 /* ZincFunctionalTests */,
 				B387430E1489B830004B227B /* ZincDemo */,
 				B36388A417E184F000F2BBE4 /* zinc-object-untar */,
-				B33A363316991112007F0A57 /* Resources */,
 				B38743071489B830004B227B /* Frameworks */,
 				B38743051489B830004B227B /* Products */,
 			);
@@ -1367,9 +1366,9 @@
 				B32EEBC81500490D005F9917 /* ImageFileViewController.xib in Resources */,
 				B393432D1588144200C81A4F /* sphalerite.jpg in Resources */,
 				B393432E1588144200C81A4F /* sphalerite@2x.jpg in Resources */,
+				B3C4B55E1804E1FD002B1140 /* Default-568h@2x.png in Resources */,
 				B3E743B815998B9F0098DB19 /* com.mindsnacks.demo1.cats.json in Resources */,
 				B3E743B915998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar in Resources */,
-				3961E3501649E4710008A65B /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
