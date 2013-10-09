@@ -10,7 +10,7 @@
 
 @interface ZincDownloadTask : ZincTask
 
-@property (readonly) NSInteger bytesRead;
-@property (readonly) NSInteger totalBytesToRead;
+@property (readonly) long long bytesRead;
+@property (readonly) long long totalBytesToRead;
 
 @end

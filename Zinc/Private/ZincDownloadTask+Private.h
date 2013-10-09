@@ -12,8 +12,8 @@
 
 @interface ZincDownloadTask ()
 
-@property (readwrite) NSInteger bytesRead;
-@property (readwrite) NSInteger totalBytesToRead;
+@property (readwrite) long long bytesRead;
+@property (readwrite) long long totalBytesToRead;
 
 @property (nonatomic, strong, readwrite) ZincHTTPRequestOperation* httpRequestOperation;
 
