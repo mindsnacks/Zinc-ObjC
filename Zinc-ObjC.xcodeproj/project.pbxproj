@@ -98,7 +98,6 @@
 		B340F983148D52D800206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
 		B340F989148D52D800206F86 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B340F987148D52D800206F86 /* InfoPlist.strings */; };
 		B340F996148D543B00206F86 /* ZincBundle.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F994148D543B00206F86 /* ZincBundle.m */; };
-		B340F999148D546300206F86 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
 		B340F9BC148D5C6200206F86 /* ZincBundleTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B340F9BB148D5C6200206F86 /* ZincBundleTests.m */; };
 		B340FA05148D608D00206F86 /* NSFileManager+Zinc.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA03148D608D00206F86 /* NSFileManager+Zinc.m */; };
 		B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = B340FA0B148D67C400206F86 /* SenTestCase+MethodSwizzling.m */; };
@@ -242,6 +241,8 @@
 		B3B7BA96157D436C00613B8B /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AD8B7114FD7CBD00B5F9ED /* CFNetwork.framework */; };
 		B3BE1CDA14D79ECA00C61515 /* ZincDownloadTask.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BE1CD814D79EC800C61515 /* ZincDownloadTask.m */; };
 		B3BFF9E115C62363005A879E /* ZincTaskRef.m in Sources */ = {isa = PBXBuildFile; fileRef = B3BFF9DF15C62363005A879E /* ZincTaskRef.m */; };
+		B3C4B55B1804DFD0002B1140 /* libPods-Zinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */; };
+		B3C4B55C1804DFE4002B1140 /* libZinc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B340F970148D52D800206F86 /* libZinc.a */; };
 		B3C512B2175E57FB00E5A93B /* ZincRepoTaskManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B3C512B0175E57FB00E5A93B /* ZincRepoTaskManager.h */; };
 		B3C512B3175E57FB00E5A93B /* ZincRepoTaskManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C512B1175E57FB00E5A93B /* ZincRepoTaskManager.m */; };
 		B3C5E20917C03F6A00B1EA19 /* ZincAgentTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3C5E20817C03F6A00B1EA19 /* ZincAgentTests.m */; };
@@ -514,6 +515,7 @@
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
 		B3BFF9DE15C62363005A879E /* ZincTaskRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskRef.h; sourceTree = "<group>"; };
 		B3BFF9DF15C62363005A879E /* ZincTaskRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskRef.m; sourceTree = "<group>"; };
+		B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libPods-Zinc.a"; path = "Pods/build/Debug-iphoneos/libPods-Zinc.a"; sourceTree = "<group>"; };
 		B3C512B0175E57FB00E5A93B /* ZincRepoTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoTaskManager.h; sourceTree = "<group>"; };
 		B3C512B1175E57FB00E5A93B /* ZincRepoTaskManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoTaskManager.m; sourceTree = "<group>"; };
 		B3C5E20817C03F6A00B1EA19 /* ZincAgentTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincAgentTests.m; sourceTree = "<group>"; };
@@ -638,10 +640,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3C4B55C1804DFE4002B1140 /* libZinc.a in Frameworks */,
+				B3C4B55B1804DFD0002B1140 /* libPods-Zinc.a in Frameworks */,
 				B3ACA22C15DCC94C000C842D /* SystemConfiguration.framework in Frameworks */,
 				B3AD8B7214FD7CBD00B5F9ED /* CFNetwork.framework in Frameworks */,
 				B30B763C14B75750004E6587 /* libz.dylib in Frameworks */,
-				B340F999148D546300206F86 /* libZinc.a in Frameworks */,
 				B38743091489B830004B227B /* UIKit.framework in Frameworks */,
 				B387430B1489B830004B227B /* Foundation.framework in Frameworks */,
 				B387430D1489B830004B227B /* CoreGraphics.framework in Frameworks */,
@@ -825,6 +828,7 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */,
 				B3DD9D5C17C2D050003D6A21 /* Security.framework */,
 				B30B763B14B75750004E6587 /* libz.dylib */,
 				B329B05C14E3152D0091019F /* libcommonCrypto.dylib */,
@@ -1287,7 +1291,6 @@
 				B38743011489B830004B227B /* Frameworks */,
 				B38743021489B830004B227B /* Resources */,
 				B3F761001582807C00B2C194 /* ShellScript */,
-				36F8943765DE4D2C9A07DB3C /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1388,20 +1391,6 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
-		};
-		36F8943765DE4D2C9A07DB3C /* Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-resources.sh\"\n";
 		};
 		4A0E0FCF5FB349038F993E9E /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2025,6 +2014,7 @@
 		};
 		B38743231489B830004B227B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
@@ -2039,6 +2029,7 @@
 		};
 		B38743241489B830004B227B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";

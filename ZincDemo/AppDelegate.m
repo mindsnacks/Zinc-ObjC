@@ -9,12 +9,7 @@
 #import "AppDelegate.h"
 
 #import "BundleListViewController.h"
-#import "ZincRepo.h"
-#import "ZincRepo+Private.h"
-#import "ZincEvent.h"
-#import "ZincUtils.h"
-#import "UIImage+Zinc.h"
-#import <Zinc/Zinc.h>
+
 
 @interface AppDelegate()
 @property (strong, nonatomic) BundleListViewController *viewController;
@@ -22,8 +17,6 @@
 
 @implementation AppDelegate
 
-@synthesize window = _window;
-@synthesize viewController = _viewController;
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {   
@@ -82,7 +75,7 @@
     NSError* error = nil;
     
     NSURL* repoURL = [NSURL fileURLWithPath:
-                      [AMGetApplicationDocumentsDirectory()
+                      [ZincGetApplicationDocumentsDirectory()
                        stringByAppendingPathComponent:@"zinc"]];
     
     NSLog(@"repo path: %@", [repoURL path]);
