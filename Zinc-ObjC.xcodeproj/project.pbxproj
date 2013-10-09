@@ -802,11 +802,11 @@
 			children = (
 				B3A395FA16CEB58D000C4F83 /* Build Settings */,
 				B340F972148D52D800206F86 /* Zinc */,
-				B387430E1489B830004B227B /* Demo */,
 				B340F984148D52D800206F86 /* ZincTests */,
 				B33A36051698F3A5007F0A57 /* ZincFunctionalTests */,
-				B33A363316991112007F0A57 /* Resources */,
+				B387430E1489B830004B227B /* ZincDemo */,
 				B36388A417E184F000F2BBE4 /* zinc-object-untar */,
+				B33A363316991112007F0A57 /* Resources */,
 				B38743071489B830004B227B /* Frameworks */,
 				B38743051489B830004B227B /* Products */,
 			);
@@ -850,7 +850,7 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B387430E1489B830004B227B /* Demo */ = {
+		B387430E1489B830004B227B /* ZincDemo */ = {
 			isa = PBXGroup;
 			children = (
 				B38743171489B830004B227B /* AppDelegate.h */,
@@ -866,7 +866,6 @@
 				B387430F1489B830004B227B /* Supporting Files */,
 				B340F96B148D521000206F86 /* Resources */,
 			);
-			name = Demo;
 			path = ZincDemo;
 			sourceTree = "<group>";
 		};
