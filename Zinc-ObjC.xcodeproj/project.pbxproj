@@ -514,7 +514,7 @@
 		B3BE1CDB14D79F0700C61515 /* ZincDownloadTask+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincDownloadTask+Private.h"; sourceTree = "<group>"; };
 		B3BFF9DE15C62363005A879E /* ZincTaskRef.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskRef.h; sourceTree = "<group>"; };
 		B3BFF9DF15C62363005A879E /* ZincTaskRef.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskRef.m; sourceTree = "<group>"; };
-		B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libPods-Zinc.a"; path = "Pods/build/Debug-iphoneos/libPods-Zinc.a"; sourceTree = "<group>"; };
+		B3C4B55A1804DFD0002B1140 /* libPods-Zinc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-Zinc.a"; path = "Pods/build/Debug-iphoneos/libPods-Zinc.a"; sourceTree = "<group>"; };
 		B3C4B55D1804E1FD002B1140 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B3C512B0175E57FB00E5A93B /* ZincRepoTaskManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincRepoTaskManager.h; sourceTree = "<group>"; };
 		B3C512B1175E57FB00E5A93B /* ZincRepoTaskManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincRepoTaskManager.m; sourceTree = "<group>"; };
@@ -1267,9 +1267,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B363891217E1863400F2BBE4 /* Build configuration list for PBXNativeTarget "Zinc-OSX" */;
 			buildPhases = (
+				76D23E073848481FA4810624 /* Check Pods Manifest.lock */,
 				B36388B217E1863400F2BBE4 /* Sources */,
 				B36388F017E1863400F2BBE4 /* Frameworks */,
 				B36388F217E1863400F2BBE4 /* Headers */,
+				B5F46B361EF44E73891E1EE0 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1448,6 +1450,21 @@
 			shellScript = "\"${SRCROOT}/Pods/Pods-Zinc-FunctionalTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		76D23E073848481FA4810624 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
 		87627306861E46F6BEA17D38 /* Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1503,6 +1520,21 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "echo \"Warning: local manifest generation disabled\"\n#./Zinc/Scripts/generate_manifest_from_local_files.py -x";
+		};
+		B5F46B361EF44E73891E1EE0 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Pods-Zinc-resources.sh\"\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
