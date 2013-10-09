@@ -210,7 +210,7 @@
         ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:NO];
         NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
-        ZincBundleState state = [versionInfo[[@(bundleVersion) stringValue]] integerValue];
+        ZincBundleState state = (ZincBundleState)[versionInfo[[@(bundleVersion) stringValue]] integerValue];
         return state;
     }
 }
@@ -260,7 +260,7 @@
             NSDictionary* versionInfo = bundleInfo[@"versions"];
             NSArray* allVersions = [versionInfo allKeys];
             for (NSNumber* version in allVersions) {
-                ZincBundleState state = [versionInfo[version] integerValue];
+                ZincBundleState state = (ZincBundleState)[versionInfo[version] integerValue];
                 if (state == targetState) {
                     [set addObject:[NSURL zincResourceForBundleWithID:bundleID version:[version integerValue]]];
                 }
@@ -430,7 +430,7 @@
         NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
         NSArray* versionKeys = [versionInfo allKeys];
         for (NSString* versionKey in versionKeys) {
-            ZincBundleState state = [versionInfo[versionKey] integerValue];
+            ZincBundleState state = (ZincBundleState)[versionInfo[versionKey] integerValue];
             versionInfo[versionKey] = ZincBundleStateName[state];
         }
     }
