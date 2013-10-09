@@ -40,6 +40,10 @@ basically just tags. This allows clients to track a tag such as `master`
 instead of the version directly. Then whenever the `master` distribution is
 updated, clients will automatically download the changes.
 
+## Other clients:
+  - [Python](https://github.com/mindsnacks/Zinc)
+  - [Java](https://github.com/mindsnacks/JavaZinc/)
+
 ## Acknowledgements
 
 Zinc-ObjC incorporates code from the following:
