@@ -8,8 +8,8 @@
 
 #define kZincErrorDomain kZincPackageName
 
-#define ZincError(E) AMError(E, kZincErrorDomain)
-#define ZincErrorWithInfo(E,I) AMErrorWithInfo(E,kZincErrorDomain,I) 
+#define ZincError(code) AMErrorMake(kZincErrorDomain, code)
+#define ZincErrorWithInfo(code, info) AMErrorMakeWithInfo(kZincErrorDomain, code, info)
 
 enum 
 {

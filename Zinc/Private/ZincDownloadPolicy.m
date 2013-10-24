@@ -71,7 +71,7 @@ NSString* const ZincDownloadPolicyPriorityChangePriorityKey = @"priority";
         for (NSNumber* connectionType in connectionTypes) {
             NSNumber* registeredPriority = self.prioritiesByRequiredConnectionType[connectionType];
             if (priority >= [registeredPriority integerValue]) {
-                return [connectionType integerValue];
+                return (ZincConnectionType)[connectionType integerValue];
             }
         }
         return self.defaultRequiredConnectionType;

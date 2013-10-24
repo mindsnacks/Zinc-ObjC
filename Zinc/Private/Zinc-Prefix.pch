@@ -9,5 +9,5 @@
         #import <MobileCoreServices/MobileCoreServices.h>
         #import <SystemConfiguration/SystemConfiguration.h>
     #endif
-    #import "AMFoundation.h"
+    #import <AMError/AMError.h>
 #endif
