@@ -45,7 +45,7 @@
 
 @interface ZincDownloadCompleteEvent ()
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size;
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(long long)size;
 
 @end
 

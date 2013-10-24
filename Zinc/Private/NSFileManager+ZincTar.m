@@ -62,7 +62,7 @@
 @interface ZincNSFileManagerTarHelper : NSObject
 + (char)typeForObject:(id)object atOffset:(unsigned long long)offset;
 + (NSString*)nameForObject:(id)object atOffset:(unsigned long long)offset;
-+ (unsigned long long)sizeForObject:(id)object atOffset:(unsigned long long)offset;
++ (NSUInteger)sizeForObject:(id)object atOffset:(unsigned long long)offset;
 + (NSData*)dataForObject:(id)object inRange:(NSRange)range;
 @end
 
@@ -129,7 +129,7 @@
 #endif
                 NSString *filePath = [path stringByAppendingPathComponent:name]; // Create a full path from the name
                 
-                long size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
+                NSUInteger size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
                 
                 if (size == 0){
 #ifdef TAR_VERBOSE_LOG_MODE
@@ -179,7 +179,7 @@
 #ifdef TAR_VERBOSE_LOG_MODE
                 NSLog(@"UNTAR - unsupported block"); 
 #endif
-                long size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
+                unsigned long long size = [ZincNSFileManagerTarHelper sizeForObject:tarObject atOffset:location];
                 blockCount += (size-1)/TAR_BLOCK_SIZE+1; // size/TAR_BLOCK_SIZE rounded up
                 break;
             }          
@@ -252,12 +252,14 @@
     return [NSString stringWithCString:nameBytes encoding:NSASCIIStringEncoding];
 }
 
-+ (unsigned long long)sizeForObject:(id)object atOffset:(unsigned long long)offset
++ (NSUInteger)sizeForObject:(id)object atOffset:(unsigned long long)offset
 {
     char sizeBytes[TAR_SIZE_SIZE+1]; // TAR_SIZE_SIZE+1 for nul char at end
     memset(&sizeBytes, '\0', TAR_SIZE_SIZE+1); // Fill byte array with nul char
     memcpy(&sizeBytes,[self dataForObject:object inRange:NSMakeRange(offset+TAR_SIZE_POSITION, TAR_SIZE_SIZE)].bytes, TAR_SIZE_SIZE);
-    return strtol(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal
+    unsigned long long size = strtoull(sizeBytes, NULL, 8); // Size is an octal number, convert to decimal;
+    NSAssert(size <= NSUIntegerMax, @"cannot handle size");
+    return (NSUInteger)size;
 }
 
 + (NSData*)dataForObject:(id)object inRange:(NSRange)range

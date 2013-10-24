@@ -16,8 +16,10 @@
 
 BOOL ZincGzipInflate(NSString* sourcePath, NSString* destPath, size_t bufferSize, NSError** outError)
 {
+    assert(bufferSize <= UINT_MAX);  // [self length] greater than UINT_MAX
+
     NSError* error = nil;
-    
+
     CFURLRef inputURL = CFURLCreateWithFileSystemPath(kCFAllocatorDefault,
                                                       (CFStringRef)sourcePath,
                                                       kCFURLPOSIXPathStyle,
@@ -73,11 +75,11 @@ BOOL ZincGzipInflate(NSString* sourcePath, NSString* destPath, size_t bufferSize
                                                   (uint8_t*)inputBuffer,
                                                   (CFIndex)sizeof(inputBuffer));
         strm.next_in = inputBuffer;
-        strm.avail_in = bytesReadCount;
+        strm.avail_in = (unsigned int)bytesReadCount;
         
         do {
             strm.next_out = outputBuffer;
-            strm.avail_out = bufferSize;
+            strm.avail_out = (unsigned int)bufferSize;
             
             inflate_status = inflate(&strm, Z_SYNC_FLUSH);
             if (inflate_status < 0) {

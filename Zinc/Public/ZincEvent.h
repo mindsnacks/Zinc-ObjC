@@ -89,7 +89,7 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 @interface ZincDownloadCompleteEvent : ZincEvent 
 
 @property (readonly) NSURL* url;
-@property (readonly) NSInteger size;
+@property (readonly) long long size;
 
 @end
 

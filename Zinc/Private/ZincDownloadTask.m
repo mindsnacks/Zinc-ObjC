@@ -103,7 +103,7 @@
     return [self isFinished] ? 0 : ZincProgressNotYetDetermined;
 }
 
-- (void) updateCurrentBytes:(NSInteger)currentBytes totalBytes:(NSInteger)totalBytes
+- (void) updateCurrentBytes:(long long)currentBytes totalBytes:(long long)totalBytes
 {
     self.bytesRead = currentBytes;
     self.totalBytesToRead = totalBytes; // TODO: totalBytesToRead not used

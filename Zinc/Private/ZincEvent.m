@@ -184,7 +184,7 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 
 @implementation ZincDownloadCompleteEvent
 
-+ (id) downloadCompleteEventForURL:(NSURL*)url size:(NSInteger)size
++ (id) downloadCompleteEventForURL:(NSURL*)url size:(long long)size
 {
     NSDictionary* attr = @{kZincEventAttributesURLKey: url,
                           kZincEventAttributesSizeKey: @(size)};
@@ -208,9 +208,9 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
     return (self.attributes)[kZincEventAttributesURLKey];
 }
 
-- (NSInteger) size
+- (long long) size
 {
-    return [(self.attributes)[kZincEventAttributesSizeKey] integerValue];
+    return [(self.attributes)[kZincEventAttributesSizeKey] longLongValue];
 }
 
 @end

@@ -16,8 +16,10 @@
 
 - (NSString*) zinc_sha1
 {
+    NSAssert([self length] <= UINT32_MAX, @"[self length] greater than CC_LONG capacity (UINT32_MAX)");
+
     uint8_t digest[CC_SHA1_DIGEST_LENGTH];
-    CC_SHA1([self bytes], [self length], digest);
+    CC_SHA1([self bytes], (CC_LONG)[self length], digest);
     
     char finalhash[40];
     char hexval[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -76,17 +78,21 @@
 - (NSData*) zinc_gzipInflate
 {
 	if ([self length] == 0) return self;
-	
-	unsigned full_length = [self length];
-	unsigned half_length = [self length] / 2;
-	
-	NSMutableData *decompressed = [NSMutableData dataWithLength: full_length + half_length];
+
+    NSAssert([self length] <= UINT_MAX, @"[self length] greater than UINT_MAX");
+
+	const unsigned int full_length = (unsigned int)[self length];
+	const unsigned int half_length = (unsigned int)[self length] / 2;
+
+    NSAssert(full_length + half_length <= UINT_MAX, @"decompressed_length greater than UINT_MAX");
+
+	NSMutableData *decompressed = [NSMutableData dataWithLength:full_length + half_length];
 	BOOL done = NO;
 	int status;
 	
 	z_stream strm;
 	strm.next_in = (Bytef *)[self bytes];
-	strm.avail_in = [self length];
+	strm.avail_in = (unsigned int)[self length];
 	strm.total_out = 0;
 	strm.zalloc = Z_NULL;
 	strm.zfree = Z_NULL;
@@ -98,7 +104,7 @@
 		if (strm.total_out >= [decompressed length])
 			[decompressed increaseLengthBy: half_length];
 		strm.next_out = [decompressed mutableBytes] + strm.total_out;
-		strm.avail_out = [decompressed length] - strm.total_out;
+		strm.avail_out = (unsigned int)([decompressed length] - strm.total_out);
 		
 		// Inflate another chunk.
 		status = inflate (&strm, Z_SYNC_FLUSH);

@@ -8,7 +8,7 @@
 
 #import "ZincBundleAvailabilityMonitor+Private.h"
 #import "ZincActivityMonitor+Private.h"
-#import "ZincRepo.h"
+#import "ZincRepo+Private.h"
 #import "ZincTask.h"
 #import "ZincTaskDescriptor.h"
 #import "ZincTaskActions.h"

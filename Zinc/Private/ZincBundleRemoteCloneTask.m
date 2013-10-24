@@ -196,7 +196,7 @@
     
     ZincManifest* manifest = [self.repo manifestWithBundleID:self.bundleID version:self.version error:&error];
     if (manifest == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:AMErrorAddOriginToError(error) source:ZINC_EVENT_SRC()]];
+        [self addEvent:[ZincErrorEvent eventWithError:AMErrorWrap(error) source:ZINC_EVENT_SRC()]];
         [self completeWithSuccess:NO];
         return;
     }

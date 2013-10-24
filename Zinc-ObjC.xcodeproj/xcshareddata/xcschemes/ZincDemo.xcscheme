@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "0460"
+   LastUpgradeVersion = "0500"
    version = "1.3">
    <BuildAction
-      parallelizeBuildables = "NO"
+      parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B32E31F416C9DC410032E7E8"
-               BuildableName = "libKSReachability.a"
-               BlueprintName = "KSReachability"
-               ReferencedContainer = "container:Dependencies/External/KSReachability/KSReachability.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "YES"
-            buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-               BuildableName = "Zinc Functional Tests.app"
-               BlueprintName = "Zinc Functional Tests"
+               BlueprintIdentifier = "B38743031489B830004B227B"
+               BuildableName = "Zinc-iOS.app"
+               BlueprintName = "ZincDemo"
                ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -46,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "ZincDemo"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,9 +51,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "ZincDemo"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -83,9 +69,9 @@
       <BuildableProductRunnable>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B33A35FF1698F3A5007F0A57"
-            BuildableName = "Zinc Functional Tests.app"
-            BlueprintName = "Zinc Functional Tests"
+            BlueprintIdentifier = "B38743031489B830004B227B"
+            BuildableName = "Zinc-iOS.app"
+            BlueprintName = "ZincDemo"
             ReferencedContainer = "container:Zinc-ObjC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
