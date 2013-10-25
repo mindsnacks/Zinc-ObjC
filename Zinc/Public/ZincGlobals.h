@@ -52,6 +52,14 @@ typedef NS_ENUM(NSInteger, ZincBundleVersionSpecifier) {
      in the catalog.
      */
     ZincBundleVersionSpecifierCatalogOnly,
+
+    /**
+     Require that the version is up to date with the tracked distro version
+     in the catalog OR the version is `ZincVersionUnknown`.
+     */
+    ZincBundleVersionSpecifierCatalogOrUnknown,
+
+    ZincBundleVersionSpecifierDefault = ZincBundleVersionSpecifierCatalogOrUnknown,
 };
 
 

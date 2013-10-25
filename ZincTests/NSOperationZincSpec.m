@@ -6,7 +6,7 @@
 //  Copyright 2013 MindSnacks. All rights reserved.
 //
 
-#import "Kiwi.h"
+#import <Kiwi/Kiwi.h>
 #import "NSOperation+Zinc.h"
 #import "ZincOperation+Private.h"
 

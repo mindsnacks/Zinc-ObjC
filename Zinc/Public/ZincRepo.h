@@ -195,8 +195,17 @@
 
 /**
  Get the state of a bundle.
+
+ @param bundleID The ID of the bundle
+ @param versionSpec The version specifier
+ */
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpec;
+
+/**
+ Get the state of a bundle.
  
  @param bundleID The ID of the bundle
+ @default versionSpec ZincBundleVersionSpecifierDefault
  */
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID;
 

@@ -21,6 +21,7 @@
 #import "ZincBundleTrackingRequest.h"
 #import "ZincExternalBundleInfo.h"
 #import "ZincDownloadPolicy+Private.h"
+#import "ZincBundleVersionHelper.h"
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -60,6 +61,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 @property (nonatomic, assign, readwrite) BOOL isInitialized;
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
+@property (nonatomic, strong, readwrite) ZincBundleVersionHelper* versionHelper;
 
 @end
 
@@ -162,6 +164,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.taskManager = [[ZincRepoTaskManager alloc] initWithZincRepo:self networkOperationQueue:networkQueue];
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
+        self.versionHelper = [[ZincBundleVersionHelper alloc] init];
     }
     return self;
 }
@@ -585,8 +588,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         NSSet* trackBundles = [self.index trackedBundleIDs];
         for (NSString* bundleID in trackBundles) {
             NSString* dist = [self.index trackedDistributionForBundleID:bundleID];
-            ZincVersion version = [self versionForBundleID:bundleID distribution:dist];
-            [activeBundles addObject:[NSURL zincResourceForBundleWithID:bundleID version:version]];
+            ZincVersion version = [self versionForBundleID:bundleID distribution:dist versionSpecifier:ZincBundleVersionSpecifierAny];
+            if (version != ZincVersionInvalid) {
+                [activeBundles addObject:[NSURL zincResourceForBundleWithID:bundleID version:version]];
+            }
         }
         
         [activeBundles addObjectsFromArray:[self.index registeredExternalBundles]];
@@ -624,66 +629,29 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return ZincVersionInvalid;
 }
 
-- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
+- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro versionSpecifier:(ZincBundleVersionSpecifier)versionSpec
 {
-    NSArray* availableVersions = [self.index availableVersionsForBundleID:bundleID];
-    
-    if ([availableVersions count] == 0) {
-        return ZincVersionInvalid;
-    }
-    
-    if (distro != nil) {
-        ZincVersion catalogVersion = [self catalogVersionForBundleID:bundleID distribution:distro];
-        if ([availableVersions containsObject:@(catalogVersion)]) {
-            return catalogVersion;
-        }
-    }
-    
-    return [[availableVersions lastObject] integerValue];
+    return [self.versionHelper versionForBundleID:bundleID distribution:distro versionSpecifier:versionSpec repo:self];
 }
 
 - (ZincVersion) versionForBundleID:(NSString *)bundleID
 {
-    return [self versionForBundleID:bundleID distribution:[self.index trackedDistributionForBundleID:bundleID]];
+    return [self.versionHelper versionForBundleID:bundleID repo:self];
 }
 
 - (ZincVersion) currentDistroVersionForBundleID:(NSString*)bundleID
 {
-    NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-    return [self catalogVersionForBundleID:bundleID distribution:distro];
+    return [self.versionHelper currentDistroVersionForBundleID:bundleID repo:self];
 }
 
 - (BOOL) bundleResource:(NSURL*)bundleResource satisfiesVersionSpecifier:(ZincBundleVersionSpecifier)versionSpec
 {
-    BOOL hasVersion = NO;
-    NSString* bundleID = [bundleResource zincBundleID];
-    ZincVersion version = [bundleResource zincBundleVersion];
-
-    switch (versionSpec) {
-        case ZincBundleVersionSpecifierAny:
-            hasVersion = (version != ZincVersionInvalid);
-            break;
-
-        case ZincBundleVersionSpecifierNotUnknown:
-            hasVersion = (version > 0);
-            break;
-
-        case ZincBundleVersionSpecifierCatalogOnly:
-            hasVersion = (version == [self currentDistroVersionForBundleID:bundleID]);
-            break;
-
-        default:
-            NSAssert(NO, @"unhandled case: %ld", (long)versionSpec);
-            break;
-    }
-    return hasVersion;
+    return [self.versionHelper bundleResource:bundleResource satisfiesVersionSpecifier:versionSpec repo:self];
 }
 
 - (BOOL) hasSpecifiedVersion:(ZincBundleVersionSpecifier)versionSpec forBundleID:(NSString*)bundleID
 {
-    ZincVersion localVersion = [self versionForBundleID:bundleID];
-    NSURL* res = [NSURL zincResourceForBundleWithID:bundleID version:localVersion];
-    return [self bundleResource:res satisfiesVersionSpecifier:versionSpec];
+    return [self.versionHelper hasSpecifiedVersion:versionSpec forBundleID:bundleID repo:self];
 }
 
 - (BOOL) hasManifestForBundleID:(NSString *)bundleID distribution:(NSString*)distro
@@ -926,7 +894,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 
-- (ZincBundle*) bundleWithID:(NSString*)bundleID
+- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versonSpecifier
 {
     if (!self.isInitialized) {
         @throw [NSException
@@ -936,7 +904,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 
     NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-    ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
+    ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versonSpecifier];
     if (version == ZincVersionInvalid) {
         return nil;
     }
@@ -944,15 +912,25 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [self.bundleManager bundleWithID:bundleID version:version];
 }
 
-- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID
+- (ZincBundle*) bundleWithID:(NSString*)bundleID
+{
+    return [self bundleWithID:bundleID versionSpecifier:ZincBundleVersionSpecifierCatalogOrUnknown];
+}
+
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpec
 {
     @synchronized(self.index) {
         NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-        ZincVersion version = [self versionForBundleID:bundleID distribution:distro];
+        ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versionSpec];
         NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
         ZincBundleState state = [self.index stateForBundle:bundleRes];
         return state;
     }
+}
+
+- (ZincBundleState) stateForBundleWithID:(NSString*)bundleID
+{
+    return [self stateForBundleWithID:bundleID versionSpecifier:ZincBundleVersionSpecifierDefault];
 }
 
 #pragma mark Tasks

@@ -49,7 +49,7 @@
 /*
  * TODO: document the difference between this and catalogVersionForBundleID
  */
-- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro;
+- (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro versionSpecifier:(ZincBundleVersionSpecifier)versionSpec;
 
 /*
  * TODO: document the difference between this and versionForBundleID
