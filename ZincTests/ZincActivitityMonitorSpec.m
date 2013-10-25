@@ -9,6 +9,7 @@
 #import "ZincActivityMonitor+Private.h"
 #import "ZincProgress+Private.h"
 #import "ZincOperation.h"
+#import "ZincMockFactory.h"
 
 SPEC_BEGIN(ZincActivitityMonitorSpec)
 
@@ -16,14 +17,14 @@ describe(@"ZincActivityItem", ^{
 
     __block ZincActivityItem* item;
     __block id monitor;
-    
+
     beforeEach(^{
         monitor = [ZincActivityMonitor mock];
         [monitor stub:@selector(progressBlock) andReturn:nil];
 
         item = [[ZincActivityItem alloc] initWithActivityMonitor:monitor];
     });
-    
+
     it(@"sets progress correctly", ^{
         item.progressPercentage = 0.5;
         [[theValue(item.progressPercentage) should] equal:0.5 withDelta:0.001];
@@ -93,10 +94,10 @@ describe(@"ZincActivityItem", ^{
 
             [monitor stub:@selector(progressBlock)
                 andReturn:[^(id context, long long currentProgress, long long totalProgress, float percent) {
-                    blockContext = context;
-                    blockCurrentProgress = currentProgress;
-                    blockTotalProgress = totalProgress;
-                    blockPercent = percent;
+                blockContext = context;
+                blockCurrentProgress = currentProgress;
+                blockTotalProgress = totalProgress;
+                blockPercent = percent;
             } copy]];
         });
 
@@ -117,11 +118,15 @@ describe(@"ZincActivityItem", ^{
 
 describe(@"ZincActivitityMonitor", ^{
 
-   __block ZincActivityMonitor* monitor;
+    __block ZincActivityMonitor* monitor;
+    __block ZincMockFactory* mockFactory;
+
 
     beforeEach(^{
         monitor = [[ZincActivityMonitor alloc] init];
         monitor.refreshInterval = 0;
+
+        mockFactory = [[ZincMockFactory alloc] init];
     });
 
     context(@"newly created", ^{
@@ -174,13 +179,8 @@ describe(@"ZincActivitityMonitor", ^{
             monitor.refreshInterval = refreshInterval;
             [monitor startMonitoring];
 
-            // set a finished operation on the item
-            __block id operation = [ZincOperation mock];
-            [operation stub:@selector(isFinished) andReturn:theValue(YES)];
-            [operation stub:@selector(currentProgressValue) andReturn:theValue(progressValue)];
-            [operation stub:@selector(maxProgressValue) andReturn:theValue(progressValue)];
-            item.subject = operation;
-
+            item.subject = [mockFactory mockActivitySubjectWithCurrentProgressValue:progressValue maxProgressValue:progressValue isFinished:YES];
+            
             // and expect it will be finished
             [[expectFutureValue(theValue([item isFinished])) shouldEventuallyBeforeTimingOutAfter(refreshInterval*3)] beTrue];
         });
