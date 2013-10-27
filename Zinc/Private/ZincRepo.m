@@ -183,7 +183,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 /**
- @discussion Returns YES if initialization tasks are queued, NO otherwise
+  Returns YES if initialization tasks are queued, NO otherwise
  */
 - (BOOL) queueInitializationTasks
 {
