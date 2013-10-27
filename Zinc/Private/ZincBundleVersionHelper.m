@@ -12,14 +12,6 @@
 
 @implementation ZincBundleVersionHelper
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-    }
-    return self;
-}
-
 - (ZincVersion) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro versionSpecifier:(ZincBundleVersionSpecifier)versionSpec repo:(ZincRepo*)repo
 {
     NSArray* availableVersions = [repo.index availableVersionsForBundleID:bundleID];
