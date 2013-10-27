@@ -215,7 +215,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return completeInitializationTask != nil;
 }
 
-- (ZincTaskRef*) taskRefForInitialization
+- (ZincTaskRef*) initializationTaskRef
 {
     @synchronized(self) {
 
@@ -229,7 +229,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (void) waitForInitialization
 {
-    [[self taskRefForInitialization] waitUntilFinished];
+    [[self initializationTaskRef] waitUntilFinished];
 }
 
 - (void) completeInitialization

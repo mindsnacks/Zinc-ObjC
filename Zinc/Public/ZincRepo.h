@@ -64,7 +64,7 @@
 /**
  Returns an task reference (`ZincTaskRef`) for any initialization tasks that need to be done. Returns nil if no initialization is required. See the `ZincTaskRef` documentation for usage.
  */
-- (ZincTaskRef*) taskRefForInitialization;
+- (ZincTaskRef*) initializationTaskRef;
 
 ///--------------------------------
 /// @name Getting basic information
