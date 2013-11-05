@@ -914,7 +914,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (ZincBundle*) bundleWithID:(NSString*)bundleID
 {
-    return [self bundleWithID:bundleID versionSpecifier:ZincBundleVersionSpecifierCatalogOrUnknown];
+    return [self bundleWithID:bundleID versionSpecifier:ZincBundleVersionSpecifierDefault];
 }
 
 - (ZincBundleState) stateForBundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpec

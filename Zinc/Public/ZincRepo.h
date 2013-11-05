@@ -188,6 +188,15 @@
 
 /**
  Obtain a Zinc bundle. This will raise an exception if the repo is not initialized
+
+ @param bundleID The ID of the bundle.
+ @param versionSpecifier The version specifier.
+
+*/
+- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versonSpecifier;
+
+/**
+ Obtain a Zinc bundle with the `ZincBundleVersionSpecifierDefault`.
  
  @param bundleID The ID of the bundle.
  */
