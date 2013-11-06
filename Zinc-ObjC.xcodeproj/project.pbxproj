@@ -106,6 +106,9 @@
 		B347EBE115C3593500FA0649 /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B347EBDF15C3593500FA0649 /* ZincOperation.m */; };
 		B3549DF0148DB80900DD63D1 /* ZincManifest.m in Sources */ = {isa = PBXBuildFile; fileRef = B3549DEE148DB80900DD63D1 /* ZincManifest.m */; };
 		B3549DF3148DC0ED00DD63D1 /* Data in Resources */ = {isa = PBXBuildFile; fileRef = B3549DF2148DC0ED00DD63D1 /* Data */; };
+		B35AC62C1829DA5D005E46C9 /* ImageLoadingTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B35AC62B1829DA5D005E46C9 /* ImageLoadingTests.m */; };
+		B35AC62D1829DD2D005E46C9 /* sphalerite.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432B1588144200C81A4F /* sphalerite.jpg */; };
+		B35AC62E1829DD31005E46C9 /* sphalerite@2x.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B393432C1588144200C81A4F /* sphalerite@2x.jpg */; };
 		B36388A317E184F000F2BBE4 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B387430A1489B830004B227B /* Foundation.framework */; };
 		B36388A617E184F000F2BBE4 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B36388A517E184F000F2BBE4 /* main.m */; };
 		B36388AA17E184F000F2BBE4 /* zinc_objc_untar.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = B36388A917E184F000F2BBE4 /* zinc_objc_untar.1 */; };
@@ -451,6 +454,7 @@
 		B3549DED148DB80900DD63D1 /* ZincManifest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincManifest.h; sourceTree = "<group>"; };
 		B3549DEE148DB80900DD63D1 /* ZincManifest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincManifest.m; sourceTree = "<group>"; };
 		B3549DF2148DC0ED00DD63D1 /* Data */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Data; sourceTree = "<group>"; };
+		B35AC62B1829DA5D005E46C9 /* ImageLoadingTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageLoadingTests.m; sourceTree = "<group>"; };
 		B36388A217E184F000F2BBE4 /* zinc-objc-untar */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "zinc-objc-untar"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B36388A517E184F000F2BBE4 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B36388A817E184F000F2BBE4 /* zinc-objc-untar-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "zinc-objc-untar-Prefix.pch"; sourceTree = "<group>"; };
@@ -669,6 +673,7 @@
 				B30716BF17C1BCAE007705F3 /* ZincAgentFunctionalTestCase.h */,
 				B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */,
 				B33A36251698F6BF007F0A57 /* DemoCatalogTests.m */,
+				B35AC62B1829DA5D005E46C9 /* ImageLoadingTests.m */,
 				B33A362E16990BA5007F0A57 /* ExternalBundleTests.m */,
 				B311841E16F7CBAF00D13BD0 /* ErrorStateTests.m */,
 				B33A36061698F3A5007F0A57 /* Supporting Files */,
@@ -1349,11 +1354,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				B33A360A1698F3A5007F0A57 /* InfoPlist.strings in Resources */,
+				B35AC62E1829DD31005E46C9 /* sphalerite@2x.jpg in Resources */,
 				B33A36121698F3A5007F0A57 /* Default.png in Resources */,
 				B33A36141698F3A5007F0A57 /* Default@2x.png in Resources */,
 				B33A36161698F3A5007F0A57 /* Default-568h@2x.png in Resources */,
 				B33A363716991121007F0A57 /* cats.json in Resources */,
 				B33A363816991121007F0A57 /* kucing.jpeg in Resources */,
+				B35AC62D1829DD2D005E46C9 /* sphalerite.jpg in Resources */,
 				B33A363916991121007F0A57 /* lime-cat.jpeg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1559,6 +1566,7 @@
 				B33A363216990DE5007F0A57 /* ZincRepoFunctionalTestCase.m in Sources */,
 				B311841F16F7CBAF00D13BD0 /* ErrorStateTests.m in Sources */,
 				B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */,
+				B35AC62C1829DA5D005E46C9 /* ImageLoadingTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
