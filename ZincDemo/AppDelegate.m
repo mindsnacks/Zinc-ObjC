@@ -7,16 +7,12 @@
 //
 
 #import "AppDelegate.h"
+#import "ZincAdminViewController.h"
+#import "ZincBundleListViewController.h"
 
-#import "BundleListViewController.h"
 
-
-@interface AppDelegate()
-@property (strong, nonatomic) BundleListViewController *viewController;
-@end
 
 @implementation AppDelegate
-
 
 - (void) zincRepo:(ZincRepo*)repo didReceiveEvent:(ZincEvent*)event
 {   
@@ -26,10 +22,8 @@
 - (void)dealloc
 {
     [_window release];
-    [_viewController release];
     [super dealloc];
 }
-
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -50,30 +44,12 @@
     
     [repo resumeAllTasks];
 
-    // TODO: replace bootstrapping
-
-//    NSArray* bundleIDsToBootstrap = [NSArray arrayWithObjects:
-//                                     @"com.mindsnacks.demo1.cats",
-//                                     @"com.mindsnacks.demo1.sphalerites", nil];
-//
-//
-//    for (NSString* bundleID in bundleIDsToBootstrap) {
-//        
-//        ZincBundleTrackingRequest* req = [[[ZincBundleTrackingRequest alloc] init] autorelease];
-//        req.bundleID = bundleID;
-//        
-//        [repo bootstrapBundleWithRequest:req fromDir:[[NSBundle mainBundle] resourcePath] completionBlock:^(NSArray *errors) {
-//            if ([errors count] > 0) {
-//                NSLog(@"%@", errors);
-//                abort();
-//            }
-//            NSLog(@"bootstrapped %@", bundleID);
-//        }];
-//    }
-
     [repo addSourceURL:[NSURL URLWithString:@"https://s3.amazonaws.com/zinc-demo/com.mindsnacks.demo1/"]];
     
     [repo beginTrackingBundleWithID:@"com.mindsnacks.demo1.sphalerites" distribution:@"master"];
+    [repo beginTrackingBundleWithID:@"com.mindsnacks.demo1.farts" distribution:@"develop"];
+    [repo beginTrackingBundleWithID:@"com.mindsnacks.demo2.pineapples" distribution:@"master"];
+
 
     [repo updateBundleWithID:@"com.mindsnacks.demo1.cats" completionBlock:^(NSArray *errors) {
     }];
@@ -82,12 +58,11 @@
 
     self.zincAgent = [ZincAgent agentForRepo:repo];
 
-    BundleListViewController* bundleListViewController = [[[BundleListViewController alloc] initWithRepo:repo] autorelease];
-    
-    UINavigationController* nc = [[[UINavigationController alloc] initWithRootViewController:bundleListViewController] autorelease];
-    
-    self.viewController = bundleListViewController;
-    self.window.rootViewController = nc;
+    ZincAdminViewController *adminViewController = [[ZincAdminViewController alloc] initWithRepo:repo];
+
+//    ZincBundleListViewController *adminViewController = [[ZincBundleListViewController alloc] initWithRepo:repo];
+
+    self.window.rootViewController = adminViewController;
     [self.window makeKeyAndVisible];
     
     return YES;

@@ -16,10 +16,13 @@
 
 @property (nonatomic, strong, readonly) NSString* identifier;
 @property (nonatomic, assign) ZincFormat format;
-@property (nonatomic, strong, readonly) NSDictionary* bundleInfoById;
+@property (nonatomic, strong, readonly) NSDictionary* bundleInfoByName;
 
 #pragma mark -
-- (ZincVersion) versionForBundleID:(NSString*)bundleName distribution:(NSString*)distro;
+
+- (NSDictionary *)distributionsForBundleName:(NSString *)bundleName;
+
+- (ZincVersion) versionForBundleName:(NSString*)bundleName distribution:(NSString*)distro;
 
 #pragma mark Encoding
 - (id) initWithDictionary:(NSDictionary*)dict;

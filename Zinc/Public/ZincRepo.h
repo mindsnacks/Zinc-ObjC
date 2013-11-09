@@ -172,6 +172,11 @@
 - (NSSet*) trackedBundleIDs;
 
 /**
+ Get the tracked distro for a bundleID
+ */
+- (NSString*) trackedDistributionForBundleID:(NSString*)bundleID;
+
+/**
  Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.
  
  @param bundleID The ID of the bundle to update.
