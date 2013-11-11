@@ -146,7 +146,7 @@ enum kTags {
     if (indexPath.section == kTrackingSection) {
 
         cell.textLabel.text = [self.repo trackedDistributionForBundleID:self.bundleID];
-        cell.accessoryType = UITableViewCellAccessoryDetailButton;
+        cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
 
     } else if (indexPath.section == kVersionsSection) {
 
