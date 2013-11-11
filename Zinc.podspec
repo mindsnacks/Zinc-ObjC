@@ -16,4 +16,8 @@ Pod::Spec.new do |s|
   s.preserve_paths      = 'Zinc/Scripts/*'
   s.dependency 'KSReachability', '~> 1.3'
   s.dependency 'AMError', '~> 0.2.5'
+
+  s.subspec 'AdminUI-iOS' do |i| 
+  	i.frameworks = 'UIKit'
+  end
 end
