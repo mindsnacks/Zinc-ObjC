@@ -56,14 +56,13 @@
             sortedBundleIDsByCatalogID[catalogID] = bundleNames;
         }
         [bundleNames addObject:bundleName];
+        sortedBundleIDsByCatalogID[catalogID] = [[bundleNames sortedArrayUsingSelector:@selector(compare:)] mutableCopy];
+
     }
 
     // store
     self.sortedCatalogIDs = [[catalogIDs allObjects] sortedArrayUsingSelector:@selector(compare:)];
 
-    [sortedBundleIDsByCatalogID enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
-        sortedBundleIDsByCatalogID[key] = [obj sortedArrayUsingSelector:@selector(compare:)];
-    }];
     self.sortedBundleIDsByCatalogID = sortedBundleIDsByCatalogID;
 }
 
