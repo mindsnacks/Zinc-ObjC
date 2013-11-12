@@ -39,10 +39,8 @@
             case ZincBundleVersionSpecifierCatalogOnly:
                 break;
 
-            case ZincBundleVersionSpecifierCatalogOrUnknown:
-                if ([availableVersions containsObject:@(ZincVersionUnknown)]) {
-                    resolvedVersion = ZincVersionUnknown;
-                }
+            case ZincBundleVersionSpecifierCatalogOrBootstrapped:
+                resolvedVersion = [repo.index versionForExternalBundleWithID:bundleID];
                 break;
 
             case ZincBundleVersionSpecifierNotUnknown:
@@ -100,7 +98,7 @@
             hasVersion = (version == [self currentDistroVersionForBundleID:bundleID repo:repo]);
             break;
 
-        case ZincBundleVersionSpecifierCatalogOrUnknown:
+        case ZincBundleVersionSpecifierCatalogOrBootstrapped:
             hasVersion = (version == ZincVersionInvalid || [self currentDistroVersionForBundleID:bundleID repo:repo]);
             break;
 

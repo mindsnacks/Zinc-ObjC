@@ -242,6 +242,25 @@
     }
 }
 
+- (ZincVersion) versionForExternalBundleWithID:(NSString *)bundleID
+{
+    ZincVersion resolvedVersion = ZincVersionInvalid;
+
+    NSArray* availableVersions = [self availableVersionsForBundleID:bundleID];
+
+    for (NSNumber *versionNum in [availableVersions reverseObjectEnumerator]) {
+
+        ZincVersion version = [versionNum integerValue];
+        NSURL* bundleRes = [NSURL zincResourceForBundleWithID:bundleID version:version];
+        ZincExternalBundleInfo* extInfo = [self infoForExternalBundle:bundleRes];
+        if (extInfo != nil) {
+            resolvedVersion = version;
+            break;
+        }
+    }
+    return resolvedVersion;
+}
+
 - (NSArray*) registeredExternalBundles
 {
     @synchronized(self.myExternalBundlesByResource) {

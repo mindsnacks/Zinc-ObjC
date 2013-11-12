@@ -39,6 +39,7 @@ describe(@"ZincBundleVersionHelper", ^{
             beforeEach(^{
                 [[repoIndex stubAndReturn:@[]] availableVersionsForBundleID:bundleID];
                 [[repo stubAndReturn:theValue(ZincVersionInvalid)] catalogVersionForBundleID:bundleID distribution:distro];
+                [[repoIndex stubAndReturn:theValue(ZincVersionInvalid)] versionForExternalBundleWithID:bundleID];
             });
 
             it(@"ZincBundleVersionSpecifierAny", ^{
@@ -59,9 +60,9 @@ describe(@"ZincBundleVersionHelper", ^{
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
 
-            it(@"ZincBundleVersionSpecifierCatalogOrUnknown", ^{
+            it(@"ZincBundleVersionSpecifierCatalogOrBootstrapped", ^{
                 [[theValue([versionHelper versionForBundleID:bundleID distribution:distro
-                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrUnknown /**/ repo:repo])
+                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrBootstrapped /**/ repo:repo])
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
         });
@@ -71,6 +72,7 @@ describe(@"ZincBundleVersionHelper", ^{
             beforeEach(^{
                 [[repoIndex stubAndReturn:@[@(ZincVersionUnknown)]] availableVersionsForBundleID:bundleID];
                 [[repo stubAndReturn:theValue(ZincVersionInvalid)] catalogVersionForBundleID:bundleID distribution:distro];
+                [[repoIndex stubAndReturn:theValue(ZincVersionUnknown)] versionForExternalBundleWithID:bundleID];
             });
 
             it(@"ZincBundleVersionSpecifierAny", ^{
@@ -91,9 +93,9 @@ describe(@"ZincBundleVersionHelper", ^{
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
 
-            it(@"ZincBundleVersionSpecifierCatalogOrUnknown", ^{
+            it(@"ZincBundleVersionSpecifierCatalogOrBootstrapped", ^{
                 [[theValue([versionHelper versionForBundleID:bundleID distribution:distro
-                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrUnknown /**/ repo:repo])
+                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrBootstrapped /**/ repo:repo])
                   should] equal:theValue(/**/ ZincVersionUnknown /**/ )];
             });
         });
@@ -106,6 +108,7 @@ describe(@"ZincBundleVersionHelper", ^{
             beforeEach(^{
                 [[repoIndex stubAndReturn:@[@(otherVersion)]] availableVersionsForBundleID:bundleID];
                 [[repo stubAndReturn:theValue(catalogVersion)] catalogVersionForBundleID:bundleID distribution:distro];
+                [[repoIndex stubAndReturn:theValue(ZincVersionInvalid)] versionForExternalBundleWithID:bundleID];
             });
 
             it(@"ZincBundleVersionSpecifierAny", ^{
@@ -126,9 +129,9 @@ describe(@"ZincBundleVersionHelper", ^{
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
 
-            it(@"ZincBundleVersionSpecifierCatalogOrUnknown", ^{
+            it(@"ZincBundleVersionSpecifierCatalogOrBootstrapped", ^{
                 [[theValue([versionHelper versionForBundleID:bundleID distribution:distro
-                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrUnknown /**/ repo:repo])
+                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrBootstrapped /**/ repo:repo])
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
         });
@@ -141,6 +144,7 @@ describe(@"ZincBundleVersionHelper", ^{
             beforeEach(^{
                 [[repoIndex stubAndReturn:@[@(ZincVersionUnknown), @(otherVersion)]] availableVersionsForBundleID:bundleID];
                 [[repo stubAndReturn:theValue(catalogVersion)] catalogVersionForBundleID:bundleID distribution:distro];
+                [[repoIndex stubAndReturn:theValue(ZincVersionUnknown)] versionForExternalBundleWithID:bundleID];
             });
 
             it(@"ZincBundleVersionSpecifierAny", ^{
@@ -161,9 +165,9 @@ describe(@"ZincBundleVersionHelper", ^{
                   should] equal:theValue(/**/ ZincVersionInvalid /**/ )];
             });
 
-            it(@"ZincBundleVersionSpecifierCatalogOrUnknown", ^{
+            it(@"ZincBundleVersionSpecifierCatalogOrBootstrapped", ^{
                 [[theValue([versionHelper versionForBundleID:bundleID distribution:distro
-                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrUnknown /**/ repo:repo])
+                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrBootstrapped /**/ repo:repo])
                   should] equal:theValue(/**/ ZincVersionUnknown /**/ )];
             });
         });
@@ -196,9 +200,9 @@ describe(@"ZincBundleVersionHelper", ^{
                   should] equal:theValue(/**/ catalogVersion /**/ )];
             });
 
-            it(@"ZincBundleVersionSpecifierCatalogOrUnknown", ^{
+            it(@"ZincBundleVersionSpecifierCatalogOrBootstrapped", ^{
                 [[theValue([versionHelper versionForBundleID:bundleID distribution:distro
-                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrUnknown /**/ repo:repo])
+                                            versionSpecifier:/**/ ZincBundleVersionSpecifierCatalogOrBootstrapped /**/ repo:repo])
                   should] equal:theValue(/**/ catalogVersion /**/ )];
             });
         });

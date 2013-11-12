@@ -58,6 +58,8 @@
 
 - (ZincExternalBundleInfo*) infoForExternalBundle:(NSURL*)bundleRes;
 
+- (ZincVersion) versionForExternalBundleWithID:(NSString *)bundleID;
+
 - (NSArray*) registeredExternalBundles;
 
 #pragma mark Encoding
