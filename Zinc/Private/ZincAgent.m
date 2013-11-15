@@ -56,7 +56,6 @@ static NSMutableDictionary* _AgentsByURL;
     self = [super init];
     if (self) {
         self.repo = repo;
-        _autoRefreshInterval = kZincAgentDefaultAutoRefreshInterval;
 
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(reachabilityChanged:)

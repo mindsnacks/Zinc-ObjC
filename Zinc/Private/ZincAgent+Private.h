@@ -8,8 +8,6 @@
 
 #import "ZincAgent.h"
 
-#define kZincAgentDefaultAutoRefreshInterval (120)
-
 @class ZincRepo;
 
 @interface ZincAgent (Private)
