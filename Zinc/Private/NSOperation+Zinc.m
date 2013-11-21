@@ -27,13 +27,13 @@
         // loop through all dependencies, but only recusively visit those
         // we haven't already visited
         NSArray* deps = [op dependencies];
-        for (id obj in deps) {
-            [allDependencies addObject:obj];
-            if (includeChildren && [obj conformsToProtocol:@protocol(ZincChildren)]) {
-                [allDependencies addObjectsFromArray:[(id<ZincChildren>)obj allChildren]];
+        for (id dep in deps) {
+            [allDependencies addObject:dep];
+            if (includeChildren && [dep conformsToProtocol:@protocol(ZincChildren)]) {
+                [allDependencies addObjectsFromArray:[(id<ZincChildren>)dep allChildren]];
             }
-            if (![visitedOperations containsObject:obj]) {
-                [pendingOperationsToVisit addObject:obj];
+            if (![visitedOperations containsObject:dep]) {
+                [pendingOperationsToVisit addObject:dep];
             }
         }
     }
@@ -44,6 +44,65 @@
 - (NSSet*) zinc_allDependencies
 {
     return [self zinc_allDependenciesIncludingChildren:NO];
+}
+
+- (NSString*) zinc_dependencyGraph
+{
+    /*
+     digraph graphname {
+     a -> b -> c;
+     b -> d;
+     }
+     */
+
+    NSMutableArray *pendingOperationsToVisit = [NSMutableArray arrayWithObject:self];
+    NSMutableSet *visitedOperations = [NSMutableSet set];
+//    NSMutableString* dot = [NSMutableString stringWithFormat:@"digraph deps {\n"];
+
+    NSMutableArray* nodes = [NSMutableArray array];
+    NSMutableArray* edges = [NSMutableArray array];
+
+    while ([pendingOperationsToVisit count] > 0) {
+
+        // mark the operation as "visited"
+        NSOperation *op = [pendingOperationsToVisit lastObject];
+        [pendingOperationsToVisit removeLastObject];
+        [visitedOperations addObject:op];
+
+        [nodes addObject:
+         [NSString stringWithFormat:@"op_%p [color=%@, style=%@];\n",
+          op,
+          [op isReady] ? @"green" : @"red",
+          [op isFinished] ? @"dotted" : @"solid"]];
+
+        NSMutableArray *list = [[op dependencies] mutableCopy];
+        if ([op conformsToProtocol:@protocol(ZincChildren)]) {
+            [list addObjectsFromArray:[(id<ZincChildren>)op immediateChildren]];
+        }
+
+        // loop through all dependencies, but only recusively visit those
+        // we haven't already visited
+        for (id dep in list) {
+
+//            if ([dep isFinished]) continue;
+
+            [edges addObject:
+             [NSString stringWithFormat:@"op_%p -> op_%p;\n", op, dep]];
+
+            if (![visitedOperations containsObject:dep]) {
+                [pendingOperationsToVisit addObject:dep];
+            }
+        }
+    }
+
+    NSString* nodeString = [nodes componentsJoinedByString:@"\n"];
+    NSString* edgeString = [edges componentsJoinedByString:@"\n"];
+
+
+
+    return [NSString stringWithFormat:@"digraph deps {\n%@%@}",
+            nodeString, edgeString];
+
 }
 
 @end
