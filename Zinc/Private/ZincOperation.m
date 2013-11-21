@@ -19,7 +19,7 @@ double const kZincOperationDefaultReadinessUpdateInterval = 5.0;
 
 @interface ZincOperation ()
 @property (atomic, strong) NSMutableSet* myChildOperations;
-@property (strong) NSTimer *updateReadinessTimer;
+@property (weak) NSTimer *updateReadinessTimer;
 @end
 
 @implementation ZincOperation
@@ -56,15 +56,18 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 
 - (void)stopUpdateReadinessTimer
 {
-    [self.updateReadinessTimer invalidate];
+    [self.updateReadinessTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
+    self.updateReadinessTimer = nil;
 }
 
-- (void)startUpdateReadinessTimer
+- (void)restartUpdateReadinessTimer
 {
     if (self.readinessBlock != nil
         && self.readinessUpdateInterval > 0
         && ![self isFinished]
         && ![self isExecuting]) {
+
+        [self stopUpdateReadinessTimer];
 
         self.updateReadinessTimer = [NSTimer timerWithTimeInterval:self.readinessUpdateInterval
                                                             target:self
@@ -100,7 +103,7 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 
     _readinessBlock = [readinessBlock copy];
 
-    [self startUpdateReadinessTimer];
+    [self restartUpdateReadinessTimer];
 }
 
 - (void)setReadinessUpdateInterval:(NSTimeInterval)readinessUpdateInterval
@@ -109,7 +112,7 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 
     _readinessUpdateInterval = readinessUpdateInterval;
 
-    [self startUpdateReadinessTimer];
+    [self restartUpdateReadinessTimer];
 }
 
 - (NSArray*) zincDependencies
