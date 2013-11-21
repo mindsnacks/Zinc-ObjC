@@ -214,7 +214,6 @@ enum kTags {
     }
 }
 
-
 - (void)alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
     if (alertView.tag == kTrackNewCustomDistroAlertTag) {
@@ -226,7 +225,6 @@ enum kTags {
 
             [self.tableView reloadData];
         }
-
 
     } else if (alertView.tag == kTrackNewDistroAlertTag) {
 
