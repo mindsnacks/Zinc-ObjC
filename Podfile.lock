@@ -3,6 +3,7 @@ PODS:
   - GHUnitIOS (0.5.6)
   - Kiwi (1.1.1)
   - KSReachability (1.3)
+  - MSWeakTimer (1.1.0)
   - OCMock (2.2.1)
 
 DEPENDENCIES:
@@ -11,6 +12,7 @@ DEPENDENCIES:
   - GHUnitIOS (~> 0.5.6)
   - Kiwi (~> 1.1.1)
   - KSReachability (~> 1.3)
+  - MSWeakTimer (~> 1.1.0)
   - OCMock (~> 2.2.1)
 
 EXTERNAL SOURCES:
@@ -22,6 +24,7 @@ SPEC CHECKSUMS:
   GHUnitIOS: bf149b2c44084eee2785ce4ac3675c3a699e509d
   Kiwi: ab0fa8d13b97dca05915e31df9b2d888d74ab717
   KSReachability: 6883b291ce3bf8e0c95c86b4cced07d7169f9fc4
+  MSWeakTimer: 0d6a05f0095cdf023b24f59a0e61d1dd9d6fbefa
   OCMock: 80e4cfbc71a0e1bd28caf10a9fda27da7c4c8402
 
-COCOAPODS: 0.27.1
+COCOAPODS: 0.28.0

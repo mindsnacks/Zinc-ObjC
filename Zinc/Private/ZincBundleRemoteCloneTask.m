@@ -24,6 +24,12 @@
     self = [super initWithRepo:repo resourceDescriptor:resource input:input];
     if (self) {
         _httpOverheadConstant = kZincBundleCloneTaskDefaultHTTPOverheadConstant;
+
+        __weak typeof(self) weakself = self;
+        self.readinessBlock = ^{
+            typeof(self) strongself = weakself;
+            return [strongself.repo doesPolicyAllowDownloadForBundleID:strongself.bundleID];
+        };
     }
     return self;
 }
@@ -176,11 +182,6 @@
     }
 
     return downloadedAllFilesSuccessfully && [linkOp isSuccessful];
-}
-
-- (BOOL) isReady
-{
-    return [super isReady] && [self.repo doesPolicyAllowDownloadForBundleID:self.bundleID];
 }
 
 - (void) main

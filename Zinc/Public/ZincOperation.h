@@ -32,7 +32,6 @@
  */
 + (double) defaultThreadPriority;
 
-
 - (id<ZincProgress>)progress;
 
 @end
@@ -44,4 +43,10 @@
  0.5 - the same as NSOperation default
  */
 extern double const kZincOperationInitialDefaultThreadPriority;
+
+/**
+ 5.0 seconds
+ */
+extern double const kZincOperationReadinessUpdateInterval;
+
 

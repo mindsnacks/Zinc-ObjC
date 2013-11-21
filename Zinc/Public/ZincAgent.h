@@ -42,6 +42,8 @@
 
 /**
  Interval at which catalogs are updated and automatic clone tasks started.
+ 
+ NOTE: is initialized to 0. Must be set to >0 to refresh automatically.
  */
 @property (nonatomic, assign) NSTimeInterval autoRefreshInterval;
 

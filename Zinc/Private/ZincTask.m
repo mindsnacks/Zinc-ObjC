@@ -95,9 +95,6 @@ typedef id ZincBackgroundTaskIdentifier;
 {
     [super setQueuePriority:p];
     
-    // !!!: Since isReady may be related to queue priority make sure to update it
-    [self updateReadiness];
-    
     for (NSOperation* op in self.childOperations) {
         [op setQueuePriority:p];
     }
@@ -181,11 +178,6 @@ typedef id ZincBackgroundTaskIdentifier;
     return allErrors;
 }
 
-- (void) updateReadiness
-{
-    [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
-    [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
-}
 
 - (void)setShouldExecuteAsBackgroundTask
 {
