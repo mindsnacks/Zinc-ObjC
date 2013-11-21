@@ -67,6 +67,8 @@ static NSMutableDictionary* _AgentsByURL;
 
 - (void) dealloc
 {
+    [self stopRefreshTimer];
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
     @synchronized(_AgentsByURL) {
