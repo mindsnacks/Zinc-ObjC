@@ -74,7 +74,7 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
                                                           selector:@selector(updateReadinessTimerFired)
                                                           userInfo:nil
                                                            repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:_updateReadinessTimer forMode:NSRunLoopCommonModes];
+        [[NSRunLoop mainRunLoop] addTimer:self.updateReadinessTimer forMode:NSRunLoopCommonModes];
     }
 }
 
