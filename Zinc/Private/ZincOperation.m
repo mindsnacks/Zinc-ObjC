@@ -12,15 +12,19 @@
 
 double const kZincOperationInitialDefaultThreadPriority = 0.5;
 
+double const kZincOperationDefaultReadinessUpdateInterval = 5.0;
+
+
 #define DEFAULT_MAX_PROGRESS_VAL (1000)
 
 @interface ZincOperation ()
 @property (atomic, strong) NSMutableSet* myChildOperations;
+@property (weak) NSTimer *updateReadinessTimer;
 @end
 
 @implementation ZincOperation
 
-double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
+static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
 
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
@@ -39,9 +43,76 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
     self = [super init];
     if (self) {
         self.threadPriority = [[self class] defaultThreadPriority];
-        self.myChildOperations = [NSMutableSet set];
+        _myChildOperations = [NSMutableSet set];
+        _readinessUpdateInterval = kZincOperationDefaultReadinessUpdateInterval;
     }
     return self;
+}
+
+- (void)dealloc
+{
+    [self stopUpdateReadinessTimer];
+}
+
+- (void)stopUpdateReadinessTimer
+{
+    [self.updateReadinessTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
+    self.updateReadinessTimer = nil;
+}
+
+- (void)restartUpdateReadinessTimer
+{
+    if (self.readinessBlock != nil
+        && self.readinessUpdateInterval > 0
+        && ![self isFinished]
+        && ![self isExecuting]) {
+
+        [self stopUpdateReadinessTimer];
+
+        self.updateReadinessTimer = [NSTimer timerWithTimeInterval:self.readinessUpdateInterval
+                                                            target:self
+                                                          selector:@selector(updateReadinessTimerFired)
+                                                          userInfo:nil
+                                                           repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:_updateReadinessTimer forMode:NSRunLoopCommonModes];
+    }
+}
+
+- (void) updateReadinessTimerFired
+{
+    if (self.isExecuting || self.isFinished) {
+        [self stopUpdateReadinessTimer];
+    } else {
+        [self willChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+        [self didChangeValueForKey:NSStringFromSelector(@selector(isReady))];
+    }
+}
+
+- (BOOL) isReady
+{
+    if (self.readinessBlock != nil) {
+        return [super isReady] && self.readinessBlock();
+    } else {
+        return [super isReady];
+    }
+}
+
+- (void)setReadinessBlock:(BOOL (^)(void))readinessBlock
+{
+    [self stopUpdateReadinessTimer];
+
+    _readinessBlock = [readinessBlock copy];
+
+    [self restartUpdateReadinessTimer];
+}
+
+- (void)setReadinessUpdateInterval:(NSTimeInterval)readinessUpdateInterval
+{
+    [self stopUpdateReadinessTimer];
+
+    _readinessUpdateInterval = readinessUpdateInterval;
+
+    [self restartUpdateReadinessTimer];
 }
 
 - (NSArray*) zincDependencies
@@ -115,6 +186,17 @@ double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriority;
         [self.myChildOperations makeObjectsPerformSelector:@selector(cancel)];
     }
     [super cancel];
+}
+
+- (NSString*) description
+{
+    return [NSString stringWithFormat:@"<%@: %p isReady=%d isExecuting=%d isFinished=%d queuePriority=%d>",
+            NSStringFromClass([self class]),
+            self,
+            self.isReady,
+            self.isExecuting,
+            self.isFinished,
+            self.queuePriority];
 }
 
 @end

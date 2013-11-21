@@ -50,18 +50,8 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
         self.tasks = [NSMutableArray array];
         self.executeTasksInBackgroundEnabled = YES;
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(reachabilityChanged:)
-                                                     name:ZincRepoReachabilityChangedNotification
-                                                   object:self.repo.reachability];
     }
     return self;
-}
-
-- (void) dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark Internal Operations
@@ -292,16 +282,6 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 {
     ZincTaskDescriptor* taskDesc = [ZincRepoIndexUpdateTask taskDescriptorForResource:[self.repo indexURL]];
     return [self queueTaskForDescriptor:taskDesc];
-}
-
-- (void) reachabilityChanged:(NSNotification*)note
-{
-    @synchronized(self.tasks) {
-        NSArray* remoteBundleUpdateTasks = [self.tasks filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
-            return [evaluatedObject isKindOfClass:[ZincBundleRemoteCloneTask class]];
-        }]];
-        [remoteBundleUpdateTasks makeObjectsPerformSelector:@selector(updateReadiness)];
-    }
 }
 
 #pragma mark KVO
