@@ -8,6 +8,8 @@
 
 #import "ZincAgent+Private.h"
 
+#import <MSWeakTimer/MSWeakTimer.h>
+
 #import "ZincInternals.h"
 
 #import "ZincRepo+Private.h"
@@ -17,8 +19,8 @@
 
 @interface ZincAgent ()
 
-@property (nonatomic, strong, readwrite) ZincRepo *repo;
-@property (nonatomic, weak) NSTimer* refreshTimer;
+@property (strong, readwrite) ZincRepo *repo;
+@property (strong) MSWeakTimer* refreshTimer;
 
 @end
 
@@ -94,12 +96,12 @@ static NSMutableDictionary* _AgentsByURL;
         [self stopRefreshTimer];
 
         if (self.autoRefreshInterval > 0) {
-            self.refreshTimer = [NSTimer timerWithTimeInterval:self.autoRefreshInterval
-                                                        target:self
-                                                      selector:@selector(refreshTimerFired:)
-                                                      userInfo:nil
-                                                       repeats:YES];
-            [[NSRunLoop mainRunLoop] addTimer:self.refreshTimer forMode:NSRunLoopCommonModes];
+            self.refreshTimer = [MSWeakTimer scheduledTimerWithTimeInterval:self.autoRefreshInterval
+                                                                     target:self
+                                                                   selector:@selector(refreshTimerFired)
+                                                                   userInfo:nil
+                                                                    repeats:YES
+                                                              dispatchQueue:dispatch_get_main_queue()];
             [self.refreshTimer fire];
         }
     }
@@ -109,7 +111,7 @@ static NSMutableDictionary* _AgentsByURL;
 {
     @synchronized(self)
     {
-        [self.refreshTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
+        [self.refreshTimer invalidate];
         self.refreshTimer = nil;
     }
 }
@@ -213,7 +215,7 @@ static NSMutableDictionary* _AgentsByURL;
     [self refreshWithCompletion:nil];
 }
 
-- (void) refreshTimerFired:(NSTimer*)timer
+- (void) refreshTimerFired
 {
     [self refresh];
 }

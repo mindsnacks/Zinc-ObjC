@@ -8,6 +8,8 @@
 
 #import "ZincActivityMonitor.h"
 
+#import <MSWeakTimer/MSWeakTimer.h>
+
 #import "ZincActivityMonitor+Private.h"
 #import "ZincProgress+Private.h"
 #import "ZincTask.h"
@@ -18,9 +20,9 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 
 @interface ZincActivityMonitor ()
-@property (nonatomic, strong) NSMutableArray* myItems;
-@property (nonatomic, strong) NSTimer* refreshTimer;
-@property (nonatomic, readwrite, assign) BOOL isMonitoring;
+@property (strong) NSMutableArray* myItems;
+@property (strong) MSWeakTimer* refreshTimer;
+@property (readwrite, assign) BOOL isMonitoring;
 @end
 
 
@@ -48,13 +50,12 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
     if (!self.isMonitoring) return;
 
     if (self.refreshInterval > 0) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            self.refreshTimer = [NSTimer scheduledTimerWithTimeInterval:self.refreshInterval
+        self.refreshTimer = [MSWeakTimer scheduledTimerWithTimeInterval:self.refreshInterval
                                                                  target:self
                                                                selector:@selector(update)
                                                                userInfo:nil
-                                                                repeats:YES];
-        });
+                                                                repeats:YES
+                                                          dispatchQueue:dispatch_get_main_queue()];
     }
 }
 
@@ -66,8 +67,10 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (void)setRefreshInterval:(NSTimeInterval)refreshInterval
 {
-    _refreshInterval = refreshInterval;
-    [self restartRefreshTimer];
+    @synchronized(self) {
+        _refreshInterval = refreshInterval;
+        [self restartRefreshTimer];
+    }
 }
 
 - (void) startMonitoring
