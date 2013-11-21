@@ -222,7 +222,7 @@ enum kTags {
         if (buttonIndex == 1) {
 
             NSString *newDistro = [alertView textFieldAtIndex:0].text;
-            [self.repo beginTrackingBundleWithID:self.bundleID distribution:newDistro];
+            [self.repo updateTrackedDistributionForBundleWithID:self.bundleID distribution:newDistro];
 
             [self.tableView reloadData];
         }
@@ -231,14 +231,13 @@ enum kTags {
     } else if (alertView.tag == kTrackNewDistroAlertTag) {
 
         if (buttonIndex == 1) {
+            
             NSString *newDistro = [alertView message]; // TODO: this is hacky
-            [self.repo beginTrackingBundleWithID:self.bundleID distribution:newDistro];
+            [self.repo updateTrackedDistributionForBundleWithID:self.bundleID distribution:newDistro];
 
             [self.tableView reloadData];
-
         }
     }
-
 }
 
 @end

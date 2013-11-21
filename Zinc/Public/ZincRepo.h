@@ -162,6 +162,11 @@
 - (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor;
 
 /**
+ Updates the tracked distribution while leaving the tracked flavor intact.
+ */
+- (void) updateTrackedDistributionForBundleWithID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/**
  Stop tracking a bundle.
  */
 - (void) stopTrackingBundleWithID:(NSString*)bundleID;

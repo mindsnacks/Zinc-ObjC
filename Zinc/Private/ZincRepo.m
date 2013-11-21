@@ -750,6 +750,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleID:bundleID];
 }
 
+- (void) updateTrackedDistributionForBundleWithID:(NSString*)bundleID distribution:(NSString*)distro
+{
+    NSString* flavor = [self.index trackingInfoForBundleID:bundleID].flavor;
+    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:flavor];
+}
+
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID
 {
     ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
