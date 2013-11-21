@@ -7,6 +7,9 @@
 //
 
 #import "ZincOperation+Private.h"
+
+#import <MSWeakTimer/MSWeakTimer.h>
+
 #import "NSOperation+Zinc.h"
 #import "ZincProgress.h"
 
@@ -18,8 +21,8 @@ double const kZincOperationDefaultReadinessUpdateInterval = 5.0;
 #define DEFAULT_MAX_PROGRESS_VAL (1000)
 
 @interface ZincOperation ()
-@property (atomic, strong) NSMutableSet* myChildOperations;
-@property (weak) NSTimer *updateReadinessTimer;
+@property (strong) NSMutableSet* myChildOperations;
+@property (strong) MSWeakTimer *updateReadinessTimer;
 @end
 
 @implementation ZincOperation
@@ -56,25 +59,30 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 
 - (void)stopUpdateReadinessTimer
 {
-    [self.updateReadinessTimer performSelectorOnMainThread:@selector(invalidate) withObject:nil waitUntilDone:YES];
-    self.updateReadinessTimer = nil;
+    @synchronized(self) {
+        [self.updateReadinessTimer invalidate];
+        self.updateReadinessTimer = nil;
+    }
 }
 
 - (void)restartUpdateReadinessTimer
 {
-    if (self.readinessBlock != nil
-        && self.readinessUpdateInterval > 0
-        && ![self isFinished]
-        && ![self isExecuting]) {
+    @synchronized(self) {
 
         [self stopUpdateReadinessTimer];
 
-        self.updateReadinessTimer = [NSTimer timerWithTimeInterval:self.readinessUpdateInterval
-                                                            target:self
-                                                          selector:@selector(updateReadinessTimerFired)
-                                                          userInfo:nil
-                                                           repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:self.updateReadinessTimer forMode:NSRunLoopCommonModes];
+        if (self.readinessBlock != nil
+            && self.readinessUpdateInterval > 0
+            && ![self isFinished]
+            && ![self isExecuting]) {
+
+            self.updateReadinessTimer = [MSWeakTimer scheduledTimerWithTimeInterval:self.readinessUpdateInterval
+                                                                             target:self
+                                                                           selector:@selector(updateReadinessTimerFired)
+                                                                           userInfo:nil
+                                                                            repeats:YES
+                                                                      dispatchQueue:dispatch_get_main_queue()];
+        }
     }
 }
 
