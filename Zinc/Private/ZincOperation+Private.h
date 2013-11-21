@@ -13,4 +13,8 @@
 
 - (void) addChildOperation:(NSOperation*)childOp;
 
+@property (nonatomic, copy) BOOL (^readinessBlock) (void);
+
+@property (nonatomic, assign) NSTimeInterval readinessUpdateInterval;
+
 @end
