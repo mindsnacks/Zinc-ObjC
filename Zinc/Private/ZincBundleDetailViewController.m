@@ -49,6 +49,7 @@ enum kTags {
     if (self) {
         self.bundleID = bundleID;
         self.repo = repo;
+        self.title = ZincBundleNameFromBundleID(self.bundleID);
     }
     return self;
 }
@@ -169,7 +170,7 @@ enum kTags {
         if (![trackedDisto isEqualToString:distro]) {
             cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
         } else {
-            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
     }
 
