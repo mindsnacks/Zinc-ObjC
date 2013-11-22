@@ -118,11 +118,15 @@
     return (NSInteger)[self.items count];
 }
 
-- (UITableViewCell *)configureCell:(ZincActivityCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    static NSString *CellIdentifier = @"Cell";
+    ZincActivityCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
+    
     cell.progressView.progress = 0.0;
 
     cell.mainLabel.text = [self textForCellAtIndexPath:indexPath];
+//    cell.textLabel.text = [self textForCellAtIndexPath:indexPath];
 
     ZincActivityItem *item = [self.items objectAtIndex:(NSUInteger)indexPath.row];
 
@@ -138,7 +142,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [ZincActivityCell cellHeightForText:[self textForCellAtIndexPath:indexPath]];
+    return [ZincActivityCell cellHeightForText:[self textForCellAtIndexPath:indexPath] fitInWidth:self.view.frame.size.width];
 }
 
 - (void)viewWillAppear:(BOOL)animated

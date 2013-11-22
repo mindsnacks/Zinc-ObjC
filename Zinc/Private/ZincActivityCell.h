@@ -13,6 +13,6 @@
 @property (nonatomic, retain, readonly) UILabel *mainLabel;
 @property (nonatomic, retain, readonly) UIProgressView *progressView;
 
-+ (CGFloat)cellHeightForText:(NSString *)text;
++ (CGFloat)cellHeightForText:(NSString *)text fitInWidth:(CGFloat)width;
 
 @end
