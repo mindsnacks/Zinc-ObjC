@@ -148,15 +148,15 @@ enum kTags {
 
         cell.textLabel.text = [self.repo trackedDistributionForBundleID:self.bundleID];
         cell.accessoryType = UITableViewCellAccessoryDetailDisclosureButton;
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
     } else if (indexPath.section == kVersionsSection) {
 
         NSNumber *version = [self.repo.index availableVersionsForBundleID:self.bundleID][indexPath.row];
         cell.textLabel.text = [NSString stringWithFormat:@"%@", version];
-
         cell.detailTextLabel.text = [self.distrosByVersion[version] componentsJoinedByString:@", "];
-
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
 
     } else if (indexPath.section == kDistrosSection) {
 
@@ -164,7 +164,7 @@ enum kTags {
         cell.textLabel.text = distro;
         cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",
                                      self.versionsByDistro[distro]];
-
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
         NSString *trackedDisto = [self.repo trackedDistributionForBundleID:self.bundleID];
         if (![trackedDisto isEqualToString:distro]) {
