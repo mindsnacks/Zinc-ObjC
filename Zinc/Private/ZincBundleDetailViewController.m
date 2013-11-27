@@ -12,6 +12,7 @@
 #import "ZincRepoIndex.h"
 #import "ZincInternals.h"
 #import "ZincBundleDetailCell.h"
+#import "ZincBundleContentsViewController.h"
 
 
 enum kSections {
@@ -118,7 +119,7 @@ enum kTags {
         return NSLocalizedString(@"Available Local Versions", nil);
 
     } else if (section == kDistrosSection) {
-        return NSLocalizedString(@"Available Distros", nil);
+        return NSLocalizedString(@"Available Remote Distros", nil);
     }
 
     return nil;
@@ -172,6 +173,7 @@ enum kTags {
         } else {
             cell.accessoryType = UITableViewCellAccessoryCheckmark;
         }
+
     }
 
     return cell;
@@ -212,6 +214,35 @@ enum kTags {
 
         [self showTrackNewDistroAlertWithDistro:disto];
 
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == kVersionsSection) {
+
+        ZincVersion version = [[self.repo.index availableVersionsForBundleID:self.bundleID][indexPath.row] integerValue];
+        NSString *path = [self.repo pathForBundleWithID:self.bundleID version:version];
+
+        NSError *error = nil;
+        ZincManifest *manifest = [self.repo manifestWithBundleID:self.bundleID version:version error:&error];
+        if (manifest == nil)
+        {
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Coud Not Load Manifest", nil)
+                                                            message:[error localizedDescription]
+                                                           delegate:nil
+                                                  cancelButtonTitle:NSLocalizedString(@"OK", nil)
+                                                  otherButtonTitles:nil];
+            [alert show];
+            return;
+        }
+
+        ZincBundleContentsViewController *vc = [[ZincBundleContentsViewController alloc] initWithManifest:manifest rootPath:path];
+        [self.navigationController pushViewController:vc animated:YES];
+
+    } else {
+
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
 }
 

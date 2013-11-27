@@ -8,114 +8,197 @@
 
 #import "ZincBundleContentsViewController.h"
 
+#import "ZincManifest.h"
+#import "ZincImageFileViewController.h"
+
+#define kDirectoryPrefix @"📁"
+
 @interface ZincBundleContentsViewController ()
+@property (nonatomic, strong) ZincManifest *manifest;
+@property (nonatomic, strong) NSString *rootPath;
+@property (nonatomic, strong) NSString *subPath;
+@property (nonatomic, strong) NSArray *items;
+@property (nonatomic, strong) NSMutableDictionary *directoryCache;
 
 @end
 
-@implementation ZincBundleContentsViewController
 
-- (id)initWithStyle:(UITableViewStyle)style
+@interface ZincBundleContentsCell : UITableViewCell
+@end
+
+@implementation ZincBundleContentsCell
+
+- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
-    self = [super initWithStyle:style];
+    self = [super initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Custom initialization
+        self.textLabel.adjustsFontSizeToFitWidth = YES;
+        self.detailTextLabel.adjustsFontSizeToFitWidth = YES;
+
     }
     return self;
+}
+
+@end
+
+
+@implementation ZincBundleContentsViewController
+
+- (id)initWithManifest:(ZincManifest *)manifest rootPath:(NSString *)rootPath;
+{
+    self = [super initWithStyle:UITableViewStylePlain];
+    if (self) {
+        self.manifest = manifest;
+        self.rootPath = rootPath;
+        self.title = [self.rootPath lastPathComponent];
+        self.directoryCache = [NSMutableDictionary dictionary];
+    }
+    return self;
+}
+
+- (NSString *)currentDirectory
+{
+    return self.subPath != nil ? [self.rootPath stringByAppendingPathComponent:self.subPath] : self.rootPath;
+}
+
+- (void)reload
+{
+    NSError *error = nil;
+
+    NSArray *contents = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[self currentDirectory] error:&error];
+    // TODO: something with the error
+
+    NSMutableArray *items = [NSMutableArray arrayWithCapacity:[contents count]];
+
+    for (NSString *f in contents) {
+
+        NSString *bundlePath = self.subPath ? [self.subPath stringByAppendingPathComponent:f] : f;
+
+        if ([self.manifest shaForFile:bundlePath] != nil) {
+            [items addObject:f];
+        }
+    }
+
+    self.items = items;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
+    [self.tableView registerClass:[ZincBundleContentsCell class] forCellReuseIdentifier:@"Cell"];
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self reload];
 }
 
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
-    // Return the number of sections.
-    return 0;
+    return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
-    // Return the number of rows in the section.
-    return 0;
+    return [self.items count];
+}
+
+- (NSArray *)supportedViewerExtensions
+{
+    return [ZincImageFileViewController supportedExtensions];
+}
+
+- (BOOL)isDirAtPath:(NSString *)path
+{
+    if (self.directoryCache[path] != nil) {
+        return [self.directoryCache[path] boolValue];
+    }
+
+    BOOL isDir = NO;
+    [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir];
+    self.directoryCache[path] = [NSNumber numberWithBool:isDir];
+
+    return isDir;
+}
+
+- (NSString *)absolutePathAtIndex:(NSUInteger)index
+{
+    return [[self currentDirectory] stringByAppendingPathComponent:self.items[index]];
+}
+
+- (NSString *)bundlePathAtIndex:(NSUInteger)index
+{
+    return [[self absolutePathAtIndex:index] substringFromIndex:[self.rootPath length] + 1];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-    
-    // Configure the cell...
-    
+
+    NSString *filename = self.items[indexPath.row];
+    NSString *absPath = [self absolutePathAtIndex:indexPath.row];
+    NSString *bundlePath = [self bundlePathAtIndex:indexPath.row];
+    NSString *text = filename;
+
+    BOOL isDir = [self isDirAtPath:absPath];
+
+    if (isDir) {
+
+        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", kDirectoryPrefix, filename];
+
+    } else  {
+
+        cell.textLabel.text = filename;
+        cell.detailTextLabel.text = [self.manifest shaForFile:bundlePath];
+
+        if ([[self supportedViewerExtensions] containsObject:[[text pathExtension] lowercaseString]]) {
+
+            cell.selectionStyle = UITableViewCellSelectionStyleBlue;
+            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+
+        } else {
+
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.accessoryType = UITableViewCellAccessoryNone;
+        }
+    }
+
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
 
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+- (void)didReceiveMemoryWarning
 {
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
-    else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    self.directoryCache = [NSMutableDictionary dictionary];
 }
-*/
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 #pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    NSString *path = [self absolutePathAtIndex:indexPath.row];
+
+    UIViewController *viewControllerToPush = nil;
+
+    if ([self isDirAtPath:path]) {
+
+        viewControllerToPush = [[ZincBundleContentsViewController alloc] initWithManifest:self.manifest rootPath:path];
+
+    } else if ([[ZincImageFileViewController supportedExtensions] containsObject:[path pathExtension]]) {
+
+        viewControllerToPush = [[ZincImageFileViewController alloc] initWitImagePath:path];
+    }
+
+    if (viewControllerToPush != nil) {
+        [self.navigationController pushViewController:viewControllerToPush animated:YES];
+    } else {
+        [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+
 }
 
 @end

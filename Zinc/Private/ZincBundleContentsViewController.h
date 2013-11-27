@@ -8,6 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
+@class ZincManifest;
+
 @interface ZincBundleContentsViewController : UITableViewController
+
+- (id)initWithManifest:(ZincManifest *)manifest rootPath:(NSString *)rootPath;
 
 @end
