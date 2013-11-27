@@ -227,6 +227,8 @@
 		B36EC42F17D9336C003DAFC9 /* NSFileManager+ZincTar.m in Sources */ = {isa = PBXBuildFile; fileRef = B36EC42D17D9336C003DAFC9 /* NSFileManager+ZincTar.m */; };
 		B37023B916FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = B37023B716FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.h */; };
 		B37023BA16FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = B37023B816FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.m */; };
+		B381407D18456E6000520D15 /* ZincBundleContentsViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B381407B18456E6000520D15 /* ZincBundleContentsViewController.h */; };
+		B381407E18456E6000520D15 /* ZincBundleContentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B381407C18456E6000520D15 /* ZincBundleContentsViewController.m */; };
 		B3832C6C1819E19300262947 /* ZincBundleVersionHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = B3832C6A1819E19300262947 /* ZincBundleVersionHelper.h */; };
 		B3832C6D1819E19300262947 /* ZincBundleVersionHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B3832C6B1819E19300262947 /* ZincBundleVersionHelper.m */; };
 		B3832C6F1819F03900262947 /* ZincBundleVersionHelperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B3832C6E1819F03900262947 /* ZincBundleVersionHelperSpec.m */; };
@@ -506,6 +508,8 @@
 		B36EC42D17D9336C003DAFC9 /* NSFileManager+ZincTar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSFileManager+ZincTar.m"; sourceTree = "<group>"; };
 		B37023B716FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincHTTPRequestOperation+ZincContextInfo.h"; sourceTree = "<group>"; };
 		B37023B816FA47D3007603F3 /* ZincHTTPRequestOperation+ZincContextInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "ZincHTTPRequestOperation+ZincContextInfo.m"; sourceTree = "<group>"; };
+		B381407B18456E6000520D15 /* ZincBundleContentsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleContentsViewController.h; sourceTree = "<group>"; };
+		B381407C18456E6000520D15 /* ZincBundleContentsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleContentsViewController.m; sourceTree = "<group>"; };
 		B3832C6A1819E19300262947 /* ZincBundleVersionHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleVersionHelper.h; sourceTree = "<group>"; };
 		B3832C6B1819E19300262947 /* ZincBundleVersionHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleVersionHelper.m; sourceTree = "<group>"; };
 		B3832C6E1819F03900262947 /* ZincBundleVersionHelperSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincBundleVersionHelperSpec.m; sourceTree = "<group>"; };
@@ -712,22 +716,8 @@
 		B317E3D11829E44500AB0591 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				B34C67B0182C8FCF000A1AC9 /* ZincBundleManagementViewController.h */,
-				B34C67B1182C8FCF000A1AC9 /* ZincBundleManagementViewController.m */,
-				B317E3D21829E47700AB0591 /* ZincBundleListViewController.h */,
-				B317E3D31829E47700AB0591 /* ZincBundleListViewController.m */,
-				B3F928AC182DA8D800E16D73 /* ZincBundleDetailViewController.h */,
-				B3F928AD182DA8D900E16D73 /* ZincBundleDetailViewController.m */,
-				B34C67A9182C723F000A1AC9 /* ZincBundleListViewDataSource.h */,
-				B34C67AA182C723F000A1AC9 /* ZincBundleListViewDataSource.m */,
-				B38DF119182D8E34001E78E6 /* ZincBundleListViewCell.h */,
-				B38DF11A182D8E34001E78E6 /* ZincBundleListViewCell.m */,
-				B3F928B0182DB95A00E16D73 /* ZincBundleDetailCell.h */,
-				B3F928B1182DB95A00E16D73 /* ZincBundleDetailCell.m */,
-				B34C67C5182C92CB000A1AC9 /* ZincActivityCell.h */,
-				B34C67C6182C92CB000A1AC9 /* ZincActivityCell.m */,
-				B34C67C8182C92CB000A1AC9 /* ZincActivityViewController.h */,
-				B34C67C9182C92CB000A1AC9 /* ZincActivityViewController.m */,
+				B381407F18456F4A00520D15 /* Bundle Management */,
+				B381408018456F5C00520D15 /* Activity */,
 			);
 			name = UI;
 			sourceTree = "<group>";
@@ -874,6 +864,38 @@
 				B36388A817E184F000F2BBE4 /* zinc-objc-untar-Prefix.pch */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B381407F18456F4A00520D15 /* Bundle Management */ = {
+			isa = PBXGroup;
+			children = (
+				B34C67B0182C8FCF000A1AC9 /* ZincBundleManagementViewController.h */,
+				B34C67B1182C8FCF000A1AC9 /* ZincBundleManagementViewController.m */,
+				B317E3D21829E47700AB0591 /* ZincBundleListViewController.h */,
+				B317E3D31829E47700AB0591 /* ZincBundleListViewController.m */,
+				B3F928AC182DA8D800E16D73 /* ZincBundleDetailViewController.h */,
+				B3F928AD182DA8D900E16D73 /* ZincBundleDetailViewController.m */,
+				B34C67A9182C723F000A1AC9 /* ZincBundleListViewDataSource.h */,
+				B34C67AA182C723F000A1AC9 /* ZincBundleListViewDataSource.m */,
+				B38DF119182D8E34001E78E6 /* ZincBundleListViewCell.h */,
+				B38DF11A182D8E34001E78E6 /* ZincBundleListViewCell.m */,
+				B3F928B0182DB95A00E16D73 /* ZincBundleDetailCell.h */,
+				B3F928B1182DB95A00E16D73 /* ZincBundleDetailCell.m */,
+				B381407B18456E6000520D15 /* ZincBundleContentsViewController.h */,
+				B381407C18456E6000520D15 /* ZincBundleContentsViewController.m */,
+			);
+			name = "Bundle Management";
+			sourceTree = "<group>";
+		};
+		B381408018456F5C00520D15 /* Activity */ = {
+			isa = PBXGroup;
+			children = (
+				B34C67C5182C92CB000A1AC9 /* ZincActivityCell.h */,
+				B34C67C6182C92CB000A1AC9 /* ZincActivityCell.m */,
+				B34C67C8182C92CB000A1AC9 /* ZincActivityViewController.h */,
+				B34C67C9182C92CB000A1AC9 /* ZincActivityViewController.m */,
+			);
+			name = Activity;
 			sourceTree = "<group>";
 		};
 		B38742F91489B830004B227B = {
@@ -1235,6 +1257,7 @@
 				B3F928AE182DA8D900E16D73 /* ZincBundleDetailViewController.h in Headers */,
 				B3228CD017E5472400C2D7C7 /* ZincCreateBundleLinksOperation.h in Headers */,
 				B386696F17E57231001D03A4 /* ZincActivity.h in Headers */,
+				B381407D18456E6000520D15 /* ZincBundleContentsViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1729,6 +1752,7 @@
 				B32E5BB917E50A8900BDC634 /* NSString+Zinc.m in Sources */,
 				B3F928AF182DA8D900E16D73 /* ZincBundleDetailViewController.m in Sources */,
 				B3228CD217E5472400C2D7C7 /* ZincCreateBundleLinksOperation.m in Sources */,
+				B381407E18456E6000520D15 /* ZincBundleContentsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
