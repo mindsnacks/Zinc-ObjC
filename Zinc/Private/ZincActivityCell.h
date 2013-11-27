@@ -10,9 +10,10 @@
 
 @interface ZincActivityCell : UITableViewCell
 
-@property (nonatomic, retain, readonly) UILabel *mainLabel;
-@property (nonatomic, retain, readonly) UIProgressView *progressView;
+@property (nonatomic, strong, readonly) UILabel *mainLabel;
+@property (nonatomic, strong, readonly) UILabel *detailLabel;
+@property (nonatomic, strong, readonly) UIProgressView *progressView;
 
-+ (CGFloat)cellHeightForText:(NSString *)text fitInWidth:(CGFloat)width;
++ (CGFloat)cellHeight;
 
 @end

@@ -80,6 +80,7 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
         self.isMonitoring = YES;
         [self restartRefreshTimer];
         [self monitoringDidStart];
+        [self update];
     }
 }
 

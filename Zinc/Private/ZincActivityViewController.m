@@ -49,11 +49,6 @@
     [super loadView];
 
     [self.tableView registerClass:[ZincActivityCell class] forCellReuseIdentifier:@"Cell"];
-
-    self.view.backgroundColor = [UIColor whiteColor];
-
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-    self.tableView.rowHeight = 55;
 }
 
 - (void)monitorRefreshed:(NSNotification *)note
@@ -91,21 +86,6 @@
     }
 }
 
-#pragma mark -
-
-- (NSString *)textForCellAtIndexPath:(NSIndexPath *)indexPath
-{
-    ZincActivityItem* item = [self.items objectAtIndex:(NSUInteger)indexPath.row];
-
-    if ([item.subject isKindOfClass:[ZincTask class]]) {
-
-        NSString* bundleId = [[(ZincTask *)item.subject resource] zincBundleID];
-        return bundleId;
-    }
-
-    return nil;
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -125,10 +105,20 @@
     
     cell.progressView.progress = 0.0;
 
-    cell.mainLabel.text = [self textForCellAtIndexPath:indexPath];
-//    cell.textLabel.text = [self textForCellAtIndexPath:indexPath];
+    ZincActivityItem* item = [self.items objectAtIndex:(NSUInteger)indexPath.row];
 
-    ZincActivityItem *item = [self.items objectAtIndex:(NSUInteger)indexPath.row];
+    cell.mainLabel.text = [NSString stringWithFormat:@"[%p] %@",
+                           item.subject,
+                           NSStringFromClass([item.subject class])];
+
+
+
+    if ([item.subject isKindOfClass:[ZincTask class]]) {
+        NSString* bundleId = [[(ZincTask *)item.subject resource] zincBundleID];
+        cell.detailLabel.text = bundleId;
+    } else {
+        cell.detailLabel.text = @"";  // TODO: something intelligent here
+    }
 
     const float newProgress = item.progressPercentage;
 
@@ -142,7 +132,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [ZincActivityCell cellHeightForText:[self textForCellAtIndexPath:indexPath] fitInWidth:self.view.frame.size.width];
+    return [ZincActivityCell cellHeight];
 }
 
 - (void)viewWillAppear:(BOOL)animated
