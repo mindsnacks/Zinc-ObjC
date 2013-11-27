@@ -32,7 +32,7 @@
 - (void) testBundleImageLoading
 {
     // NOTE: this should be a unit test, but they don't execute in the same
-    // evironment so I'm adding a little something here
+    // environment so I'm adding a little something here
 
     NSError* error = nil;
 
@@ -52,17 +52,12 @@
     UIImage* image1 = [UIImage zinc_imageNamed:@"sphalerite.jpg" inBundle:bundle];
     NSAssert(image1, @"image1 is nil");
     NSLog(@"image1: %@", NSStringFromCGSize(image1.size));
+    NSAssert(image1.scale == [UIScreen mainScreen].scale, @"image1 scale wrong");
 
     UIImage* image2 = [UIImage zinc_imageNamed:@"sphalerite@2x.jpg" inBundle:bundle];
-    NSAssert(image2, @"image1 is nil");
+    NSAssert(image2, @"image2 is nil");
     NSLog(@"image2: %@", NSStringFromCGSize(image2.size));
-
-    if ([UIScreen mainScreen].scale == 2.0f) {
-        NSAssert(image1.size.width == image2.size.width, @"retina wrong");
-
-    } else {
-        NSAssert(image1.size.width*2 == image2.size.width, @"non-retina wrong");
-    }
+    NSAssert(image2.scale == [UIScreen mainScreen].scale, @"image2 scale wrong");
 }
 
 

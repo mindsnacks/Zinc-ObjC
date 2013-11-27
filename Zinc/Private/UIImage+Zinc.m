@@ -50,8 +50,12 @@
     
     // if the image is still nil, try to load without the cache
     if (image == nil) {
-        image = [UIImage imageWithContentsOfFile:
-                 [bundlePath stringByAppendingPathComponent:name]];
+        for (NSString* imageName in imageNames) {
+            image = [UIImage imageWithContentsOfFile:
+                     [bundlePath stringByAppendingPathComponent:imageName]];
+            if (image != nil)
+                break;
+        }
     }
     
     return image;
