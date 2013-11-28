@@ -109,13 +109,9 @@
 		B34C67AB182C723F000A1AC9 /* ZincBundleListViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67A9182C723F000A1AC9 /* ZincBundleListViewDataSource.h */; };
 		B34C67AC182C723F000A1AC9 /* ZincBundleListViewDataSource.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67A9182C723F000A1AC9 /* ZincBundleListViewDataSource.h */; };
 		B34C67AD182C723F000A1AC9 /* ZincBundleListViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67AA182C723F000A1AC9 /* ZincBundleListViewDataSource.m */; };
-		B34C67AE182C723F000A1AC9 /* ZincBundleListViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67AA182C723F000A1AC9 /* ZincBundleListViewDataSource.m */; };
-		B34C67AF182C723F000A1AC9 /* ZincBundleListViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67AA182C723F000A1AC9 /* ZincBundleListViewDataSource.m */; };
 		B34C67B2182C8FCF000A1AC9 /* ZincBundleManagementViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67B0182C8FCF000A1AC9 /* ZincBundleManagementViewController.h */; };
 		B34C67B3182C8FCF000A1AC9 /* ZincBundleManagementViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67B0182C8FCF000A1AC9 /* ZincBundleManagementViewController.h */; };
 		B34C67B4182C8FCF000A1AC9 /* ZincBundleManagementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67B1182C8FCF000A1AC9 /* ZincBundleManagementViewController.m */; };
-		B34C67B5182C8FCF000A1AC9 /* ZincBundleManagementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67B1182C8FCF000A1AC9 /* ZincBundleManagementViewController.m */; };
-		B34C67B6182C8FCF000A1AC9 /* ZincBundleManagementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67B1182C8FCF000A1AC9 /* ZincBundleManagementViewController.m */; };
 		B34C67CA182C92CB000A1AC9 /* ZincActivityCell.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67C5182C92CB000A1AC9 /* ZincActivityCell.h */; };
 		B34C67CB182C92CB000A1AC9 /* ZincActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B34C67C6182C92CB000A1AC9 /* ZincActivityCell.m */; };
 		B34C67CC182C92CB000A1AC9 /* ZincActivityViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B34C67C8182C92CB000A1AC9 /* ZincActivityViewController.h */; };
@@ -1749,7 +1745,6 @@
 				B340FA0C148D67C400206F86 /* SenTestCase+MethodSwizzling.m in Sources */,
 				B327D4BF14AE75DC0051416F /* ZincFileManagerTest.m in Sources */,
 				B3215E3B14BFC6DA00FC7FA7 /* ZincResourceTests.m in Sources */,
-				B34C67B6182C8FCF000A1AC9 /* ZincBundleManagementViewController.m in Sources */,
 				B3E46AB614C0DEDA00030349 /* UIImageZincTests.m in Sources */,
 				B3E46BA014C4C01800030349 /* ZincRepoIndexTests.m in Sources */,
 				B3D2CA1814C5FC1A00717B2E /* ZincManifestTests.m in Sources */,
@@ -1763,7 +1758,6 @@
 				B3AE826617DFA73E003AA609 /* ZincProgressSpec.m in Sources */,
 				B3AE827217DFBD97003AA609 /* ZincActivitityMonitorSpec.m in Sources */,
 				B3AE827417DFCCFA003AA609 /* ZincTaskMonitorSpec.m in Sources */,
-				B34C67AF182C723F000A1AC9 /* ZincBundleListViewDataSource.m in Sources */,
 				B3AE827617DFCD9E003AA609 /* ZincCompletableActivityMonitorSpec.m in Sources */,
 				B3AE827C17DFD89B003AA609 /* ZincTestDummies.m in Sources */,
 				B3AE827E17DFDC47003AA609 /* ZincBundleAvailabilityMonitorSpec.m in Sources */,
@@ -1786,7 +1780,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B36388B317E1863400F2BBE4 /* ZincURLConnectionOperation.m in Sources */,
-				B34C67AE182C723F000A1AC9 /* ZincBundleListViewDataSource.m in Sources */,
 				B36388B417E1863400F2BBE4 /* ZincBundle.m in Sources */,
 				B36388B517E1863400F2BBE4 /* NSFileManager+Zinc.m in Sources */,
 				B36388B617E1863400F2BBE4 /* ZincManifest.m in Sources */,
@@ -1804,7 +1797,6 @@
 				B36388C117E1863400F2BBE4 /* ZincGarbageCollectTask.m in Sources */,
 				B36388C217E1863400F2BBE4 /* ZincBundleDeleteTask.m in Sources */,
 				B36388C317E1863400F2BBE4 /* ZincTaskDescriptor.m in Sources */,
-				B34C67B5182C8FCF000A1AC9 /* ZincBundleManagementViewController.m in Sources */,
 				B36388C417E1863400F2BBE4 /* ZincResource.m in Sources */,
 				B36388C517E1863400F2BBE4 /* ZincCatalogUpdateTask.m in Sources */,
 				B36388C617E1863400F2BBE4 /* ZincOperationQueueGroup.m in Sources */,
