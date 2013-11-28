@@ -162,6 +162,11 @@
 - (void) beginTrackingBundleWithID:(NSString*)bundleID distribution:(NSString*)distro flavor:(NSString*)flavor;
 
 /**
+ Updates the tracked distribution while leaving the tracked flavor intact.
+ */
+- (void) updateTrackedDistributionForBundleWithID:(NSString*)bundleID distribution:(NSString*)distro;
+
+/**
  Stop tracking a bundle.
  */
 - (void) stopTrackingBundleWithID:(NSString*)bundleID;
@@ -170,6 +175,11 @@
  Get all currently tracking bundles.
  */
 - (NSSet*) trackedBundleIDs;
+
+/**
+ Get the tracked distro for a bundleID
+ */
+- (NSString*) trackedDistributionForBundleID:(NSString*)bundleID;
 
 /**
  Manually update a bundle. Currently ignores downloadPolicy and will update regardless of connectivity.

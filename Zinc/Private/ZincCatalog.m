@@ -12,7 +12,7 @@
 
 @interface ZincCatalog ()
 @property (nonatomic, strong, readwrite) NSString* identifier;
-@property (nonatomic, strong, readwrite) NSDictionary* bundleInfoById;
+@property (nonatomic, strong, readwrite) NSDictionary* bundleInfoByName;
 @end
 
 @implementation ZincCatalog
@@ -34,7 +34,7 @@
     if (self) {
         self.identifier = dict[@"id"]; 
         self.format = [dict[@"format"] integerValue];
-        self.bundleInfoById = dict[@"bundles"];
+        self.bundleInfoByName = dict[@"bundles"];
     }
     return self;
 }
@@ -44,7 +44,7 @@
     NSMutableDictionary* d = [NSMutableDictionary dictionaryWithCapacity:4];
     d[@"id"] = self.identifier;
     d[@"format"] = @(self.format);
-    d[@"bundles"] = self.bundleInfoById;
+    d[@"bundles"] = self.bundleInfoByName;
     return d;
 }
 
@@ -58,9 +58,16 @@
 
 #pragma mark -
 
-- (NSInteger) versionForBundleID:(NSString*)bundleID distribution:(NSString*)distro
+- (NSDictionary *)distributionsForBundleName:(NSString *)bundleName
 {
-    NSDictionary* bundleInfo = (self.bundleInfoById)[bundleID];
+    NSDictionary* bundleInfo = (self.bundleInfoByName)[bundleName];
+    return [bundleInfo[@"distributions"] copy];
+}
+
+
+- (NSInteger) versionForBundleName:(NSString*)bundleName distribution:(NSString*)distro
+{
+    NSDictionary* bundleInfo = (self.bundleInfoByName)[bundleName];
     
     NSNumber* version = bundleInfo[@"distributions"][distro];
     if (version != nil) {

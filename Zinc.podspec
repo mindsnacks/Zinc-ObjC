@@ -17,4 +17,8 @@ Pod::Spec.new do |s|
   s.dependency 'KSReachability', '~> 1.3'
   s.dependency 'AMError', '~> 0.2.5'
   s.dependency 'MSWeakTimer', '~> 1.1.0'
+
+  s.subspec 'AdminUI-iOS' do |i| 
+  	i.frameworks = 'UIKit'
+  end
 end

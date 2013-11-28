@@ -615,7 +615,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     ZincCatalog* catalog = [self catalogWithIdentifier:catalogID error:&error];
     if (catalog != nil) {
         NSString* bundleName = ZincBundleNameFromBundleID(bundleID);
-        ZincVersion catalogVersion = [catalog versionForBundleID:bundleName distribution:distro];
+        ZincVersion catalogVersion = [catalog versionForBundleName:bundleName distribution:distro];
         
         if (catalogVersion == ZincVersionInvalid) {
             NSDictionary* info = @{@"bundleID" : bundleID, @"distro": distro};
@@ -662,7 +662,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     if (catalog == nil) {
         return NO;
     }
-    ZincVersion version = [catalog versionForBundleID:bundleName distribution:distro];
+    ZincVersion version = [catalog versionForBundleName:bundleName distribution:distro];
     return [self hasManifestForBundleIDentifier:bundleID version:version];
 }
 
@@ -748,6 +748,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     
     [self queueIndexSaveTask];
     [self postNotification:ZincRepoBundleDidBeginTrackingNotification bundleID:bundleID];
+}
+
+- (void) updateTrackedDistributionForBundleWithID:(NSString*)bundleID distribution:(NSString*)distro
+{
+    NSString* flavor = [self.index trackingInfoForBundleID:bundleID].flavor;
+    [self beginTrackingBundleWithID:bundleID distribution:distro flavor:flavor];
 }
 
 - (ZincTaskRef*) updateBundleWithID:(NSString*)bundleID
@@ -847,6 +853,11 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (NSSet*) trackedBundleIDs
 {
     return [self.index trackedBundleIDs];
+}
+
+- (NSString*) trackedDistributionForBundleID:(NSString*)bundleID
+{
+    return [self.index trackedDistributionForBundleID:bundleID];
 }
 
 #pragma mark Bundles

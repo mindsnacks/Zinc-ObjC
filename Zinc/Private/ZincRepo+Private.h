@@ -37,6 +37,7 @@
 
 - (void) registerCatalog:(ZincCatalog*)catalog;
 - (NSString*) pathForCatalogIndex:(ZincCatalog*)catalog;
+- (ZincCatalog*) catalogWithIdentifier:(NSString*)identifier error:(NSError**)outError;
 
 - (void) addManifest:(ZincManifest*)manifest forBundleID:(NSString*)bundleID;
 - (BOOL) removeManifestForBundleID:(NSString*)bundleID version:(ZincVersion)version error:(NSError**)outError;

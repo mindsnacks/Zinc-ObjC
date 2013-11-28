@@ -54,7 +54,7 @@
 
 - (NSURL*) urlForBundleName:(NSString*)name distribution:(NSString*)distro catalog:(ZincCatalog*)catalog
 {
-    NSInteger version = [catalog versionForBundleID:name distribution:distro];
+    NSInteger version = [catalog versionForBundleName:name distribution:distro];
     if (version == ZincVersionInvalid) {
         return nil;
     }
