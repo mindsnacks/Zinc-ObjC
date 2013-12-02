@@ -18,8 +18,8 @@
 
 - (void)testGetsTheSameAgent
 {
-    id repo = [OCMockObject niceMockForClass:[ZincRepo class]];
-    [[[repo stub] andReturn:[NSURL URLWithString:@"file:///tmp"]] url];
+        id repo = [ZincRepo nullMock];
+    [repo stub:@selector(url) andReturn:[NSURL URLWithString:@"file:///tmp"]];
 
     ZincAgent* agent1 = [ZincAgent agentForRepo:repo];
     ZincAgent* agent2 = [ZincAgent agentForRepo:repo];

@@ -9,7 +9,7 @@ target :Zinc do
 
 	target :Tests do
 		pod 'OCMock', '~> 2.2.1'
-		pod 'Kiwi', '~> 1.1.1'
+		pod 'Kiwi', '~> 2.2.3'
 		link_with 'ZincTests'
 	end
 
