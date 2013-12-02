@@ -51,30 +51,30 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 
 @property (nonatomic, assign) ZincConnectionType defaultRequiredConnectionType;
 
-- (ZincConnectionType)requiredConnectionTypeForPriority:(NSOperationQueuePriority)priority;
+- (ZincConnectionType) requiredConnectionTypeForPriority:(NSOperationQueuePriority)priority;
 
-- (void)setRequiredConnectionType:(ZincConnectionType)connectionType forPrioritiesGreaterThanOrEqualToPriority:(NSOperationQueuePriority)priority;
+- (void) setRequiredConnectionType:(ZincConnectionType)connectionType forPrioritiesGreaterThanOrEqualToPriority:(NSOperationQueuePriority)priority;
 
-- (void)removePriorityForConnectionType:(ZincConnectionType)connectionType;
+- (void) removePriorityForConnectionType:(ZincConnectionType)connectionType;
 
 
 #pragma mark Custom Rules
 
 /**
- @discussion Add a custom rule.
+ Add a custom rule.
  */
-- (void)addRule:(id<ZincDownloadPolicyRule>)rule;
+- (void) addRule:(id<ZincDownloadPolicyRule>)rule;
 
 /**
- @discussion Remove a custom rule.
+ Remove a custom rule.
  */
-- (void)removeRule:(id<ZincDownloadPolicyRule>)rule;
+- (void) removeRule:(id<ZincDownloadPolicyRule>)rule;
 
 
 #pragma mark Convenience
 
 /**
- @discussion Resets the policy to defaults, and if it was just created using init
+ Resets the policy to defaults, and if it was just created using init
  */
 - (void) reset;
 
