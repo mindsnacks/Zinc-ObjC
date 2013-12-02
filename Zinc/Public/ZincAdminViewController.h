@@ -10,7 +10,7 @@
 
 @class ZincRepo;
 
-@interface ZincAdminViewController : UIViewController <UITabBarDelegate>
+@interface ZincAdminViewController : UIViewController
 
 
 /**
