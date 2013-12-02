@@ -34,8 +34,8 @@ extern NSString* const ZincDownloadPolicyPriorityChangePriorityKey;
 @interface ZincDownloadPolicy : NSObject
 
 /**
- @discussion Returns a bundle policy with no rules for specific priorities
- and default required connection type ZincConnectionTypeAny 
+ Returns a bundle policy with no rules for specific priorities and default
+ required connection type ZincConnectionTypeAny.
  */
 - (id) init;
 
@@ -88,7 +88,7 @@ typedef BOOL (^ZincDownloadPolicyBlockRuleHandler)(NSString* bundleID, NSOperati
 
 @interface ZincDownloadPolicyBlockRule : NSObject <ZincDownloadPolicyRule>
 
-+ (instancetype)ruleWithBlock:(ZincDownloadPolicyBlockRuleHandler)block;
++ (instancetype) ruleWithBlock:(ZincDownloadPolicyBlockRuleHandler)block;
 
 @end
 
