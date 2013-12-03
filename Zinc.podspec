@@ -19,7 +19,7 @@ Pod::Spec.new do |s|
   s.osx.source_files        = 'Zinc/{Public,Private}/*.{h,m}', 'Zinc/{Public,Private}/osx/*.{h,m}'
 
   s.ios.frameworks          = 'Security', 'CFNetwork', 'MobileCoreServices', 'SystemConfiguration', 'UIKit'
-  s.osx.frameworks          = 'MobileCoreServices', 'SystemConfiguration', 'UIKit'
+  s.osx.frameworks          = 'Security', 'CFNetwork'
 
   s.libraries               = 'z'
   s.requires_arc            = true
