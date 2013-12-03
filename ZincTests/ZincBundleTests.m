@@ -23,7 +23,7 @@
 {
     NSError* error = nil;
     NSString* path = TEST_CREATE_TMP_DIR(@"zincbundle");
-    NSString* formatString = [NSString stringWithFormat:@"%d", format];
+    NSString* formatString = [NSString stringWithFormat:@"%ld", (long)format];
     NSString* formatPath = [path stringByAppendingPathComponent:@"zinc_format.txt"];
     if (![formatString writeToFile:formatPath atomically:NO encoding:NSUTF8StringEncoding error:&error]) {
         STFail(@"%@", error);

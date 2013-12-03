@@ -107,7 +107,7 @@
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     STAssertNoThrow(i1.format = 1, @"should not throw");
-    STAssertEquals(i1.format, 1, @"should be 1");
+    STAssertEquals((long)i1.format, 1l, @"should be 1");
 }
 
 - (void) testInvalidFormat

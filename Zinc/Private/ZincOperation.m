@@ -198,13 +198,13 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 
 - (NSString*) description
 {
-    return [NSString stringWithFormat:@"<%@: %p isReady=%d isExecuting=%d isFinished=%d queuePriority=%d>",
+    return [NSString stringWithFormat:@"<%@: %p isReady=%d isExecuting=%d isFinished=%d queuePriority=%ld>",
             NSStringFromClass([self class]),
             self,
             self.isReady,
             self.isExecuting,
             self.isFinished,
-            self.queuePriority];
+            (long)self.queuePriority];
 }
 
 @end

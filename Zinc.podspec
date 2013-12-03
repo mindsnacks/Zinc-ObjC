@@ -30,9 +30,8 @@ Pod::Spec.new do |s|
   s.dependency 'MSWeakTimer', '~> 1.1.0'
 
   s.subspec 'AdminUI' do |admin| 
-    admin.platform            = :ios, '6.0'
-    admin.public_header_files = 'Zinc/Public/AdminUI/ios/*.h'
-    admin.source_files        = 'Zinc/{Public,Private}/AdminUI/ios/*.{h,m}'
+    admin.ios.public_header_files = 'Zinc/Public/AdminUI/ios/*.h'
+    admin.ios.source_files        = 'Zinc/{Public,Private}/AdminUI/ios/*.{h,m}'
   end
 
 end
