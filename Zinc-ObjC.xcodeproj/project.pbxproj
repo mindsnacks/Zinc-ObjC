@@ -395,9 +395,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0D5923FA899F4A349A8158A7 /* libPods-ZincOSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZincOSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C9F7CDD3DC4BE8AAC529A9 /* Pods-Zinc-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc-Tests.xcconfig"; path = "Pods/Pods-Zinc-Tests.xcconfig"; sourceTree = "<group>"; };
 		4DF903572D4B405F8361AFBA /* libPods-Zinc-ZincTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc-ZincTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D9EAE466FC244928D4779AB /* libPods-Zinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F101754647C438D91956386 /* Pods-ZincOSX.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZincOSX.xcconfig"; path = "Pods/Pods-ZincOSX.xcconfig"; sourceTree = "<group>"; };
 		6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc.xcconfig"; path = "Pods/Pods-Zinc.xcconfig"; sourceTree = "<group>"; };
 		98567F54C9A94AB1A0663A24 /* libPods-Zinc-FunctionalTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc-FunctionalTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD421D93A86A4558A19EA3B8 /* Pods-Zinc-FunctionalTests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc-FunctionalTests.xcconfig"; path = "Pods/Pods-Zinc-FunctionalTests.xcconfig"; sourceTree = "<group>"; };
@@ -413,8 +415,8 @@
 		B313BF9317E8E27500B69E7D /* NSOperationZincSpec.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSOperationZincSpec.m; sourceTree = "<group>"; };
 		B317E4EF15C9F8AF00DE9D73 /* ZincJSONSerialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincJSONSerialization.h; sourceTree = "<group>"; };
 		B317E4F015C9F8AF00DE9D73 /* ZincJSONSerialization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincJSONSerialization.m; sourceTree = "<group>"; };
-		B31B9DAF184D634D0046BD31 /* libPods-ZincOSX.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libPods-ZincOSX.a"; path = "Pods/build/Debug/libPods-ZincOSX.a"; sourceTree = "<group>"; };
-		B31B9DB1184D63520046BD31 /* libPods-ZincOSX-Tests.a */ = {isa = PBXFileReference; lastKnownFileType = file; name = "libPods-ZincOSX-Tests.a"; path = "Pods/build/Debug/libPods-ZincOSX-Tests.a"; sourceTree = "<group>"; };
+		B31B9DAF184D634D0046BD31 /* libPods-ZincOSX.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-ZincOSX.a"; path = "Pods/build/Debug/libPods-ZincOSX.a"; sourceTree = "<group>"; };
+		B31B9DB1184D63520046BD31 /* libPods-ZincOSX-Tests.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libPods-ZincOSX-Tests.a"; path = "Pods/build/Debug/libPods-ZincOSX-Tests.a"; sourceTree = "<group>"; };
 		B31E269015D472F600B913D9 /* ZincBundleTrackingRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincBundleTrackingRequest.h; sourceTree = "<group>"; };
 		B3215E2014BE5AF800FC7FA7 /* ZincTaskDescriptor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZincTaskDescriptor.h; sourceTree = "<group>"; };
 		B3215E2114BE5AF800FC7FA7 /* ZincTaskDescriptor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZincTaskDescriptor.m; sourceTree = "<group>"; };
@@ -957,6 +959,7 @@
 				B36388A417E184F000F2BBE4 /* zinc-object-untar */,
 				B38743071489B830004B227B /* Frameworks */,
 				B38743051489B830004B227B /* Products */,
+				5F101754647C438D91956386 /* Pods-ZincOSX.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -998,6 +1001,7 @@
 				B387430A1489B830004B227B /* Foundation.framework */,
 				B387430C1489B830004B227B /* CoreGraphics.framework */,
 				B340F94A148D514600206F86 /* SenTestingKit.framework */,
+				0D5923FA899F4A349A8158A7 /* libPods-ZincOSX.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -1811,7 +1815,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Pods-Zinc-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Pods-ZincOSX-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -2160,6 +2164,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Private/Zinc-Prefix.pch";
@@ -2170,7 +2175,6 @@
 					"$(inherited)",
 					"\"$(SDKROOT)/usr/lib/system\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -2180,6 +2184,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
 				GCC_PREFIX_HEADER = "Zinc/Private/Zinc-Prefix.pch";
@@ -2190,7 +2195,6 @@
 					"$(inherited)",
 					"\"$(SDKROOT)/usr/lib/system\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -2260,7 +2264,7 @@
 		};
 		B363891317E1863400F2BBE4 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
+			baseConfigurationReference = 5F101754647C438D91956386 /* Pods-ZincOSX.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
@@ -2273,7 +2277,6 @@
 					"\"$(SDKROOT)/usr/lib/system\"",
 				);
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Zinc-OSX";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -2283,7 +2286,7 @@
 		};
 		B363891417E1863400F2BBE4 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
+			baseConfigurationReference = 5F101754647C438D91956386 /* Pods-ZincOSX.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/Zinc.dst;
@@ -2295,7 +2298,6 @@
 					"$(inherited)",
 					"\"$(SDKROOT)/usr/lib/system\"",
 				);
-				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Zinc-OSX";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -2307,6 +2309,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -2341,6 +2344,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				CLANG_WARN_BOOL_CONVERSION = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
@@ -2369,13 +2373,15 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
 				INFOPLIST_FILE = "ZincDemo/Zinc-Demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Zinc-iOS";
+				VALID_ARCHS = "arm64 armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -2384,12 +2390,14 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6EB8AAF445D542D4956DD3C4 /* Pods-Zinc.xcconfig */;
 			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_INCLUDING_64_BIT)";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "ZincDemo/Zinc-Demo-Prefix.pch";
 				INFOPLIST_FILE = "ZincDemo/Zinc-Demo-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "Zinc-iOS";
+				VALID_ARCHS = "arm64 armv7 armv7s arm64";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;

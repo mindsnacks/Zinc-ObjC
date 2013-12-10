@@ -5,7 +5,7 @@ target :Zinc, :exclusive => true do
 
 	pod 'AMError', :git => 'https://github.com/amrox/AMError.git'
 	podspec :path => "Zinc.podspec"
-	link_with 'Zinc'
+	link_with ['Zinc', 'ZincDemo']
 
 	target :Tests do
 		pod 'OCMock', '~> 2.2.1'
