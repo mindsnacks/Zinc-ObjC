@@ -25,7 +25,9 @@
     if (op.response != nil ) {
         NSMutableDictionary* responseInfo = [NSMutableDictionary dictionary];
         info[@"URLResponse"] = responseInfo;
-        responseInfo[@"Headers"] = [op.response allHeaderFields];
+        if ([op.response respondsToSelector:@selector(allHeaderFields)]) {
+            responseInfo[@"Headers"] = [op.response performSelector:@selector(allHeaderFields)];
+        }
     }
 
     return info;
