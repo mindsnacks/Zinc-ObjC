@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ZincHTTPRequestOperationFactory.h"
+
 @class ZincRepo;
 @class ZincTask;
 @class ZincTaskDescriptor;
@@ -64,5 +66,12 @@
 #pragma mark Initialization;
 
 - (ZincTaskRef*) taskRefForInitialization;
+
+@end
+
+
+@interface ZincRepoTaskManager (ZincHTTPRequestOperationFactoryDelegate) <ZincHTTPRequestOperationFactoryDelegate>
+
+- (BOOL)HTTPRequestOperationFactory:(ZincHTTPRequestOperationFactory *)operationRequestFactory shouldExecuteOperationsInBackground:(id<ZincHTTPRequestOperation>)operation;
 
 @end

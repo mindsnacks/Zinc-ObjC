@@ -25,6 +25,16 @@
     return self;
 }
 
+- (BOOL)shouldExecuteOperationInBackground:(id<ZincHTTPRequestOperation>)op
+{
+    if (self.delegate) {
+        return [self.delegate HTTPRequestOperationFactory:self
+                      shouldExecuteOperationsInBackground:op];
+    } else {
+       return YES;
+    }
+}
+
 - (id<ZincHTTPRequestOperation>)operationForRequest:(NSURLRequest *)request
 {
     id <ZincHTTPRequestOperation> requestOp = nil;
@@ -39,7 +49,7 @@
 
         //#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
 #if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-        if (self.executeTasksInBackgroundEnabled) {
+        if ([self shouldExecuteOperationInBackground:requestOp]) {
             [urlConnectionOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
         }
 #endif

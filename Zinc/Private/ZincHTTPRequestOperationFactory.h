@@ -9,13 +9,25 @@
 #import <Foundation/Foundation.h>
 #import "ZincHTTPRequestOperation.h"
 
+
+@protocol ZincHTTPRequestOperationFactoryDelegate;
+
+
 @interface ZincHTTPRequestOperationFactory : NSObject
 
-/**
- @discussion default is YES
- */
-@property (atomic, assign) BOOL executeTasksInBackgroundEnabled;
+@property (nonatomic, weak) id<ZincHTTPRequestOperationFactoryDelegate> delegate;
 
 - (id<ZincHTTPRequestOperation>)operationForRequest:(NSURLRequest *)request;
+
+@end
+
+
+
+@protocol ZincHTTPRequestOperationFactoryDelegate <NSObject>
+
+/**
+ If not implemented, will default to YES
+ */
+- (BOOL)HTTPRequestOperationFactory:(ZincHTTPRequestOperationFactory *)operationRequestFactory shouldExecuteOperationsInBackground:(id<ZincHTTPRequestOperation>)operation;
 
 @end

@@ -299,3 +299,15 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 }
 
 @end
+
+
+
+@implementation ZincRepoTaskManager (ZincHTTPRequestOperationFactoryDelegate)
+
+- (BOOL)HTTPRequestOperationFactory:(ZincHTTPRequestOperationFactory *)operationRequestFactory shouldExecuteOperationsInBackground:(id<ZincHTTPRequestOperation>)operation
+{
+    return self.executeTasksInBackgroundEnabled;
+}
+
+@end
+
