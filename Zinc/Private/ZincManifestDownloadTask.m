@@ -13,7 +13,7 @@
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskActions.h"
-#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
+#import "ZincEventHelpers.h"
 
 @implementation ZincManifestDownloadTask
 
@@ -62,7 +62,7 @@
         if (self.isCancelled) return;
 
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:                            [ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
             continue;
         }
         
@@ -70,13 +70,13 @@
         
         NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
             continue;
         }
         
         id json = [ZincJSONSerialization JSONObjectWithData:uncompressed options:0 error:&error];
         if (json == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
             continue;
         }
         

@@ -13,7 +13,9 @@
 #import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskActions.h"
-#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
+#import "ZincHTTPRequestOperation.h"
+#import "ZincEventHelpers.h"
+
 
 @implementation ZincSourceUpdateTask
 
@@ -40,33 +42,35 @@
 - (void) main
 {
     NSError* error = nil;
-    
+
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
-    ZincHTTPURLConnectionOperation* requestOp = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
+
+    id<ZincHTTPRequestOperation> requestOp = [self.repo.requestOperationFactory operationForRequest:request];
+
     [self queueChildOperation:requestOp];
-    
+
     [requestOp waitUntilFinished];
     if (self.isCancelled) return;
-    
+
     if (![requestOp hasAcceptableStatusCode]) {
-        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
         return;
     }
-    
+
     if (self.isCancelled) return;
-    
+
     NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
     if (uncompressed == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
         return;
     }
-    
+
     ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[requestOp zinc_contextInfo]]];
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
         return;
     }
-    
+
     NSData* data = [catalog jsonRepresentation:&error];
     if (data == nil) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];

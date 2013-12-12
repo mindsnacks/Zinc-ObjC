@@ -11,11 +11,10 @@
 #import "ZincInternals.h"
 #import "ZincTask+Private.h"
 #import "ZincTaskActions.h"
-#import "ZincRepo.h"
-#import "ZincHTTPURLConnectionOperation.h"
-
-// TODO: break this dependency?
 #import "ZincRepo+Private.h"
+#import "ZincHTTPRequestOperation.h"
+#import "ZincHTTPRequestOperationFactory.h"
+
 
 @interface ZincDownloadTask()
 @property (nonatomic, strong, readwrite) id context;
@@ -34,18 +33,12 @@
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    ZincHTTPURLConnectionOperation* requestOp = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
+    id<ZincHTTPRequestOperation> requestOp = [self.repo.requestOperationFactory operationForRequest:request];
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;
     }
-    
-    if (self.repo.taskManager.executeTasksInBackgroundEnabled) { // TODO: break this dependency?
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
-        [requestOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
-#endif
-    }
-    
+
     self.context = context;
     
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];

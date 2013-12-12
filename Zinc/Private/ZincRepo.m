@@ -165,6 +165,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
+        self.requestOperationFactory = [[ZincHTTPRequestOperationFactory alloc] init];
     }
     return self;
 }

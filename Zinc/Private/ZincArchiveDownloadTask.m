@@ -12,7 +12,7 @@
 #import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
+#import "ZincEventHelpers.h"
 
 @interface ZincArchiveDownloadTask ()
 @property (nonatomic, strong) ZincArchiveExtractOperation* extractOp;
@@ -83,7 +83,7 @@
         if (self.isCancelled) return;
         
         if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[self.httpRequestOperation zinc_contextInfo]]];
+            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
