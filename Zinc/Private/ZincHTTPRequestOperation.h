@@ -10,7 +10,7 @@
 
 @protocol ZincHTTPRequestOperation <NSObject>
 
-//@required
+@required
 
 
 ///------------------------------------------------------
