@@ -87,8 +87,7 @@
         }
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
-        NSOutputStream* outStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
-        [self queueOperationForRequest:request outputStream:outStream context:nil];
+        [self queueOperationForRequest:request downoadPath:downloadPath context:nil];
         
         [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;

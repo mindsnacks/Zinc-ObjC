@@ -56,7 +56,7 @@
         
         NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
-        [self queueOperationForRequest:request outputStream:nil context:nil];
+        [self queueOperationForRequest:request downoadPath:nil context:nil];
         
         [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;
