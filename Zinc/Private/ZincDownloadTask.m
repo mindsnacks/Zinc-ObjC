@@ -29,7 +29,7 @@
     return ZincTaskActionUpdate;
 }
 
-- (void) queueOperationForRequest:(NSURLRequest *)request downoadPath:(NSString *)downloadPath context:(id)context
+- (void) queueOperationForRequest:(NSURLRequest *)request downloadPath:(NSString *)downloadPath context:(id)context
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
 

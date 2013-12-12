@@ -76,7 +76,7 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
-        [self queueOperationForRequest:request downoadPath:self.downloadPath context:self.bundleID];
+        [self queueOperationForRequest:request downloadPath:self.downloadPath context:self.bundleID];
         
         [self.httpRequestOperation waitUntilFinished];
         if (self.isCancelled) return;

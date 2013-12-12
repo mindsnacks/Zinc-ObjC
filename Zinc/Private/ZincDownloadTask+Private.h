@@ -18,7 +18,7 @@
 @property (nonatomic, strong, readwrite) id<ZincHTTPRequestOperation> httpRequestOperation;
 
 - (void) queueOperationForRequest:(NSURLRequest *)request
-                      downoadPath:(NSString *)downloadPath
+                      downloadPath:(NSString *)downloadPath
                           context:(id)context;
 
 @end
