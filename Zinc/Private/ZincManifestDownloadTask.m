@@ -13,7 +13,7 @@
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskActions.h"
-#import "ZincHTTPRequestOperation+ZincContextInfo.h"
+#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
 
 @implementation ZincManifestDownloadTask
 

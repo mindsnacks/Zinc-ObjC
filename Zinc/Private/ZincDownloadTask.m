@@ -12,7 +12,7 @@
 #import "ZincTask+Private.h"
 #import "ZincTaskActions.h"
 #import "ZincRepo.h"
-#import "ZincHTTPRequestOperation.h"
+#import "ZincHTTPURLConnectionOperation.h"
 
 // TODO: break this dependency?
 #import "ZincRepo+Private.h"
@@ -34,7 +34,7 @@
 {
     NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
     
-    ZincHTTPRequestOperation* requestOp = [[ZincHTTPRequestOperation alloc] initWithRequest:request];
+    ZincHTTPURLConnectionOperation* requestOp = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
     
     if (outputStream != nil) {
         requestOp.outputStream = outputStream;

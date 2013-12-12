@@ -13,7 +13,7 @@
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincSHA.h"
-#import "ZincHTTPRequestOperation+ZincContextInfo.h"
+#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;

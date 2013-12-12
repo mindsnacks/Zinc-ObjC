@@ -1,14 +1,14 @@
 //
-//  ZincHTTPRequestOperation+ZincErrorContext.h
+//  ZincHTTPURLConnectionOperation+ZincErrorContext.h
 //  Zinc-ObjC
 //
 //  Created by Andy Mroczkowski on 3/18/13.
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincHTTPRequestOperation.h"
+#import "ZincHTTPURLConnectionOperation.h"
 
-@interface ZincHTTPRequestOperation (ZincContextInfo)
+@interface ZincHTTPURLConnectionOperation (ZincContextInfo)
 
 - (NSDictionary*) zinc_contextInfo;
 

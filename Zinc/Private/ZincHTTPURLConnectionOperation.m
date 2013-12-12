@@ -1,4 +1,4 @@
-// ZincHTTPRequestOperation.m
+// ZincHTTPURLConnectionOperation.m
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -20,7 +20,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#import "ZincHTTPRequestOperation.h"
+#import "ZincHTTPURLConnectionOperation.h"
 #import <objc/runtime.h>
 
 // Workaround for change in imp_implementationWithBlock() with Xcode 4.5
@@ -107,13 +107,13 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
 
 #pragma mark -
 
-@interface ZincHTTPRequestOperation ()
+@interface ZincHTTPURLConnectionOperation ()
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
 @property (readwrite, nonatomic, strong) NSError *HTTPError;
 @end
 
-@implementation ZincHTTPRequestOperation
+@implementation ZincHTTPURLConnectionOperation
 @synthesize HTTPError = _HTTPError;
 @synthesize successCallbackQueue = _successCallbackQueue;
 @synthesize failureCallbackQueue = _failureCallbackQueue;
@@ -259,8 +259,8 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
     }
 }
 
-- (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(ZincHTTPRequestOperation *operation, NSError *error))failure
+- (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPURLConnectionOperation *operation, id responseObject))success
+                              failure:(void (^)(ZincHTTPURLConnectionOperation *operation, NSError *error))failure
 {
     // completionBlock is manually nilled out in ZincURLConnectionOperation to break the retain cycle.
 #pragma clang diagnostic push
@@ -284,7 +284,7 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
 #pragma clang diagnostic pop
 }
 
-#pragma mark - ZincHTTPRequestOperation
+#pragma mark - ZincHTTPURLConnectionOperation
 
 + (NSIndexSet *)acceptableStatusCodes {
     return [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(200, 100)];
@@ -311,7 +311,7 @@ static void SwizzleClassMethodWithClassAndSelectorUsingBlock(Class klass, SEL se
 }
 
 + (BOOL)canProcessRequest:(NSURLRequest *)request {
-    if ([[self class] isEqual:[ZincHTTPRequestOperation class]]) {
+    if ([[self class] isEqual:[ZincHTTPURLConnectionOperation class]]) {
         return YES;
     }
 

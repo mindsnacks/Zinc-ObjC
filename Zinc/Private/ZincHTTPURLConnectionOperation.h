@@ -1,4 +1,4 @@
-// ZincHTTPRequestOperation.h
+// ZincHTTPURLConnectionOperation.h
 //
 // Copyright (c) 2011 Gowalla (http://gowalla.com/)
 //
@@ -24,9 +24,9 @@
 #import "ZincURLConnectionOperation.h"
 
 /**
- `ZincHTTPRequestOperation` is a subclass of `ZincURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
+ `ZincHTTPURLConnectionOperation` is a subclass of `ZincURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
  */
-@interface ZincHTTPRequestOperation : ZincURLConnectionOperation
+@interface ZincHTTPURLConnectionOperation : ZincURLConnectionOperation
 
 ///----------------------------------------------
 /// @name Getting HTTP URL Connection Information
@@ -117,8 +117,8 @@
  @param success The block to be executed on the completion of a successful request. This block has no return value and takes two arguments: the receiver operation and the object constructed from the response data of the request.
  @param failure The block to be executed on the completion of an unsuccessful request. This block has no return value and takes two arguments: the receiver operation and the error that occurred during the request.
  */
-- (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPRequestOperation *operation, id responseObject))success
-                              failure:(void (^)(ZincHTTPRequestOperation *operation, NSError *error))failure;
+- (void)setCompletionBlockWithSuccess:(void (^)(ZincHTTPURLConnectionOperation *operation, id responseObject))success
+                              failure:(void (^)(ZincHTTPURLConnectionOperation *operation, NSError *error))failure;
 
 @end
 

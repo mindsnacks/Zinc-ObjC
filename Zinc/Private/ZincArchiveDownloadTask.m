@@ -12,7 +12,7 @@
 #import "ZincTask+Private.h"
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
-#import "ZincHTTPRequestOperation+ZincContextInfo.h"
+#import "ZincHTTPURLConnectionOperation+ZincContextInfo.h"
 
 @interface ZincArchiveDownloadTask ()
 @property (nonatomic, strong) ZincArchiveExtractOperation* extractOp;

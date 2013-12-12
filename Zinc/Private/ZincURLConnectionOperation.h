@@ -31,7 +31,7 @@
 
  This is the base class of all network request operations. You may wish to create your own subclass in order to implement additional `NSURLConnection` delegate methods (see "`NSURLConnection` Delegate Methods" below), or to provide additional properties and/or class constructors.
 
- If you are creating a subclass that communicates over the HTTP or HTTPS protocols, you may want to consider subclassing `ZincHTTPRequestOperation` instead, as it supports specifying acceptable content types or status codes.
+ If you are creating a subclass that communicates over the HTTP or HTTPS protocols, you may want to consider subclassing `ZincHTTPURLConnectionOperation` instead, as it supports specifying acceptable content types or status codes.
 
  ## NSURLConnection Delegate Methods
 
@@ -55,7 +55,7 @@
 
  ## Callbacks and Completion Blocks
 
- The built-in `completionBlock` provided by `NSOperation` allows for custom behavior to be executed after the request finishes. It is a common pattern for class constructors in subclasses to take callback block parameters, and execute them conditionally in the body of its `completionBlock`. Make sure to handle cancelled operations appropriately when setting a `completionBlock` (i.e. returning early before parsing response data). See the implementation of any of the `ZincHTTPRequestOperation` subclasses for an example of this.
+ The built-in `completionBlock` provided by `NSOperation` allows for custom behavior to be executed after the request finishes. It is a common pattern for class constructors in subclasses to take callback block parameters, and execute them conditionally in the body of its `completionBlock`. Make sure to handle cancelled operations appropriately when setting a `completionBlock` (i.e. returning early before parsing response data). See the implementation of any of the `ZincHTTPURLConnectionOperation` subclasses for an example of this.
 
  Subclasses are strongly discouraged from overriding `setCompletionBlock:`, as `ZincURLConnectionOperation`'s implementation includes a workaround to mitigate retain cycles, and what Apple rather ominously refers to as ["The Deallocation Problem"](http://developer.apple.com/library/ios/#technotes/tn2109/).
  
@@ -236,7 +236,7 @@ NSCoding, NSCopying>
 /**
  Resumes the execution of the paused request operation.
 
- Pause/Resume behavior varies depending on the underlying implementation for the operation class. In its base implementation, resuming a paused requests restarts the original request. However, since HTTP defines a specification for how to request a specific content range, `ZincHTTPRequestOperation` will resume downloading the request from where it left off, instead of restarting the original request.
+ Pause/Resume behavior varies depending on the underlying implementation for the operation class. In its base implementation, resuming a paused requests restarts the original request. However, since HTTP defines a specification for how to request a specific content range, `ZincHTTPURLConnectionOperation` will resume downloading the request from where it left off, instead of restarting the original request.
  */
 - (void)resume;
 
