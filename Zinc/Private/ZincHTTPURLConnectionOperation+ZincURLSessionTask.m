@@ -10,6 +10,10 @@
 
 @implementation ZincHTTPURLConnectionOperation (ZincURLSessionTask)
 
+// to suppress a warning in iOS 6
+@dynamic error;
+@dynamic response;
+
 - (NSURLRequest *)originalRequest
 {
     return self.request;

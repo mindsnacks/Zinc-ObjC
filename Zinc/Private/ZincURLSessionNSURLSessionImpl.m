@@ -8,6 +8,9 @@
 
 #import "ZincURLSessionNSURLSessionImpl.h"
 
+
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+
 @implementation  NSURLSession (ZincURLSession)
 
 @end
@@ -21,3 +24,5 @@
 }
 
 @end
+
+#endif

@@ -24,21 +24,32 @@
     return self;
 }
 
+- (id<ZincURLSession>)getLegacyURLSessionImpl
+{
+    ZincURLSessionNSURLConnectionImpl* URLConnImpl = [[ZincURLSessionNSURLConnectionImpl alloc] initWithOperationQueue:self.networkOperationQueue];
+    URLConnImpl.backgroundTaskDelegate = self.backgroundTaskDelegate;
+    return URLConnImpl;
+}
+
+- (id<ZincURLSession>)getModernURLSessionImpl
+{
+#if defined(__IPHONE_7_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_7_0
+    NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+    config.HTTPShouldUsePipelining = YES;
+    return [NSURLSession sessionWithConfiguration:config];
+#else
+    return nil;
+#endif
+}
+
 - (id<ZincURLSession>)getURLSession
 {
     id<ZincURLSession> URLSession = nil;
 
     if (!_NSURLSessionAvailable || self.wantLegacyImplementation) {
-
-        ZincURLSessionNSURLConnectionImpl* URLConnImpl = [[ZincURLSessionNSURLConnectionImpl alloc] initWithOperationQueue:self.networkOperationQueue];
-        URLConnImpl.backgroundTaskDelegate = self.backgroundTaskDelegate;
-        URLSession = URLConnImpl;
-
+        URLSession = [self getLegacyURLSessionImpl];
     } else {
-
-        NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-        config.HTTPShouldUsePipelining = YES;
-        URLSession = [NSURLSession sessionWithConfiguration:config];
+        URLSession = [self getModernURLSessionImpl];
     }
 
     return URLSession;
