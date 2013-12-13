@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ZincURLSessionImpl.h"
+#import "ZincURLSessionNSURLConnectionImpl.h"
 
 @class ZincRepo;
 @class ZincTask;
@@ -72,6 +72,6 @@
 
 @interface ZincRepoTaskManager (ZincURLSessionBackgroundTaskDelegate) <ZincURLSessionBackgroundTaskDelegate>
 
-- (BOOL)urlSession:(ZincURLSession *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation;
+- (BOOL)urlSession:(ZincURLSessionNSURLConnectionImpl *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation;
 
 @end

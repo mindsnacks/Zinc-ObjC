@@ -77,9 +77,14 @@
     for (NSURL* source in sources) {
         
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
-        [self queueOperationForRequest:request downloadPath:self.downloadPath context:self.bundleID];
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        [self queueOperationForRequest:request downloadPath:self.downloadPath context:self.bundleID completion:^{
+            dispatch_semaphore_signal(sem);
+        }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        dispatch_release(sem);
         
-        [self.URLSessionTask waitUntilFinished];
+//        [self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
 
         NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];

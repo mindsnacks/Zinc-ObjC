@@ -304,7 +304,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
 
 @implementation ZincRepoTaskManager (ZincURLSessionBackgroundTaskDelegate)
 
-- (BOOL)urlSession:(ZincURLSession *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation
+- (BOOL)urlSession:(ZincURLSessionNSURLConnectionImpl *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation
 {
     return self.executeTasksInBackgroundEnabled;
 }

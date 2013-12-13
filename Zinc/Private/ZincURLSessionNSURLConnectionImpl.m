@@ -6,10 +6,10 @@
 //  Copyright (c) 2013 MindSnacks. All rights reserved.
 //
 
-#import "ZincURLSessionImpl.h"
+#import "ZincURLSessionNSURLConnectionImpl.h"
 #import "ZincHTTPURLConnectionOperation+ZincURLSessionTask.h"
 
-@implementation ZincURLSession
+@implementation ZincURLSessionNSURLConnectionImpl
 {
     NSOperationQueue *_operationQueue;
 }
@@ -44,36 +44,36 @@
     ZincHTTPURLConnectionOperation* op = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
     [self checkShouldExecuteOperationInBackground:op];
 
-    __weak typeof(op) weakOp = op;
-    op.completionBlock = ^{
-        __strong typeof(weakOp) strongOp = weakOp;
-        completionHandler(strongOp.responseData, strongOp.response, strongOp.error);
-    };
+    if (completionHandler != NULL) {
+        __weak typeof(op) weakOp = op;
+        op.completionBlock = ^{
+            __strong typeof(weakOp) strongOp = weakOp;
+            completionHandler(strongOp.responseData, strongOp.response, strongOp.error);
+        };
+    }
 
     [_operationQueue addOperation:op];
     return op;
 }
 
-- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request destinationPath:(NSString *)destPath completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler
+- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler
 {
     ZincHTTPURLConnectionOperation* op = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
     [self checkShouldExecuteOperationInBackground:op];
 
-    if (destPath != nil) {
-        op.outputStream = [[NSOutputStream alloc] initToFileAtPath:destPath append:NO];
-    }
+    NSString* tmpFormat = [NSTemporaryDirectory() stringByAppendingPathComponent:@"zinc-download.XXXXXXXX"];
+    char* tmpCstring = mktemp((char*)[tmpFormat cStringUsingEncoding:NSUTF8StringEncoding]);
+    NSString* tmpFile = @(tmpCstring);
+    op.outputStream = [[NSOutputStream alloc] initToFileAtPath:tmpFile append:NO];
 
-    __weak typeof(op) weakOp = op;
-    op.completionBlock = ^{
-        if (completionHandler != NULL) {
+    if (completionHandler != NULL) {
+        __weak typeof(op) weakOp = op;
+        op.completionBlock = ^{
             __strong typeof(weakOp) strongOp = weakOp;
-            NSURL *location = nil;
-            if (destPath) {
-                location =  [NSURL fileURLWithPath:destPath];;
-            }
+            NSURL* location = [NSURL fileURLWithPath:tmpFile];
             completionHandler(location, strongOp.response, strongOp.error);
-        }
-    };
+        };
+    }
 
     [_operationQueue addOperation:op];
     return op;

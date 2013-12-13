@@ -14,8 +14,8 @@
 
 @property (nonatomic, strong, readwrite) id<ZincURLSessionTask> URLSessionTask;
 
-- (void) queueOperationForRequest:(NSURLRequest *)request
-                      downloadPath:(NSString *)downloadPath
-                          context:(id)context;
+- (void) queueOperationForRequest:(NSURLRequest *)request downloadPath:(NSString *)downloadPath context:(id)context completion:(dispatch_block_t)completion;
+
+@property (nonatomic, strong) NSData* responseData;
 
 @end

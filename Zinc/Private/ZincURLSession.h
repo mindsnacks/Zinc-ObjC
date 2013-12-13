@@ -11,6 +11,8 @@
 
 @protocol ZincURLSessionTask <NSObject>
 
+#pragma - mark NSURLSessionTask-ish
+
 @property (readonly, copy) NSURLRequest *originalRequest;
 @property (readonly, copy) NSURLRequest *currentRequest;    /* may differ from originalRequest due to http server redirection */
 @property (readonly, copy) NSURLResponse *response;	    /* may be nil if no response has been received */
@@ -33,24 +35,17 @@
 @property (readonly, copy) NSError *error;
 
 
-#pragma - NSOperation
+#pragma - NSOperation-ish
 
 - (BOOL)isFinished;
-- (void)waitUntilFinished;
-
-#pragma - ZincURLConnectionOperation
-
-/**
- The data received during the request.
- */
-@property (readonly, nonatomic, strong) NSData *responseData;
 
 @end
+
 
 @protocol ZincURLSession <NSObject>
 
 - (id<ZincURLSessionTask>)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
 
-- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request destinationPath:(NSString *)destPath completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler;
+- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler;
 
 @end

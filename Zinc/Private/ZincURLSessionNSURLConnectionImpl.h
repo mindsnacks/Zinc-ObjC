@@ -13,13 +13,15 @@
 @protocol ZincURLSessionBackgroundTaskDelegate;
 @class ZincHTTPURLConnectionOperation;
 
-@interface ZincURLSession : NSObject <ZincURLSession>
+@interface ZincURLSessionNSURLConnectionImpl : NSObject <ZincURLSession>
 
 - (instancetype)initWithOperationQueue:(NSOperationQueue *)opQueue;
 
 @property (nonatomic, weak) id<ZincURLSessionBackgroundTaskDelegate> backgroundTaskDelegate;
 
 - (id<ZincURLSessionTask>)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
+
+- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler;
 
 @end
 
@@ -29,6 +31,6 @@
 /**
  If not implemented, will default to YES
  */
-- (BOOL)urlSession:(ZincURLSession *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation;
+- (BOOL)urlSession:(ZincURLSessionNSURLConnectionImpl *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation;
 
 @end

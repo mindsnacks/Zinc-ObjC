@@ -57,9 +57,15 @@
         
         NSString* bundleName = ZincBundleNameFromBundleID(self.bundleID);
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
-        [self queueOperationForRequest:request downloadPath:nil context:nil];
-        
-        [self.URLSessionTask waitUntilFinished];
+
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        [self queueOperationForRequest:request downloadPath:nil context:nil completion:^{
+            dispatch_semaphore_signal(sem);
+        }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        dispatch_release(sem);
+
+//        [self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
 
         NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];
@@ -71,7 +77,7 @@
         
         [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL] size:self.bytesRead]];
         
-        NSData* uncompressed = [self.URLSessionTask.responseData zinc_gzipInflate];
+        NSData* uncompressed = [self.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
             continue;

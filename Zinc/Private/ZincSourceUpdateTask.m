@@ -64,13 +64,15 @@
 
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
 
-    [self.repo.URLSession dataTaskWithRequest:request
+    id<ZincURLSessionTask> task = [self.repo.URLSession dataTaskWithRequest:request
                             completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 
                                 BOOL success = [self handleResultFromRequest:request response:response data:data error:error];
 
                                 [self completeWithSucess:success];
                             }];
+
+    (void)task;
 }
 
 - (void)completeWithSucess:(BOOL)success

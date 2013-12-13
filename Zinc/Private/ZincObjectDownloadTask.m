@@ -88,9 +88,14 @@
         }
         
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
-        [self queueOperationForRequest:request downloadPath:downloadPath context:nil];
-        
-        [self.URLSessionTask waitUntilFinished];
+        dispatch_semaphore_t sem = dispatch_semaphore_create(0);
+        [self queueOperationForRequest:request downloadPath:downloadPath context:nil completion:^{
+            dispatch_semaphore_signal(sem);
+        }];
+        dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
+        dispatch_release(sem);
+
+        //[self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
 
         NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];
