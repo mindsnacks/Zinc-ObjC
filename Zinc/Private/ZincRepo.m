@@ -166,10 +166,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
-        self.requestOperationFactory = [[ZincHTTPRequestOperationFactory alloc] init];
-        self.requestOperationFactory.delegate = self.taskManager;
 
-        self.URLSession = [[ZincURLSession alloc] initWithOperationQueue:networkQueue];
+        ZincURLSession* URLSession = [[ZincURLSession alloc] initWithOperationQueue:networkQueue];
+        URLSession.backgroundTaskDelegate = self.taskManager;
+        self.URLSession = URLSession;
     }
     return self;
 }

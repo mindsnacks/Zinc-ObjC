@@ -13,7 +13,6 @@
 #import "ZincTaskActions.h"
 #import "ZincRepo+Private.h"
 #import "ZincHTTPRequestOperation.h"
-#import "ZincHTTPRequestOperationFactory.h"
 
 
 @interface ZincDownloadTask()

@@ -23,17 +23,26 @@
     return self;
 }
 
+- (void)checkShouldExecuteOperationInBackground:(ZincHTTPURLConnectionOperation *)op
+{
+#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+    BOOL shouldExecuteInBackground = NO;
+    if (self.backgroundTaskDelegate) {
+        shouldExecuteInBackground = [self.backgroundTaskDelegate urlSession:self shouldExecuteOperationsInBackground:op];
+    } else {
+        shouldExecuteInBackground = YES;
+    }
+
+    if (shouldExecuteInBackground) {
+        [op setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
+    }
+#endif
+}
+
 - (id<ZincURLSessionTask>)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler
 {
-
     ZincHTTPURLConnectionOperation* op = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
-
-    //#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
-//#if defined(__IPHONE_OS_VERSION_MIN_REQUIRED)
-//    if ([self shouldExecuteOperationInBackground:requestOp]) {
-//        [urlConnectionOp setShouldExecuteAsBackgroundTaskWithExpirationHandler:nil];
-//    }
-//#endif
+    [self checkShouldExecuteOperationInBackground:op];
 
     __weak typeof(op) weakOp = op;
     op.completionBlock = ^{
@@ -45,15 +54,10 @@
     return op;
 }
 
-- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request
-{
-    return nil;
-}
-
 - (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request destinationPath:(NSString *)destPath completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler
 {
-
     ZincHTTPURLConnectionOperation* op = [[ZincHTTPURLConnectionOperation alloc] initWithRequest:request];
+    [self checkShouldExecuteOperationInBackground:op];
 
     if (destPath != nil) {
         op.outputStream = [[NSOutputStream alloc] initToFileAtPath:destPath append:NO];
@@ -74,6 +78,5 @@
     [_operationQueue addOperation:op];
     return op;
 }
-
 
 @end

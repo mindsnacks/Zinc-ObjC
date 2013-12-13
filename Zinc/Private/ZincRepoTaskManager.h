@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ZincHTTPRequestOperationFactory.h"
+#import "ZincURLSessionImpl.h"
 
 @class ZincRepo;
 @class ZincTask;
@@ -70,8 +70,8 @@
 @end
 
 
-@interface ZincRepoTaskManager (ZincHTTPRequestOperationFactoryDelegate) <ZincHTTPRequestOperationFactoryDelegate>
+@interface ZincRepoTaskManager (ZincURLSessionBackgroundTaskDelegate) <ZincURLSessionBackgroundTaskDelegate>
 
-- (BOOL)HTTPRequestOperationFactory:(ZincHTTPRequestOperationFactory *)operationRequestFactory shouldExecuteOperationsInBackground:(id<ZincHTTPRequestOperation>)operation;
+- (BOOL)urlSession:(ZincURLSession *)urlSession shouldExecuteOperationsInBackground:(ZincHTTPURLConnectionOperation *)operation;
 
 @end
