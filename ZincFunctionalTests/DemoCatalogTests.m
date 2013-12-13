@@ -101,7 +101,7 @@
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     ZincBundle *masterBundle = [self.zincRepo bundleWithID:bundleID];
-    GHTestLog(@"master bundle version: %d", masterBundle.version);
+    GHTestLog(@"master bundle version: %ld", (long)masterBundle.version);
     
     // -- Update bundle @ test
     
@@ -119,7 +119,7 @@
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     ZincBundle *testBundle = [self.zincRepo bundleWithID:bundleID];
-    GHTestLog(@"test bundle version: %d", testBundle.version);
+    GHTestLog(@"test bundle version: %ld", (long)testBundle.version);
     
     // -- Verify
     
@@ -159,7 +159,7 @@
     [self waitForStatus:kGHUnitWaitStatusSuccess timeout:DEFAULT_TIMEOUT_SECONDS];
 
     ZincBundle *masterBundle = [self.zincRepo bundleWithID:bundleID];
-    GHTestLog(@"master bundle version: %d", masterBundle.version);
+    GHTestLog(@"master bundle version: %ld", (long)masterBundle.version);
 
     // -- Update bundle @ test
 

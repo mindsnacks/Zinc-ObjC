@@ -23,8 +23,10 @@
 #import "ZincDownloadPolicy+Private.h"
 #import "ZincBundleVersionHelper.h"
 
-#import "ZincURLSessionNSURLConnectionImpl.h"
-#import "ZincURLSessionNSURLSessionImpl.h"
+//#import "ZincURLSessionNSURLConnectionImpl.h"
+//#import "ZincURLSessionNSURLSessionImpl.h"
+
+#import "ZincURLSessionFactory.h"
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -169,11 +171,10 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.reachability = reachability;
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
 
-//        ZincURLSessionNSURLConnectionImpl* URLSession = [[ZincURLSessionNSURLConnectionImpl alloc] initWithOperationQueue:networkQueue];
-//        URLSession.backgroundTaskDelegate = self.taskManager;
-//        self.URLSession = URLSession;
-
-        self.URLSession = [NSURLSession sharedSession];
+        ZincURLSessionFactory* urlSessionFactory = [[ZincURLSessionFactory alloc] init];
+        urlSessionFactory.networkOperationQueue = networkQueue;
+        urlSessionFactory.backgroundTaskDelegate = self.taskManager;
+        self.URLSession = [urlSessionFactory getURLSession];
     }
     return self;
 }

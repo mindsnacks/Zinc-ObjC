@@ -16,6 +16,7 @@
 
 - (instancetype)initWithOperationQueue:(NSOperationQueue *)opQueue
 {
+    NSParameterAssert(opQueue);
     self = [super init];
     if (self) {
         _operationQueue = opQueue;
