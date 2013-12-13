@@ -63,7 +63,6 @@
             dispatch_semaphore_signal(sem);
         }];
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
-        dispatch_release(sem);
 
         if (self.isCancelled) return;
 
