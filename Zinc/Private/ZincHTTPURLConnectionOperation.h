@@ -22,12 +22,11 @@
 
 #import <Foundation/Foundation.h>
 #import "ZincURLConnectionOperation.h"
-#import "ZincHTTPRequestOperation.h"
 
 /**
  `ZincHTTPURLConnectionOperation` is a subclass of `ZincURLConnectionOperation` for requests using the HTTP or HTTPS protocols. It encapsulates the concept of acceptable status codes and content types, which determine the success or failure of a request.
  */
-@interface ZincHTTPURLConnectionOperation : ZincURLConnectionOperation <ZincHTTPRequestOperation>
+@interface ZincHTTPURLConnectionOperation : ZincURLConnectionOperation
 
 ///----------------------------------------------
 /// @name Getting HTTP URL Connection Information

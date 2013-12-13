@@ -13,7 +13,6 @@
 #import "ZincTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincTaskActions.h"
-#import "ZincHTTPRequestOperation.h"
 #import "ZincEventHelpers.h"
 
 

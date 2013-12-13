@@ -8,12 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-@protocol ZincHTTPRequestOperation;
-
 
 @interface ZincEventHelpers : NSObject
-
-+ (NSDictionary *)attributesForRequestOperation:(id<ZincHTTPRequestOperation>)op;
 
 + (NSDictionary *)attributesForRequest:(NSURLRequest *)request andResponse:(NSURLResponse *)response;
 

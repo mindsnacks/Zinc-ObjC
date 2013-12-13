@@ -8,8 +8,6 @@
 
 #import "ZincEventHelpers.h"
 
-#import "ZincHTTPRequestOperation.h"
-
 @implementation ZincEventHelpers
 
 + (NSDictionary *)attributesForRequest:(NSURLRequest *)request andResponse:(NSURLResponse *)response
@@ -32,11 +30,6 @@
 
     return info;
     
-}
-
-+ (NSDictionary *)attributesForRequestOperation:(id<ZincHTTPRequestOperation>)op
-{
-    return [self attributesForRequest:op.request andResponse:op.response];
 }
 
 @end
