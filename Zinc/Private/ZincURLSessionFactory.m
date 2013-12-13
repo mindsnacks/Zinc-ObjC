@@ -36,9 +36,9 @@
 
     } else {
 
-        // TODO: configure a new session
-        URLSession = [NSURLSession sharedSession];
-
+        NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
+        config.HTTPShouldUsePipelining = YES;
+        URLSession = [NSURLSession sessionWithConfiguration:config];
     }
 
     return URLSession;
