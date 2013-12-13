@@ -71,8 +71,7 @@
 
                                 [self completeWithSucess:success];
                             }];
-
-    (void)task;
+    [task resume];
 }
 
 - (void)completeWithSucess:(BOOL)success

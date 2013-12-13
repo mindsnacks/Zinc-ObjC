@@ -9,17 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "ZincURLSession.h"
 
-@interface ZincURLSessionNSURLSessionImpl : NSObject <ZincURLSession>
-
-- (id<ZincURLSessionTask>)dataTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData *data, NSURLResponse *response, NSError *error))completionHandler;
-
-- (id<ZincURLSessionTask>)downloadTaskWithRequest:(NSURLRequest *)request completionHandler:(void (^)(NSURL *location, NSURLResponse *response, NSError *error))completionHandler;
-
-@property (readonly, strong) NSURLSession* URLSession;
+@interface NSURLSession (ZincURLSession) <ZincURLSession>
 
 @end
-
-
 
 @interface NSURLSessionTask (ZincURLSessionTask) <ZincURLSessionTask>
 

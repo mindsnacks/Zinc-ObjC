@@ -95,7 +95,6 @@
         dispatch_semaphore_wait(sem, DISPATCH_TIME_FOREVER);
         dispatch_release(sem);
 
-        //[self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
 
         NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];

@@ -173,7 +173,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 //        URLSession.backgroundTaskDelegate = self.taskManager;
 //        self.URLSession = URLSession;
 
-        self.URLSession = [[ZincURLSessionNSURLSessionImpl alloc] init];
+        self.URLSession = [NSURLSession sharedSession];
     }
     return self;
 }

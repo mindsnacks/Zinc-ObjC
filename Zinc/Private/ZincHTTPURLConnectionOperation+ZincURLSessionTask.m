@@ -30,12 +30,4 @@
     return self.response.expectedContentLength;
 }
 
-- (void)resume
-{
-}
-
-- (void)suspend
-{
-}
-
 @end

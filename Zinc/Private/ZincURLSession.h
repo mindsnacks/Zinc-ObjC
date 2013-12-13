@@ -34,6 +34,8 @@
  */
 @property (readonly, copy) NSError *error;
 
+- (void)resume;
+
 
 #pragma - NSOperation-ish
 

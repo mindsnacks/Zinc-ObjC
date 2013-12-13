@@ -58,10 +58,12 @@
     }
 
     self.context = context;
+    self.URLSessionTask = requestTask;
+
+    [self.URLSessionTask resume];
 
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
 
-    self.URLSessionTask = requestTask;
 
     // TODO: is this needed?
     //    [self queueChildOperation:requestOp];
