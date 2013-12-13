@@ -12,26 +12,31 @@
 
 @implementation ZincEventHelpers
 
-+ (NSDictionary *)attributesForRequestOperation:(id<ZincHTTPRequestOperation>)op
++ (NSDictionary *)attributesForRequest:(NSURLRequest *)request andResponse:(NSURLResponse *)response
 {
     NSMutableDictionary* info = [NSMutableDictionary dictionaryWithCapacity:2];
 
-    if (op.request != nil) {
+    if (request != nil) {
         NSMutableDictionary* requestInfo = [NSMutableDictionary dictionary];
         info[@"URLRequest"] = requestInfo;
-        requestInfo[@"URL"] = op.request.URL;
+        requestInfo[@"URL"] = request.URL;
     }
 
-    if (op.response != nil ) {
+    if (response != nil ) {
         NSMutableDictionary* responseInfo = [NSMutableDictionary dictionary];
         info[@"URLResponse"] = responseInfo;
-        if ([op.response respondsToSelector:@selector(allHeaderFields)]) {
-            responseInfo[@"Headers"] = [op.response performSelector:@selector(allHeaderFields)];
+        if ([response respondsToSelector:@selector(allHeaderFields)]) {
+            responseInfo[@"Headers"] = [response performSelector:@selector(allHeaderFields)];
         }
     }
 
     return info;
+    
 }
 
++ (NSDictionary *)attributesForRequestOperation:(id<ZincHTTPRequestOperation>)op
+{
+    return [self attributesForRequest:op.request andResponse:op.response];
+}
 
 @end

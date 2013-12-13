@@ -22,6 +22,7 @@
 #import "ZincExternalBundleInfo.h"
 #import "ZincDownloadPolicy+Private.h"
 #import "ZincBundleVersionHelper.h"
+#import "ZincURLSessionImpl.h"
 
 
 #define CATALOGS_DIR @"catalogs"
@@ -167,6 +168,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
         self.requestOperationFactory = [[ZincHTTPRequestOperationFactory alloc] init];
         self.requestOperationFactory.delegate = self.taskManager;
+
+        self.URLSession = [[ZincURLSession alloc] initWithOperationQueue:networkQueue];
     }
     return self;
 }

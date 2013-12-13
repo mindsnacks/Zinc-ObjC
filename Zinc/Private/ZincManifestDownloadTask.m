@@ -14,6 +14,7 @@
 #import "ZincRepo+Private.h"
 #import "ZincTaskActions.h"
 #import "ZincEventHelpers.h"
+#import "ZincURLSession.h"
 
 @implementation ZincManifestDownloadTask
 
@@ -58,25 +59,27 @@
         NSURLRequest* request = [source zincManifestURLRequestForBundleName:bundleName version:self.version];
         [self queueOperationForRequest:request downloadPath:nil context:nil];
         
-        [self.httpRequestOperation waitUntilFinished];
+        [self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
 
-        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:                            [ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+        NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];
+
+        if (self.URLSessionTask.error != nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.URLSessionTask.error source:ZINC_EVENT_SRC() attributes:                            eventAttrs]];
             continue;
         }
         
         [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:[request URL] size:self.bytesRead]];
         
-        NSData* uncompressed = [self.httpRequestOperation.responseData zinc_gzipInflate];
+        NSData* uncompressed = [self.URLSessionTask.responseData zinc_gzipInflate];
         if (uncompressed == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
             continue;
         }
         
         id json = [ZincJSONSerialization JSONObjectWithData:uncompressed options:0 error:&error];
         if (json == nil) {
-            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+            [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
             continue;
         }
         

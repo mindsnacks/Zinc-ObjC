@@ -18,11 +18,9 @@
 
 @interface ZincDownloadTask()
 @property (nonatomic, strong, readwrite) id context;
-@property (atomic, readwrite) BOOL trackingProgress;
 @end
 
 @implementation ZincDownloadTask
-
 
 + (NSString *)action
 {
@@ -31,51 +29,18 @@
 
 - (void) queueOperationForRequest:(NSURLRequest *)request downloadPath:(NSString *)downloadPath context:(id)context
 {
-    NSAssert(self.httpRequestOperation == nil || [self.httpRequestOperation isFinished], @"operation already enqueued");
+    NSAssert(self.URLSessionTask == nil || [self.URLSessionTask isFinished], @"URLSessionTask already enqueued");
 
-    id<ZincHTTPRequestOperation> requestOp = [self.repo.requestOperationFactory operationForRequest:request];
-
-    if (downloadPath != nil) {
-        requestOp.outputStream = [[NSOutputStream alloc] initToFileAtPath:downloadPath append:NO];
-    }
+    id<ZincURLSessionTask> requestTask = [self.repo.URLSession downloadTaskWithRequest:request destinationPath:downloadPath completionHandler:nil];
 
     self.context = context;
 
     [self addEvent:[ZincDownloadBeginEvent downloadBeginEventForURL:request.URL]];
 
-    self.httpRequestOperation = requestOp;
+    self.URLSessionTask = requestTask;
 
-    [self queueChildOperation:requestOp];
-}
-
-- (void)addProgressTrackingIfNeeded
-{
-    if ([self isFinished]) return;
-
-    @synchronized(self) {
-        if (self.trackingProgress) return;
-        self.trackingProgress = YES;
-    }
-
-    static const NSTimeInterval minTimeOffsetBetweenEventSends = 0.25f;
-    __block NSTimeInterval lastTimeEventSentDate = 0;
-    __weak typeof(self) weakself = self;
-
-    [self.httpRequestOperation setDownloadProgressBlock:^(NSUInteger bytesRead, long long totalBytesRead, long long totalBytesExpectedToRead) {
-
-        __weak typeof(weakself) strongself = weakself;
-
-        NSTimeInterval currentDate = [[NSDate date] timeIntervalSince1970];
-        NSTimeInterval timeSinceLastEventSent = currentDate - lastTimeEventSentDate;
-
-        BOOL enoughTimePassedSinceLastNotification = timeSinceLastEventSent >= minTimeOffsetBetweenEventSends;
-        BOOL downloadCompleted = totalBytesRead == totalBytesExpectedToRead;
-        if (enoughTimePassedSinceLastNotification || downloadCompleted)
-        {
-            lastTimeEventSentDate = currentDate;
-            [strongself updateCurrentBytes:totalBytesRead totalBytes:totalBytesExpectedToRead];
-        }
-    }];
+    // TODO: is this needed?
+    //    [self queueChildOperation:requestOp];
 }
 
 - (long long) currentProgressValue
@@ -84,27 +49,21 @@
         return [self maxProgressValue];
     }
 
-    [self addProgressTrackingIfNeeded];
-    return self.bytesRead;
+    return [self.URLSessionTask countOfBytesReceived];
 }
 
 - (long long) maxProgressValue
 {
-    if (self.httpRequestOperation.response != nil) {
-        return [self.httpRequestOperation.response expectedContentLength];
+    if (self.URLSessionTask.response != nil) {
+        return [self.URLSessionTask countOfBytesExpectedToReceive];
     }
     return [self isFinished] ? 0 : ZincProgressNotYetDetermined;
 }
 
-- (void) updateCurrentBytes:(long long)currentBytes totalBytes:(long long)totalBytes
+- (long long)bytesRead
 {
-    self.bytesRead = currentBytes;
-    self.totalBytesToRead = totalBytes; // TODO: totalBytesToRead not used
+    return [self currentProgressValue];
 }
 
-- (void)dealloc
-{
-    [self.httpRequestOperation waitUntilFinished];
-}
 
 @end

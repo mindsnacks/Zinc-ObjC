@@ -18,6 +18,10 @@
 
 
 @implementation ZincSourceUpdateTask
+{
+    BOOL _isExecuting;
+    BOOL _isFinished;
+}
 
 + (NSString *)action
 {
@@ -33,65 +37,99 @@
     return self;
 }
 
-
 - (NSURL*) sourceURL
 {
     return self.resource;
 }
 
-- (void) main
+- (BOOL)isConcurrent
 {
-    NSError* error = nil;
+    return YES;
+}
+
+- (BOOL)isExecuting
+{
+    return _isExecuting;
+}
+
+- (BOOL)isFinished
+{
+    return _isFinished;
+}
+
+- (void)start
+{
+    [self willChangeValueForKey:NSStringFromSelector(@selector(isExecuting))];
+    _isExecuting = YES;
+    [self didChangeValueForKey:NSStringFromSelector(@selector(isExecuting))];
 
     NSURLRequest* request = [self.sourceURL urlRequestForCatalogIndex];
 
-    id<ZincHTTPRequestOperation> requestOp = [self.repo.requestOperationFactory operationForRequest:request];
+    [self.repo.URLSession dataTaskWithRequest:request
+                            completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
 
-    [self queueChildOperation:requestOp];
+                                BOOL success = [self handleResultFromRequest:request response:response data:data error:error];
 
-    [requestOp waitUntilFinished];
-    if (self.isCancelled) return;
+                                [self completeWithSucess:success];
+                            }];
+}
 
-    if (![requestOp hasAcceptableStatusCode]) {
-        [self addEvent:[ZincErrorEvent eventWithError:requestOp.error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
-        return;
+- (void)completeWithSucess:(BOOL)success
+{
+    self.finishedSuccessfully = success;
+
+    [self willChangeValueForKey:NSStringFromSelector(@selector(isFinished))];
+    _isFinished = YES;
+    [self didChangeValueForKey:NSStringFromSelector(@selector(isFinished))];
+}
+
+- (BOOL)handleResultFromRequest:(NSURLRequest *)request response:(NSURLResponse *)response data:(NSData *)responseData error:(NSError *)error
+{
+    if (self.isCancelled) return NO;
+
+    NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:request andResponse:response];
+
+    if (error != nil) {
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
+        return NO;
     }
 
-    if (self.isCancelled) return;
+    if (self.isCancelled) return NO;
 
-    NSData* uncompressed = [requestOp.responseData zinc_gzipInflate];
+    NSData* uncompressed = [responseData zinc_gzipInflate];
     if (uncompressed == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
-        return;
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
+        return NO;
     }
 
     ZincCatalog* catalog = [ZincCatalog catalogFromJSONData:uncompressed error:&error];
     if (catalog == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:requestOp]]];
-        return;
+        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
+        return NO;
     }
 
-    NSData* data = [catalog jsonRepresentation:&error];
-    if (data == nil) {
-        [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
-        return;
+    NSError *jsonError = nil;
+    NSData* jsonData = [catalog jsonRepresentation:&jsonError];
+    if (jsonData == nil) {
+        [self addEvent:[ZincErrorEvent eventWithError:jsonError source:ZINC_EVENT_SRC()]];
+        return NO;
     }
-    
+
     NSURL* catalogRes = [NSURL zincResourceForCatalogWithId:catalog.identifier];
     ZincTaskDescriptor* taskDesc = [ZincCatalogUpdateTask taskDescriptorForResource:catalogRes];
-    
+
     ZincTask* catalogTask = [self queueChildTaskForDescriptor:taskDesc input:catalog];
-    
+
     [catalogTask waitUntilFinished];
-    if (self.isCancelled) return;
-    
+    if (self.isCancelled) return NO;
+
     if (!catalogTask.finishedSuccessfully) {
-        return;
+        return NO;
     }
-    
+
     [self.repo registerSource:self.sourceURL forCatalog:catalog];
-    
-    self.finishedSuccessfully = YES;
+
+    return YES;
 }
 
 @end

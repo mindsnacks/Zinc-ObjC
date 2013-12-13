@@ -14,6 +14,7 @@
 #import "ZincRepo+Private.h"
 #import "ZincSHA.h"
 #import "ZincEventHelpers.h"
+#import "ZincURLSession.h"
 
 @interface ZincObjectDownloadTask ()
 @property (readwrite) NSInteger bytesRead;
@@ -89,11 +90,13 @@
         NSURLRequest* request = [source urlRequestForFileWithSHA:self.sha extension:ext];
         [self queueOperationForRequest:request downloadPath:downloadPath context:nil];
         
-        [self.httpRequestOperation waitUntilFinished];
+        [self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
+
+        NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];
         
-        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes: [ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+        if (self.URLSessionTask.error != nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.URLSessionTask.error source:ZINC_EVENT_SRC() attributes: eventAttrs]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];
@@ -105,7 +108,7 @@
             NSData* compressed = [[NSData alloc] initWithContentsOfFile:downloadPath];
             NSData* uncompressed = [compressed zinc_gzipInflate];
             if (![uncompressed writeToFile:uncompressedPath options:0 error:&error]) {
-                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+                [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
                 // don't return/continue! still need to clean up
             }
         } 

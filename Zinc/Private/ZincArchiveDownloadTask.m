@@ -13,6 +13,7 @@
 #import "ZincDownloadTask+Private.h"
 #import "ZincRepo+Private.h"
 #import "ZincEventHelpers.h"
+#import "ZincURLSession.h"
 
 @interface ZincArchiveDownloadTask ()
 @property (nonatomic, strong) ZincArchiveExtractOperation* extractOp;
@@ -78,11 +79,13 @@
         NSURLRequest* request = [source urlRequestForArchivedBundleName:bundleName version:self.version flavor:flavor];
         [self queueOperationForRequest:request downloadPath:self.downloadPath context:self.bundleID];
         
-        [self.httpRequestOperation waitUntilFinished];
+        [self.URLSessionTask waitUntilFinished];
         if (self.isCancelled) return;
+
+        NSDictionary* eventAttrs = [ZincEventHelpers attributesForRequest:self.URLSessionTask.originalRequest andResponse:self.URLSessionTask.response];
         
-        if (!self.httpRequestOperation.hasAcceptableStatusCode) {
-            [self addEvent:[ZincErrorEvent eventWithError:self.httpRequestOperation.error source:ZINC_EVENT_SRC() attributes:[ZincEventHelpers attributesForRequestOperation:self.httpRequestOperation]]];
+        if (self.URLSessionTask.error != nil) {
+            [self addEvent:[ZincErrorEvent eventWithError:self.URLSessionTask.error source:ZINC_EVENT_SRC() attributes:eventAttrs]];
             continue;
         } else {
             [self addEvent:[ZincDownloadCompleteEvent downloadCompleteEventForURL:request.URL size:self.bytesRead]];

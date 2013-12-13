@@ -150,6 +150,11 @@ NSCoding, NSCopying>
  */
 @property (readonly, nonatomic, assign) NSStringEncoding responseStringEncoding;
 
+/**
+ TODO: doc
+ */
+@property (readonly, nonatomic, assign) long long totalBytesRead;
+
 ///-------------------------------
 /// @name Managing URL Credentials
 ///-------------------------------

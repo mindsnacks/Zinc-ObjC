@@ -12,6 +12,7 @@
 #import "ZincRepoBundleManager.h"
 #import "ZincRepoTaskManager.h"
 #import "ZincHTTPRequestOperationFactory.h"
+#import "ZincURLSession.h"
 
 #define kZincRepoDefaultObjectDownloadCount (5)
 #define kZincRepoDefaultNetworkOperationCount (kZincRepoDefaultObjectDownloadCount*2)
@@ -29,6 +30,7 @@
 @property (nonatomic, strong) NSFileManager* fileManager;
 @property (nonatomic, strong) ZincRepoTaskManager* taskManager;
 @property (nonatomic, strong) ZincHTTPRequestOperationFactory *requestOperationFactory;
+@property (nonatomic, strong) id<ZincURLSession> URLSession;
 
 - (NSURL*) indexURL;
 

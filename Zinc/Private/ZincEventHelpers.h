@@ -15,4 +15,6 @@
 
 + (NSDictionary *)attributesForRequestOperation:(id<ZincHTTPRequestOperation>)op;
 
++ (NSDictionary *)attributesForRequest:(NSURLRequest *)request andResponse:(NSURLResponse *)response;
+
 @end
