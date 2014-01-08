@@ -22,10 +22,6 @@
 #import "ZincExternalBundleInfo.h"
 #import "ZincDownloadPolicy+Private.h"
 #import "ZincBundleVersionHelper.h"
-
-//#import "ZincURLSessionNSURLConnectionImpl.h"
-//#import "ZincURLSessionNSURLSessionImpl.h"
-
 #import "ZincURLSessionFactory.h"
 
 
