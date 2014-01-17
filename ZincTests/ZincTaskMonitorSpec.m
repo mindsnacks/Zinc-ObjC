@@ -44,7 +44,6 @@ describe(@"ZincTaskMonitor", ^{
         it(@"finishes if the tasks finishes before monitoring starts", ^{
             taskRef.isFinished = YES;
             [monitor startMonitoring];
-            [monitor update];
             [[theValue([monitor.progress isFinished]) should] beTrue];
         });
     });
