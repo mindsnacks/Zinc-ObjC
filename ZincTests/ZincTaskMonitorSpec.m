@@ -46,6 +46,20 @@ describe(@"ZincTaskMonitor", ^{
             [monitor startMonitoring];
             [[theValue([monitor.progress isFinished]) should] beTrue];
         });
+
+        it(@"calls the completion block when finished", ^{
+
+            __block BOOL completionBlockCalled = NO;
+            monitor.completionBlock = ^{
+                completionBlockCalled = YES;
+            };
+
+            [monitor startMonitoring];
+            taskRef.isFinished = YES;
+            [monitor update];
+
+            [[theValue(completionBlockCalled) should] beTrue];
+        });
     });
 
 });
