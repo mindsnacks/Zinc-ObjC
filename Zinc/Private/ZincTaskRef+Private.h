@@ -12,4 +12,6 @@
 
 - (void) addError:(NSError*)error;
 
+- (void) setBundleWasAlreadyAvailable;
+
 @end

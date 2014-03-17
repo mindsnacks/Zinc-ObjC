@@ -11,6 +11,9 @@
 #import "ZincTask.h"
 
 @interface ZincTaskRef ()
+{
+    BOOL _bundleWasAlreadyAvailable;
+}
 @property (nonatomic, strong) NSMutableArray* errors;
 @end
 
@@ -38,6 +41,11 @@
     [self.errors addObject:error];
 }
 
+- (void) setBundleWasAlreadyAvailable
+{
+    _bundleWasAlreadyAvailable = YES;
+}
+
 - (ZincTask*) getTask
 {
     if ([self.dependencies count] > 0) {
@@ -54,6 +62,10 @@
 - (BOOL) isSuccessful
 {
     return [self isValid] && [self isFinished] && [[self allErrors] count] == 0;
+}
+
+- (BOOL) bundleWasAlreadyAvailable {
+    return _bundleWasAlreadyAvailable;
 }
 
 - (NSArray*) allErrors
