@@ -839,6 +839,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             if (task != nil) {
                 // task may be nil if bundle is already available
                 [taskRef addDependency:task];
+            } else {
+                [taskRef setBundleWasAlreadyAvailable];
             }
             [self.taskManager addOperation:taskRef];
         }

@@ -40,6 +40,11 @@
 - (BOOL) isSuccessful;
 
 /**
+ @return `YES` if the task was not necessary, `NO` otherwise.
+ */
+- (BOOL) bundleWasAlreadyAvailable;
+
+/**
  @return All errors from the task
  */
 - (NSArray*) allErrors;
