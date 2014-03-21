@@ -124,7 +124,9 @@ NSString* const ZincActivityMonitorRefreshedNotification = @"ZincActivityMonitor
 
 - (void) update
 {
-    [[self items] makeObjectsPerformSelector:@selector(update)];
+    @synchronized(self.myItems) {
+        [self.myItems makeObjectsPerformSelector:@selector(update)];
+    }
 
     [self itemsDidUpdate];
 
