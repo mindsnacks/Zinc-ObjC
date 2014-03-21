@@ -100,7 +100,7 @@
 /**
  Default auto refresh interval
  */
-static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 0.5;
+static NSTimeInterval const kZincActivityMonitorDefaultRefreshInterval = 1.0;
 
 /**
  Notification that is posted when ActivityMonitor refreshes
