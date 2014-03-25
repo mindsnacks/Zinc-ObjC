@@ -8,7 +8,9 @@
 
 #import "ZincRepo+Private.h"
 
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#define ENABLE_REACHABILITY TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
+
+#if ENABLE_REACHABILITY
 #import <KSReachability/KSReachability.h>
 #endif
 
@@ -31,7 +33,6 @@
 #define BUNDLES_DIR @"bundles"
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
-
 
 static NSMutableDictionary* _ReposByURL;
 
@@ -93,7 +94,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
         if (repo == nil) {
 
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#if ENABLE_REACHABILITY
             KSReachability* reachability = [KSReachability reachabilityToLocalNetwork];
 #else
             KSReachability* reachability = nil;
@@ -1037,7 +1038,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
     _reachability = reachability;
 
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#if ENABLE_REACHABILITY
     _reachability.notificationName = ZincRepoReachabilityChangedNotification;
 #endif
 }
@@ -1080,7 +1081,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     // TODO: this logic makes more sense in the ZincDownloadPolicy object, but
     // I also hestitate to add reachability support to it directly.
 
-#if TARGET_OS_IPHONE && TARGET_IPHONE_SIMULATOR
+#if ENABLE_REACHABILITY
     ZincConnectionType requiredConnectionType = [self.downloadPolicy requiredConnectionTypeForBundleID:bundleID];
 
     if (requiredConnectionType == ZincConnectionTypeWiFiOnly && [self.reachability WWANOnly]) {
