@@ -169,6 +169,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
 
         ZincURLSessionFactory* urlSessionFactory = [[ZincURLSessionFactory alloc] init];
+#if !TARGET_OS_IPHONE
+        urlSessionFactory.wantLegacyImplementation = YES;
+#endif
         urlSessionFactory.networkOperationQueue = networkQueue;
         urlSessionFactory.backgroundTaskDelegate = self.taskManager;
         self.URLSession = [urlSessionFactory getURLSession];
