@@ -195,17 +195,10 @@ static NSMutableDictionary* _AgentsByURL;
 
         [strongself resumeBundleActions];
 
-        __weak typeof(strongself) weakself2 = strongself;
-
         [strongself refreshBundlesWithCompletion:^{
-
-            __strong typeof(weakself2) strongself2 = weakself2;
-
-            [strongself2.repo cleanWithCompletion:^{
-
-                if (completion != nil) completion();
-
-            }];
+            
+            if (completion != nil) completion();
+            
         }];
     }];
 }
