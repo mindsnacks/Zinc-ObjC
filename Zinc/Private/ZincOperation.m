@@ -162,7 +162,7 @@ static double _defaultThreadPriority = kZincOperationInitialDefaultThreadPriorit
 - (NSArray*) immediateChildren
 {
     NSArray* childOps;
-    @synchronized(self) {
+    @synchronized(self.myChildOperations) {
         childOps = [self.myChildOperations allObjects];
     }
     return childOps;
