@@ -5,6 +5,8 @@
 //  Created by Andy Mroczkowski on 1/15/12.
 //  Copyright (c) 2012 MindSnacks. All rights reserved.
 //
+FOUNDATION_EXPORT double ZincVersionNumber;
+FOUNDATION_EXPORT const unsigned char ZincVersionString[];
 
 #import <Zinc/ZincGlobals.h>
 #import <Zinc/ZincErrors.h>
