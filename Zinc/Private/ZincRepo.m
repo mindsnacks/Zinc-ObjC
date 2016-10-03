@@ -11,7 +11,7 @@
 #define ENABLE_REACHABILITY TARGET_OS_IPHONE && !TARGET_IPHONE_SIMULATOR
 
 #if ENABLE_REACHABILITY
-#import <KSReachability/KSReachability.h>
+#import <KSReachability_iOS/KSReachability.h>
 #endif
 
 #import "ZincInternals.h"

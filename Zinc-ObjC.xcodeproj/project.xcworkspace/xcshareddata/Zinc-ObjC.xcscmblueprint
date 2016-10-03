@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "537441DDB1204BFC9E0A1B6AFC7EBC14B8E9642F",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "A8BABD625D1D94990FC826D3082E2401B2CCE27D" : 9223372036854775807,
+    "537441DDB1204BFC9E0A1B6AFC7EBC14B8E9642F" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "7B90F828-7DFC-4077-84BB-E9C1128EDEEE",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "A8BABD625D1D94990FC826D3082E2401B2CCE27D" : "..\/..",
+    "537441DDB1204BFC9E0A1B6AFC7EBC14B8E9642F" : "Zinc-ObjC\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Zinc-ObjC",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Zinc-ObjC.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/mindsnacks\/Zinc-ObjC.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "537441DDB1204BFC9E0A1B6AFC7EBC14B8E9642F"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "github.com:mindsnacks\/griffin.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "A8BABD625D1D94990FC826D3082E2401B2CCE27D"
+    }
+  ]
+}
