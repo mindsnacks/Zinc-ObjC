@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */; };
 		3592AD2D1D9F2B2A0024E326 /* Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E46B5814C3E0EA00030349 /* Zinc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2E1D9F2B2A0024E326 /* ZincGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F975148D52D800206F86 /* ZincGlobals.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2F1D9F2B2A0024E326 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -220,6 +221,7 @@
 /* Begin PBXFileReference section */
 		0D5923FA899F4A349A8158A7 /* libPods-ZincOSX.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ZincOSX.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33C9F7CDD3DC4BE8AAC529A9 /* Pods-Zinc-Tests.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc-Tests.xcconfig"; path = "Pods/Pods-Zinc-Tests.xcconfig"; sourceTree = "<group>"; };
+		351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = KSReachability_iOS.framework; path = ../../Build/iOS/KSReachability_iOS.framework; sourceTree = "<group>"; };
 		3592AD251D9F2A560024E326 /* Zinc.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Zinc.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3592AD281D9F2A560024E326 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3592AD781D9F2C700024E326 /* AMErroriOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMErroriOS.framework; path = ../../Build/iOS/AMErroriOS.framework; sourceTree = "<group>"; };
@@ -501,6 +503,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */,
 				3592ADA01D9F39170024E326 /* libz.tbd in Frameworks */,
 				3592AD941D9F35DC0024E326 /* MSWeakTimer.framework in Frameworks */,
 				3592AD951D9F35DC0024E326 /* AMErroriOS.framework in Frameworks */,
@@ -827,6 +830,7 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */,
 				3592AD9F1D9F39170024E326 /* libz.tbd */,
 				3592AD911D9F331D0024E326 /* MSWeakTimer.framework */,
 				3592AD781D9F2C700024E326 /* AMErroriOS.framework */,
@@ -1400,6 +1404,7 @@
 			inputPaths = (
 				"$(SRCROOT)/Carthage/Build/iOS/AMErroriOS.framework",
 				"$(SRCROOT)/Carthage/Build/iOS/MSWeakTimer.framework",
+				"$(SRCROOT)/Carthage/Build/iOS/KSReachability_iOS.framework",
 			);
 			outputPaths = (
 			);
@@ -2056,6 +2061,7 @@
 				3592AD2C1D9F2A560024E326 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B33A36191698F3A5007F0A57 /* Build configuration list for PBXNativeTarget "ZincFunctionalTests" */ = {
 			isa = XCConfigurationList;
