@@ -30,5 +30,6 @@ FOUNDATION_EXPORT const unsigned char ZincVersionString[];
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     #import <Zinc/UIImage+Zinc.h>
+    #import <Zinc/ZincAdminViewController.h>
 #endif
 

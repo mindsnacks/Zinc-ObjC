@@ -92,6 +92,7 @@
 		3592AD9B1D9F37E70024E326 /* ZincSHA.m in Sources */ = {isa = PBXBuildFile; fileRef = B36CA5B71631D97E00843CEC /* ZincSHA.m */; };
 		3592AD9C1D9F37E70024E326 /* ZincGzip.m in Sources */ = {isa = PBXBuildFile; fileRef = B36CA5C51632142A00843CEC /* ZincGzip.m */; };
 		3592ADA01D9F39170024E326 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD9F1D9F39170024E326 /* libz.tbd */; };
+		35E25B8E1DA33E9E00FFCE69 /* ZincAdminViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B3D4CE7F184D47D7002015AA /* ZincAdminViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		54379984A7D44B67979C88D4 /* libPods-Zinc-FunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98567F54C9A94AB1A0663A24 /* libPods-Zinc-FunctionalTests.a */; };
 		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
@@ -1177,6 +1178,7 @@
 				3592AD401D9F2B2A0024E326 /* ZincTask.h in Headers */,
 				3592AD411D9F2B2A0024E326 /* ZincOperation.h in Headers */,
 				3592AD421D9F2B2A0024E326 /* ZincChildren.h in Headers */,
+				35E25B8E1DA33E9E00FFCE69 /* ZincAdminViewController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
