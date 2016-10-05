@@ -30,6 +30,12 @@ FOUNDATION_EXPORT const unsigned char ZincVersionString[];
 #import <Zinc/ZincTaskMonitor.h>
 #import <Zinc/ZincRepoMonitor.h>
 #import <Zinc/ZincBundleAvailabilityMonitor.h>
+#import <Zinc/NSData+Zinc.h>
+#import <Zinc/NSError+Zinc.h>
+#import <Zinc/NSFileManager+Zinc.h>
+#import <Zinc/NSOperation+Zinc.h>
+#import <Zinc/NSString+Zinc.h>
+#import <Zinc/ZincDeepCopying.h>
 
 #if TARGET_OS_IPHONE || TARGET_IPHONE_SIMULATOR
     #import <Zinc/UIImage+Zinc.h>
