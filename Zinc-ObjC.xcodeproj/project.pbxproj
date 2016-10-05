@@ -9,6 +9,16 @@
 /* Begin PBXBuildFile section */
 		351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */; };
 		351E46011DA581010073F2EC /* ZincAdminViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE90184D485B002015AA /* ZincAdminViewController.m */; };
+		351E46021DA581CC0073F2EC /* ZincActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE89184D4853002015AA /* ZincActivityCell.m */; };
+		351E46031DA581CC0073F2EC /* ZincActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE8B184D4853002015AA /* ZincActivityViewController.m */; };
+		351E46041DA581CC0073F2EC /* ZincBundleContentsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE93184D4866002015AA /* ZincBundleContentsViewController.m */; };
+		351E46051DA581CC0073F2EC /* ZincBundleDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE95184D4866002015AA /* ZincBundleDetailCell.m */; };
+		351E46061DA581CC0073F2EC /* ZincBundleDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE97184D4866002015AA /* ZincBundleDetailViewController.m */; };
+		351E46071DA581CC0073F2EC /* ZincBundleListViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE99184D4866002015AA /* ZincBundleListViewCell.m */; };
+		351E46081DA581CC0073F2EC /* ZincBundleListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE9B184D4866002015AA /* ZincBundleListViewController.m */; };
+		351E46091DA581CC0073F2EC /* ZincBundleListViewDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE9D184D4866002015AA /* ZincBundleListViewDataSource.m */; };
+		351E460A1DA581CC0073F2EC /* ZincBundleManagementViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE9F184D4866002015AA /* ZincBundleManagementViewController.m */; };
+		351E460B1DA581CC0073F2EC /* ZincImageFileViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CEA1184D4866002015AA /* ZincImageFileViewController.m */; };
 		3592AD2D1D9F2B2A0024E326 /* Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E46B5814C3E0EA00030349 /* Zinc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2E1D9F2B2A0024E326 /* ZincGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F975148D52D800206F86 /* ZincGlobals.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2F1D9F2B2A0024E326 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1564,6 +1574,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3592AD431D9F2B480024E326 /* ZincGlobals.m in Sources */,
+				351E46091DA581CC0073F2EC /* ZincBundleListViewDataSource.m in Sources */,
 				3592AD441D9F2B480024E326 /* ZincRepo.m in Sources */,
 				3592AD451D9F2B480024E326 /* ZincAgent.m in Sources */,
 				3592AD461D9F2B480024E326 /* ZincModelObject.m in Sources */,
@@ -1574,15 +1585,19 @@
 				3592AD4B1D9F2B480024E326 /* ZincBundleVersionHelper.m in Sources */,
 				3592AD4C1D9F2B480024E326 /* ZincEvent.m in Sources */,
 				3592AD4D1D9F2B480024E326 /* ZincEventHelpers.m in Sources */,
+				351E46031DA581CC0073F2EC /* ZincActivityViewController.m in Sources */,
 				3592AD4E1D9F2B480024E326 /* ZincSource.m in Sources */,
 				3592AD4F1D9F2B480024E326 /* ZincCatalog.m in Sources */,
 				3592AD501D9F2B480024E326 /* ZincResource.m in Sources */,
+				351E46041DA581CC0073F2EC /* ZincBundleContentsViewController.m in Sources */,
 				3592AD511D9F2B480024E326 /* ZincManifest.m in Sources */,
+				351E46061DA581CC0073F2EC /* ZincBundleDetailViewController.m in Sources */,
 				3592AD521D9F2B480024E326 /* ZincDownloadPolicy.m in Sources */,
 				3592AD531D9F2B480024E326 /* ZincProgress.m in Sources */,
 				3592AD541D9F2B480024E326 /* ZincTrackingInfo.m in Sources */,
 				3592AD551D9F2B480024E326 /* ZincExternalBundleInfo.m in Sources */,
 				3592AD561D9F2B480024E326 /* ZincBundleTrackingRequest.m in Sources */,
+				351E46021DA581CC0073F2EC /* ZincActivityCell.m in Sources */,
 				3592AD571D9F2B480024E326 /* ZincTaskRequest.m in Sources */,
 				3592AD581D9F2B480024E326 /* ZincURLSessionFactory.m in Sources */,
 				3592AD591D9F2B480024E326 /* ZincURLSessionNSURLSessionImpl.m in Sources */,
@@ -1600,9 +1615,12 @@
 				3592AD651D9F2B480024E326 /* ZincBundleCloneTask.m in Sources */,
 				3592AD661D9F2B480024E326 /* ZincBundleRemoteCloneTask.m in Sources */,
 				3592AD671D9F2B480024E326 /* ZincCreateBundleLinksOperation.m in Sources */,
+				351E46081DA581CC0073F2EC /* ZincBundleListViewController.m in Sources */,
 				3592AD681D9F2B480024E326 /* ZincBundleDeleteTask.m in Sources */,
 				3592AD691D9F2B480024E326 /* ZincDownloadTask.m in Sources */,
+				351E460A1DA581CC0073F2EC /* ZincBundleManagementViewController.m in Sources */,
 				3592AD6A1D9F2B480024E326 /* ZincManifestDownloadTask.m in Sources */,
+				351E46071DA581CC0073F2EC /* ZincBundleListViewCell.m in Sources */,
 				3592AD6B1D9F2B480024E326 /* ZincObjectDownloadTask.m in Sources */,
 				3592AD6C1D9F2B480024E326 /* ZincArchiveDownloadTask.m in Sources */,
 				3592AD6D1D9F2B480024E326 /* ZincMaintenanceTask.m in Sources */,
@@ -1610,6 +1628,8 @@
 				3592AD6F1D9F2B480024E326 /* ZincCleanLegacySymlinksTask.m in Sources */,
 				3592AD701D9F2B480024E326 /* ZincTaskRef.m in Sources */,
 				3592AD711D9F2B480024E326 /* ZincInitializationTask.m in Sources */,
+				351E46051DA581CC0073F2EC /* ZincBundleDetailCell.m in Sources */,
+				351E460B1DA581CC0073F2EC /* ZincImageFileViewController.m in Sources */,
 				3592AD721D9F2B480024E326 /* ZincCompleteInitializationTask.m in Sources */,
 				3592AD731D9F2B480024E326 /* ZincActivityMonitor.m in Sources */,
 				3592AD741D9F2B480024E326 /* ZincCompletableActivityMonitor.m in Sources */,
