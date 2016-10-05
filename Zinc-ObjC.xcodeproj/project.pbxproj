@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */; };
+		351E46011DA581010073F2EC /* ZincAdminViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE90184D485B002015AA /* ZincAdminViewController.m */; };
 		3592AD2D1D9F2B2A0024E326 /* Zinc.h in Headers */ = {isa = PBXBuildFile; fileRef = B3E46B5814C3E0EA00030349 /* Zinc.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2E1D9F2B2A0024E326 /* ZincGlobals.h in Headers */ = {isa = PBXBuildFile; fileRef = B340F975148D52D800206F86 /* ZincGlobals.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3592AD2F1D9F2B2A0024E326 /* ZincErrors.h in Headers */ = {isa = PBXBuildFile; fileRef = B340FA0E148D7DC100206F86 /* ZincErrors.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -1621,6 +1622,7 @@
 				3592AD9A1D9F37E70024E326 /* ZincJSONSerialization.m in Sources */,
 				3592AD9B1D9F37E70024E326 /* ZincSHA.m in Sources */,
 				3592AD9C1D9F37E70024E326 /* ZincGzip.m in Sources */,
+				351E46011DA581010073F2EC /* ZincAdminViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
