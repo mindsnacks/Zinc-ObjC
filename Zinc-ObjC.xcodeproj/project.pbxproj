@@ -1223,7 +1223,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3592AD2A1D9F2A560024E326 /* Build configuration list for PBXNativeTarget "Zinc" */;
 			buildPhases = (
-				3592AD931D9F33F80024E326 /* ShellScript */,
 				3592AD201D9F2A560024E326 /* Sources */,
 				3592AD211D9F2A560024E326 /* Frameworks */,
 				3592AD221D9F2A560024E326 /* Headers */,
@@ -1432,22 +1431,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3592AD931D9F33F80024E326 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/AMErroriOS.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/MSWeakTimer.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/KSReachability_iOS.framework",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
 		4A0E0FCF5FB349038F993E9E /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
