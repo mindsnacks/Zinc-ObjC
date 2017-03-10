@@ -94,6 +94,13 @@
 @end
 
 
+@interface ZincCatalogUpdatedEvent ()
+
++ (id)catalogUpdatedEventWithURL:(NSURL*)url source:(NSDictionary*)source;
+
+@end
+
+
 #pragma mark Event Source Utils
 
 #define ZINC_EVENT_SRC() _ZincEventSrcMake(self, __PRETTY_FUNCTION__, __LINE__)
