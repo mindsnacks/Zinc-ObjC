@@ -404,19 +404,19 @@ NSString *const kZincEventCatalogUpdatedNotification = @"kZincEventCatalogUpdate
 
 @implementation ZincCatalogUpdatedEvent
 
-+ (id)catalogUpdatedEventWithURL:(NSURL*)url source:(NSDictionary*)source
++ (id)catalogUpdatedEventWithURL:(NSURL*)catalogURL source:(NSDictionary*)source
 {
-    NSDictionary* attr = @{kZincEventAttributesURLKey: url};
+    NSDictionary* attr = @{kZincEventAttributesURLKey: catalogURL};
     return [[self alloc] initWithType:ZincEventTypeCatalogUpdate source:source attributes:attr];
 }
 
 
-- (NSURL*) url
+- (NSURL*)catalogURL
 {
     return (self.attributes)[kZincEventAttributesURLKey];
 }
 
-+ (NSString*) name
++ (NSString*)name
 {
     return @"CATALOG-UPDATED";
 }

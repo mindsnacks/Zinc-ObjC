@@ -96,7 +96,7 @@
 
 @interface ZincCatalogUpdatedEvent ()
 
-+ (id)catalogUpdatedEventWithURL:(NSURL*)url source:(NSDictionary*)source;
++ (id)catalogUpdatedEventWithURL:(NSURL*)catalogURL source:(NSDictionary*)source;
 
 @end
 

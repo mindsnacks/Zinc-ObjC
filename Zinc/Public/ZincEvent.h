@@ -141,6 +141,6 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 
 @interface ZincCatalogUpdatedEvent: ZincEvent
 
-@property (readonly) NSURL* bundleResource;
+@property (readonly) NSURL* catalogURL;
 
 @end
