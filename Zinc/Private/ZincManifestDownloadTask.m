@@ -99,16 +99,14 @@
         // try remove existing. it shouldn't exist, but being defensive.
         [fm removeItemAtPath:path error:NULL];
         
-        if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
+        if ([data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
+            [self addEvent:[ZincCatalogUpdatedEvent catalogUpdatedEventWithURL:[self.repo indexURL] source:ZINC_EVENT_SRC()]];
+            [self.repo addManifest:manifest forBundleID:self.bundleID];
+            self.finishedSuccessfully = YES;
+            break; // make sure to break out of the loop when we finish successfully
+        } else {
             [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
-            continue;
         }
-        
-        [self.repo addManifest:manifest forBundleID:self.bundleID];
-        
-        self.finishedSuccessfully = YES;
-        
-        break; // make sure to break out of the loop when we finish successfully 
     }
 }
 @end

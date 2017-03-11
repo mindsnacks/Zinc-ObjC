@@ -47,12 +47,13 @@
     }
     
     NSString* path = [self.repo pathForCatalogIndex:self.catalog];
-    if ([data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
-        [self addEvent:[ZincCatalogUpdatedEvent catalogUpdatedEventWithURL:[self.repo indexURL] source:ZINC_EVENT_SRC()]];
-        [self.repo registerCatalog:self.catalog];
-        self.finishedSuccessfully = YES;
-    } else {
+    if (![data zinc_writeToFile:path atomically:YES createDirectories:YES skipBackup:YES error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        return;
     }
+    
+    [self.repo registerCatalog:self.catalog];
+    
+    self.finishedSuccessfully = YES;
 }
 @end
