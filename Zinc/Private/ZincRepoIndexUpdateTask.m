@@ -40,12 +40,12 @@
         return;
     }
     
-    if ([jsonData zinc_writeToFile:[[self.repo indexURL] path] atomically:YES createDirectories:NO skipBackup:YES error:&error]) {
-        self.finishedSuccessfully = YES;
-        [self addEvent:[ZincCatalogUpdatedEvent catalogUpdatedEventWithURL:[self.repo indexURL] source:ZINC_EVENT_SRC()]];
-    } else {
+    if (![jsonData zinc_writeToFile:[[self.repo indexURL] path] atomically:YES createDirectories:NO skipBackup:YES error:&error]) {
         [self addEvent:[ZincErrorEvent eventWithError:error source:ZINC_EVENT_SRC()]];
+        return;
     }
+
+    self.finishedSuccessfully = YES;
 }
 
 @end
