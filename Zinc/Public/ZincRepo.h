@@ -133,6 +133,12 @@
  */
 - (void) refreshSourcesWithCompletion:(dispatch_block_t)completion;
 
+/**
+ Returns a set of all downloaded catalog files
+ */
+- (NSSet<NSString *>*)existingCatalogIDs;
+
+
 ///---------------------------
 /// @name Working with Bundles
 ///---------------------------
