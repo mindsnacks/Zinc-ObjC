@@ -446,7 +446,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 - (NSSet<NSString *> *)existingCatalogIDs {
     NSArray<NSString *> *filesInCatalogsPath = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.catalogsPath
-                                                                                       error:Nil];
+                                                                                       error:nil];
     NSPredicate *jsonFilesPredicate = [NSPredicate predicateWithFormat:@"self ENDSWITH '.json'"];
     NSArray<NSString *> *jsonFileNames = [filesInCatalogsPath filteredArrayUsingPredicate:jsonFilesPredicate];
     NSMutableSet<NSString *> *existingCatalogIDs = [[NSMutableSet alloc] init];
@@ -454,6 +454,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         [existingCatalogIDs addObject:[fileName stringByDeletingPathExtension]];
     }
     return existingCatalogIDs;
+}
+
+- (NSSet<NSString *> *)downloadedBundleIDs {
+    NSArray<NSString *> *filesInBundlesPath = [NSFileManager.defaultManager contentsOfDirectoryAtPath:self.bundlesPath
+                                                                                                error:nil];
+    return [NSSet setWithArray:filesInBundlesPath];
 }
 
 #pragma mark Caching
