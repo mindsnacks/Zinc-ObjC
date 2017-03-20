@@ -444,16 +444,16 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return (self.sourcesByCatalog)[catalogID];
 }
 
-- (NSSet<NSString *> *)existingCatalogIDs {
+- (NSSet<NSString *> *)downloadedCatalogIDs {
     NSArray<NSString *> *filesInCatalogsPath = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:self.catalogsPath
                                                                                        error:nil];
     NSPredicate *jsonFilesPredicate = [NSPredicate predicateWithFormat:@"self ENDSWITH '.json'"];
     NSArray<NSString *> *jsonFileNames = [filesInCatalogsPath filteredArrayUsingPredicate:jsonFilesPredicate];
-    NSMutableSet<NSString *> *existingCatalogIDs = [[NSMutableSet alloc] init];
+    NSMutableSet<NSString *> *downloadedCatalogIDs = [[NSMutableSet alloc] init];
     for (NSString *fileName in jsonFileNames) {
-        [existingCatalogIDs addObject:[fileName stringByDeletingPathExtension]];
+        [downloadedCatalogIDs addObject:[fileName stringByDeletingPathExtension]];
     }
-    return existingCatalogIDs;
+    return downloadedCatalogIDs;
 }
 
 - (NSSet<NSString *> *)downloadedBundleIDs {
