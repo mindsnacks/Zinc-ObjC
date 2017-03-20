@@ -123,12 +123,6 @@
 - (void) removeSourceURL:(NSURL*)url;
 
 /**
- Completely deletes a source.
- @param sourceURL The URL of the source to remove. If the source URL is not registered, this does nothing.
- */
-- (void) deleteSourceWithURL:(NSURL *)sourceURL;
-
-/**
  Return a copy of all registered source URLs.
  */
 - (NSSet*) sourceURLs;
