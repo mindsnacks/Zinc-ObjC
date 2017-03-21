@@ -17,6 +17,7 @@ NSString *const kZincEventAttributesArchiveResourceKey = @"archiveResource";
 NSString *const kZincEventAttributesContextKey = @"context";
 NSString *const kZincEventAttributesCloneSuccessKey = @"success";
 NSString *const kZincEventAttributesActionKey = @"action";
+NSString *const kZincEventAttributesCatalogIDKey = @"catalogID";
 
 NSString *const kZincEventErrorNotification = @"ZincEventErrorNotification";
 NSString *const kZincEventBundleUpdateNotification = @"ZincEventBundleUpdateNotification";
@@ -29,6 +30,7 @@ NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveEx
 NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
 NSString *const kZincEventMaintenanceBeginNotification = @"ZincEventMaintenanceionBeginNotification";
 NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMaintenanceionCompleteNotification";
+NSString *const kZincEventCatalogUpdatedNotification = @"ZincEventCatalogUpdatedNotification";
 
 
 @interface ZincEvent ()
@@ -396,6 +398,33 @@ NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMainte
 - (NSString*) action
 {
     return self.attributes[kZincEventAttributesActionKey];
+}
+
+@end
+
+
+@implementation ZincCatalogUpdatedEvent
+
++ (id)catalogUpdatedEventWithCatalogID:(NSString *)catalogID source:(NSDictionary*)source
+{
+    NSDictionary* attr = @{kZincEventAttributesCatalogIDKey: catalogID};
+    return [[self alloc] initWithType:ZincEventTypeCatalogUpdate source:source attributes:attr];
+}
+
+
+- (NSURL*)catalogID
+{
+    return (self.attributes)[kZincEventAttributesCatalogIDKey];
+}
+
++ (NSString*)name
+{
+    return @"CATALOG-UPDATED";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventCatalogUpdatedNotification;
 }
 
 @end

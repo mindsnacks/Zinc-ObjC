@@ -1,2 +1,3 @@
-github "mindsnacks/AMError" "d4b2353ab9baa02cecc3b96bcefeb7e3660c6798"
-github "mindsnacks/MSWeakTimer" "95cfac56b53ade05a80bd4acb6ae9c4edcfa472d"
+github "mindsnacks/AMError" "b367f5e208c072d593a292a7fdf5fe1308b5fe14"
+github "mindsnacks/KSReachability" "ca9b53436b26a51734cf2602e478b50c9f461fe0"
+github "mindsnacks/MSWeakTimer" "3d7ccd7df7025fa6d839d932752fadefd2cc95fb"

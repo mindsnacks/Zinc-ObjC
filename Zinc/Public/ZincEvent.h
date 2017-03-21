@@ -137,3 +137,10 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 @property (readonly) NSString* action;
 
 @end
+
+
+@interface ZincCatalogUpdatedEvent : ZincEvent
+
+@property (readonly) NSString* catalogID;
+
+@end
