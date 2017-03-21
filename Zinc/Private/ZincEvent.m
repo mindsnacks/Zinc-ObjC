@@ -30,7 +30,7 @@ NSString *const kZincEventArchiveExtractBeginNotification = @"ZincEventArchiveEx
 NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiveExtractCompleteNotification";
 NSString *const kZincEventMaintenanceBeginNotification = @"ZincEventMaintenanceionBeginNotification";
 NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMaintenanceionCompleteNotification";
-NSString *const kZincEventCatalogUpdatedNotification = @"kZincEventCatalogUpdatedNotification";
+NSString *const kZincEventCatalogUpdatedNotification = @"ZincEventCatalogUpdatedNotification";
 
 
 @interface ZincEvent ()

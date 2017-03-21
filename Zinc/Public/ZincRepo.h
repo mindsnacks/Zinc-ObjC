@@ -136,7 +136,7 @@
 /**
  Returns a set of all downloaded catalog files
  */
-- (NSSet<NSString *>*)downloadedCatalogIDs;
+- (NSSet<NSString *> *)downloadedCatalogIDs;
 
 /**
  Returns a set of all downloaded bundle files
