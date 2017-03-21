@@ -1108,6 +1108,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
-}
+} 
 
 @end
