@@ -136,6 +136,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             }
             
             [repo queueGarbageCollectTask];
+            [repo queueContentBundleDeleteTask];
         }
     }
 
@@ -1041,6 +1042,12 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (ZincTask*) queueGarbageCollectTask
 {
     ZincTaskDescriptor* taskDesc = [ZincGarbageCollectTask taskDescriptorForResource:self.url];
+    return [self.taskManager queueTaskForDescriptor:taskDesc];
+}
+
+- (ZincTask*) queueContentBundleDeleteTask
+{
+    ZincTaskDescriptor* taskDesc = [ZincContentBundleDeleteTask taskDescriptorForResource:self.url];
     return [self.taskManager queueTaskForDescriptor:taskDesc];
 }
 
