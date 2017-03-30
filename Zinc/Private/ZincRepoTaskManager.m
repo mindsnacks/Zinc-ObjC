@@ -41,6 +41,7 @@ static NSString* kvo_taskIsFinished = @"kvo_taskIsFinished";
         self.internalQueue = [[NSOperationQueue alloc] init];
         self.taskQueueGroup = [[ZincOperationQueueGroup alloc] init];
         [self.taskQueueGroup setIsBarrierOperationForClass:[ZincGarbageCollectTask class]];
+        [self.taskQueueGroup setIsBarrierOperationForClass:[ZincContentBundleDeleteTask class]];
         [self.taskQueueGroup setIsBarrierOperationForClass:[ZincBundleDeleteTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:2 forClass:[ZincBundleRemoteCloneTask class]];
         [self.taskQueueGroup setMaxConcurrentOperationCount:1 forClass:[ZincCatalogUpdateTask class]];
