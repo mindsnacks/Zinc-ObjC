@@ -33,9 +33,11 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 - (void)doMaintenance {
     NSLog(@"ContentBundleDelete started");
 
+    /*
     if ([self totalSizeOfContentBundles] < kContentBundleFlushLimitInMegabytes) {
         return;
     }
+     */
 
     NSMutableSet<NSURL *> *contentBundleURLs = [NSMutableSet new];
     NSMutableSet<NSString *> *contentBundleIDs = [NSMutableSet new];

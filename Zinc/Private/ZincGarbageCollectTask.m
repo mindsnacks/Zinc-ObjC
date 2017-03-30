@@ -21,6 +21,8 @@
 
 - (void) doMaintenance
 {
+    NSLog(@"GarbageCollect started");
+
     NSError* error = nil;
     NSFileManager* fm = [[NSFileManager alloc] init];
     NSDirectoryEnumerator* filesEnum = [fm enumeratorAtURL:[NSURL fileURLWithPath:[self.repo filesPath]]
@@ -46,6 +48,8 @@
             }
         }
     }
+
+    NSLog(@"GarbageCollect done");
 }
 
 @end
