@@ -16,11 +16,13 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 
 @implementation ZincContentBundleDeleteTask
 
-#pragma mark - 
+#pragma mark - ZincTask
 
 + (NSString *)action {
     return @"ContentBundleDelete";
 }
+
+#pragma mark - ZincMaintenanceTask
 
 - (void)doMaintenance {
     CGFloat totalSizeOfContentBundles = [self totalSizeOfContentBundles];
