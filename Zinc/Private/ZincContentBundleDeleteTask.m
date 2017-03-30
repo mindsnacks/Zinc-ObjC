@@ -16,10 +16,6 @@ static const CGFloat kContentBundleFlushLimitInMegabytes = 20.f;
 static const CGFloat kContentBundleFlushLimitInMegabytes = 100.f;
 #endif
 
-#if DEBUG
-static NSString * const kGameBundlePrefix = @"com.wonder.moai_games";
-#endif
-
 static NSString * const kContentBundlePrefix = @"com.wonder.content";
 
 @implementation ZincContentBundleDeleteTask
@@ -36,6 +32,12 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
     if ([self totalSizeOfContentBundles] < kContentBundleFlushLimitInMegabytes) {
         return;
     }
+
+#if DEBUG
+    NSLog(@"lol1: %f", kContentBundleFlushLimitInMegabytes);
+#else
+    NSLog(@"lol2: %f", kContentBundleFlushLimitInMegabytes);
+#endif
 
     NSMutableSet<NSURL *> *contentBundleURLs = [NSMutableSet new];
     NSMutableSet<NSString *> *contentBundleIDs = [NSMutableSet new];
@@ -64,12 +66,6 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                   bundleURL);
         }
     }
-
-    /*
-    MSAnalyticsIntegration *analyticsIntegration = MSInjectionCreateObject(MSAnalyticsIntegration);
-    [analyticsIntegration trackActionWithName:@"StoredContentCleared"
-                               withProperties:@{}];
-     */
 
     NSLog(@"ContentBundleDelete done");
 }

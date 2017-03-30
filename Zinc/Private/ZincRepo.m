@@ -135,11 +135,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
                 repo.isInitialized = YES;
             }
 
-            NSLog(@"asdf1");
             [repo queueGarbageCollectTask];
-            NSLog(@"asdf2");
             [repo queueContentBundleDeleteTask];
-            NSLog(@"asdf3");
         }
     }
 
