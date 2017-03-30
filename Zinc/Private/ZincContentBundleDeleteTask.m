@@ -10,7 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-#if DEBUG
+#if ZINC_DEBUG
 static const CGFloat kContentBundleFlushLimitInMegabytes = 20.f;
 #else
 static const CGFloat kContentBundleFlushLimitInMegabytes = 100.f;
@@ -29,7 +29,7 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 - (void)doMaintenance {
     NSLog(@"ContentBundleDelete started");
 
-#if DEBUG
+#if ZINC_DEBUG
     NSLog(@"lol1: %f", kContentBundleFlushLimitInMegabytes);
 #else
     NSLog(@"lol2: %f", kContentBundleFlushLimitInMegabytes);
