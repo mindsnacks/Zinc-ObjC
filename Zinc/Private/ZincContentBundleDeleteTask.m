@@ -10,11 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-#if ZINC_DEBUG
-static const CGFloat kContentBundleFlushLimitInMegabytes = 20.f;
-#else
 static const CGFloat kContentBundleFlushLimitInMegabytes = 100.f;
-#endif
 
 static NSString * const kContentBundlePrefix = @"com.wonder.content";
 
@@ -27,19 +23,15 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 }
 
 - (void)doMaintenance {
-    NSLog(@"ContentBundleDelete started");
+    CGFloat totalSizeOfContentBundles = [self totalSizeOfContentBundles];
+    NSString *message = [NSString stringWithFormat:@"Total size of content bundles: %f", totalSizeOfContentBundles];
 
-#if ZINC_DEBUG
-    NSLog(@"lol1: %f", kContentBundleFlushLimitInMegabytes);
-#else
-    NSLog(@"lol2: %f", kContentBundleFlushLimitInMegabytes);
-#endif
-
-    if ([self totalSizeOfContentBundles] < kContentBundleFlushLimitInMegabytes) {
+    if (totalSizeOfContentBundles < kContentBundleFlushLimitInMegabytes) {
+        NSLog(@"%@, will not clear", message);
         return;
     }
 
-    NSLog(@"ContentBundleDelete started2");
+    NSLog(@"%@, will clear", message);
 
     NSMutableSet<NSURL *> *contentBundleURLs = [NSMutableSet new];
     NSMutableSet<NSString *> *contentBundleIDs = [NSMutableSet new];
@@ -68,8 +60,6 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                   bundleURL);
         }
     }
-
-    NSLog(@"ContentBundleDelete done");
 }
 
 #pragma mark - repo.json
@@ -151,7 +141,7 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
     return [self writeToRepoJSONWithJSONDict:repoJSONDict];
 }
 
-#pragma mark - File Path
+#pragma mark - URLs
 
 - (NSURL *)urlForSearchPathDirectory:(NSSearchPathDirectory)searchPathDirectory {
     NSURL *url = [NSFileManager.defaultManager URLsForDirectory:searchPathDirectory inDomains:NSUserDomainMask][0];
@@ -180,10 +170,6 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 - (NSURL *)manifestURLForManifestName:(NSString *)manifestName {
     return [[self manifestsFolderURL] URLByAppendingPathComponent:manifestName
                                                          isDirectory:NO];
-}
-
-- (NSString *)manifestNameForBundleName:(NSString *)bundleName {
-    return [bundleName stringByAppendingString:@".json"];
 }
 
 #pragma mark - File Size
@@ -236,6 +222,10 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 
 - (NSString *)bundleNameForBundleURL:(NSURL *)bundleURL {
     return [[bundleURL absoluteString] lastPathComponent];
+}
+
+- (NSString *)manifestNameForBundleName:(NSString *)bundleName {
+    return [bundleName stringByAppendingString:@".json"];
 }
 
 - (void)forBundlesWithPrefix:(NSString *)prefix
