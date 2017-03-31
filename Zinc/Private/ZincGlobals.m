@@ -11,3 +11,5 @@ NSString* const ZincBundleStateName[] = {
     @"Available",
     @"Deleting",
 };
+
+NSString *const kZincEventAttributesActionContentBundleDelete = @"ContentBundleDelete";

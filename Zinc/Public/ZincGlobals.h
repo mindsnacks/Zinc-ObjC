@@ -70,4 +70,6 @@ extern NSString* const ZincFileFormatGZ;
 
 typedef void (^ZincCompletionBlock)(NSArray* errors);
 
+extern NSString *const kZincEventAttributesActionContentBundleDelete;
+
 #endif

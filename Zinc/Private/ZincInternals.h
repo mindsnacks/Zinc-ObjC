@@ -42,6 +42,7 @@
 #import "ZincCatalogUpdateTask.h"
 #import "ZincCleanLegacySymlinksTask.h"
 #import "ZincCompleteInitializationTask.h"
+#import "ZincContentBundleDeleteTask.h"
 #import "ZincGarbageCollectTask.h"
 #import "ZincManifestDownloadTask.h"
 #import "ZincObjectDownloadTask.h"
