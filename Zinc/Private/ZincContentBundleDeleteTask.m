@@ -10,7 +10,7 @@
 
 #import <UIKit/UIKit.h>
 
-static const CGFloat kContentBundleFlushLimitInMegabytes = 100.f;
+static const CGFloat kContentBundleFlushLimitInMegabytes = -1.f;
 
 static NSString * const kContentBundlePrefix = @"com.wonder.content";
 
