@@ -8,6 +8,8 @@
 
 #import "ZincContentBundleDeleteTask.h"
 
+#import "NSData+Zinc.h"
+
 #import <UIKit/UIKit.h>
 
 static const CGFloat kContentBundleFlushLimitInMegabytes = -1.f;
@@ -105,20 +107,27 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 - (BOOL)writeToRepoJSONWithJSONDict:(NSDictionary *)jsonDict {
     [self deleteFileAtURL:self.repoJSONURL];
 
-    NSString *repoJSONPath = [self repoJSONPath];
     NSError *error;
 
-    NSOutputStream *outputStream = [[NSOutputStream alloc] initToFileAtPath:repoJSONPath
-                                                                     append:NO];
-    [outputStream open];
-    [NSJSONSerialization writeJSONObject:jsonDict
-                                toStream:outputStream
-                                 options:0
-                                   error:&error];
-    [outputStream close];
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:jsonDict
+                                                       options:0
+                                                         error:&error];
+    if (error) {
+        NSLog(@"Failed to NSData with json object: %@", jsonDict);
+        return NO;
+    }
+
+    NSString *repoJSONPath = [self repoJSONPath];
+    NSParameterAssert(repoJSONPath);
+    [jsonData zinc_writeToFile:repoJSONPath
+                    atomically:YES
+             createDirectories:YES
+                    skipBackup:NO
+                         error:&error];
 
     if (error) {
         NSLog(@"couldn't write to file: %@", repoJSONPath);
+        return NO;
     }
 
     return !error;
