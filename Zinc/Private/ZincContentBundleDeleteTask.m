@@ -62,6 +62,10 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                   bundleURL);
         }
     }
+
+    [NSNotificationCenter.defaultCenter postNotificationName:kZincAllContentBundlesWereDeleted
+                                                      object:self
+                                                    userInfo:nil];
 }
 
 #pragma mark - repo.json
