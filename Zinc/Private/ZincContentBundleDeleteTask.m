@@ -19,7 +19,7 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
 #pragma mark - ZincTask
 
 + (NSString *)action {
-    return @"ContentBundleDelete";
+    return kZincEventAttributesActionContentBundleDelete;
 }
 
 #pragma mark - ZincMaintenanceTask
