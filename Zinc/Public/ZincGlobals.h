@@ -70,4 +70,9 @@ extern NSString* const ZincFileFormatGZ;
 
 typedef void (^ZincCompletionBlock)(NSArray* errors);
 
+
+/* NSNotificationCenter Events
+ */
+extern NSString* const kZincAllContentBundlesWereDeleted;
+
 #endif

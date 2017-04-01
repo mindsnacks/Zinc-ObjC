@@ -122,12 +122,16 @@
 	else return nil;
 }
 
-- (BOOL) zinc_writeToFile:(NSString*)path atomically:(BOOL)useAuxiliaryFile createDirectories:(BOOL)createIntermediates skipBackup:(BOOL)skipBackup error:(NSError**)outError
+- (BOOL) zinc_writeToFile:(NSString*)path
+               atomically:(BOOL)atomically
+        createDirectories:(BOOL)createDirectories
+               skipBackup:(BOOL)skipBackup
+                    error:(NSError**)outError
 {
     NSDataWritingOptions options = 0;
-    if (useAuxiliaryFile) options = NSDataWritingAtomic;
+    if (atomically) options = NSDataWritingAtomic;
     
-    if (createIntermediates) {
+    if (createDirectories) {
         NSFileManager* fm = [[NSFileManager alloc] init];
         if (![fm zinc_createDirectoryIfNeededAtPath:[path stringByDeletingLastPathComponent] error:outError]) {
             return NO;
