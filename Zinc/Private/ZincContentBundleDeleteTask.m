@@ -125,8 +125,12 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                     skipBackup:NO
                          error:&error];
 
-    repoJSONPath = [self absoluteURLForPathRelativeToZincFolder:@"repo2.json" isDirectory:NO];
-    [jsonData zinc_writeToFile:repoJSONPath
+    NSURL *myURL = [self absoluteURLForPathRelativeToZincFolder:@"repo2.json" isDirectory:NO];
+    NSLog(@"myURL: %@", myURL);
+    NSString *myPath = [myURL path];
+    NSLog(@"myPath: %@", myPath);
+
+    [jsonData zinc_writeToFile:myPath
                     atomically:YES
              createDirectories:YES
                     skipBackup:NO
