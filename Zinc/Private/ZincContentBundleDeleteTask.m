@@ -95,7 +95,7 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
     [inputStream close];
 
     if (error) {
-        NSLog(@"Error while converting json file to NSDictionary: %@", repoJSONPath);
+        NSLog(@"Error while creating NSDictionary with json file path: %@", repoJSONPath);
         return nil;
     }
 
@@ -113,7 +113,7 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                                                        options:0
                                                          error:&error];
     if (error) {
-        NSLog(@"Failed to NSData with json object: %@", jsonDict);
+        NSLog(@"Failed to create NSData with json object: %@", jsonDict);
         return NO;
     }
 
@@ -125,8 +125,15 @@ static NSString * const kContentBundlePrefix = @"com.wonder.content";
                     skipBackup:NO
                          error:&error];
 
+    repoJSONPath = [self absoluteURLForPathRelativeToZincFolder:@"repo2.json" isDirectory:NO];
+    [jsonData zinc_writeToFile:repoJSONPath
+                    atomically:YES
+             createDirectories:YES
+                    skipBackup:NO
+                         error:&error];
+
     if (error) {
-        NSLog(@"couldn't write to file: %@", repoJSONPath);
+        NSLog(@"Error while writing to file: %@", repoJSONPath);
         return NO;
     }
 
