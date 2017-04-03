@@ -1175,8 +1175,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
 // Example content bundle name: @"com.wonder.content4.sat-BELLY-0355-1"
 // Example content bundle id: @"com.wonder.content4.sat-BELLY-0355"
-- (NSString *)contentBundleIDForContentBundleName2:(NSString *)bundleName {
-    NSString *contentBundleRegexPattern = @"\\A(com\\.wonder\\.content\\d*\\..*)-(.*)\\Z";
+- (NSString *)contentBundleIDForContentBundleResource:(NSURL *)bundleResource {
+    NSString *bundleResourceString = [bundleResource absoluteString];
+    NSString *contentBundleRegexPattern = @"\\Azincresource://bundle/(com\\.wonder\\.content\\d*\\..*)/(.*)\\Z";
 
     NSError *error;
     NSRegularExpression *contentBundleRegex = [NSRegularExpression regularExpressionWithPattern:contentBundleRegexPattern
@@ -1184,16 +1185,16 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
                                                                                           error:&error];
     NSAssert(error == nil, @"error when creating content bundle regex: %@", error);
 
-    NSTextCheckingResult *match = [contentBundleRegex firstMatchInString:bundleName
+    NSTextCheckingResult *match = [contentBundleRegex firstMatchInString:bundleResourceString
                                                                  options:NSMatchingAnchored
-                                                                   range:NSMakeRange(0, bundleName.length)];
+                                                                   range:NSMakeRange(0, bundleResourceString.length)];
 
     if (match == nil) {
         return nil;
     }
 
-    NSString *bundleID = [bundleName substringWithRange:[match rangeAtIndex:1]]; // e.g. "com.wonder.content4.sat-BELLY-0355"
-    NSString *zincVersionString = [bundleName substringWithRange:[match rangeAtIndex:2]]; // e.g. "1"
+    NSString *bundleID = [bundleResourceString substringWithRange:[match rangeAtIndex:1]]; // e.g. "com.wonder.content4.sat-BELLY-0355"
+    NSString *zincVersionString = [bundleResourceString substringWithRange:[match rangeAtIndex:2]]; // e.g. "1"
     NSParameterAssert(bundleID);
     NSParameterAssert(zincVersionString);
 
@@ -1313,14 +1314,17 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         NSSet* available = [self.index availableBundles];
         NSLog(@"available bundles: %@", available);
 
-        NSPredicate *contentBundlePredicate = [NSPredicate predicateWithBlock:^BOOL(NSURL * _Nullable bundleURL,
+        NSPredicate *contentBundlePredicate = [NSPredicate predicateWithBlock:^BOOL(NSURL * _Nullable bundleResource,
                                                                                     NSDictionary<NSString *,id> * _Nullable bindings) {
-            NSLog(@"bundleURL: %@", bundleURL);
+            NSLog(@"bundleResource: %@", bundleResource);
+            // zincresource://bundle/com.wonder.content4.sat-BELLY-0238/1
 
+            /*
             NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
             NSLog(@"bundleName: %@", bundleName);
+             */
 
-            NSString *contentBundleID = [self contentBundleIDForContentBundleName2:bundleName];
+            NSString *contentBundleID = [self contentBundleIDForContentBundleResource:bundleResource];
             NSLog(@"contentBundleID: %@", contentBundleID);
 
             return (contentBundleID != nil);
