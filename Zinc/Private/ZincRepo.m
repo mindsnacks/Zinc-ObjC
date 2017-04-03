@@ -138,7 +138,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             }
 
             [repo queueGarbageCollectTask];
-            [repo deleteAllContentBundlesIfNeeded];
+            //[repo deleteAllContentBundlesIfNeeded];
+            [repo deleteAllContentBundlesIfNeeded2];
         }
     }
 
@@ -1243,7 +1244,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     [self.taskManager addOperation:taskRef];
 }
 
-- (void) deleteAllContentBundlesIfNeeded {
+- (void)deleteAllContentBundlesIfNeeded {
     float totalSizeOfContentBundles = [self totalSizeOfContentBundles];
     NSString *message = [NSString stringWithFormat:@"Total size of content bundles: %f", totalSizeOfContentBundles];
 
@@ -1265,6 +1266,19 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
     [self purgeBundlesWithIDS:contentBundleIDs
                    bundleURLs:contentBundleURLs];
+}
+
+- (void)deleteAllContentBundlesIfNeeded2 {
+    NSLog(@"deleteAllContentBundlesIfNeeded2 started");
+
+    NSSet* available = [self.index availableBundles];
+
+    for (NSURL* bundleURL in available) {
+        [self deleteBundleWithID:[bundleURL zincBundleID]
+                         version:[bundleURL zincBundleVersion]];
+    }
+
+    NSLog(@"deleteAllContentBundlesIfNeeded2 ended");
 }
 
 - (ZincTask*) queueCleanSymlinksTask
