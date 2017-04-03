@@ -1315,10 +1315,19 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
         NSPredicate *contentBundlePredicate = [NSPredicate predicateWithBlock:^BOOL(NSURL * _Nullable bundleURL,
                                                                                     NSDictionary<NSString *,id> * _Nullable bindings) {
+            NSLog(@"bundleURL: %@", bundleURL);
+
             NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
-            return ([self contentBundleIDForContentBundleName2:bundleName] != nil);
+            NSLog(@"bundleName: %@", bundleName);
+
+            NSString *contentBundleID = [self contentBundleIDForContentBundleName2:bundleName];
+            NSLog(@"contentBundleID: %@", contentBundleID);
+
+            return (contentBundleID != nil);
         }];
+
         available = [available filteredSetUsingPredicate:contentBundlePredicate];
+        NSLog(@"available bundles2: %@", available);
 
         for (NSURL* bundleURL in available) {
             NSLog(@"deleting bundle: %@", bundleURL);
