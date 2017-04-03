@@ -1173,6 +1173,33 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return bundleID;
 }
 
+// Example content bundle name: @"com.wonder.content4.sat-BELLY-0355-1"
+// Example content bundle id: @"com.wonder.content4.sat-BELLY-0355"
+- (NSString *)contentBundleIDForContentBundleName2:(NSString *)bundleName {
+    NSString *contentBundleRegexPattern = @"\\A(com\\.wonder\\.content\\d*\\..*)-(.*)\\Z";
+
+    NSError *error;
+    NSRegularExpression *contentBundleRegex = [NSRegularExpression regularExpressionWithPattern:contentBundleRegexPattern
+                                                                                        options:NSRegularExpressionAnchorsMatchLines
+                                                                                          error:&error];
+    NSAssert(error == nil, @"error when creating content bundle regex: %@", error);
+
+    NSTextCheckingResult *match = [contentBundleRegex firstMatchInString:bundleName
+                                                                 options:NSMatchingAnchored
+                                                                   range:NSMakeRange(0, bundleName.length)];
+
+    if (match == nil) {
+        return nil;
+    }
+
+    NSString *bundleID = [bundleName substringWithRange:[match rangeAtIndex:1]]; // e.g. "com.wonder.content4.sat-BELLY-0355"
+    NSString *zincVersionString = [bundleName substringWithRange:[match rangeAtIndex:2]]; // e.g. "1"
+    NSParameterAssert(bundleID);
+    NSParameterAssert(zincVersionString);
+
+    return bundleID;
+}
+
 - (void) xderegisterBundle:(NSURL*)bundleResource completion:(dispatch_block_t)completion
 {
     [self postNotification:ZincRepoBundleWillDeleteNotification bundleID:[bundleResource zincBundleID]];
@@ -1285,6 +1312,13 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
         NSSet* available = [self.index availableBundles];
         NSLog(@"available bundles: %@", available);
+
+        NSPredicate *contentBundlePredicate = [NSPredicate predicateWithBlock:^BOOL(NSURL * _Nullable bundleURL,
+                                                                                    NSDictionary<NSString *,id> * _Nullable bindings) {
+            NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
+            return ([self contentBundleIDForContentBundleName2:bundleName] != nil);
+        }];
+        available = [available filteredSetUsingPredicate:contentBundlePredicate];
 
         for (NSURL* bundleURL in available) {
             NSLog(@"deleting bundle: %@", bundleURL);
