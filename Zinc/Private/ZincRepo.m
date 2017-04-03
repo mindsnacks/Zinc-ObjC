@@ -1271,14 +1271,32 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 - (void)deleteAllContentBundlesIfNeeded2 {
     NSLog(@"deleteAllContentBundlesIfNeeded2 started");
 
-    NSSet* available = [self.index availableBundles];
+    @synchronized(self.index) {
+        NSLog(@"deleteAllContentBundlesIfNeeded2 acquired lock");
 
-    for (NSURL* bundleURL in available) {
-        [self deleteBundleWithID:[bundleURL zincBundleID]
-                         version:[bundleURL zincBundleVersion]];
+        NSSet* cloningBundles = [self.index cloningBundles];
+        if ([cloningBundles count] > 1) {
+            // don't delete while any clones are in progress
+            NSLog(@"deleteAllContentBundlesIfNeeded2 cloning in progress, exiting");
+            return;
+        }
+
+        NSLog(@"deleteAllContentBundlesIfNeeded2 cloning not in progress, continuing");
+
+        NSSet* available = [self.index availableBundles];
+        NSLog(@"available bundles: %@", available);
+
+        for (NSURL* bundleURL in available) {
+            NSLog(@"deleting bundle: %@", bundleURL);
+
+            [self deleteBundleWithID:[bundleURL zincBundleID]
+                             version:[bundleURL zincBundleVersion]];
+        }
+
+        NSLog(@"deleteAllContentBundlesIfNeeded2 ended");
     }
 
-    NSLog(@"deleteAllContentBundlesIfNeeded2 ended");
+
 }
 
 - (ZincTask*) queueCleanSymlinksTask
