@@ -73,6 +73,7 @@ typedef void (^ZincCompletionBlock)(NSArray* errors);
 
 /* NSNotificationCenter Events
  */
-extern NSString* const kZincAllContentBundlesWereDeleted;
+extern NSString* const kZincBundlesWithPrefixWereDeleted;
+extern NSString* const kZincBundlePrefixKey; // value will be an NSString with the prefix
 
 #endif

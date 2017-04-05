@@ -34,9 +34,6 @@
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
-static const float kContentBundleFlushLimitInMegabytes = 100.f;
-static NSString * const kContentBundlePrefix = @"com.wonder.content";
-
 static NSMutableDictionary* _ReposByURL;
 
 NSString* const ZincRepoReachabilityChangedNotification = @"ZincRepoReachabilityChangedNotification";
@@ -66,6 +63,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, strong, readwrite) ZincBundleVersionHelper* versionHelper;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *bundleSizeLimitInMBByPrefix; // NSNumber contains a float
 
 @end
 
@@ -138,7 +136,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             }
 
             [repo queueGarbageCollectTask];
-            [repo deleteAllContentBundlesIfNeeded];
+            [repo deleteSizeLimitedBundles];
         }
     }
 
@@ -170,6 +168,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
+        self.bundleSizeLimitInMBByPrefix = [NSMutableDictionary dictionary];
 
         ZincURLSessionFactory* urlSessionFactory = [[ZincURLSessionFactory alloc] init];
         urlSessionFactory.networkOperationQueue = networkQueue;
@@ -1068,7 +1067,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 - (NSURL *)bundlesFolderURL {
-    return [self absoluteURLForPathRelativeToZincFolder:@"bundles"
+    return [self absoluteURLForPathRelativeToZincFolder:BUNDLES_DIR
                                             isDirectory:YES];
 }
 
@@ -1137,10 +1136,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [self megabytesForBytes:bytes];
 }
 
-- (float)totalSizeOfContentBundles {
-    return [self totalSizeInMegabytesOfBundlesWithPrefix:kContentBundlePrefix];
-}
-
 // Example content bundle name: @"com.wonder.content4.sat-BELLY-0355-1"
 // Example content bundle id: @"com.wonder.content4.sat-BELLY-0355"
 - (NSString *)contentBundleIDForContentBundleName:(NSString *)bundleName {
@@ -1170,7 +1165,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 - (NSURL *)manifestsFolderURL {
-    return [self absoluteURLForPathRelativeToZincFolder:@"manifests" isDirectory:YES];
+    return [self absoluteURLForPathRelativeToZincFolder:MANIFESTS_DIR
+                                            isDirectory:YES];
 }
 
 - (NSURL *)manifestURLForManifestName:(NSString *)manifestName {
@@ -1190,10 +1186,17 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return !error;
 }
 
-- (void)purgeBundlesWithIDs:(NSSet<NSString *> *)bundleIDs
-                 bundleURLs:(NSSet<NSURL *> *)bundleURLs {
+- (void)purgeBundlesWithPrefix:(NSString *)prefix {
+    NSMutableSet<NSURL *> *bundleURLs = [NSMutableSet new];
+    [self forBundlesWithPrefix:prefix performBlock:^(NSURL *bundleURL) {
+        [bundleURLs addObject:bundleURL];
+    }];
+
     @synchronized(self.index) {
-        for (NSString *bundleID in bundleIDs) {
+        for (NSURL *bundleURL in bundleURLs) {
+            NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
+            NSString *bundleID = [self contentBundleIDForContentBundleName:bundleName];
+
             [self postNotification:ZincRepoBundleWillDeleteNotification
                           bundleID:bundleID];
             [self.index purgeBundleWithID:bundleID];
@@ -1215,36 +1218,32 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             }
         }
 
-        [NSNotificationCenter.defaultCenter postNotificationName:kZincAllContentBundlesWereDeleted
-                                                          object:self
-                                                        userInfo:nil];
+        [self postNotification:kZincBundlesWithPrefixWereDeleted
+                      userInfo:@{kZincBundlePrefixKey : prefix}];
     };
     [taskRef addDependency:[self queueIndexSaveTask]];
     [self.taskManager addOperation:taskRef];
 }
 
-- (void) deleteAllContentBundlesIfNeeded {
-    float totalSizeOfContentBundles = [self totalSizeOfContentBundles];
-    NSString *message = [NSString stringWithFormat:@"Total size of content bundles: %f", totalSizeOfContentBundles];
+- (void)deleteSizeLimitedBundles {
+    NSParameterAssert(self.bundleSizeLimitInMBByPrefix);
+    [self.bundleSizeLimitInMBByPrefix enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull prefix,
+                                                                          NSNumber * _Nonnull sizeLimitInMBNumber,
+                                                                          BOOL * _Nonnull stop) {
+        float sizeLimitInMB = [sizeLimitInMBNumber floatValue];
+        float sizeInMB = [self totalSizeInMegabytesOfBundlesWithPrefix:prefix];
+        NSString *message = [NSString stringWithFormat:@"Total size of bundles with prefix \"%@\" is: %fMB",
+                             prefix,
+                             sizeInMB];
 
-    if (totalSizeOfContentBundles < kContentBundleFlushLimitInMegabytes) {
-        NSLog(@"%@, will not clear", message);
-        return;
-    }
-    NSLog(@"%@, will clear", message);
-
-    NSMutableSet<NSURL *> *contentBundleURLs = [NSMutableSet new];
-    NSMutableSet<NSString *> *contentBundleIDs = [NSMutableSet new];
-    [self forBundlesWithPrefix:kContentBundlePrefix performBlock:^(NSURL *bundleURL) {
-        NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
-        NSString *bundleID = [self contentBundleIDForContentBundleName:bundleName];
-
-        [contentBundleURLs addObject:bundleURL];
-        [contentBundleIDs addObject:bundleID];
+        if (sizeInMB >= sizeLimitInMB) {
+            NSLog(@"%@, will purge", message);
+            [self purgeBundlesWithPrefix:prefix];
+            NSLog(@"finished purging bundles with prefix: %@", prefix);
+        } else {
+            NSLog(@"%@, will not purge", message);
+        }
     }];
-
-    [self purgeBundlesWithIDs:contentBundleIDs
-                   bundleURLs:contentBundleURLs];
 }
 
 - (ZincTask*) queueCleanSymlinksTask
@@ -1329,6 +1328,14 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
+}
+
+- (void)setBundleSizeLimitInMB:(float)sizeLimitInMB
+          forBundlesWithPrefix:(NSString *)prefix {
+    NSParameterAssert(prefix);
+
+    NSParameterAssert(self.bundleSizeLimitInMBByPrefix);
+    self.bundleSizeLimitInMBByPrefix[prefix] = @(sizeLimitInMB);
 }
 
 @end

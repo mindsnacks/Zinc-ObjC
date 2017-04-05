@@ -256,6 +256,13 @@
  */
 - (BOOL) registerExternalBundleWithManifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)bundleRootPath error:(NSError**)outError;
 
+/**
+ Purges bundles with the given prefix when the total sum of the size of the bundles reaches the limit.
+ The bundles are deleted, their associated manifest files deleted, and completely wiped from the repo.json file.
+ */
+- (void)setBundleSizeLimitInMB:(float)sizeLimitInMB
+          forBundlesWithPrefix:(NSString *)prefix;
+
 ///----------------------
 /// @name Task Management
 ///----------------------
