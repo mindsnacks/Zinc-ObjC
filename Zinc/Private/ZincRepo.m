@@ -63,7 +63,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 @property (nonatomic, strong) ZincRepoBundleManager* bundleManager;
 @property (nonatomic, strong, readwrite) ZincDownloadPolicy* downloadPolicy;
 @property (nonatomic, strong, readwrite) ZincBundleVersionHelper* versionHelper;
-@property (nonatomic, strong) NSMutableDictionary<NSString *, NSNumber *> *bundleSizeLimitInMBByPrefix; // NSNumber contains a float
 
 @end
 
@@ -136,7 +135,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             }
 
             [repo queueGarbageCollectTask];
-            [repo deleteSizeLimitedBundles];
         }
     }
 
@@ -168,7 +166,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
         self.downloadPolicy = [[ZincDownloadPolicy alloc] init];
         self.reachability = reachability;
         self.versionHelper = [[ZincBundleVersionHelper alloc] init];
-        self.bundleSizeLimitInMBByPrefix = [NSMutableDictionary dictionary];
 
         ZincURLSessionFactory* urlSessionFactory = [[ZincURLSessionFactory alloc] init];
         urlSessionFactory.networkOperationQueue = networkQueue;
@@ -1209,25 +1206,22 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     [self.taskManager addOperation:taskRef];
 }
 
-- (void)deleteSizeLimitedBundles {
-    NSParameterAssert(self.bundleSizeLimitInMBByPrefix);
-    [self.bundleSizeLimitInMBByPrefix enumerateKeysAndObjectsUsingBlock:^(NSString * _Nonnull prefix,
-                                                                          NSNumber * _Nonnull sizeLimitInMBNumber,
-                                                                          BOOL * _Nonnull stop) {
-        float sizeLimitInMB = [sizeLimitInMBNumber floatValue];
-        float sizeInMB = [self totalSizeInMegabytesOfBundlesWithPrefix:prefix];
-        NSString *message = [NSString stringWithFormat:@"Total size of bundles with prefix \"%@\" is: %fMB",
-                             prefix,
-                             sizeInMB];
+- (void)purgeBundlesWithPrefix:(NSString *)prefix
+ifSumOfSizeHasReachedLimitInMegabytes:(float)sizeLimitInMB {
+    NSParameterAssert(prefix);
 
-        if (sizeInMB >= sizeLimitInMB) {
-            NSLog(@"%@, will purge", message);
-            [self purgeBundlesWithPrefix:prefix];
-            NSLog(@"finished purging bundles with prefix: %@", prefix);
-        } else {
-            NSLog(@"%@, will not purge", message);
-        }
-    }];
+    float sizeInMB = [self totalSizeInMegabytesOfBundlesWithPrefix:prefix];
+    NSString *message = [NSString stringWithFormat:@"Total size of bundles with prefix \"%@\" is: %fMB",
+                         prefix,
+                         sizeInMB];
+
+    if (sizeInMB >= sizeLimitInMB) {
+        NSLog(@"%@, will purge", message);
+        [self purgeBundlesWithPrefix:prefix];
+        NSLog(@"finished purging bundles with prefix: %@", prefix);
+    } else {
+        NSLog(@"%@, will not purge", message);
+    }
 }
 
 - (ZincTask*) queueCleanSymlinksTask
@@ -1312,14 +1306,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
-}
-
-- (void)setBundleSizeLimitInMB:(float)sizeLimitInMB
-          forBundlesWithPrefix:(NSString *)prefix {
-    NSParameterAssert(prefix);
-
-    NSParameterAssert(self.bundleSizeLimitInMBByPrefix);
-    self.bundleSizeLimitInMBByPrefix[prefix] = @(sizeLimitInMB);
 }
 
 @end
