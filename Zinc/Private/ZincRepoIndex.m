@@ -226,6 +226,12 @@
     }
 }
 
+- (void) purgeBundleWithID:(NSString *)bundleID {
+    @synchronized (self.myBundles) {
+        self.myBundles[bundleID] = nil;
+    }
+}
+
 - (void) registerExternalBundle:(NSURL*)bundleRes manifestPath:(NSString*)manifestPath bundleRootPath:(NSString*)rootPath
 {
     @synchronized(self.myExternalBundlesByResource) {

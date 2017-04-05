@@ -11,3 +11,6 @@ NSString* const ZincBundleStateName[] = {
     @"Available",
     @"Deleting",
 };
+
+NSString *const kZincBundlesWithPrefixWereDeleted = @"ZincBundlesWithPrefixWereDeleted";
+NSString *const kZincBundlePrefixKey = @"ZincBundlePrefixKey";

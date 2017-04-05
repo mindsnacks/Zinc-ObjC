@@ -36,7 +36,6 @@
 
 static NSMutableDictionary* _ReposByURL;
 
-
 NSString* const ZincRepoReachabilityChangedNotification = @"ZincRepoReachabilityChangedNotification";
 
 NSString* const ZincRepoBundleStatusChangeNotification = @"ZincRepoBundleStatusChangeNotification";
@@ -134,7 +133,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
             if (![repo queueInitializationTasks]) {
                 repo.isInitialized = YES;
             }
-            
+
             [repo queueGarbageCollectTask];
         }
     }
@@ -1042,6 +1041,192 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 {
     ZincTaskDescriptor* taskDesc = [ZincGarbageCollectTask taskDescriptorForResource:self.url];
     return [self.taskManager queueTaskForDescriptor:taskDesc];
+}
+
+- (NSURL *)urlForSearchPathDirectory:(NSSearchPathDirectory)searchPathDirectory {
+    NSURL *url = [NSFileManager.defaultManager URLsForDirectory:searchPathDirectory
+                                                      inDomains:NSUserDomainMask][0];
+    NSAssert(url != nil,
+             @"url not found for NSSearchPathDirectory: %ld",
+             (long)searchPathDirectory);
+    return url;
+}
+
+- (NSURL *)absoluteURLForPathRelativeToZincFolder:(NSString *)path isDirectory:(BOOL)isDirectory {
+    NSURL *docDirURL = [self urlForSearchPathDirectory:NSDocumentDirectory];
+    NSURL *zincDirURL = [docDirURL URLByAppendingPathComponent:@"zinc"];
+    NSURL *url = [zincDirURL URLByAppendingPathComponent:path
+                                             isDirectory:isDirectory];
+    NSParameterAssert(url);
+    return url;
+}
+
+- (NSURL *)bundlesFolderURL {
+    return [self absoluteURLForPathRelativeToZincFolder:BUNDLES_DIR
+                                            isDirectory:YES];
+}
+
+- (void)forBundlesWithPrefix:(NSString *)prefix
+                performBlock:(void (^ _Nonnull)(NSURL * bundleURL))block {
+    NSParameterAssert(prefix);
+    NSParameterAssert(block);
+
+    NSURL *bundlesFolderURL = [self bundlesFolderURL];
+
+    NSError *error;
+    NSArray<NSURL *> *bundleURLs = [NSFileManager.defaultManager contentsOfDirectoryAtURL:bundlesFolderURL
+                                                               includingPropertiesForKeys:nil
+                                                                                  options:0
+                                                                                    error:&error];
+    NSAssert(error == nil,
+             @"Error while getting bundle URLs: %@ \nfor bundle folder path:",
+             error.localizedDescription,
+             bundlesFolderURL.path);
+
+    for (NSURL *bundleURL in bundleURLs) {
+        NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
+        if ([bundleName hasPrefix:prefix]) {
+            block(bundleURL);
+        }
+    }
+}
+
+- (unsigned long long int)sizeOfFolderInBytesWithPath:(NSString *)folderPath {
+    NSError *error;
+    NSArray *filesArray = [NSFileManager.defaultManager subpathsOfDirectoryAtPath:folderPath
+                                                                            error:&error];
+    NSAssert(error == nil,
+             @"Error while getting folder subpaths: %@ \nfor folder path:",
+             error.localizedDescription,
+             folderPath);
+
+    NSEnumerator *filesEnumerator = [filesArray objectEnumerator];
+    NSString *fileName;
+    unsigned long long int totalSize = 0;
+
+    while (fileName = [filesEnumerator nextObject]) {
+        NSString *filePath = [folderPath stringByAppendingPathComponent:fileName];
+        NSDictionary *fileDictionary = [NSFileManager.defaultManager attributesOfItemAtPath:filePath
+                                                                                      error:&error];
+        totalSize += [fileDictionary fileSize];
+    }
+
+    return totalSize;
+}
+
+- (float)megabytesForBytes:(unsigned long long)bytes {
+    return bytes / 1024.f / 1024.f;
+}
+
+- (unsigned long long)totalSizeInBytesOfBundlesWithPrefix:(NSString *)prefix {
+    __block unsigned long long size = 0;
+
+    [self forBundlesWithPrefix:prefix performBlock:^(NSURL *bundleURL) {
+        size += [self sizeOfFolderInBytesWithPath:bundleURL.path];
+    }];
+
+    return size;
+}
+
+- (float)totalSizeInMegabytesOfBundlesWithPrefix:(NSString *)prefix {
+    unsigned long long bytes = [self totalSizeInBytesOfBundlesWithPrefix:prefix];
+    return [self megabytesForBytes:bytes];
+}
+
+- (NSString *)bundleNameForBundleURL:(NSURL *)bundleURL {
+    return [[bundleURL absoluteString] lastPathComponent];
+}
+
+// Example bundle name: @"com.hello.world-foo-bar-1"
+// Example bundle id: @"com.hello.world-foo-bar"
+- (NSString *)bundleIDForBundleName:(NSString *)bundleName {
+    NSRange rangeOfLastHyphen = [bundleName rangeOfString:@"-"
+                                                  options:NSBackwardsSearch];
+    NSString *bundleID = [bundleName substringWithRange:NSMakeRange(0, rangeOfLastHyphen.location)];
+    return bundleID;
+}
+
+- (NSString *)manifestNameForBundleName:(NSString *)bundleName {
+    return [bundleName stringByAppendingString:@".json"];
+}
+
+- (NSURL *)manifestsFolderURL {
+    return [self absoluteURLForPathRelativeToZincFolder:MANIFESTS_DIR
+                                            isDirectory:YES];
+}
+
+- (NSURL *)manifestURLForManifestName:(NSString *)manifestName {
+    return [[self manifestsFolderURL] URLByAppendingPathComponent:manifestName
+                                                      isDirectory:NO];
+}
+
+- (BOOL)deleteFileAtURL:(NSURL *)url {
+    NSError *error;
+    [NSFileManager.defaultManager removeItemAtURL:url error:&error];
+    if (error) {
+        NSLog(@"Error while deleting file at url: %@ \nfor file path: %@",
+              error.localizedDescription,
+              url.path);
+    }
+
+    return !error;
+}
+
+- (void)purgeBundlesWithPrefix:(NSString *)prefix {
+    NSMutableSet<NSURL *> *bundleURLs = [NSMutableSet new];
+    [self forBundlesWithPrefix:prefix performBlock:^(NSURL *bundleURL) {
+        [bundleURLs addObject:bundleURL];
+    }];
+
+    @synchronized(self.index) {
+        for (NSURL *bundleURL in bundleURLs) {
+            NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
+            NSString *bundleID = [self bundleIDForBundleName:bundleName];
+
+            [self postNotification:ZincRepoBundleWillDeleteNotification
+                          bundleID:bundleID];
+            [self.index purgeBundleWithID:bundleID];
+        }
+    }
+
+    ZincTaskRef* taskRef = [[ZincTaskRef alloc] init];
+    taskRef.completionBlock = ^{
+        for (NSURL *bundleURL in bundleURLs) {
+            NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
+            NSString *manifestName = [self manifestNameForBundleName:bundleName];
+            NSURL *manifestURL = [self manifestURLForManifestName:manifestName];
+
+            if ([self deleteFileAtURL:manifestURL]) {
+                [self deleteFileAtURL:bundleURL];
+            } else {
+                NSLog(@"Failed to delete a manifest, will not delete the related bundle: %@",
+                      bundleURL);
+            }
+        }
+
+        [self postNotification:kZincBundlesWithPrefixWereDeleted
+                      userInfo:@{kZincBundlePrefixKey : prefix}];
+    };
+    [taskRef addDependency:[self queueIndexSaveTask]];
+    [self.taskManager addOperation:taskRef];
+}
+
+- (void)purgeBundlesWithPrefix:(NSString *)prefix
+ifSumOfSizeHasReachedLimitInMegabytes:(float)sizeLimitInMB {
+    NSParameterAssert(prefix);
+
+    float sizeInMB = [self totalSizeInMegabytesOfBundlesWithPrefix:prefix];
+    NSString *message = [NSString stringWithFormat:@"Total size of bundles with prefix \"%@\" is: %fMB",
+                         prefix,
+                         sizeInMB];
+
+    if (sizeInMB >= sizeLimitInMB) {
+        NSLog(@"%@, will purge", message);
+        [self purgeBundlesWithPrefix:prefix];
+        NSLog(@"finished purging bundles with prefix: %@", prefix);
+    } else {
+        NSLog(@"%@, will not purge", message);
+    }
 }
 
 - (ZincTask*) queueCleanSymlinksTask

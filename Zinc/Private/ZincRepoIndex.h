@@ -40,6 +40,7 @@
 - (void) setState:(ZincBundleState)state forBundle:(NSURL*)bundleResource;
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource;
 - (void) removeBundle:(NSURL*)bundleResource;
+- (void) purgeBundleWithID:(NSString *)bundleID;
 
 - (NSSet*) cloningBundles;
 - (NSSet*) availableBundles;
