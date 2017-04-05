@@ -1044,8 +1044,11 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 - (NSURL *)urlForSearchPathDirectory:(NSSearchPathDirectory)searchPathDirectory {
-    NSURL *url = [NSFileManager.defaultManager URLsForDirectory:searchPathDirectory inDomains:NSUserDomainMask][0];
-    NSAssert(url != nil, @"url not found for NSSearchPathDirectory: %ld", (long)searchPathDirectory);
+    NSURL *url = [NSFileManager.defaultManager URLsForDirectory:searchPathDirectory
+                                                      inDomains:NSUserDomainMask][0];
+    NSAssert(url != nil,
+             @"url not found for NSSearchPathDirectory: %ld",
+             (long)searchPathDirectory);
     return url;
 }
 
@@ -1056,7 +1059,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
                                              isDirectory:isDirectory];
     NSParameterAssert(url);
     return url;
-
 }
 
 - (NSURL *)bundlesFolderURL {
@@ -1071,11 +1073,11 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
     NSURL *bundlesFolderURL = [self bundlesFolderURL];
 
-    NSError *error = nil;
+    NSError *error;
     NSArray<NSURL *> *bundleURLs = [NSFileManager.defaultManager contentsOfDirectoryAtURL:bundlesFolderURL
                                                                includingPropertiesForKeys:nil
                                                                                   options:0
-                                                                                    error:nil];
+                                                                                    error:&error];
     NSAssert(error == nil,
              @"Error while getting bundle URLs: %@ \nfor bundle folder path:",
              error.localizedDescription,
@@ -1090,8 +1092,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 - (unsigned long long int)sizeOfFolderInBytesWithPath:(NSString *)folderPath {
-    NSError *error = nil;
-    NSArray *filesArray = [NSFileManager.defaultManager subpathsOfDirectoryAtPath:folderPath error:nil];
+    NSError *error;
+    NSArray *filesArray = [NSFileManager.defaultManager subpathsOfDirectoryAtPath:folderPath
+                                                                            error:&error];
     NSAssert(error == nil,
              @"Error while getting folder subpaths: %@ \nfor folder path:",
              error.localizedDescription,
@@ -1103,7 +1106,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 
     while (fileName = [filesEnumerator nextObject]) {
         NSString *filePath = [folderPath stringByAppendingPathComponent:fileName];
-        NSDictionary *fileDictionary = [NSFileManager.defaultManager attributesOfItemAtPath:filePath error:nil];
+        NSDictionary *fileDictionary = [NSFileManager.defaultManager attributesOfItemAtPath:filePath
+                                                                                      error:&error];
         totalSize += [fileDictionary fileSize];
     }
 
@@ -1136,7 +1140,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 // Example bundle name: @"com.hello.world-foo-bar-1"
 // Example bundle id: @"com.hello.world-foo-bar"
 - (NSString *)bundleIDForBundleName:(NSString *)bundleName {
-    NSRange rangeOfLastHyphen = [bundleName rangeOfString:@"-" options:NSBackwardsSearch];
+    NSRange rangeOfLastHyphen = [bundleName rangeOfString:@"-"
+                                                  options:NSBackwardsSearch];
     NSString *bundleID = [bundleName substringWithRange:NSMakeRange(0, rangeOfLastHyphen.location)];
     return bundleID;
 }
