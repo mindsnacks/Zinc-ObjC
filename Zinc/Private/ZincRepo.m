@@ -1046,10 +1046,6 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [self.taskManager queueTaskForDescriptor:taskDesc];
 }
 
-- (NSString *)bundleNameForBundleURL:(NSURL *)bundleURL {
-    return [[bundleURL absoluteString] lastPathComponent];
-}
-
 - (NSURL *)urlForSearchPathDirectory:(NSSearchPathDirectory)searchPathDirectory {
     NSURL *url = [NSFileManager.defaultManager URLsForDirectory:searchPathDirectory inDomains:NSUserDomainMask][0];
     NSAssert(url != nil, @"url not found for NSSearchPathDirectory: %ld", (long)searchPathDirectory);
@@ -1136,27 +1132,15 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     return [self megabytesForBytes:bytes];
 }
 
-// Example content bundle name: @"com.wonder.content4.sat-BELLY-0355-1"
-// Example content bundle id: @"com.wonder.content4.sat-BELLY-0355"
-- (NSString *)contentBundleIDForContentBundleName:(NSString *)bundleName {
-    NSString *contentBundleRegexPattern = @"\\A(com\\.wonder\\.content\\d*\\..*)-(.*)\\Z";
+- (NSString *)bundleNameForBundleURL:(NSURL *)bundleURL {
+    return [[bundleURL absoluteString] lastPathComponent];
+}
 
-    NSError *error;
-    NSRegularExpression *contentBundleRegex = [NSRegularExpression regularExpressionWithPattern:contentBundleRegexPattern
-                                                                                        options:NSRegularExpressionAnchorsMatchLines
-                                                                                          error:&error];
-    NSAssert(error == nil, @"error when creating content bundle regex: %@", error);
-
-    NSTextCheckingResult *match = [contentBundleRegex firstMatchInString:bundleName
-                                                                 options:NSMatchingAnchored
-                                                                   range:NSMakeRange(0, bundleName.length)];
-    NSParameterAssert(match);
-
-    NSString *bundleID = [bundleName substringWithRange:[match rangeAtIndex:1]]; // e.g. "com.wonder.content4.sat-BELLY-0355"
-    NSString *zincVersionString = [bundleName substringWithRange:[match rangeAtIndex:2]]; // e.g. "1"
-    NSParameterAssert(bundleID);
-    NSParameterAssert(zincVersionString);
-
+// Example bundle name: @"com.hello.world-foo-bar-1"
+// Example bundle id: @"com.hello.world-foo-bar"
+- (NSString *)bundleIDForBundleName:(NSString *)bundleName {
+    NSRange rangeOfLastHyphen = [bundleName rangeOfString:@"-" options:NSBackwardsSearch];
+    NSString *bundleID = [bundleName substringWithRange:NSMakeRange(0, rangeOfLastHyphen.location)];
     return bundleID;
 }
 
@@ -1195,7 +1179,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     @synchronized(self.index) {
         for (NSURL *bundleURL in bundleURLs) {
             NSString *bundleName = [self bundleNameForBundleURL:bundleURL];
-            NSString *bundleID = [self contentBundleIDForContentBundleName:bundleName];
+            NSString *bundleID = [self bundleIDForBundleName:bundleName];
 
             [self postNotification:ZincRepoBundleWillDeleteNotification
                           bundleID:bundleID];
