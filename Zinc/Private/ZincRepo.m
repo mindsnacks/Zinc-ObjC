@@ -1311,6 +1311,6 @@ ifSumOfSizeHasReachedLimitInMegabytes:(float)sizeLimitInMB {
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
 {
     [ZincOperation setDefaultThreadPriority:defaultThreadPriority];
-}
+} 
 
 @end
