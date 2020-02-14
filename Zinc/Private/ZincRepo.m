@@ -1301,12 +1301,8 @@ ifSumOfSizeHasReachedLimitInMegabytes:(float)sizeLimitInMB {
         [self.eventListener zincRepo:self didReceiveEvent:event];
     }
 
-    __weak typeof(self) weakself = self;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        __strong typeof(weakself) strongself = weakself;
-        NSMutableDictionary* userInfo = [event.attributes mutableCopy];
-        [[NSNotificationCenter defaultCenter] postNotificationName:[[event class] notificationName] object:self userInfo:userInfo];
-    }];
+    NSMutableDictionary* userInfo = [event.attributes mutableCopy];
+    [self postNotification:[[event class] notificationName] userInfo:userInfo];
 }
 
 + (void)setDefaultThreadPriority:(double)defaultThreadPriority
