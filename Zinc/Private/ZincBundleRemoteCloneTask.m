@@ -13,6 +13,9 @@
 #import "ZincRepo+Private.h"
 #import "ZincCreateBundleLinksOperation.h"
 
+static NSString * const kPrepareManifestFailureWarning = @"Preparing the manifest failed but without any errors";
+static NSString * const kPrepareObjectFilesFailureWarning = @"Preparing the object files using the remote catalog for the manifest failed but without any errors";
+
 @interface ZincBundleRemoteCloneTask ()
 @property (strong) NSArray* downloadTasks;
 @end
@@ -191,6 +194,9 @@
     NSError* error = nil;
     
     if (![self prepareManifest]) {
+        if (![self hasAnyErrors]) {
+            [self addEvent:[ZincWarningEvent eventWithWarning:kPrepareManifestFailureWarning source:ZINC_EVENT_SRC()]];
+        }
         [self completeWithSuccess:NO];
         return;
     }
@@ -203,11 +209,19 @@
     }
     
     if (![self prepareObjectFilesUsingRemoteCatalogForManifest:manifest]) {
+        if (![self hasAnyErrors]) {
+            [self addEvent:[ZincWarningEvent eventWithWarning:kPrepareObjectFilesFailureWarning source:ZINC_EVENT_SRC()]];
+        }
         [self completeWithSuccess:NO];
         return;
     }
 
     [self completeWithSuccess:YES];
+}
+
+- (BOOL) hasAnyErrors {
+    NSArray *allErrors = self.allErrors;
+    return !(allErrors == nil || allErrors.count == 0);
 }
 
 @end

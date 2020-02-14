@@ -100,6 +100,16 @@
 
 @end
 
+@interface ZincWarningEvent ()
+
+- (id) initWithWarning:(NSString *)warning source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
+@property (copy) NSString *warning;
+
++ (id) eventWithWarning:(NSString *)warning source:(NSDictionary*)source;
++ (id) eventWithWarning:(NSString *)warning source:(NSDictionary*)source attributes:(NSDictionary*)attributes;
+
+@end
+
 
 #pragma mark Event Source Utils
 

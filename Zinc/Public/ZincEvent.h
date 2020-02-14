@@ -23,6 +23,7 @@ typedef enum {
     ZincEventTypeArchiveExtractComplete,
     ZincEventTypeMaintenanceBegin,
     ZincEventTypeMaintenanceComplete,
+    ZincEventTypeWarning,
 } ZincEventType;
 
 
@@ -142,5 +143,11 @@ extern NSString *const kZincEventMaintenanceionCompleteNotification;
 @interface ZincCatalogUpdatedEvent : ZincEvent
 
 @property (readonly) NSString* catalogID;
+
+@end
+
+@interface ZincWarningEvent : ZincEvent
+
+@property (readonly, copy) NSString* warning;
 
 @end

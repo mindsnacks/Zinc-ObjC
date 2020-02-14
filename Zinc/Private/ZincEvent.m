@@ -31,6 +31,7 @@ NSString *const kZincEventArchiveExtractCompleteNotification = @"ZincEventArchiv
 NSString *const kZincEventMaintenanceBeginNotification = @"ZincEventMaintenanceionBeginNotification";
 NSString *const kZincEventMaintenanceionCompleteNotification = @"ZincEventMaintenanceionCompleteNotification";
 NSString *const kZincEventCatalogUpdatedNotification = @"ZincEventCatalogUpdatedNotification";
+NSString *const kZincEventWarningNotification = @"ZincEventWarningNotification";
 
 
 @interface ZincEvent ()
@@ -429,5 +430,45 @@ NSString *const kZincEventCatalogUpdatedNotification = @"ZincEventCatalogUpdated
 
 @end
 
+@implementation ZincWarningEvent
 
+- (id) initWithWarning:(NSString *)warning source:(NSDictionary *)source attributes:(NSDictionary*)attributes
+{
+    self = [super initWithType:ZincEventTypeWarning source:source attributes:attributes];
+    if (self) {
+        self.warning = warning;
+    }
+    return self;
+}
 
++ (id) eventWithWarning:(NSString *)warning source:(NSDictionary*)source
+{
+    return [[ZincWarningEvent alloc] initWithWarning:warning source:source attributes:nil];
+}
+
++ (id) eventWithWarning:(NSString *)warning source:(NSDictionary *)source attributes:(NSDictionary *)attributes
+{
+    return [[ZincWarningEvent alloc] initWithWarning:warning source:source attributes:attributes];
+}
+
++ (NSString*) name
+{
+    return @"WARNING";
+}
+
++ (NSString *)notificationName
+{
+    return kZincEventWarningNotification;
+}
+
+- (NSString*) description
+{
+    NSString* desc = [NSString stringWithFormat:@"%@: %@ ", [[self class] name], self.warning];
+    for (NSString* k in self.attributes) {
+        desc  = [desc stringByAppendingFormat:@" '%@'='%@'",
+                 k, (self.attributes)[k]];
+    }
+    return desc;
+}
+
+@end
