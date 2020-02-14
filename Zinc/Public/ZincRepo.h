@@ -362,6 +362,8 @@ extern NSString* const ZincRepoTaskNotificationTaskKey;
 
 /**
  Called whenever an event occurs in the ZincRepo
+
+ May be called on a background queue
  
  @param repo The repo
  @param event The event
