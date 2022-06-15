@@ -3,11 +3,10 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */; };
 		351E46011DA581010073F2EC /* ZincAdminViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE90184D485B002015AA /* ZincAdminViewController.m */; };
 		351E46021DA581CC0073F2EC /* ZincActivityCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE89184D4853002015AA /* ZincActivityCell.m */; };
 		351E46031DA581CC0073F2EC /* ZincActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D4CE8B184D4853002015AA /* ZincActivityViewController.m */; };
@@ -109,8 +108,6 @@
 		3592AD751D9F2B480024E326 /* ZincTaskMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CAB5F115FC228F008502AC /* ZincTaskMonitor.m */; };
 		3592AD761D9F2B480024E326 /* ZincBundleAvailabilityMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CAB60015FC6D0B008502AC /* ZincBundleAvailabilityMonitor.m */; };
 		3592AD771D9F2B480024E326 /* ZincRepoMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = B3CAB5F715FC3673008502AC /* ZincRepoMonitor.m */; };
-		3592AD941D9F35DC0024E326 /* MSWeakTimer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD911D9F331D0024E326 /* MSWeakTimer.framework */; };
-		3592AD951D9F35DC0024E326 /* AMErroriOS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD781D9F2C700024E326 /* AMErroriOS.framework */; };
 		3592AD971D9F37C30024E326 /* ZincOperation.m in Sources */ = {isa = PBXBuildFile; fileRef = B347EBDF15C3593500FA0649 /* ZincOperation.m */; };
 		3592AD981D9F37E70024E326 /* ZincUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E46B5514C3DF7800030349 /* ZincUtils.m */; };
 		3592AD991D9F37E70024E326 /* ZincOperationQueueGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = B3215E2D14BF67CB00FC7FA7 /* ZincOperationQueueGroup.m */; };
@@ -119,6 +116,12 @@
 		3592AD9C1D9F37E70024E326 /* ZincGzip.m in Sources */ = {isa = PBXBuildFile; fileRef = B36CA5C51632142A00843CEC /* ZincGzip.m */; };
 		3592ADA01D9F39170024E326 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD9F1D9F39170024E326 /* libz.tbd */; };
 		35E25B8E1DA33E9E00FFCE69 /* ZincAdminViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B3D4CE7F184D47D7002015AA /* ZincAdminViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		382F18BD285A7529006D4AB8 /* AMErroriOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */; };
+		382F18BE285A7529006D4AB8 /* AMErroriOS.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		382F18BF285A7529006D4AB8 /* KSReachability_iOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */; };
+		382F18C0285A7529006D4AB8 /* KSReachability_iOS.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		382F18C1285A7529006D4AB8 /* MSWeakTimer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */; };
+		382F18C2285A7529006D4AB8 /* MSWeakTimer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		54379984A7D44B67979C88D4 /* libPods-Zinc-FunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98567F54C9A94AB1A0663A24 /* libPods-Zinc-FunctionalTests.a */; };
 		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
@@ -233,6 +236,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		382F18C3285A7529006D4AB8 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				382F18C2285A7529006D4AB8 /* MSWeakTimer.xcframework in Embed Frameworks */,
+				382F18C0285A7529006D4AB8 /* KSReachability_iOS.xcframework in Embed Frameworks */,
+				382F18BE285A7529006D4AB8 /* AMErroriOS.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		B36388A017E184F000F2BBE4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -254,6 +270,9 @@
 		3592AD781D9F2C700024E326 /* AMErroriOS.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AMErroriOS.framework; path = ../../Build/iOS/AMErroriOS.framework; sourceTree = "<group>"; };
 		3592AD911D9F331D0024E326 /* MSWeakTimer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MSWeakTimer.framework; path = ../../Build/iOS/MSWeakTimer.framework; sourceTree = "<group>"; };
 		3592AD9F1D9F39170024E326 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = AMErroriOS.xcframework; path = Carthage/Build/AMErroriOS.xcframework; sourceTree = "<group>"; };
+		382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = KSReachability_iOS.xcframework; path = Carthage/Build/KSReachability_iOS.xcframework; sourceTree = "<group>"; };
+		382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MSWeakTimer.xcframework; path = Carthage/Build/MSWeakTimer.xcframework; sourceTree = "<group>"; };
 		4DF903572D4B405F8361AFBA /* libPods-Zinc-ZincTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc-ZincTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D9EAE466FC244928D4779AB /* libPods-Zinc.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5F101754647C438D91956386 /* Pods-ZincOSX.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ZincOSX.xcconfig"; path = "Pods/Pods-ZincOSX.xcconfig"; sourceTree = "<group>"; };
@@ -530,10 +549,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				351DDAB41DA31ACD00B0E8D5 /* KSReachability_iOS.framework in Frameworks */,
+				382F18C1285A7529006D4AB8 /* MSWeakTimer.xcframework in Frameworks */,
+				382F18BD285A7529006D4AB8 /* AMErroriOS.xcframework in Frameworks */,
+				382F18BF285A7529006D4AB8 /* KSReachability_iOS.xcframework in Frameworks */,
 				3592ADA01D9F39170024E326 /* libz.tbd in Frameworks */,
-				3592AD941D9F35DC0024E326 /* MSWeakTimer.framework in Frameworks */,
-				3592AD951D9F35DC0024E326 /* AMErroriOS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -857,6 +876,9 @@
 		B38743071489B830004B227B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */,
+				382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */,
+				382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */,
 				351DDAB31DA31ACD00B0E8D5 /* KSReachability_iOS.framework */,
 				3592AD9F1D9F39170024E326 /* libz.tbd */,
 				3592AD911D9F331D0024E326 /* MSWeakTimer.framework */,
@@ -1227,6 +1249,7 @@
 				3592AD211D9F2A560024E326 /* Frameworks */,
 				3592AD221D9F2A560024E326 /* Headers */,
 				3592AD231D9F2A560024E326 /* Resources */,
+				382F18C3285A7529006D4AB8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1810,7 +1833,11 @@
 				INFOPLIST_FILE = Zinc/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mindsnacks.Zinc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -1853,7 +1880,11 @@
 				INFOPLIST_FILE = Zinc/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.mindsnacks.Zinc;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
