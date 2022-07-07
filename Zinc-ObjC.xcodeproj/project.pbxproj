@@ -117,11 +117,8 @@
 		3592ADA01D9F39170024E326 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD9F1D9F39170024E326 /* libz.tbd */; };
 		35E25B8E1DA33E9E00FFCE69 /* ZincAdminViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = B3D4CE7F184D47D7002015AA /* ZincAdminViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		382F18BD285A7529006D4AB8 /* AMErroriOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */; };
-		382F18BE285A7529006D4AB8 /* AMErroriOS.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BA285A7529006D4AB8 /* AMErroriOS.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		382F18BF285A7529006D4AB8 /* KSReachability_iOS.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */; };
-		382F18C0285A7529006D4AB8 /* KSReachability_iOS.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BB285A7529006D4AB8 /* KSReachability_iOS.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		382F18C1285A7529006D4AB8 /* MSWeakTimer.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */; };
-		382F18C2285A7529006D4AB8 /* MSWeakTimer.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 382F18BC285A7529006D4AB8 /* MSWeakTimer.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		54379984A7D44B67979C88D4 /* libPods-Zinc-FunctionalTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 98567F54C9A94AB1A0663A24 /* libPods-Zinc-FunctionalTests.a */; };
 		B30716C217C1BCB5007705F3 /* ZincAgentFunctionalTestCase.m in Sources */ = {isa = PBXBuildFile; fileRef = B30716C017C1BCAE007705F3 /* ZincAgentFunctionalTestCase.m */; };
 		B308D67716CA221F008A1237 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B308D67616CA221F008A1237 /* MobileCoreServices.framework */; };
@@ -236,19 +233,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		382F18C3285A7529006D4AB8 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				382F18C2285A7529006D4AB8 /* MSWeakTimer.xcframework in Embed Frameworks */,
-				382F18C0285A7529006D4AB8 /* KSReachability_iOS.xcframework in Embed Frameworks */,
-				382F18BE285A7529006D4AB8 /* AMErroriOS.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		B36388A017E184F000F2BBE4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1249,7 +1233,6 @@
 				3592AD211D9F2A560024E326 /* Frameworks */,
 				3592AD221D9F2A560024E326 /* Headers */,
 				3592AD231D9F2A560024E326 /* Resources */,
-				382F18C3285A7529006D4AB8 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
