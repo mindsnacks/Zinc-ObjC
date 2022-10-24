@@ -10,7 +10,7 @@
 #import "ZincRepo.h"
 
 
-@interface ZincAgentTests : SenTestCase
+@interface ZincAgentTests : XCTestCase
 @end
 
 
@@ -24,7 +24,7 @@
     ZincAgent* agent1 = [ZincAgent agentForRepo:repo];
     ZincAgent* agent2 = [ZincAgent agentForRepo:repo];
 
-    STAssertEquals(agent1, agent2, @"should be the same object");
+    XCTAssertEqual(agent1, agent2, @"should be the same object");
 }
 
 @end

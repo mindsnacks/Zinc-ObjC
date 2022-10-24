@@ -11,7 +11,7 @@
 #import "ZincTrackingInfo.h"
 
 
-@interface ZincRepoIndexTests : SenTestCase
+@interface ZincRepoIndexTests : XCTestCase
 @end
 
 
@@ -23,7 +23,7 @@
     NSError* error = nil;
     NSDictionary* dict = [index dictionaryRepresentation];
     ZincRepoIndex* index2 = [ZincRepoIndex repoIndexFromDictionary:dict error:&error];
-    STAssertEqualObjects(index, index2, @"objects should be equal");
+    XCTAssertEqualObjects(index, index2, @"objects should be equal");
 }
 
 
@@ -32,7 +32,7 @@
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     ZincRepoIndex* i2 = [[[ZincRepoIndex alloc] init] autorelease];
     
-    STAssertEqualObjects(i1, i2, @"empty objects should be equal");
+    XCTAssertEqualObjects(i1, i2, @"empty objects should be equal");
 }
 
 - (void) testAddSourceURL
@@ -41,7 +41,7 @@
     [i1 addSourceURL:[NSURL URLWithString:@"http://mindsnacks.com"]];
     
     BOOL contains = [[i1 sourceURLs] containsObject:[NSURL URLWithString:@"http://mindsnacks.com"]];
-    STAssertTrue(contains, @"URL not found");
+    XCTAssertTrue(contains, @"URL not found");
     
     [self _testDictionaryRoundtrip:i1];
 }
@@ -51,7 +51,7 @@
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     ZincTrackingInfo* ref = [ZincTrackingInfo trackingInfoWithDistribution:@"prod"];
     [i1 setTrackingInfo:ref forBundleID:@"com.foo.bundle"];
-    STAssertTrue([[i1 trackedDistributionForBundleID:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
+    XCTAssertTrue([[i1 trackedDistributionForBundleID:@"com.foo.bundle"] isEqualToString:@"prod"], @"distro not found");
     
     [self _testDictionaryRoundtrip:i1];
 }
@@ -64,7 +64,7 @@
     [i1 setState:ZincBundleStateAvailable forBundle:bundleRes];
     
     BOOL contains = [[i1 availableBundles] containsObject:bundleRes];
-    STAssertTrue(contains, @"URL not found");
+    XCTAssertTrue(contains, @"URL not found");
 
     [self _testDictionaryRoundtrip:i1];
 }
@@ -77,7 +77,7 @@
     [i1 setState:ZincBundleStateCloning forBundle:bundleRes];
     
     BOOL contains = [[i1 availableBundles] containsObject:bundleRes];
-    STAssertFalse(contains, @"URL found");
+    XCTAssertFalse(contains, @"URL found");
     
     [self _testDictionaryRoundtrip:i1];
 }
@@ -91,7 +91,7 @@
     
     ZincBundleState state = [i1 stateForBundle:bundleRes];
     
-    STAssertEquals(state, ZincBundleStateCloning, @"state is wrong");
+    XCTAssertEqual(state, ZincBundleStateCloning, @"state is wrong");
     
     [self _testDictionaryRoundtrip:i1];
 }
@@ -100,20 +100,20 @@
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
     ZincTrackingInfo* ref = [i1 trackingInfoForBundleID:@"foo.bundle"];
-    STAssertNil(ref, @"tracking ref should be nil");
+    XCTAssertNil(ref, @"tracking ref should be nil");
 }
 
 - (void) testValidFormat
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    STAssertNoThrow(i1.format = 1, @"should not throw");
-    STAssertEquals(i1.format, (NSInteger)1, @"should be 1");
+    XCTAssertNoThrow(i1.format = 1, @"should not throw");
+    XCTAssertEqual(i1.format, (NSInteger)1, @"should be 1");
 }
 
 - (void) testInvalidFormat
 {
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] init] autorelease];
-    STAssertThrows(i1.format = 0, @"should throw");
+    XCTAssertThrows(i1.format = 0, @"should throw");
 }
 
 - (void) testDictionaryFormat1
@@ -134,7 +134,7 @@
     
     id versionVal = d_versions[[[NSNumber numberWithInteger:version] stringValue]];
     
-    STAssertEqualObjects(versionVal, ZincBundleStateName[ZincBundleStateAvailable], @"should be equal");
+    XCTAssertEqualObjects(versionVal, ZincBundleStateName[ZincBundleStateAvailable], @"should be equal");
     
     
     NSLog(@"d");

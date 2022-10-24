@@ -33,11 +33,11 @@
     id task = [ZincTask mock];
     [task stub:@selector(taskDescriptor) andReturn:taskDescriptor];
     [task stub:@selector(resource) andReturn:resource];
-    [task stub:@selector(isFinished) andReturn:theValue(NO)];
+    [task stub:@selector(isFinished) andReturn:NO];
 
     id progress = [ZincProgressItem mock];
-    [progress stub:@selector(currentProgressValue) andReturn:theValue(0)];
-    [progress stub:@selector(maxProgressValue) andReturn:theValue(0)];
+    [progress stub:@selector(currentProgressValue) andReturn:0];
+    [progress stub:@selector(maxProgressValue) andReturn:0];
     [task stub:@selector(progress) andReturn:progress];
 
     return task;
