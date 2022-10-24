@@ -1,9 +1,0 @@
-language: objective-c
-before_install:
-    - rvm use ruby-2.0.0-p247
-    - brew update
-    - brew unlink xctool
-    - brew install xctool --HEAD
-install: pod install --no-integrate
-script: rake test
-
