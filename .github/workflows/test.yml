@@ -18,7 +18,6 @@ jobs:
 
       - name: Setup
         run: |
-          brew install cocoapods
           carthage update --use-xcframeworks
           pod install
 
