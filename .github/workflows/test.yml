@@ -16,5 +16,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Setup
+        run: |
+          brew install carthage
+          brew install cocoapods
+          carthage update --use-xcframeworks
+          pod install
+
       - name: Run Unit Tests
         run: xcodebuild test -scheme ZincTests -workspace Zinc-ObjC.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 14'
