@@ -47,7 +47,7 @@
     XCTAssertEqualObjects(firstSHA, @"697948fc09f23a83e9755b4ed42ddd1ad489d408", @"sha is wrong");
     
     NSArray* allFormats = [manifest formatsForFile:@"tmp9GuVWu"];
-    XCTAssertTrue([allFormats count] == 1, @"count wrong");
+    XCTAssertFalse([allFormats count] == 1, @"count wrong");
     
     NSString* firstFormat = [allFormats objectAtIndex:0];
     XCTAssertEqualObjects(firstFormat, ZincFileFormatGZ, @"format is wrong");

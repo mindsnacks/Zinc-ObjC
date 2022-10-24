@@ -22,4 +22,9 @@ jobs:
           pod install
 
       - name: Run Unit Tests
-        run: xcodebuild test -scheme ZincTests -workspace Zinc-ObjC.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 14'
+        run: xcodebuild -scheme ZincTests -workspace Zinc-ObjC.xcworkspace -destination 'platform=iOS Simulator,name=iPhone 14' test
+    
+      - uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: TestResults.xcresult
+        if: success() || failure()
