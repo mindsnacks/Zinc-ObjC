@@ -10,7 +10,7 @@
 #import "ZincJSONSerialization.h"
 
 
-@interface ZincManifestTests : SenTestCase
+@interface ZincManifestTests : XCTestCase
 @end
 
 
@@ -20,37 +20,37 @@
 {
     NSError* error = nil;
     
-    NSString* path = TEST_RESOURCE_PATH(@"meep-1.json");
+    NSString *path = TEST_RESOURCE_PATH(@"meep-1.json");
     
     NSData* jsonData = [[[NSData alloc] initWithContentsOfFile:path options:0 error:&error] autorelease];
     if (jsonData == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
                     
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
     
     NSString* sha = [manifest shaForFile:@"tmp9GuVWu"];
-    STAssertEqualObjects(sha, @"697948fc09f23a83e9755b4ed42ddd1ad489d408", @"sha is wrong");
+    XCTAssertEqualObjects(sha, @"697948fc09f23a83e9755b4ed42ddd1ad489d408", @"sha is wrong");
     
     NSArray* allSHAs = [manifest allSHAs];
-    STAssertTrue([allSHAs count] == 1, @"count wrong");
+    XCTAssertTrue([allSHAs count] == 1, @"count wrong");
     
     NSString* firstSHA = [allSHAs objectAtIndex:0];
-    STAssertEqualObjects(firstSHA, @"697948fc09f23a83e9755b4ed42ddd1ad489d408", @"sha is wrong");
+    XCTAssertEqualObjects(firstSHA, @"697948fc09f23a83e9755b4ed42ddd1ad489d408", @"sha is wrong");
     
     NSArray* allFormats = [manifest formatsForFile:@"tmp9GuVWu"];
-    STAssertTrue([allFormats count] == 1, @"count wrong");
+    XCTAssertTrue([allFormats count] == 1, @"count wrong");
     
     NSString* firstFormat = [allFormats objectAtIndex:0];
-    STAssertEqualObjects(firstFormat, ZincFileFormatGZ, @"format is wrong");
+    XCTAssertEqualObjects(firstFormat, ZincFileFormatGZ, @"format is wrong");
 }
 
 - (void) testBestFormatForFileRawOnly
@@ -75,16 +75,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
 
     NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg"];
-    STAssertTrue([bestFormat isEqualToString:ZincFileFormatRaw], @"should be raw");
+    XCTAssertTrue([bestFormat isEqualToString:ZincFileFormatRaw], @"should be raw");
 }
 
 - (void) testBestFormatForFileGZOnly
@@ -109,16 +109,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
     
     NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg" withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
-    STAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
+    XCTAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
 }
 
 - (void) testBestFormatForFileGZAndRaw
@@ -146,16 +146,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
     
     NSString* bestFormat = [manifest bestFormatForFile:@"meep.jpg" withPreferredFormats:[NSArray arrayWithObjects:ZincFileFormatGZ, ZincFileFormatRaw, nil]];
-    STAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
+    XCTAssertTrue([bestFormat isEqualToString:ZincFileFormatGZ], @"should be gz");
 }
 
 - (void) testFileSize
@@ -183,16 +183,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
 
     NSUInteger size = [manifest sizeForFile:@"meep.jpg" format:ZincFileFormatGZ];
-    STAssertTrue(size == 123, @"size is wrong");
+    XCTAssertTrue(size == 123, @"size is wrong");
 }
 
 - (void) testReadGlobalFlavors
@@ -221,16 +221,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
     
     NSArray* expectedFlavors = [NSArray arrayWithObjects:@"small", @"large", nil];
-    STAssertEqualObjects(manifest.flavors, expectedFlavors, @"fail");
+    XCTAssertEqualObjects(manifest.flavors, expectedFlavors, @"fail");
 }
 
 - (void) testReadFileFlavors
@@ -260,16 +260,16 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
 
     NSArray* expectedFlavors = [NSArray arrayWithObjects:@"small",  nil];
-    STAssertEqualObjects([manifest flavorsForFile:@"meep.jpg"], expectedFlavors, @"fail");
+    XCTAssertEqualObjects([manifest flavorsForFile:@"meep.jpg"], expectedFlavors, @"fail");
 }
 
 - (void) testFilesForFlavor
@@ -311,22 +311,22 @@
     NSData* jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary* dict = [ZincJSONSerialization JSONObjectWithData:jsonData options:0 error:&error];
     if (dict == nil) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
     }
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:dict] autorelease];
     if (manifest == nil) {
-        STFail(@"manifest didn't load");
+        XCTFail(@"manifest didn't load");
     }
     
     NSArray* smallFiles = [manifest filesForFlavor:@"small"];
-    STAssertTrue([smallFiles count]==1, @"2 small files");
+    XCTAssertTrue([smallFiles count]==1, @"2 small files");
     
     NSArray* largeFiles = [manifest filesForFlavor:@"large"];
-    STAssertTrue([largeFiles count]==0, @"0 large files");
+    XCTAssertTrue([largeFiles count]==0, @"0 large files");
     
     NSArray* allFiles = [manifest filesForFlavor:nil];
-    STAssertTrue([allFiles count]==2, @"2 files");
+    XCTAssertTrue([allFiles count]==2, @"2 files");
 }
 
 - (ZincManifest*) _manifestForDictionaryRepresentationTest
@@ -344,7 +344,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
 
-    STAssertEqualObjects([dict objectForKey:@"bundle"], manifest.bundleName, @"bundle name doesn't match");
+    XCTAssertEqualObjects([dict objectForKey:@"bundle"], manifest.bundleName, @"bundle name doesn't match");
 }
 
 - (void) testDictionaryRepresentation_catalogID
@@ -353,7 +353,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogID, @"catalog id doesn't match");
+    XCTAssertEqualObjects([dict objectForKey:@"catalog"], manifest.catalogID, @"catalog id doesn't match");
 }
 
 - (void) testDictionaryRepresentation_version
@@ -362,7 +362,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEquals((ZincVersion)[[dict objectForKey:@"version"] integerValue], manifest.version, @"version doesn't match");
+    XCTAssertEqual((ZincVersion)[[dict objectForKey:@"version"] integerValue], manifest.version, @"version doesn't match");
 }
 
 - (void) testDictionaryRepresentation_flavors_nil
@@ -371,7 +371,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
+    XCTAssertEqual((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
 }
 
 - (void) testDictionaryRepresentation_flavors_notNil
@@ -381,7 +381,7 @@
     
     NSDictionary* dict = [manifest dictionaryRepresentation];
     
-    STAssertEquals((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
+    XCTAssertEqual((id)[dict objectForKey:@"flavors"], manifest.flavors, @"flavors don't match");
 }
 
 - (void) testRebuildFlavorsFromFiles
@@ -399,7 +399,7 @@
     
     ZincManifest* manifest = [[[ZincManifest alloc] initWithDictionary:manifestDict] autorelease];
     
-    STAssertEqualObjects(manifest.flavors, @[@"pork"], @"should have built flavors from files");
+    XCTAssertEqualObjects(manifest.flavors, @[@"pork"], @"should have built flavors from files");
 }
 
 @end

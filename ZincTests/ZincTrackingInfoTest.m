@@ -9,7 +9,7 @@
 #import "ZincTrackingInfo.h"
 
 
-@interface ZincTrackingInfoTest : SenTestCase
+@interface ZincTrackingInfoTest : XCTestCase
 @end
 
 
@@ -19,7 +19,7 @@
 {
     NSDictionary* dict = [trackingRef dictionaryRepresentation];
     ZincTrackingInfo* ref2 = [ZincTrackingInfo trackingInfoFromDictionary:dict];
-    STAssertEqualObjects(trackingRef, ref2, @"objects should be equal");
+    XCTAssertEqualObjects(trackingRef, ref2, @"objects should be equal");
 }
 
 - (void) testBasicEquality
@@ -27,13 +27,13 @@
     ZincTrackingInfo* r1 = [[[ZincTrackingInfo alloc] init] autorelease];
     ZincTrackingInfo* r2 = [[[ZincTrackingInfo alloc] init] autorelease];
     
-    STAssertEqualObjects(r1, r2, @"empty objects should be equal");
+    XCTAssertEqualObjects(r1, r2, @"empty objects should be equal");
 }
 
 - (void) testReturnsNilDict
 {
     ZincTrackingInfo* r1 = [ZincTrackingInfo trackingInfoFromDictionary:nil];
-    STAssertNil(r1, @"should be nil");
+    XCTAssertNil(r1, @"should be nil");
 }
 
 @end

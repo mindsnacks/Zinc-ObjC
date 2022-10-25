@@ -9,7 +9,7 @@
 #import "ZincUtils.h"
 
 
-@interface ZincUtilsTests : SenTestCase
+@interface ZincUtilsTests : XCTestCase
 @end
 
 
@@ -17,11 +17,11 @@
 
 - (void) testBundleIdentifierParsing
 {
-    STAssertEqualObjects(ZincBundleNameFromBundleID(@"mindsnacks.assets"), @"assets", @"should be 'assets'");
-    STAssertEqualObjects(ZincCatalogIDFromBundleID(@"mindsnacks.assets"), @"mindsnacks", @"should be 'mindsnacks'");
+    XCTAssertEqualObjects(ZincBundleNameFromBundleID(@"mindsnacks.assets"), @"assets", @"should be 'assets'");
+    XCTAssertEqualObjects(ZincCatalogIDFromBundleID(@"mindsnacks.assets"), @"mindsnacks", @"should be 'mindsnacks'");
 
-    STAssertEqualObjects(ZincBundleNameFromBundleID(@"com.mindsnacks.assets"), @"assets", @"should be 'assets'");
-    STAssertEqualObjects(ZincCatalogIDFromBundleID(@"com.mindsnacks.assets"), @"com.mindsnacks", @"should be 'com.mindsnacks'");
+    XCTAssertEqualObjects(ZincBundleNameFromBundleID(@"com.mindsnacks.assets"), @"assets", @"should be 'assets'");
+    XCTAssertEqualObjects(ZincCatalogIDFromBundleID(@"com.mindsnacks.assets"), @"com.mindsnacks", @"should be 'com.mindsnacks'");
 }
 
 @end

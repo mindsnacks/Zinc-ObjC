@@ -11,7 +11,7 @@
 #import "NSFileManager+Zinc.h"
 
 
-@interface ZincBundleTests : SenTestCase
+@interface ZincBundleTests : XCTestCase
 @end
 
 
@@ -26,7 +26,7 @@
     NSString* formatString = [NSString stringWithFormat:@"%ld", (long)format];
     NSString* formatPath = [path stringByAppendingPathComponent:@"zinc_format.txt"];
     if (![formatString writeToFile:formatPath atomically:NO encoding:NSUTF8StringEncoding error:&error]) {
-        STFail(@"%@", error);
+        XCTFail(@"%@", error);
         return nil;
     }
     return path;

@@ -9,7 +9,7 @@
 #import "ZincDownloadPolicy.h"
 
 
-@interface ZincDownloadPolicyTest : SenTestCase
+@interface ZincDownloadPolicyTest : XCTestCase
 @end
 
 
@@ -24,7 +24,7 @@
     
     ZincConnectionType resolvedConnectionType = [policy requiredConnectionTypeForPriority:NSOperationQueuePriorityNormal];
     
-    STAssertEquals(resolvedConnectionType, ZincConnectionTypeWiFiOnly, @"should allow wifi only");
+    XCTAssertEqual(resolvedConnectionType, ZincConnectionTypeWiFiOnly, @"should allow wifi only");
 }
 
 - (void) testThatConnectionTypeIsSetForGreaterPriorityIsCorrectWhenSetForPriority
@@ -36,7 +36,7 @@
     
     ZincConnectionType resolvedConnectionType = [policy requiredConnectionTypeForPriority:NSOperationQueuePriorityVeryHigh];
     
-    STAssertEquals(resolvedConnectionType, ZincConnectionTypeAny, @"should allow any connection type");
+    XCTAssertEqual(resolvedConnectionType, ZincConnectionTypeAny, @"should allow any connection type");
 }
 
 @end

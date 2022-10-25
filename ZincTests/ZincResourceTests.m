@@ -9,7 +9,7 @@
 #import "ZincResource.h"
 
 
-@interface ZincResourceTests : SenTestCase
+@interface ZincResourceTests : XCTestCase
 @end
 
 
@@ -20,7 +20,7 @@
 {
     NSURL* catalogResource = [NSURL zincResourceForCatalogWithId:@"com.mindsnacks"];
   
-    STAssertTrue([[catalogResource zincCatalogID] isEqualToString:@"com.mindsnacks"],
+    XCTAssertTrue([[catalogResource zincCatalogID] isEqualToString:@"com.mindsnacks"],
                  @"catalogID wrong");
 }
 
@@ -29,7 +29,7 @@
     NSURL* bundleResource = [NSURL zincResourceForBundleWithID:@"com.mindsnacks.demo" version:1];
     
     NSString* catalogID = [bundleResource zincCatalogID];
-    STAssertTrue([catalogID isEqual:@"com.mindsnacks"], @"catalog wrong");
+    XCTAssertTrue([catalogID isEqual:@"com.mindsnacks"], @"catalog wrong");
 }
 
 @end
