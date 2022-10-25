@@ -195,6 +195,8 @@
 		B3DD9DA317C58232003D6A21 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3DD9D5C17C2D050003D6A21 /* Security.framework */; };
 		B3E743B815998B9F0098DB19 /* com.mindsnacks.demo1.cats.json in Resources */ = {isa = PBXBuildFile; fileRef = B3E743B615998B9F0098DB19 /* com.mindsnacks.demo1.cats.json */; };
 		B3E743B915998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar in Resources */ = {isa = PBXBuildFile; fileRef = B3E743B715998B9F0098DB19 /* com.mindsnacks.demo1.cats.tar */; };
+		EC0D72AA2908105900BC61CC /* UIImageZincTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EC0D72A92908105900BC61CC /* UIImageZincTests.m */; };
+		EC0D72AB2908105F00BC61CC /* UIImageZincTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EC0D72A92908105900BC61CC /* UIImageZincTests.m */; };
 		ECCF848C2906D858006990F5 /* Zinc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3592AD251D9F2A560024E326 /* Zinc.framework */; };
 		ECCF84922906D8B8006990F5 /* ZincBundleVersionHelperSpec.m in Sources */ = {isa = PBXBuildFile; fileRef = B3832C6E1819F03900262947 /* ZincBundleVersionHelperSpec.m */; };
 		ECCF84932906D8B8006990F5 /* ZincManifestTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B3D2CA1714C5FC1A00717B2E /* ZincManifestTests.m */; };
@@ -524,6 +526,7 @@
 		C7CD165554208AD103BD54C5 /* Pods-Zinc.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Zinc.debug.xcconfig"; path = "Target Support Files/Pods-Zinc/Pods-Zinc.debug.xcconfig"; sourceTree = "<group>"; };
 		D00356D8153760220021627E /* ZincEvent+Private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "ZincEvent+Private.h"; sourceTree = "<group>"; };
 		DB93EB1421814FB1BB2E1C37 /* libPods-Zinc-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Zinc-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		EC0D72A92908105900BC61CC /* UIImageZincTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UIImageZincTests.m; sourceTree = "<group>"; };
 		ECCF844D2906D78B006990F5 /* ZincTests copy-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ZincTests copy-Info.plist"; path = "/Users/guilhermekrzisch/Desktop/projects/Zinc-ObjC/ZincTests copy-Info.plist"; sourceTree = "<absolute>"; };
 		ECCF84832906D830006990F5 /* ZincTests copy2-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "ZincTests copy2-Info.plist"; path = "/Users/guilhermekrzisch/Desktop/projects/Zinc-ObjC/ZincTests copy2-Info.plist"; sourceTree = "<absolute>"; };
 		ECCF84882906D858006990F5 /* ZincTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ZincTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -715,6 +718,7 @@
 				B340F985148D52D800206F86 /* Supporting Files */,
 				B3549DF2148DC0ED00DD63D1 /* Data */,
 				B33A363316991112007F0A57 /* Resources */,
+				EC0D72A92908105900BC61CC /* UIImageZincTests.m */,
 				B3AE827A17DFD89B003AA609 /* ZincTestDummies.h */,
 				B3AE827B17DFD89B003AA609 /* ZincTestDummies.m */,
 				B3AE828017DFFCDF003AA609 /* ZincMockFactory.h */,
@@ -1675,6 +1679,7 @@
 				B3D4CEC4184D50C3002015AA /* ZincOperationTest.m in Sources */,
 				B3D4CEC5184D50C3002015AA /* ZincAgentTests.m in Sources */,
 				B3D4CEC6184D50C3002015AA /* ZincUtilsTests.m in Sources */,
+				EC0D72AB2908105F00BC61CC /* UIImageZincTests.m in Sources */,
 				B3D4CEC7184D50C3002015AA /* ZincBundleVersionHelperSpec.m in Sources */,
 				B3D4CEC8184D50C3002015AA /* ZincProgressSpec.m in Sources */,
 				B3D4CEC9184D50C3002015AA /* ZincActivitityMonitorSpec.m in Sources */,
@@ -1703,6 +1708,7 @@
 				ECCF84962906D8B8006990F5 /* ZincResourceTests.m in Sources */,
 				ECCF84A02906D8B8006990F5 /* ZincAgentTests.m in Sources */,
 				ECCF84A22906D8B8006990F5 /* ZincOperationQueueGroupSpec.m in Sources */,
+				EC0D72AA2908105900BC61CC /* UIImageZincTests.m in Sources */,
 				ECCF849B2906D8B8006990F5 /* ZincProgressSpec.m in Sources */,
 				ECCF849E2906D8B8006990F5 /* ZincRepoIndexTests.m in Sources */,
 				ECCF849A2906D8B8006990F5 /* ZincUtilsTests.m in Sources */,
