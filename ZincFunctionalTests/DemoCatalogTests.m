@@ -352,7 +352,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:self.url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
@@ -478,7 +478,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:self.url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
@@ -557,7 +557,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:self.url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
