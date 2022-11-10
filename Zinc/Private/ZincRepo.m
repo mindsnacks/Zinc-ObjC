@@ -932,7 +932,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 
-- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versonSpecifier
+- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
     if (!self.isInitialized) {
         @throw [NSException
@@ -942,7 +942,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 
     NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-    ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versonSpecifier];
+    ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versionSpecifier];
     if (version == ZincVersionInvalid) {
         return nil;
     }

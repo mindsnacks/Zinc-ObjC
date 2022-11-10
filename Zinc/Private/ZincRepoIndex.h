@@ -66,6 +66,6 @@
 
 #pragma mark Encoding
 
-+ (id) repoIndexFromDictionary:(NSDictionary*)dict fileURL:(NSURL *)fileURL error:(NSError**)outError
++ (id) repoIndexFromDictionary:(NSDictionary*)dict fileURL:(NSURL *)fileURL error:(NSError**)outError;
 
 @end
