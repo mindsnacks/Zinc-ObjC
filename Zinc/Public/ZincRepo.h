@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
+#define BUNDLES_DIR @"bundles"
+
 @protocol ZincRepoEventListener;
 @class ZincBundle;
 @class ZincBundleTrackingRequest;

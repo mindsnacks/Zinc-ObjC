@@ -16,20 +16,22 @@
 @property (nonatomic, strong) NSMutableSet* mySourceURLs;
 @property (nonatomic, strong) NSMutableDictionary* myBundles;
 @property (nonatomic, strong) NSMutableDictionary* myExternalBundlesByResource;
+@property (nonatomic, strong) NSURL *fileURL;
 @end
 
 
 @implementation ZincRepoIndex
 
-- (id) init
+- (id) initWithFileURL:(NSURL *)fileURL
 {
-    return [self initWithFormat:kZincRepoIndexCurrentFormat];
+    return [self initWithFormat:kZincRepoIndexCurrentFormat fileURL:fileURL];
 }
 
-- (id)initWithFormat:(NSInteger)format
+- (id) initWithFormat:(NSInteger)format fileURL:(NSURL *)fileURL
 {
     self = [super init];
     if (self) {
+        self.fileURL = fileURL;
         self.format = format;
         self.mySourceURLs = [NSMutableSet set];
         self.myBundles = [NSMutableDictionary dictionary];
@@ -199,6 +201,13 @@
 
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource
 {
+    NSString* bundleID = bundleResource.zincBundleID;
+    ZincVersion bundleVersion = bundleResource.zincBundleVersion;
+
+    if (![self fileExistsForID:bundleID bundleVersion:bundleVersion]) {
+        return ZincBundleStateNone;
+    }
+
     @synchronized(self.myExternalBundlesByResource) {
         ZincExternalBundleInfo* info = self.myExternalBundlesByResource[bundleResource];
         if (info != nil) {
@@ -206,13 +215,25 @@
         }
     }
     @synchronized(self.myBundles) {
-        NSString* bundleID = [bundleResource zincBundleID];
-        ZincVersion bundleVersion = [bundleResource zincBundleVersion];
         NSMutableDictionary* bundleInfo = [self bundleInfoDictForId:bundleID createIfMissing:NO];
         NSMutableDictionary* versionInfo = bundleInfo[@"versions"];
         ZincBundleState state = (ZincBundleState)[versionInfo[[@(bundleVersion) stringValue]] integerValue];
         return state;
     }
+}
+
+- (BOOL) fileExistsForID:(NSString *)bundleID bundleVersion:(ZincVersion)bundleVersion {
+    NSFileManager *fileManager = [[NSFileManager alloc] init];
+
+    NSString* bundleDirName = [NSString stringWithFormat:@"%@-%ld", bundleID, (long)bundleVersion];
+    NSString* bundlePath = [[self bundlesPath] stringByAppendingPathComponent:bundleDirName];
+
+    return [fileManager fileExistsAtPath:bundlePath];
+}
+
+- (NSString*) bundlesPath
+{
+    return [self.fileURL.path stringByAppendingPathComponent:BUNDLES_DIR];
 }
 
 - (void) removeBundle:(NSURL*)bundleResource
@@ -335,9 +356,9 @@
     return [versions sortedArrayUsingSelector:@selector(compare:)];
 }
 
-+ (id) repoIndexFromDictionary_1:(NSDictionary*)dict
++ (id) repoIndexFromDictionary_1:(NSDictionary*)dict fileURL:(NSURL *)fileURL
 {
-    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:1];
+    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:1 fileURL:fileURL];
     
     NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
@@ -356,9 +377,9 @@
     return index;
 }
 
-+ (id) repoIndexFromDictionary_2:(NSDictionary*)dict
++ (id) repoIndexFromDictionary_2:(NSDictionary*)dict fileURL:(NSURL *)fileURL
 {
-    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:2];
+    ZincRepoIndex* index = [[ZincRepoIndex alloc] initWithFormat:2 fileURL:fileURL];
     
     NSArray* sourceURLs = dict[@"sources"];
     index.mySourceURLs = [NSMutableSet setWithCapacity:[sourceURLs count]];
@@ -390,7 +411,7 @@
     return index;
 }
 
-+ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError
++ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError fileURL:(NSURL *)fileURL
 {
     NSInteger format = [dict[@"format"] intValue];
     if (![[[self class] validFormats] containsObject:@(format)]) {
@@ -401,9 +422,9 @@
     }
     
     if (format == 1) {
-        return [self repoIndexFromDictionary_1:dict];
+        return [self repoIndexFromDictionary_1:dict fileURL:fileURL];
     } else if (format == 2) {
-        return [self repoIndexFromDictionary_2:dict];
+        return [self repoIndexFromDictionary_2:dict fileURL:fileURL];
     }
     
     NSAssert(NO, @"unknown format");
