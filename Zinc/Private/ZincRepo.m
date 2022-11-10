@@ -121,8 +121,8 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
                 }
 
                 ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict
-                                                                        error:outError
-                                                                      fileURL:repo.url];
+                                                                      fileURL:repo.url
+                                                                        error:outError];
                 if (index == nil) {
                     return nil;
                 }

@@ -411,7 +411,7 @@
     return index;
 }
 
-+ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError fileURL:(NSURL *)fileURL
++ (id) repoIndexFromDictionary:(NSDictionary*)dict fileURL:(NSURL *)fileURL error:(NSError**)outError
 {
     NSInteger format = [dict[@"format"] intValue];
     if (![[[self class] validFormats] containsObject:@(format)]) {

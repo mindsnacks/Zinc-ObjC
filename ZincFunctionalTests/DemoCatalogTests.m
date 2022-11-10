@@ -20,6 +20,8 @@
 
 @interface DemoCatalogTests : ZincRepoFunctionalTestCase
 
+@property (nonatomic) NSURL *url;
+
 @end
 
 @implementation DemoCatalogTests
@@ -350,7 +352,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
@@ -476,7 +478,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
@@ -555,7 +557,7 @@
         GHFail(@"error: %@", error);
     }
     
-    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:&error];
+    ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict fileURL:url error:&error];
     if (index == nil) {
         GHFail(@"error: %@", error);
     }
