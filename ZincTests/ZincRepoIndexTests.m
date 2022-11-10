@@ -90,11 +90,11 @@
     NSURL* bundleRes = [NSURL zincResourceForBundleWithID:@"com.foo.bundle" version:1];
     
     ZincRepoIndex* i1 = [[[ZincRepoIndex alloc] initWithFileURL:self.url] autorelease];
-    [i1 setState:ZincBundleStateCloning forBundle:bundleRes];
+    [i1 setState:ZincBundleStateNone forBundle:bundleRes];
     
     ZincBundleState state = [i1 stateForBundle:bundleRes];
     
-    XCTAssertEqual(state, ZincBundleStateCloning, @"state is wrong");
+    XCTAssertEqual(state, ZincBundleStateNone, @"state is wrong");
     
     [self _testDictionaryRoundtrip:i1];
 }
