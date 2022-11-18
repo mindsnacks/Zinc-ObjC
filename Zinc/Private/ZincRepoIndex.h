@@ -21,8 +21,9 @@
 /**
  @discussion Inits with current format kZincRepoIndexCurrentFormat
  */
-- (id) init;
-- (id) initWithFormat:(NSInteger)format;
+- (id) init NS_UNAVAILABLE;
+- (id) initWithFileURL:(NSURL *)fileURL;
+- (id) initWithFormat:(NSInteger)format fileURL:(NSURL *)fileURL;
 
 @property (nonatomic, assign) NSInteger format;
 + (NSSet*) validFormats;
@@ -65,6 +66,6 @@
 
 #pragma mark Encoding
 
-+ (id) repoIndexFromDictionary:(NSDictionary*)dict error:(NSError**)outError;
++ (id) repoIndexFromDictionary:(NSDictionary*)dict fileURL:(NSURL *)fileURL error:(NSError**)outError;
 
 @end

@@ -49,7 +49,7 @@
 
  @return A Zinc resource URL for the manifest
  */
-+ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)verion;
++ (NSURL*) zincResourceForManifestWithId:(NSString*)bundleID version:(ZincVersion)version;
 
 /**
  Determines if URL is a Zinc manifest resource URL
@@ -117,7 +117,7 @@
  Create a Zinc resource URL for a file-object
 
  @param sha The file's sha
- @param version The catalog ID
+ @param catalogID The catalog ID
 
  @return A Zinc resource URL for the file-object
  */

@@ -9,6 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "ZincGlobals.h"
 
+#define BUNDLES_DIR @"bundles"
+
 @protocol ZincRepoEventListener;
 @class ZincBundle;
 @class ZincBundleTrackingRequest;
@@ -213,7 +215,7 @@
  @param versionSpecifier The version specifier.
 
 */
-- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versonSpecifier;
+- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier;
 
 /**
  Obtain a Zinc bundle with the `ZincBundleVersionSpecifierDefault`.

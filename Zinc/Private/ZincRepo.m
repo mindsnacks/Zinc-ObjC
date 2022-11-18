@@ -30,7 +30,6 @@
 #define CATALOGS_DIR @"catalogs"
 #define MANIFESTS_DIR @"manifests"
 #define FILES_DIR @"objects"
-#define BUNDLES_DIR @"bundles"
 #define DOWNLOADS_DIR @"zinc/downloads"
 #define REPO_INDEX_FILE @"repo.json"
 
@@ -121,7 +120,9 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
                     return nil;
                 }
 
-                ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict error:outError];
+                ZincRepoIndex* index = [ZincRepoIndex repoIndexFromDictionary:jsonDict
+                                                                      fileURL:repo.url
+                                                                        error:outError];
                 if (index == nil) {
                     return nil;
                 }
@@ -155,7 +156,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     self = [super init];
     if (self) {
         self.url = fileURL;
-        self.index = [[ZincRepoIndex alloc] init];
+        self.index = [[ZincRepoIndex alloc] initWithFileURL:fileURL];
         self.fileManager = [[NSFileManager alloc] init];
         self.cache = [[NSCache alloc] init];
         self.cache.countLimit = kZincRepoDefaultCacheCount;
@@ -931,7 +932,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
 }
 
 
-- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versonSpecifier
+- (ZincBundle*) bundleWithID:(NSString*)bundleID versionSpecifier:(ZincBundleVersionSpecifier)versionSpecifier
 {
     if (!self.isInitialized) {
         @throw [NSException
@@ -941,7 +942,7 @@ NSString* const ZincRepoTaskNotificationTaskKey = @"task";
     }
 
     NSString* distro = [self.index trackedDistributionForBundleID:bundleID];
-    ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versonSpecifier];
+    ZincVersion version = [self versionForBundleID:bundleID distribution:distro versionSpecifier:versionSpecifier];
     if (version == ZincVersionInvalid) {
         return nil;
     }
