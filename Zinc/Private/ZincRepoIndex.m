@@ -201,12 +201,13 @@
 
 - (ZincBundleState) stateForBundle:(NSURL*)bundleResource
 {
+    NSLog(@"Aqui hein! %@", bundleResource.zincBundleID);
     NSString* bundleID = bundleResource.zincBundleID;
     ZincVersion bundleVersion = bundleResource.zincBundleVersion;
 
-    if (![self fileExistsForID:bundleID bundleVersion:bundleVersion]) {
-        return ZincBundleStateNone;
-    }
+//    if (![self fileExistsForID:bundleID bundleVersion:bundleVersion]) {
+//        return ZincBundleStateNone;
+//    }
 
     @synchronized(self.myExternalBundlesByResource) {
         ZincExternalBundleInfo* info = self.myExternalBundlesByResource[bundleResource];
